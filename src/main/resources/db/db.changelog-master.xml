@@ -8,4 +8,5 @@
     <include file="changelog/20180918132136_added_entity_DocumentTask.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20180918132314_added_entity_EntityAuditEvent.xml" relativeToChangelogFile="true"/>
 
+
 </databaseChangeLog>

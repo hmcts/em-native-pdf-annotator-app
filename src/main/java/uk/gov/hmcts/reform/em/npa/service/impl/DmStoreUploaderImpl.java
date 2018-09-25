@@ -2,8 +2,12 @@ package uk.gov.hmcts.reform.em.npa.service.impl;
 
 import okhttp3.*;
 import org.json.JSONObject;
+//import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+//import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.em.npa.service.DmStoreUploader;
 
 import java.io.File;
@@ -13,12 +17,23 @@ import java.io.IOException;
 @Transactional
 public class DmStoreUploaderImpl implements DmStoreUploader {
 
-    private OkHttpClient client = new OkHttpClient();
+    private final OkHttpClient okHttpClient;
+
+    private final AuthTokenGenerator dmStoreTokenGenerator;
+
+    private final String dmStoreAppBaseUrl;
+
+    private final String dmStoreUploadEndpoint = "/documents";
+
+    public DmStoreUploaderImpl(OkHttpClient okHttpClient, AuthTokenGenerator dmStoreTokenGenerator,
+                               @Value("${dm-store-app.base-url}") String dmStoreAppBaseUrl) {
+        this.okHttpClient = okHttpClient;
+        this.dmStoreTokenGenerator = dmStoreTokenGenerator;
+        this.dmStoreAppBaseUrl = dmStoreAppBaseUrl;
+    }
 
     @Override
     public String uploadFile(File file) {
-
-        String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJlbV9ndyIsImV4cCI6MTUzNzM4Mzg1M30.xiAPo0CLDxnD9JuZvwfUn3paZyazbb7c8v1N5xu-UaBcynUKAlDUeHYa_pS4MiFpOF-tm2XAEC6d5QCMfJkM7g";
 
         MultipartBody requestBody = new MultipartBody
             .Builder()
@@ -29,15 +44,15 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
 
         Request request = new Request.Builder()
             .addHeader("user-roles", "caseworker")
-            .addHeader("ServiceAuthorization", token)
+            .addHeader("ServiceAuthorization", dmStoreTokenGenerator.generate())
             .addHeader("Content-Type", "application/vnd.uk.gov.hmcts.dm.document-collection.v1+hal+json;charset=UTF-8")
-            .url("http://localhost:4603/documents")
+            .url(dmStoreAppBaseUrl+dmStoreUploadEndpoint)
             .method("POST", requestBody)
             .build();
 
         try {
 
-            Response response = client.newCall(request).execute();
+            Response response = okHttpClient.newCall(request).execute();
 
             if (response.isSuccessful()) {
 

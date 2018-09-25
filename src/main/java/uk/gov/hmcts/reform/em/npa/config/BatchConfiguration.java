@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.gov.hmcts.reform.em.npa.batch.DocumentTaskItemProcessor;
 import uk.gov.hmcts.reform.em.npa.domain.DocumentTask;
+import uk.gov.hmcts.reform.em.npa.service.AnnotationSetFetcher;
 import uk.gov.hmcts.reform.em.npa.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.npa.service.DmStoreUploader;
 import uk.gov.hmcts.reform.em.npa.service.PdfAnnotator;
@@ -43,6 +44,9 @@ public class BatchConfiguration {
 
     @Autowired
     public EntityManagerFactory entityManagerFactory;
+
+    @Autowired
+    public AnnotationSetFetcher annotationSetFetcher;
 
 //    @Bean
 //    public JdbcCursorItemReader<DocumentTask> reader(DataSource dataSource) {
@@ -74,7 +78,7 @@ public class BatchConfiguration {
 
     @Bean
     public DocumentTaskItemProcessor processor() {
-        return new DocumentTaskItemProcessor(dmStoreDownloader, pdfAnnotator, dmStoreUploader);
+        return new DocumentTaskItemProcessor(dmStoreDownloader, pdfAnnotator, dmStoreUploader, annotationSetFetcher);
     }
 
     @Bean

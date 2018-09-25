@@ -5,6 +5,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Optional;
+import java.util.Set;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 /**
  * Utility class for Spring Security.
@@ -72,5 +75,18 @@ public final class SecurityUtils {
             .map(authentication -> authentication.getAuthorities().stream()
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(authority)))
             .orElse(false);
+    }
+
+    public static Optional<Set<String>> getRoles() {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        return Optional.ofNullable(securityContext.getAuthentication())
+                .map(authentication ->
+                        authentication.getAuthorities().stream().map(authority -> authority.getAuthority())
+                                .collect(Collectors.toSet()));
+
+    }
+
+    public static String getCommaSeparetedRoles() {
+        return getRoles().get().stream().collect(Collectors.joining(","));
     }
 }

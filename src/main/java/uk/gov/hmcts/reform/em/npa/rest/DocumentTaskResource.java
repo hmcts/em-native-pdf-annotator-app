@@ -8,6 +8,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import uk.gov.hmcts.reform.em.npa.batch.DocumentTaskItemProcessor;
+import uk.gov.hmcts.reform.em.npa.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.npa.rest.errors.BadRequestAlertException;
 import uk.gov.hmcts.reform.em.npa.rest.util.HeaderUtil;
 import uk.gov.hmcts.reform.em.npa.rest.util.PaginationUtil;
@@ -45,12 +47,15 @@ public class DocumentTaskResource {
      */
     @PostMapping("/document-tasks")
     ////@Timed
-    public ResponseEntity<DocumentTaskDTO> createDocumentTask(@RequestBody DocumentTaskDTO documentTaskDTO) throws URISyntaxException {
+    public ResponseEntity<DocumentTaskDTO> createDocumentTask(@RequestBody DocumentTaskDTO documentTaskDTO, @RequestHeader("Authorization") String authorisationHeader) throws URISyntaxException {
         log.debug("REST request to save DocumentTask : {}", documentTaskDTO);
         if (documentTaskDTO.getId() != null) {
             throw new BadRequestAlertException("A new documentTask cannot already have an ID", ENTITY_NAME, "idexists");
         }
+        documentTaskDTO.setJwt(authorisationHeader);
+        documentTaskDTO.setTaskState(TaskState.NEW);
         DocumentTaskDTO result = documentTaskService.save(documentTaskDTO);
+
         return ResponseEntity.created(new URI("/api/document-tasks/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
@@ -65,18 +70,18 @@ public class DocumentTaskResource {
      * or with status 500 (Internal Server Error) if the documentTaskDTO couldn't be updated
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
-    @PutMapping("/document-tasks")
-    //@Timed
-    public ResponseEntity<DocumentTaskDTO> updateDocumentTask(@RequestBody DocumentTaskDTO documentTaskDTO) throws URISyntaxException {
-        log.debug("REST request to update DocumentTask : {}", documentTaskDTO);
-        if (documentTaskDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
-        DocumentTaskDTO result = documentTaskService.save(documentTaskDTO);
-        return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, documentTaskDTO.getId().toString()))
-            .body(result);
-    }
+//    @PutMapping("/document-tasks")
+//    //@Timed
+//    public ResponseEntity<DocumentTaskDTO> updateDocumentTask(@RequestBody DocumentTaskDTO documentTaskDTO) throws URISyntaxException {
+//        log.debug("REST request to update DocumentTask : {}", documentTaskDTO);
+//        if (documentTaskDTO.getId() == null) {
+//            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+//        }
+//        DocumentTaskDTO result = documentTaskService.save(documentTaskDTO);
+//        return ResponseEntity.ok()
+//            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, documentTaskDTO.getId().toString()))
+//            .body(result);
+//    }
 
     /**
      * GET  /document-tasks : get all the documentTasks.

@@ -33,15 +33,6 @@ base-urls:
   s2s-token: ${S2S_TOKEN:AAAAAAAAAAAAAAAA}
   test-url: ${TEST_URL:http://localhost:8080}
 
-deadline:
-  extension-days: 7
-
-event-scheduler:
-    event-notifier:
-      fixed-delay: 360000
-    event-trigger:
-      fixed-delay: 360000
-      cron: 0 0 1 * * ?
 
 #this need to be removed
 info:
@@ -55,5 +46,3 @@ azure:
   application-insights:
     instrumentation-key: ${APPINSIGHTS_INSTRUMENTATIONKEY:dummy}
 
-aat:
-  test-notification-endpoint: ${base-urls.test-url}/SSCS/notifications

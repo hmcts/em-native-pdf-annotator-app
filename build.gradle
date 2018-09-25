@@ -1,3 +1,10 @@
+buildscript {
+    dependencies {
+        classpath "io.spring.gradle:dependency-management-plugin:1.0.3.RELEASE"
+    }
+}
+
+
 plugins {
     id 'application'
     id 'io.spring.dependency-management' version '1.0.4.RELEASE'
@@ -23,6 +30,13 @@ apply plugin: 'com.github.ben-manes.versions'
 apply plugin: 'idea'
 
 
+dependencyManagement {
+    imports {
+        mavenBom 'org.springframework.cloud:spring-cloud-openfeign:2.0.2.BUILD-SNAPSHOT'
+    }
+}
+
+
 if (!project.hasProperty('runList')) {
     project.ext.runList = 'main'
 }
@@ -41,6 +55,7 @@ liquibase {
             username liquibaseProps.getProperty('username')
             password liquibaseProps.getProperty('password')
             changeLogFile liquibaseProps.getProperty('changeLogFile')
+            referenceUrl liquibaseProps.getProperty('referenceUrl')
             defaultSchemaName ''
             logLevel 'debug'
             classpath 'src/main/resources/'
@@ -50,7 +65,7 @@ liquibase {
             url liquibaseProps.getProperty('url')
             username liquibaseProps.getProperty('username')
             password liquibaseProps.getProperty('password')
-            changeLogFile liquibaseProps.getProperty('changeLogFile')
+//            changeLogFile liquibaseProps.getProperty('changeLogFile')
             referenceUrl liquibaseProps.getProperty('referenceUrl')
             defaultSchemaName ''
             logLevel 'debug'
@@ -77,6 +92,9 @@ repositories {
     maven { url "https://repo.spring.io/milestone" }
     jcenter()
     mavenLocal()
+    maven {
+        url 'https://repo.spring.io/libs-snapshot'
+    }
 }
 
 dependencyCheck {
@@ -119,6 +137,7 @@ dependencies {
     liquibaseRuntime "org.liquibase:liquibase-core"
     liquibaseRuntime "org.liquibase.ext:liquibase-hibernate5:${liquibase_hibernate5_version}"
     liquibaseRuntime sourceSets.main.compileClasspath
+    liquibaseRuntime 'org.liquibase:liquibase-groovy-dsl:2.0.1'
     liquibaseRuntime "org.postgresql:postgresql"
     compile("org.postgresql:postgresql:${versions.postgresql}")
     compile group: 'info.cukes', name: 'cucumber-java', version: '1.2.5'
@@ -134,6 +153,9 @@ dependencies {
     compile "org.hibernate:hibernate-envers"
     compile "org.hibernate.validator:hibernate-validator"
     compile group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.1'
+    compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '1.0.1'
+    compile 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
     compile "org.hibernate.validator:hibernate-validator"
     compile "org.mapstruct:mapstruct-jdk8:${mapstruct_version}"
     compile "org.springframework.boot:spring-boot-starter-security"

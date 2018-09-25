@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.reform.em.npa.batch.DocumentTaskItemProcessor;
 import uk.gov.hmcts.reform.em.npa.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.npa.repository.DocumentTaskRepository;
 import uk.gov.hmcts.reform.em.npa.service.DocumentTaskService;
@@ -27,9 +28,13 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
 
     private final DocumentTaskMapper documentTaskMapper;
 
-    public DocumentTaskServiceImpl(DocumentTaskRepository documentTaskRepository, DocumentTaskMapper documentTaskMapper) {
+    private final DocumentTaskItemProcessor documentTaskItemProcessor;
+
+
+    public DocumentTaskServiceImpl(DocumentTaskRepository documentTaskRepository, DocumentTaskMapper documentTaskMapper, DocumentTaskItemProcessor documentTaskItemProcessor) {
         this.documentTaskRepository = documentTaskRepository;
         this.documentTaskMapper = documentTaskMapper;
+        this.documentTaskItemProcessor = documentTaskItemProcessor;
     }
 
     /**
@@ -43,6 +48,7 @@ public class DocumentTaskServiceImpl implements DocumentTaskService {
         log.debug("Request to save DocumentTask : {}", documentTaskDTO);
         DocumentTask documentTask = documentTaskMapper.toEntity(documentTaskDTO);
         documentTask = documentTaskRepository.save(documentTask);
+        documentTaskItemProcessor.process(documentTask);
         return documentTaskMapper.toDto(documentTask);
     }
 

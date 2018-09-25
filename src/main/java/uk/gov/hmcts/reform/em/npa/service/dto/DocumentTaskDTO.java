@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.npa.service.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import uk.gov.hmcts.reform.em.npa.domain.enumeration.TaskState;
 
 import java.io.Serializable;
@@ -19,6 +20,9 @@ public class DocumentTaskDTO extends AbstractAuditingDTO implements Serializable
     private TaskState taskState;
 
     private String failureDescription;
+
+    @JsonIgnore
+    private String jwt;
 
     public Long getId() {
         return id;
@@ -58,6 +62,14 @@ public class DocumentTaskDTO extends AbstractAuditingDTO implements Serializable
 
     public void setFailureDescription(String failureDescription) {
         this.failureDescription = failureDescription;
+    }
+
+    public String getJwt() {
+        return jwt;
+    }
+
+    public void setJwt(String jwt) {
+        this.jwt = jwt;
     }
 
     @Override

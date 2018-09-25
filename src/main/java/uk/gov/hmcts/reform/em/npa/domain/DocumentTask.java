@@ -29,10 +29,13 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
 
     @Enumerated(EnumType.STRING)
     @Column(name = "task_state")
-    private TaskState taskState;
+    private TaskState taskState = TaskState.NEW;
 
     @Column(name = "failure_description")
     private String failureDescription;
+
+    @Column(name = "jwt")
+    private String jwt;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
@@ -125,5 +128,13 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
             ", taskState='" + getTaskState() + "'" +
             ", failureDescription='" + getFailureDescription() + "'" +
             "}";
+    }
+
+    public String getJwt() {
+        return jwt;
+    }
+
+    public void setJwt(String jwt) {
+        this.jwt = jwt;
     }
 }
