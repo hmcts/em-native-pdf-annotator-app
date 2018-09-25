@@ -20,7 +20,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 @Service
-@Transactional
+@Transactional()
 public class DmStoreDownloaderImpl implements DmStoreDownloader {
 
     private final OkHttpClient okHttpClient;
@@ -30,8 +30,7 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
     private String dmStoreAppBaseUrl;
 
     private final String dmStoreAppDocumentBinaryEndpointPattern = "/documents/%s/binary";
-//,
-//
+
     public DmStoreDownloaderImpl(OkHttpClient okHttpClient, AuthTokenGenerator dmStoreTokenGenerator,
                                  @Value("${dm-store-app.base-url}") String dmStoreAppBaseUrl) {
         this.okHttpClient = okHttpClient;
@@ -41,7 +40,7 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
 
 
     @Override
-    public File downloadFile(String id) {
+    public File downloadFile(String id) throws DocumentTaskProcessingException {
 
         Request request = new Request.Builder()
             .addHeader("user-roles", "caseworker")

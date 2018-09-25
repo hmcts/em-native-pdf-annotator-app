@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.em.npa.service.impl;
 
-public class DocumentTaskProcessingException extends RuntimeException {
+public class DocumentTaskProcessingException extends Exception {
 
     public DocumentTaskProcessingException(String message) {
         super(message);

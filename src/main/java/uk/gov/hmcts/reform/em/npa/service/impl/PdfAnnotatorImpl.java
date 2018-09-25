@@ -11,7 +11,7 @@ import java.io.File;
 @Transactional
 public class PdfAnnotatorImpl implements PdfAnnotator {
     @Override
-    public File annotatePdf(File file, AnnotationSetDTO annotationSetDTO) {
+    public File annotatePdf(File file, AnnotationSetDTO annotationSetDTO) throws DocumentTaskProcessingException {
         //throw new DocumentTaskProcessingException("x", null);
         return file;
     }

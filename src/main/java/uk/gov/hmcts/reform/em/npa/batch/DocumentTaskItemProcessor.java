@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.em.npa.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.npa.service.DmStoreUploader;
 import uk.gov.hmcts.reform.em.npa.service.PdfAnnotator;
 import uk.gov.hmcts.reform.em.npa.service.dto.external.annotation.AnnotationSetDTO;
+import uk.gov.hmcts.reform.em.npa.service.impl.DocumentTaskProcessingException;
 
 import java.io.File;
 
@@ -43,9 +44,12 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
 
             item.setTaskState(TaskState.DONE);
 
-        } catch (Exception e) {
+        } catch (DocumentTaskProcessingException e) {
+
             item.setTaskState(TaskState.FAILED);
+
             item.setFailureDescription(e.getMessage());
+
         }
 
         return item;

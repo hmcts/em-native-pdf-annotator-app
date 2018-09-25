@@ -33,7 +33,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
     }
 
     @Override
-    public String uploadFile(File file) {
+    public String uploadFile(File file) throws DocumentTaskProcessingException {
 
         MultipartBody requestBody = new MultipartBody
             .Builder()

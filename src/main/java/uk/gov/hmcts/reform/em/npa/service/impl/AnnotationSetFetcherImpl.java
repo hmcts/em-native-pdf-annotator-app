@@ -27,7 +27,6 @@ public class AnnotationSetFetcherImpl implements AnnotationSetFetcher {
 
     private final String annotationEndpoint = "/api/annotation-sets/filter?documentId=";
 
-
     private final ObjectMapper objectMapper;
 
 
@@ -42,7 +41,7 @@ public class AnnotationSetFetcherImpl implements AnnotationSetFetcher {
     }
 
     @Override
-    public AnnotationSetDTO fetchAnnotationSet(String documentId, String jwt) {
+    public AnnotationSetDTO fetchAnnotationSet(String documentId, String jwt) throws DocumentTaskProcessingException {
 
         Request request = new Request.Builder()
             .addHeader("Authorization", jwt)
