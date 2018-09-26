@@ -44,6 +44,7 @@ module "app" {
     # idam
     IDAM_API_BASE_URI = "${var.idam_api_url}"
     S2S_BASE_URI = "http://${var.s2s_url}-${local.local_env}.service.core-compute-${local.local_env}.internal"
+    S2S_KEY = "${data.azurerm_key_vault_secret.s2s_key.value}"
 
     # logging vars & healthcheck
     REFORM_SERVICE_NAME = "${local.app_full_name}"
@@ -94,20 +95,25 @@ provider "vault" {
   address = "https://vault.reform.hmcts.net:6200"
 }
 
+data "azurerm_key_vault_secret" "s2s_key" {
+  name      = "microservicekey-em-npa-app"
+  vault_uri = "https://s2s-${local.local_env}.vault.azure.net/"
+}
+
 data "azurerm_key_vault" "shared_key_vault" {
   name = "${local.shared_vault_name}"
   resource_group_name = "${local.shared_vault_name}"
 }
 
-data "azurerm_key_vault_secret" "s2s_secret" {
-  name = "em-s2s-token"
-  vault_uri = "${data.azurerm_key_vault.shared_key_vault.vault_uri}"
-}
-
-data "azurerm_key_vault_secret" "oauth2_secret" {
-  name = "show-oauth2-token"
-  vault_uri = "${data.azurerm_key_vault.shared_key_vault.vault_uri}"
-}
+//data "azurerm_key_vault_secret" "s2s_secret" {
+//  name = "em-npa-s2s-token"
+//  vault_uri = "${data.azurerm_key_vault.shared_key_vault.vault_uri}"
+//}
+//
+//data "azurerm_key_vault_secret" "oauth2_secret" {
+//  name = "show-oauth2-token"
+//  vault_uri = "${data.azurerm_key_vault.shared_key_vault.vault_uri}"
+//}
 
 module "local_key_vault" {
   source = "git@github.com:hmcts/moj-module-key-vault?ref=master"

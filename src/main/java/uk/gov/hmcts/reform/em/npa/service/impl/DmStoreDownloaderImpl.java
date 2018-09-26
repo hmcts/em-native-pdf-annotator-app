@@ -25,16 +25,16 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
 
     private final OkHttpClient okHttpClient;
 
-    private final AuthTokenGenerator dmStoreTokenGenerator;
+    private final AuthTokenGenerator authTokenGenerator;
 
     private String dmStoreAppBaseUrl;
 
     private final String dmStoreAppDocumentBinaryEndpointPattern = "/documents/%s/binary";
 
-    public DmStoreDownloaderImpl(OkHttpClient okHttpClient, AuthTokenGenerator dmStoreTokenGenerator,
+    public DmStoreDownloaderImpl(OkHttpClient okHttpClient, AuthTokenGenerator authTokenGenerator,
                                  @Value("${dm-store-app.base-url}") String dmStoreAppBaseUrl) {
         this.okHttpClient = okHttpClient;
-        this.dmStoreTokenGenerator = dmStoreTokenGenerator;
+        this.authTokenGenerator = authTokenGenerator;
         this.dmStoreAppBaseUrl = dmStoreAppBaseUrl;
     }
 
@@ -44,7 +44,7 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
 
         Request request = new Request.Builder()
             .addHeader("user-roles", "caseworker")
-            .addHeader("ServiceAuthorization", dmStoreTokenGenerator.generate())
+            .addHeader("ServiceAuthorization", authTokenGenerator.generate())
             .url(dmStoreAppBaseUrl+String.format(dmStoreAppDocumentBinaryEndpointPattern, id))
             .build();
 

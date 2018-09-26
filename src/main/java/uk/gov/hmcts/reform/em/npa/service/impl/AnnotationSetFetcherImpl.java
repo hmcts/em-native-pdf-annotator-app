@@ -21,7 +21,7 @@ public class AnnotationSetFetcherImpl implements AnnotationSetFetcher {
 
     private final OkHttpClient okHttpClient;
 
-    private final AuthTokenGenerator annotationAppTokenGenerator;
+    private final AuthTokenGenerator authTokenGenerator;
 
     private String annotationApiEndpointBase;
 
@@ -31,12 +31,12 @@ public class AnnotationSetFetcherImpl implements AnnotationSetFetcher {
 
 
     public AnnotationSetFetcherImpl(OkHttpClient okHttpClient,
-                                    AuthTokenGenerator annotationAppTokenGenerator,
+                                    AuthTokenGenerator authTokenGenerator,
                                     ObjectMapper objectMapper,
                                     @Value("${em-annotation-app.base-url}") String annotationApiEndpointBase) {
         this.okHttpClient = okHttpClient;
         this.annotationApiEndpointBase = annotationApiEndpointBase;
-        this.annotationAppTokenGenerator = annotationAppTokenGenerator;
+        this.authTokenGenerator = authTokenGenerator;
         this.objectMapper = objectMapper;
     }
 
@@ -45,7 +45,7 @@ public class AnnotationSetFetcherImpl implements AnnotationSetFetcher {
 
         Request request = new Request.Builder()
             .addHeader("Authorization", jwt)
-            .addHeader("ServiceAuthorization", annotationAppTokenGenerator.generate())
+            .addHeader("ServiceAuthorization", authTokenGenerator.generate())
             .url(annotationApiEndpointBase+annotationEndpoint+documentId).build();
 
         try {

@@ -91,8 +91,6 @@ auth:
       client:
         baseUrl: ${IDAM_S2S_BASE_URI:http://localhost:4502}
 
-
-
 azure:
   app_insights_key: ${APPINSIGHTS_INSTRUMENTATIONKEY:true}
   application-insights:
@@ -103,22 +101,14 @@ app-insights:
   request-component: on
   telemetry-component: on
 
-#
-#toggle:
-#  includeidamhealth: ${ENABLE_IDAM_HEALTH_CHECK:false}
-#  includes2shealth: ${ENABLE_S2S_HEALTH_CHECK:false}
 em-annotation-app:
   base-url: ${EM_ANNOTATION_APP_URL:http://localhost:8081}
-  s2s-auth:
-    totp_secret: ${EM_ANNOTATION_MICROSERVICE_TOTP_SERVICE:AAAAAAAAAAAAAAAA}
-    microservice: ${EM_ANNOTATION_MICROSERVICE:em_gw}
 
 dm-store-app:
   base-url: ${DM_STORE_APP_URL:http://localhost:4603}
-  s2s-auth:
-    totp_secret: ${DM_STORE_MICROSERVICE_TOTP_SERVICE:AAAAAAAAAAAAAAAA}
-    microservice: ${DM_STORE_MICROSERVICE:em_gw}
 
 idam:
   s2s-auth:
     url: ${IDAM_S2S_BASE_URI:http://localhost:4502}
+    totp_secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
+    microservice: em_npa_app

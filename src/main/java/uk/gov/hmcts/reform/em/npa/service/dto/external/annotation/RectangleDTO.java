@@ -12,13 +12,13 @@ public class RectangleDTO extends AbstractAuditingDTO implements Serializable {
 
     private Long id;
 
-    private Integer x;
+    private Float x;
 
-    private Integer y;
+    private Float y;
 
-    private Integer width;
+    private Float width;
 
-    private Integer height;
+    private Float height;
 
     private Long annotationId;
 
@@ -30,35 +30,35 @@ public class RectangleDTO extends AbstractAuditingDTO implements Serializable {
         this.id = id;
     }
 
-    public Integer getX() {
+    public Float getX() {
         return x;
     }
 
-    public void setX(Integer x) {
+    public void setX(Float x) {
         this.x = x;
     }
 
-    public Integer getY() {
+    public Float getY() {
         return y;
     }
 
-    public void setY(Integer y) {
+    public void setY(Float y) {
         this.y = y;
     }
 
-    public Integer getWidth() {
+    public Float getWidth() {
         return width;
     }
 
-    public void setWidth(Integer width) {
+    public void setWidth(Float width) {
         this.width = width;
     }
 
-    public Integer getHeight() {
+    public Float getHeight() {
         return height;
     }
 
-    public void setHeight(Integer height) {
+    public void setHeight(Float height) {
         this.height = height;
     }
 

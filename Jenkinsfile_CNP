@@ -3,7 +3,7 @@
 properties([
     [
         $class: 'GithubProjectProperty',
-        displayName: 'Evidence Management Store App',
+        displayName: 'Evidence NPA App',
         projectUrlStr: 'https://github.com/hmcts/rpa-native-pdf-annotator-app'
     ],
     pipelineTriggers([
@@ -15,7 +15,7 @@ properties([
 
 def type = "java"
 def product = "em"
-def component = "anno"
+def component = "npa"
 
 def channel = '#rpa-pipeline'
 

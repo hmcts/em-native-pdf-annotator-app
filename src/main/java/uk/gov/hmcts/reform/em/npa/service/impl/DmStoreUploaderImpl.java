@@ -19,16 +19,16 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
 
     private final OkHttpClient okHttpClient;
 
-    private final AuthTokenGenerator dmStoreTokenGenerator;
+    private final AuthTokenGenerator authTokenGenerator;
 
     private final String dmStoreAppBaseUrl;
 
     private final String dmStoreUploadEndpoint = "/documents";
 
-    public DmStoreUploaderImpl(OkHttpClient okHttpClient, AuthTokenGenerator dmStoreTokenGenerator,
+    public DmStoreUploaderImpl(OkHttpClient okHttpClient, AuthTokenGenerator authTokenGenerator,
                                @Value("${dm-store-app.base-url}") String dmStoreAppBaseUrl) {
         this.okHttpClient = okHttpClient;
-        this.dmStoreTokenGenerator = dmStoreTokenGenerator;
+        this.authTokenGenerator = authTokenGenerator;
         this.dmStoreAppBaseUrl = dmStoreAppBaseUrl;
     }
 
@@ -44,7 +44,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
 
         Request request = new Request.Builder()
             .addHeader("user-roles", "caseworker")
-            .addHeader("ServiceAuthorization", dmStoreTokenGenerator.generate())
+            .addHeader("ServiceAuthorization", authTokenGenerator.generate())
             .addHeader("Content-Type", "application/vnd.uk.gov.hmcts.dm.document-collection.v1+hal+json;charset=UTF-8")
             .url(dmStoreAppBaseUrl+dmStoreUploadEndpoint)
             .method("POST", requestBody)
