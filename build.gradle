@@ -172,6 +172,7 @@ dependencies {
     testCompile group: 'info.cukes', name: 'cucumber-core', version: '1.2.5'
     testCompile group: 'info.cukes', name: 'cucumber-spring', version: '1.2.5'
     testCompile group: 'com.h2database', name: 'h2', version: '1.4.197'
+    testCompile 'com.github.gmazzo:okhttp-mock:1.0.4'
     liquibaseRuntime "com.h2database:h2"
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging-appinsights', version: '3.0.1'
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging-spring', version: '3.0.1'

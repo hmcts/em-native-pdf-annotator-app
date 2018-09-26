@@ -2,8 +2,8 @@ spring:
   database:
     driverClassName: org.h2.Driver
   datasource:
-#    url: jdbc:h2:mem:test_mem
-    url: jdbc:h2:./build/h2_db/test;DB_CLOSE_ON_EXIT=FALSE
+    url: jdbc:h2:mem:test_mem
+#    url: jdbc:h2:./build/h2_db/test;DB_CLOSE_ON_EXIT=FALSE
     platform: h2
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
@@ -13,6 +13,3 @@ azure:
   application-insights:
     instrumentation-key: ${APPINSIGHTS_INSTRUMENTATIONKEY:dummy}
 
-liquibase:
-  enabled: ${ENABLE_DB_MIGRATE:true}
-  change-log: classpath:/db/db.changelog-master.xml

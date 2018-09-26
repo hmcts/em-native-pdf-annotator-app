@@ -47,7 +47,7 @@ public class DocumentTaskResource {
      */
     @PostMapping("/document-tasks")
     ////@Timed
-    public ResponseEntity<DocumentTaskDTO> createDocumentTask(@RequestBody DocumentTaskDTO documentTaskDTO, @RequestHeader("Authorization") String authorisationHeader) throws URISyntaxException {
+    public ResponseEntity<DocumentTaskDTO> createDocumentTask(@RequestBody DocumentTaskDTO documentTaskDTO, @RequestHeader(value="Authorization", required=false) String authorisationHeader) throws URISyntaxException {
         log.debug("REST request to save DocumentTask : {}", documentTaskDTO);
         if (documentTaskDTO.getId() != null) {
             throw new BadRequestAlertException("A new documentTask cannot already have an ID", ENTITY_NAME, "idexists");
@@ -70,18 +70,19 @@ public class DocumentTaskResource {
      * or with status 500 (Internal Server Error) if the documentTaskDTO couldn't be updated
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
-//    @PutMapping("/document-tasks")
-//    //@Timed
-//    public ResponseEntity<DocumentTaskDTO> updateDocumentTask(@RequestBody DocumentTaskDTO documentTaskDTO) throws URISyntaxException {
-//        log.debug("REST request to update DocumentTask : {}", documentTaskDTO);
-//        if (documentTaskDTO.getId() == null) {
-//            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-//        }
-//        DocumentTaskDTO result = documentTaskService.save(documentTaskDTO);
-//        return ResponseEntity.ok()
-//            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, documentTaskDTO.getId().toString()))
-//            .body(result);
-//    }
+    @PutMapping("/document-tasks")
+    //@Timed
+    public ResponseEntity<DocumentTaskDTO> updateDocumentTask(@RequestBody DocumentTaskDTO documentTaskDTO, @RequestHeader(value="Authorization", required=false) String authorisationHeader) throws URISyntaxException {
+        log.debug("REST request to update DocumentTask : {}", documentTaskDTO);
+        if (documentTaskDTO.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        documentTaskDTO.setJwt(authorisationHeader);
+        DocumentTaskDTO result = documentTaskService.save(documentTaskDTO);
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, documentTaskDTO.getId().toString()))
+            .body(result);
+    }
 
     /**
      * GET  /document-tasks : get all the documentTasks.

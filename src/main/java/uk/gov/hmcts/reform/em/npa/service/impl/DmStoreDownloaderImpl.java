@@ -20,7 +20,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 @Service
-@Transactional()
+@Transactional
 public class DmStoreDownloaderImpl implements DmStoreDownloader {
 
     private final OkHttpClient okHttpClient;
