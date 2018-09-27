@@ -86,6 +86,13 @@
     </suppress>
     <suppress>
         <notes><![CDATA[
+   file name: spring-batch-core-4.0.1.RELEASE.jar
+   ]]></notes>
+        <gav regex="true">^org\.springframework\.batch:spring-batch-core:.*$</gav>
+        <cve>CVE-2016-5007</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
    file name: spring-batch-infrastructure-4.0.1.RELEASE.jar
    ]]></notes>
         <gav regex="true">^org\.springframework\.batch:spring-batch-infrastructure:.*$</gav>
