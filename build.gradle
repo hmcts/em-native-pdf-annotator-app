@@ -255,6 +255,8 @@ task smoke(type: Test) {
     environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }
 
+task migratePostgresDatabase(dependsOn: 'liquibaseUpdate')
+
 dependencyCheck {
     suppressionFile = 'dependency-check-suppressions.xml'
 }
