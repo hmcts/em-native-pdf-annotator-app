@@ -46,6 +46,11 @@ module "app" {
     S2S_BASE_URI = "http://${var.s2s_url}-${local.local_env}.service.core-compute-${local.local_env}.internal"
     S2S_KEY = "${data.azurerm_key_vault_secret.s2s_key.value}"
 
+    #DM STORE
+    DM_STORE_APP_URL = "http://${var.dm_store_app_url}-${local.local_env}.service.core-compute-${local.local_env}.internal"
+    #EM ANN API
+    EM_ANNOTATION_APP_URL = "http://${var.em_anno_app_url}-${local.local_env}.service.core-compute-${local.local_env}.internal"
+
     # logging vars & healthcheck
     REFORM_SERVICE_NAME = "${local.app_full_name}"
     REFORM_TEAM = "${var.team_name}"

@@ -69,7 +69,7 @@ variable "dm_store_app_url" {
 }
 
 variable "em_anno_app_url" {
-  default = "em-npa"
+  default = "em-anno"
 }
 
 variable "postgresql_user" {
