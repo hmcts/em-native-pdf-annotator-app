@@ -13,17 +13,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Scheduled;
 
-@Configuration
-@EnableBatchProcessing
+//@Configuration
+//@EnableBatchProcessing
 public class ScheduleConfiguration {
 
-    @Autowired
+//    @Autowired
     private JobLauncher jobLauncher;
 
-    @Autowired
+//    @Autowired
     private Job job;
 
-    @Scheduled(cron = "${spring.batch.job.jobCronExpression}")
+//    @Scheduled(cron = "${spring.batch.job.jobCronExpression}")
     public void perform() throws JobExecutionAlreadyRunningException, JobRestartException,
         JobInstanceAlreadyCompleteException, JobParametersInvalidException {
 
