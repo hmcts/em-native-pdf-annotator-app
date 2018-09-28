@@ -112,4 +112,6 @@ idam:
   s2s-auth:
     url: ${S2S_BASE_URI:http://localhost:4502}
     totp_secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
-    microservice: em_npa_app
+    #microservice: em_npa_app
+    #change data "azurerm_key_vault_secret" "s2s_key" in main.tf when em_npa_app is added to the dm_store white list
+    microservice: em_gw
