@@ -86,11 +86,11 @@ authorization:
 auth:
   idam:
     client:
-      baseUrl: ${IDAM_USER_BASE_URI:http://localhost:4501}
+      baseUrl: ${IDAM_API_BASE_URI:http://localhost:4501}
   provider:
     service:
       client:
-        baseUrl: ${IDAM_S2S_BASE_URI:http://localhost:4502}
+        baseUrl: ${S2S_BASE_URI:http://localhost:4502}
 
 azure:
   app_insights_key: ${APPINSIGHTS_INSTRUMENTATIONKEY:true}
@@ -110,6 +110,6 @@ dm-store-app:
 
 idam:
   s2s-auth:
-    url: ${IDAM_S2S_BASE_URI:http://localhost:4502}
+    url: ${S2S_BASE_URI:http://localhost:4502}
     totp_secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
     microservice: em_npa_app
