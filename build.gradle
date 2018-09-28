@@ -65,7 +65,6 @@ liquibase {
             url project.hasProperty("dburl") ? "jdbc:postgresql://$dburl" : liquibaseProps.getProperty('url')
             username project.hasProperty("flyway.user") ? "${rootProject.properties['flyway.user']}" : liquibaseProps.getProperty('username')
             password project.hasProperty("flyway.password") ? "${rootProject.properties['flyway.password']}" : liquibaseProps.getProperty('password')
-//            changeLogFile liquibaseProps.getProperty('changeLogFile')
             referenceUrl liquibaseProps.getProperty('referenceUrl')
             defaultSchemaName ''
             logLevel 'debug'
@@ -240,7 +239,7 @@ task functional(type: Test) {
     description = 'Executes functional tests'
     setTestClassesDirs(sourceSets.aat.output.classesDirs)
     setClasspath(sourceSets.aat.runtimeClasspath)
-    include "uk/gov/hmcts/reform/em/annotation/functional/**"
+    include "uk/gov/hmcts/reform/em/npa/functional/**"
 
     environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }
@@ -250,7 +249,7 @@ task smoke(type: Test) {
     description = 'Executes non-destructive smoke tests'
     setTestClassesDirs(sourceSets.aat.output.classesDirs)
     setClasspath(sourceSets.aat.runtimeClasspath)
-    include "uk/gov/hmcts/reform/em/annotation/smoke/**"
+    include "uk/gov/hmcts/reform/em/npa/smoke/**"
 
     environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }
