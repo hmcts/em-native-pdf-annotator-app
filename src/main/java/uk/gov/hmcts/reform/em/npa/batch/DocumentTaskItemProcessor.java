@@ -1,6 +1,9 @@
 package uk.gov.hmcts.reform.em.npa.batch;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
+import uk.gov.hmcts.reform.em.npa.config.audit.AsyncEntityAuditEventWriter;
 import uk.gov.hmcts.reform.em.npa.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.npa.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.npa.service.AnnotationSetFetcher;
@@ -13,6 +16,8 @@ import uk.gov.hmcts.reform.em.npa.service.impl.DocumentTaskProcessingException;
 import java.io.File;
 
 public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, DocumentTask> {
+
+    private final Logger log = LoggerFactory.getLogger(DocumentTaskItemProcessor.class);
 
     private final DmStoreDownloader dmStoreDownloader;
     private final PdfAnnotator pdfAnnotator;
@@ -45,6 +50,8 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
             item.setTaskState(TaskState.DONE);
 
         } catch (DocumentTaskProcessingException e) {
+
+            log.error("DocumentTaskProcessingException: " + e.getMessage(), e);
 
             item.setTaskState(TaskState.FAILED);
 

@@ -48,7 +48,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         authenticationManager.setEraseCredentialsAfterAuthentication(false);
         authCheckerFilter.setAuthenticationManager(authenticationManager());
 
-        http
+        http.antMatcher("/api/**")
             .addFilter(authCheckerFilter)
             .sessionManagement().sessionCreationPolicy(STATELESS).and()
             .csrf().disable()

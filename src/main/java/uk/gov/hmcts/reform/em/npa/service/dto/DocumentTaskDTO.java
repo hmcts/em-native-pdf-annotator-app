@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.npa.service.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import uk.gov.hmcts.reform.em.npa.domain.enumeration.TaskState;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -13,6 +14,7 @@ public class DocumentTaskDTO extends AbstractAuditingDTO implements Serializable
 
     private Long id;
 
+    @NotNull
     private String inputDocumentId;
 
     private String outputDocumentId;
