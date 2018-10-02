@@ -4,13 +4,14 @@ import uk.gov.hmcts.reform.em.npa.service.dto.AbstractAuditingDTO;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * A DTO for the Rectangle entity.
  */
 public class RectangleDTO extends AbstractAuditingDTO implements Serializable {
 
-    private Long id;
+    private UUID id;
 
     private Float x;
 
@@ -20,13 +21,13 @@ public class RectangleDTO extends AbstractAuditingDTO implements Serializable {
 
     private Float height;
 
-    private Long annotationId;
+    private UUID annotationId;
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -62,11 +63,11 @@ public class RectangleDTO extends AbstractAuditingDTO implements Serializable {
         this.height = height;
     }
 
-    public Long getAnnotationId() {
+    public UUID getAnnotationId() {
         return annotationId;
     }
 
-    public void setAnnotationId(Long annotationId) {
+    public void setAnnotationId(UUID annotationId) {
         this.annotationId = annotationId;
     }
 

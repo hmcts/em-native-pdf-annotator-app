@@ -5,24 +5,25 @@ import uk.gov.hmcts.reform.em.npa.service.dto.AbstractAuditingDTO;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * A DTO for the Comment entity.
  */
 public class CommentDTO extends AbstractAuditingDTO implements Serializable {
 
-    private Long id;
+    private UUID id;
 
     @Size(max = 5000)
     private String content;
 
-    private Long annotationId;
+    private UUID annotationId;
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -34,11 +35,11 @@ public class CommentDTO extends AbstractAuditingDTO implements Serializable {
         this.content = content;
     }
 
-    public Long getAnnotationId() {
+    public UUID getAnnotationId() {
         return annotationId;
     }
 
-    public void setAnnotationId(Long annotationId) {
+    public void setAnnotationId(UUID annotationId) {
         this.annotationId = annotationId;
     }
 

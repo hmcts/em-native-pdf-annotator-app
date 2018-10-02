@@ -6,13 +6,14 @@ import uk.gov.hmcts.reform.em.npa.service.dto.AbstractAuditingDTO;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * A DTO for the Annotation entity.
  */
 public class AnnotationDTO extends AbstractAuditingDTO implements Serializable {
 
-    private Long id;
+    private UUID id;
 
     @JsonProperty("type")
     private AnnotationType annotationType;
@@ -27,17 +28,17 @@ public class AnnotationDTO extends AbstractAuditingDTO implements Serializable {
 
     private Float height;
 
-    private Long annotationSetId;
+    private UUID annotationSetId;
 
     private Set<CommentDTO> comments;
 
     private Set<RectangleDTO> rectangles;
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -89,11 +90,11 @@ public class AnnotationDTO extends AbstractAuditingDTO implements Serializable {
         this.height = height;
     }
 
-    public Long getAnnotationSetId() {
+    public UUID getAnnotationSetId() {
         return annotationSetId;
     }
 
-    public void setAnnotationSetId(Long annotationSetId) {
+    public void setAnnotationSetId(UUID annotationSetId) {
         this.annotationSetId = annotationSetId;
     }
 
