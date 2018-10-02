@@ -4,7 +4,6 @@ buildscript {
     }
 }
 
-
 plugins {
     id 'application'
     id 'io.spring.dependency-management' version '1.0.4.RELEASE'
@@ -35,7 +34,6 @@ dependencyManagement {
         mavenBom 'org.springframework.cloud:spring-cloud-openfeign:2.0.2.BUILD-SNAPSHOT'
     }
 }
-
 
 if (!project.hasProperty('runList')) {
     project.ext.runList = 'main'
@@ -187,9 +185,9 @@ bootJar {
 }
 
 def coverageExclusionList = [
-    '**uk/gov/hmcts/reform/em/annotation/Application*',
-    '**uk/gov/hmcts/reform/em/annotation/appinsights/*',
-    '**uk/gov/hmcts/reform/em/annotation/domain/*',
+    '**uk/gov/hmcts/reform/em/npa/Application*',
+    '**uk/gov/hmcts/reform/em/npa/appinsights/*',
+    '**uk/gov/hmcts/reform/em/npa/domain/*',
 ]
 
 //(jacocoTestReport | jacocoTestCoverageVerification)
