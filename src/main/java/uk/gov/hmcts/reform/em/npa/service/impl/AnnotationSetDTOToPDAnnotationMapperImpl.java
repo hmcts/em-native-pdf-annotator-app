@@ -5,9 +5,12 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationPopup;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationTextMarkup;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.npa.Application;
+import uk.gov.hmcts.reform.em.npa.batch.DocumentTaskItemProcessor;
 import uk.gov.hmcts.reform.em.npa.service.AnnotationSetDTOToPDAnnotationMapper;
 import uk.gov.hmcts.reform.em.npa.service.dto.external.annotation.AnnotationDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.external.annotation.CommentDTO;
@@ -21,6 +24,8 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class AnnotationSetDTOToPDAnnotationMapperImpl implements AnnotationSetDTOToPDAnnotationMapper {
+
+    private final Logger log = LoggerFactory.getLogger(AnnotationSetDTOToPDAnnotationMapperImpl.class);
 
     @Override
     public Map<Integer, List<PDAnnotation>> toNativeAnnotationsPerPage(Set<AnnotationDTO> annotations) throws DocumentTaskProcessingException {
@@ -76,7 +81,7 @@ public class AnnotationSetDTOToPDAnnotationMapperImpl implements AnnotationSetDT
             PDDocument templateDocument = PDDocument.load(file);
             return templateDocument.getPage(0).getAnnotations();
         } catch (IOException e) {
-            //do nothing
+            log.error("Could not retrieve the template", e);
             return Collections.EMPTY_LIST;
         }
 

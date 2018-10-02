@@ -4,16 +4,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-//import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-//import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.em.npa.service.AnnotationSetFetcher;
 import uk.gov.hmcts.reform.em.npa.service.dto.external.annotation.AnnotationSetDTO;
 
 import java.io.IOException;
+
+//import org.springframework.beans.factory.annotation.Value;
+//import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 
 @Service
 @Transactional
