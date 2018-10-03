@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.em.npa.service.impl;
 
-import io.jsonwebtoken.lang.Assert;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
+import org.junit.Assert;
 import org.junit.Test;
 import uk.gov.hmcts.reform.em.npa.service.dto.external.annotation.AnnotationDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.external.annotation.CommentDTO;
@@ -23,15 +23,15 @@ public class AnnotationSetDTOToPDAnnotationMapperImplTest {
 
         AnnotationDTO annotationDTO = new AnnotationDTO();
         annotationDTO.setPage(0);
-        annotationDTO.setAnnotationType("height");
+        annotationDTO.setAnnotationType("highlight");
 
         Set<RectangleDTO> rectangles = new HashSet<>();
 
         RectangleDTO rectangleDTO = new RectangleDTO();
-        rectangleDTO.setX(0f);
-        rectangleDTO.setY(0f);
-        rectangleDTO.setHeight(10f);
-        rectangleDTO.setWidth(10f);
+        rectangleDTO.setX(0d);
+        rectangleDTO.setY(0d);
+        rectangleDTO.setHeight(10d);
+        rectangleDTO.setWidth(10d);
         rectangles.add(rectangleDTO);
 
         Set<CommentDTO> commentDTOS = new HashSet<>();
@@ -44,7 +44,10 @@ public class AnnotationSetDTOToPDAnnotationMapperImplTest {
         annotationSet.add(annotationDTO);
         Map<Integer, List<PDAnnotation>> result = annotationSetDTOToPDAnnotationMapperImpl.toNativeAnnotationsPerPage(annotationSet);
 
-        Assert.notNull(result.get(0).get(0));
+        Assert.assertNotNull(result.get(0).get(0));
+        Assert.assertEquals(result.get(0).get(0).getColor().getComponents()[0], 255f, 0);
+        Assert.assertEquals(result.get(0).get(0).getColor().getComponents()[1], 255f, 0);
+        Assert.assertEquals(result.get(0).get(0).getColor().getComponents()[2], 0f, 0);
 
 
     }

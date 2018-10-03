@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.em.npa.service.dto.external.annotation;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import uk.gov.hmcts.reform.em.npa.service.dto.AbstractAuditingDTO;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -20,19 +20,13 @@ public class AnnotationDTO extends AbstractAuditingDTO implements Serializable {
 
     private Integer page;
 
-    private Float x;
-
-    private Float y;
-
-    private Float width;
-
-    private Float height;
+    private String color;
 
     private UUID annotationSetId;
 
-    private Set<CommentDTO> comments;
+    private Set<CommentDTO> comments = new HashSet<>();
 
-    private Set<RectangleDTO> rectangles;
+    private Set<RectangleDTO> rectangles = new HashSet<>();
 
     public UUID getId() {
         return id;
@@ -56,38 +50,6 @@ public class AnnotationDTO extends AbstractAuditingDTO implements Serializable {
 
     public void setPage(Integer page) {
         this.page = page;
-    }
-
-    public Float getX() {
-        return x;
-    }
-
-    public void setX(Float x) {
-        this.x = x;
-    }
-
-    public Float getY() {
-        return y;
-    }
-
-    public void setY(Float y) {
-        this.y = y;
-    }
-
-    public Float getWidth() {
-        return width;
-    }
-
-    public void setWidth(Float width) {
-        this.width = width;
-    }
-
-    public Float getHeight() {
-        return height;
-    }
-
-    public void setHeight(Float height) {
-        this.height = height;
     }
 
     public UUID getAnnotationSetId() {
@@ -114,6 +76,14 @@ public class AnnotationDTO extends AbstractAuditingDTO implements Serializable {
         this.rectangles = rectangles;
     }
 
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
     @Override
 
     public boolean equals(Object o) {
@@ -132,21 +102,21 @@ public class AnnotationDTO extends AbstractAuditingDTO implements Serializable {
     }
 
     @Override
+    public String toString() {
+        return "AnnotationDTO{" +
+            "id=" + id +
+            ", annotationType=" + annotationType +
+            ", page=" + page +
+            ", color='" + color + '\'' +
+            ", annotationSetId=" + annotationSetId +
+            ", comments=" + comments +
+            ", rectangles=" + rectangles +
+            '}';
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hashCode(getId());
     }
 
-    @Override
-    public String toString() {
-        return "AnnotationDTO{" +
-            "id=" + getId() +
-            ", annotationType='" + getAnnotationType() + "'" +
-            ", page=" + getPage() +
-            ", x=" + getX() +
-            ", y=" + getY() +
-            ", width=" + getWidth() +
-            ", height=" + getHeight() +
-            ", annotationSet=" + getAnnotationSetId() +
-            "}";
-    }
 }

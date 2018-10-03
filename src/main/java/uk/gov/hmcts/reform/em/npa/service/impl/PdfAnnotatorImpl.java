@@ -45,12 +45,13 @@ public class PdfAnnotatorImpl implements PdfAnnotator {
                 }
             });
 
-            document.save(file.getAbsolutePath().replaceFirst("\\.pdf", "-annotated.pdf"));
-
+            final String annotatedPathFile = file.getAbsolutePath().replaceFirst("\\.pdf", "-annotated.pdf");
+            document.save(annotatedPathFile);
+            return new File(annotatedPathFile);
         } catch (IOException e) {
             throw new DocumentTaskProcessingException("Could not load the file " + file.getName(), e);
         }
 
-        return file;
+
     }
 }

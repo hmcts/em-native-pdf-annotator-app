@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.em.npa.service.dto.external.annotation;
 
-import uk.gov.hmcts.reform.em.npa.service.dto.AbstractAuditingDTO;
-
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;

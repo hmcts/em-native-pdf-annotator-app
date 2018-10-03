@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.em.npa.service.dto.external.annotation;
 
-import uk.gov.hmcts.reform.em.npa.service.dto.AbstractAuditingDTO;
-
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Objects;
