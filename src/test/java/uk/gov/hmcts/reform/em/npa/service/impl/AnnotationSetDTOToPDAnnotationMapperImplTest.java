@@ -45,8 +45,8 @@ public class AnnotationSetDTOToPDAnnotationMapperImplTest {
         Map<Integer, List<PDAnnotation>> result = annotationSetDTOToPDAnnotationMapperImpl.toNativeAnnotationsPerPage(annotationSet);
 
         Assert.assertNotNull(result.get(0).get(0));
-        Assert.assertEquals(result.get(0).get(0).getColor().getComponents()[0], 255f, 0);
-        Assert.assertEquals(result.get(0).get(0).getColor().getComponents()[1], 255f, 0);
+        Assert.assertEquals(result.get(0).get(0).getColor().getComponents()[0], 1f, 0);
+        Assert.assertEquals(result.get(0).get(0).getColor().getComponents()[1], 1f, 0);
         Assert.assertEquals(result.get(0).get(0).getColor().getComponents()[2], 0f, 0);
 
 
