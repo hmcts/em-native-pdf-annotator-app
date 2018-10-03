@@ -4,7 +4,7 @@ import io.jsonwebtoken.lang.Assert;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.junit.Test;
 import uk.gov.hmcts.reform.em.npa.service.dto.external.annotation.AnnotationDTO;
-import uk.gov.hmcts.reform.em.npa.service.dto.external.annotation.AnnotationSetDTO;
+import uk.gov.hmcts.reform.em.npa.service.dto.external.annotation.CommentDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.external.annotation.RectangleDTO;
 
 import java.util.HashSet;
@@ -34,12 +34,19 @@ public class AnnotationSetDTOToPDAnnotationMapperImplTest {
         rectangleDTO.setWidth(10f);
         rectangles.add(rectangleDTO);
 
+        Set<CommentDTO> commentDTOS = new HashSet<>();
+        CommentDTO commentDTO = new CommentDTO();
+        commentDTO.setContent("comment");
+
         annotationDTO.setRectangles(rectangles);
+        annotationDTO.setComments(commentDTOS);
 
         annotationSet.add(annotationDTO);
         Map<Integer, List<PDAnnotation>> result = annotationSetDTOToPDAnnotationMapperImpl.toNativeAnnotationsPerPage(annotationSet);
 
         Assert.notNull(result.get(0).get(0));
+
+
     }
 
 }
