@@ -53,8 +53,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
 
             log.error("DocumentTaskProcessingException: " + e.getMessage(), e);
 
-            System.out.print(e.getMessage());
-            e.printStackTrace();
+            System.out.print(e.getMessage()); e.printStackTrace();
 
             item.setTaskState(TaskState.FAILED);
 

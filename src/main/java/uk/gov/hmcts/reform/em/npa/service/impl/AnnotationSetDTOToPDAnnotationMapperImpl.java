@@ -84,6 +84,7 @@ public class AnnotationSetDTOToPDAnnotationMapperImpl implements AnnotationSetDT
             PDDocument templateDocument = PDDocument.load(Base64.getDecoder().decode(annotationTemplateB64));
             return templateDocument.getPage(0).getAnnotations();
         } catch (IOException e) {
+            System.out.print(e.getMessage()); e.printStackTrace();
             log.error("Could not retrieve the template", e);
             return Collections.EMPTY_LIST;
         }

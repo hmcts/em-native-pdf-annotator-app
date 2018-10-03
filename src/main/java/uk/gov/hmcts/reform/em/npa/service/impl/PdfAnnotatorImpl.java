@@ -40,6 +40,7 @@ public class PdfAnnotatorImpl implements PdfAnnotator {
                 try {
                     page.getAnnotations().addAll(entry.getValue());
                 } catch (IOException e) {
+                    System.out.print(e.getMessage()); e.printStackTrace();
                     log.error("Error processing annotation set", e);
                 }
             });
