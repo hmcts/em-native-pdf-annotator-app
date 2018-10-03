@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.npa.batch;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
@@ -51,9 +52,11 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
 
         } catch (DocumentTaskProcessingException e) {
 
-            log.error("DocumentTaskProcessingException: " + e.getMessage(), e);
+            String stackTrace = ExceptionUtils.getStackTrace(e);
 
-            System.out.print(e.getMessage()); e.printStackTrace();
+            log.error("DocumentTaskProcessingException: " + e.getMessage() + " stack trace: " + stackTrace);
+
+            System.out.print(e.getMessage() + " " + stackTrace);
 
             item.setTaskState(TaskState.FAILED);
 
