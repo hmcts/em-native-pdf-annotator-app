@@ -52,7 +52,7 @@ public class AnnotationSetDTOToPDAnnotationMapperImpl implements AnnotationSetDT
                     PDAnnotationTextMarkup markup = new PDAnnotationTextMarkup(PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT);
                     markup.setContents(allComments);
                     markup.setColor(getColor(annotationDTO));
-                    markup.setRectangle(position);ma
+                    markup.setRectangle(position);
                     markup.setQuadPoints(getQuadsWithRectangle(position));
                     currentPageList.add(markup);
 
