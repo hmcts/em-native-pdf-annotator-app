@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.em.npa.service.impl;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
@@ -15,6 +17,7 @@ import uk.gov.hmcts.reform.em.npa.service.dto.external.annotation.AnnotationDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.external.annotation.CommentDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.external.annotation.RectangleDTO;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -22,23 +25,21 @@ import java.util.stream.Collectors;
 @Transactional
 public class AnnotationSetDTOToPDAnnotationMapperImpl implements AnnotationSetDTOToPDAnnotationMapper {
 
-    private final Logger log = LoggerFactory.getLogger(AnnotationSetDTOToPDAnnotationMapperImpl.class);
-
     @Override
-    public Map<Integer, List<PDAnnotation>> toNativeAnnotationsPerPage(Set<AnnotationDTO> annotations) throws DocumentTaskProcessingException {
+    public void toNativeAnnotationsPerPage(PDDocument document, Set<AnnotationDTO> annotations) throws DocumentTaskProcessingException {
 
+        for (AnnotationDTO annotationDTO : annotations) {
+            processAnnotationDto(document, annotationDTO);
+        }
+    }
 
-        Map<Integer, List<PDAnnotation>> result = new HashMap<>();
+    private void processAnnotationDto(PDDocument document, AnnotationDTO annotationDTO) throws DocumentTaskProcessingException {
+        Integer pageNumber = annotationDTO.getPage() - 1;
 
-        annotations.stream().forEach( annotationDTO -> {
+        PDPage pdPage = document.getPage(pageNumber);
 
-            Integer pageNumber = annotationDTO.getPage();
-
-            if (!result.containsKey(pageNumber)) {
-                result.put(pageNumber, new LinkedList<>());
-            }
-
-            List<PDAnnotation> currentPageList = result.get(pageNumber);
+        try {
+            List<PDAnnotation> currentPageList = pdPage.getAnnotations();
 
             String allComments = annotationDTO.getComments() != null ?
                     annotationDTO.getComments().stream().sorted(Comparator.comparing(CommentDTO::getCreatedDate)).map(CommentDTO::getContent).collect(Collectors.joining("\n")) : null;
@@ -47,7 +48,7 @@ public class AnnotationSetDTOToPDAnnotationMapperImpl implements AnnotationSetDT
 
                 annotationDTO.getRectangles().forEach(rectangleDTO -> {
 
-                    PDRectangle position = rectangleDTOToPDRectangle(rectangleDTO);
+                    PDRectangle position = rectangleDTOToPDRectangle(pdPage, rectangleDTO);
 
                     PDAnnotationTextMarkup markup = new PDAnnotationTextMarkup(PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT);
                     markup.setContents(allComments);
@@ -63,10 +64,9 @@ public class AnnotationSetDTOToPDAnnotationMapperImpl implements AnnotationSetDT
 
                 });
             }
-
-        });
-
-        return result;
+        } catch (IOException e) {
+            throw new DocumentTaskProcessingException("Can't retrieve annotations from the document ", e);
+        }
     }
 
     private PDColor getColor(AnnotationDTO annotationDTO) {
@@ -81,12 +81,12 @@ public class AnnotationSetDTOToPDAnnotationMapperImpl implements AnnotationSetDT
         }
     }
 
-    private PDRectangle rectangleDTOToPDRectangle(RectangleDTO rectangleDTO) {
+    private PDRectangle rectangleDTOToPDRectangle(PDPage pdPage, RectangleDTO rectangleDTO) {
         PDRectangle pdRectangle = new PDRectangle();
         pdRectangle.setLowerLeftX(rectangleDTO.getX().floatValue());
-        pdRectangle.setLowerLeftY(rectangleDTO.getY().floatValue());
+        pdRectangle.setLowerLeftY(pdPage.getMediaBox().getUpperRightY() - (rectangleDTO.getY().floatValue() + rectangleDTO.getHeight().floatValue()));
         pdRectangle.setUpperRightX((rectangleDTO.getX().floatValue() + rectangleDTO.getWidth().floatValue()));
-        pdRectangle.setUpperRightY(rectangleDTO.getY().floatValue() + rectangleDTO.getHeight().floatValue());
+        pdRectangle.setUpperRightY(pdPage.getMediaBox().getUpperRightY() - rectangleDTO.getY().floatValue());
         return pdRectangle;
     }
 

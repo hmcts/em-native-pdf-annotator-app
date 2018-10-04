@@ -20,8 +20,6 @@ import java.util.Map;
 @Transactional
 public class PdfAnnotatorImpl implements PdfAnnotator {
 
-    private final Logger log = LoggerFactory.getLogger(PdfAnnotatorImpl.class);
-
     private final AnnotationSetDTOToPDAnnotationMapper annotationSetDTOToPDAnnotationMapper;
 
     public PdfAnnotatorImpl(AnnotationSetDTOToPDAnnotationMapper annotationSetDTOToPDAnnotationMapper) {
@@ -33,21 +31,14 @@ public class PdfAnnotatorImpl implements PdfAnnotator {
 
         try (PDDocument document = PDDocument.load(file)) {
 
-            Map<Integer, List<PDAnnotation>> nativeAnnotationsPerPage = annotationSetDTOToPDAnnotationMapper.toNativeAnnotationsPerPage(annotationSetDTO.getAnnotations());
-
-            nativeAnnotationsPerPage.entrySet().stream().forEach( entry -> {
-                PDPage page = document.getPage(entry.getKey());
-                try {
-                    page.getAnnotations().addAll(entry.getValue());
-                } catch (IOException e) {
-                    System.out.print(e.getMessage()); e.printStackTrace();
-                    log.error("Error processing annotation set", e);
-                }
-            });
+            annotationSetDTOToPDAnnotationMapper.toNativeAnnotationsPerPage(document, annotationSetDTO.getAnnotations());
 
             final String annotatedPathFile = file.getAbsolutePath().replaceFirst("\\.pdf", "-annotated.pdf");
+
             document.save(annotatedPathFile);
+
             return new File(annotatedPathFile);
+
         } catch (IOException e) {
             throw new DocumentTaskProcessingException("Could not load the file " + file.getName(), e);
         }
