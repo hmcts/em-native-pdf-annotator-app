@@ -44,9 +44,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
 
             File annotatedPdf = pdfAnnotator.annotatePdf(originalFile, annotationSetDTO);
 
-            String outputDocumentId = dmStoreUploader.uploadFile(annotatedPdf);
-
-            item.setOutputDocumentId(outputDocumentId);
+            dmStoreUploader.uploadFile(annotatedPdf, item);
 
             item.setTaskState(TaskState.DONE);
 

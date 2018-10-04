@@ -21,6 +21,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.reform.auth.checker.core.SubjectResolver;
+import uk.gov.hmcts.reform.auth.checker.core.user.User;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.em.npa.Application;
 import uk.gov.hmcts.reform.em.npa.domain.DocumentTask;
@@ -36,7 +38,9 @@ import java.io.File;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.any;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static uk.gov.hmcts.reform.em.npa.rest.TestUtil.createFormattingConversionService;
@@ -86,6 +90,9 @@ public class DocumentTaskResourceIntTest {
     @MockBean
     private AuthTokenGenerator authTokenGenerator;
 
+    @MockBean
+    private SubjectResolver<User> userResolver;
+
     @Autowired
     private EntityManager em;
 
@@ -124,6 +131,7 @@ public class DocumentTaskResourceIntTest {
             .outputDocumentId(DEFAULT_OUTPUT_DOCUMENT_ID)
             .taskState(DEFAULT_TASK_STATE)
             .failureDescription(DEFAULT_FAILURE_DESCRIPTION);
+        documentTask.setJwt("userjwt");
         return documentTask;
     }
 
@@ -153,10 +161,15 @@ public class DocumentTaskResourceIntTest {
 
         int databaseSizeBeforeCreate = documentTaskRepository.findAll().size();
 
+        BDDMockito.given(userResolver.getTokenDetails(documentTask.getJwt())).willReturn(new User("id", null));
+
         // Create the DocumentTask
         DocumentTaskDTO documentTaskDTO = documentTaskMapper.toDto(documentTask);
+
+        documentTaskDTO.setOutputDocumentId(null);
+
         restDocumentTaskMockMvc.perform(post("/api/document-tasks")
-            .header("Authorization", "jwt")
+            .header("Authorization", documentTask.getJwt())
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(documentTaskDTO)))
             .andExpect(status().isCreated());
@@ -167,6 +180,47 @@ public class DocumentTaskResourceIntTest {
         DocumentTask testDocumentTask = documentTaskList.get(documentTaskList.size() - 1);
         assertThat(testDocumentTask.getInputDocumentId()).isEqualTo(DEFAULT_INPUT_DOCUMENT_ID);
         assertThat(testDocumentTask.getOutputDocumentId()).isEqualTo("new-doc_url");
+        assertThat(testDocumentTask.getTaskState()).isEqualTo(TaskState.DONE);
+        assertThat(testDocumentTask.getFailureDescription()).isEqualTo(DEFAULT_FAILURE_DESCRIPTION);
+    }
+
+    @Test
+    @Transactional
+    public void createDocumentTaskOutputIdNotNull() throws Exception {
+        BDDMockito.given(authTokenGenerator.generate()).willReturn("s2s");
+        MockInterceptor mockInterceptor = (MockInterceptor) okHttpClient.interceptors().get(0);
+
+        ClassLoader classLoader = Application.class.getClassLoader();
+
+        mockInterceptor.addRule(new Rule.Builder().get().url(dmBaseUrl + "/documents/AAAAAAAAAA/binary")
+                .respond(classLoader.getResourceAsStream("annotationTemplate.pdf")));
+
+        // Create the DocumentTask
+        DocumentTaskDTO documentTaskDTO = documentTaskMapper.toDto(documentTask);
+        documentTaskDTO.setOutputDocumentId("BBBBBB");
+
+        mockInterceptor.addRule(new Rule.Builder().get().url(emAnnotationAppBaseUrl + "/api/annotation-sets/filter?documentId=AAAAAAAAAA")
+                .respond("{ \"annotations\" : [] }"));
+
+        mockInterceptor.addRule(new Rule.Builder().post().url(dmBaseUrl + "/documents/" + documentTaskDTO.getOutputDocumentId())
+                .respond("{\"_links\":{\"self\":{\"href\":\"http://aa.bvv.com/new-doc_url\"}}}"));
+
+        int databaseSizeBeforeCreate = documentTaskRepository.findAll().size();
+
+        BDDMockito.given(userResolver.getTokenDetails(documentTask.getJwt())).willReturn(new User("id", null));
+
+        restDocumentTaskMockMvc.perform(post("/api/document-tasks")
+                .header("Authorization", documentTask.getJwt())
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(documentTaskDTO)))
+                .andExpect(status().isCreated());
+
+        // Validate the DocumentTask in the database
+        List<DocumentTask> documentTaskList = documentTaskRepository.findAll();
+        assertThat(documentTaskList).hasSize(databaseSizeBeforeCreate + 1);
+        DocumentTask testDocumentTask = documentTaskList.get(documentTaskList.size() - 1);
+        assertThat(testDocumentTask.getInputDocumentId()).isEqualTo(DEFAULT_INPUT_DOCUMENT_ID);
+        assertThat(testDocumentTask.getOutputDocumentId()).isEqualTo(documentTaskDTO.getOutputDocumentId());
         assertThat(testDocumentTask.getTaskState()).isEqualTo(TaskState.DONE);
         assertThat(testDocumentTask.getFailureDescription()).isEqualTo(DEFAULT_FAILURE_DESCRIPTION);
     }
