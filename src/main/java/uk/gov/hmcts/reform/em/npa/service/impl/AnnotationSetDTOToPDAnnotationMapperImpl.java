@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.em.npa.service.impl;
 
+import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -10,14 +12,18 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationPopup;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationTextMarkup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.npa.service.AnnotationSetDTOToPDAnnotationMapper;
 import uk.gov.hmcts.reform.em.npa.service.dto.external.annotation.AnnotationDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.external.annotation.CommentDTO;
+import uk.gov.hmcts.reform.em.npa.service.dto.external.annotation.IdamDetailsDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.external.annotation.RectangleDTO;
 
 import java.io.IOException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -55,11 +61,26 @@ public class AnnotationSetDTOToPDAnnotationMapperImpl implements AnnotationSetDT
                     markup.setColor(getColor(annotationDTO));
                     markup.setRectangle(position);
                     markup.setQuadPoints(getQuadsWithRectangle(position));
+                    if (annotationDTO.getCreatedDate() != null) {
+                        markup.setCreationDate(GregorianCalendar.from(ZonedDateTime.ofInstant(annotationDTO.getCreatedDate(), ZoneId.systemDefault())));
+                    }
+                    if (annotationDTO.getLastModifiedDate() != null) {
+                        markup.setModifiedDate(GregorianCalendar.from(ZonedDateTime.ofInstant(annotationDTO.getLastModifiedDate(), ZoneId.systemDefault())));
+                    }
+                    if (annotationDTO.getLastModifiedByDetails() != null ) {
+                        markup.getCOSObject().setItem(COSName.T, new COSString(extractUserDetails(annotationDTO.getLastModifiedByDetails())));
+                    } else if (annotationDTO.getCreatedByDetails() != null) {
+                        markup.getCOSObject().setItem(COSName.T, new COSString(extractUserDetails(annotationDTO.getCreatedByDetails())));
+                    }
+
                     currentPageList.add(markup);
 
                     PDAnnotationPopup pdAnnotationPopup = new PDAnnotationPopup();
                     pdAnnotationPopup.setContents(allComments);
                     pdAnnotationPopup.setRectangle(position);
+                    if (annotationDTO.getLastModifiedDate() != null) {
+                        pdAnnotationPopup.setModifiedDate(GregorianCalendar.from(ZonedDateTime.ofInstant(annotationDTO.getLastModifiedDate(), ZoneId.systemDefault())));
+                    }
                     currentPageList.add(pdAnnotationPopup);
 
                 });
@@ -67,6 +88,13 @@ public class AnnotationSetDTOToPDAnnotationMapperImpl implements AnnotationSetDT
         } catch (IOException e) {
             throw new DocumentTaskProcessingException("Can't retrieve annotations from the document ", e);
         }
+    }
+
+    private String extractUserDetails(IdamDetailsDTO idamDetailsDTO) {
+        if (idamDetailsDTO != null && idamDetailsDTO.getForename() != null && idamDetailsDTO.getSurname() != null) {
+            return idamDetailsDTO.getForename() + " " + idamDetailsDTO.getSurname();
+        }
+        return null;
     }
 
     private PDColor getColor(AnnotationDTO annotationDTO) {

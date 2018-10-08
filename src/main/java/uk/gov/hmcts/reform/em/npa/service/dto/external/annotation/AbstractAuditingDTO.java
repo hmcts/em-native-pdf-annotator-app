@@ -16,10 +16,14 @@ public abstract class AbstractAuditingDTO implements Serializable {
     @ReadOnlyProperty
     private String createdBy;
 
+    private IdamDetailsDTO createdByDetails;
+
     @ReadOnlyProperty
     private Instant createdDate = Instant.now();
 
     private String lastModifiedBy;
+
+    private IdamDetailsDTO lastModifiedByDetails;
 
     private Instant lastModifiedDate = Instant.now();
 
@@ -53,5 +57,21 @@ public abstract class AbstractAuditingDTO implements Serializable {
 
     public void setLastModifiedDate(Instant lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public IdamDetailsDTO getCreatedByDetails() {
+        return createdByDetails;
+    }
+
+    public void setCreatedByDetails(IdamDetailsDTO createdByDetails) {
+        this.createdByDetails = createdByDetails;
+    }
+
+    public IdamDetailsDTO getLastModifiedByDetails() {
+        return lastModifiedByDetails;
+    }
+
+    public void setLastModifiedByDetails(IdamDetailsDTO lastModifiedByDetails) {
+        this.lastModifiedByDetails = lastModifiedByDetails;
     }
 }

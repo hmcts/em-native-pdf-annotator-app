@@ -12,6 +12,6 @@ import java.util.Set;
 public interface AnnotationSetDTOToPDAnnotationMapper {
 
     void toNativeAnnotationsPerPage(PDDocument document, Set<AnnotationDTO> annotations) throws DocumentTaskProcessingException;
-         ;
+
 
 }

@@ -6,8 +6,11 @@ import org.junit.Assert;
 import org.junit.Test;
 import uk.gov.hmcts.reform.em.npa.service.dto.external.annotation.AnnotationDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.external.annotation.CommentDTO;
+import uk.gov.hmcts.reform.em.npa.service.dto.external.annotation.IdamDetailsDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.external.annotation.RectangleDTO;
 
+import java.io.File;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,6 +27,10 @@ public class AnnotationSetDTOToPDAnnotationMapperImplTest {
         annotationDTO.setPage(1);
         annotationDTO.setAnnotationType("highlight");
 
+        annotationDTO.setLastModifiedByDetails(new IdamDetailsDTO("john", "smith"));
+        annotationDTO.setCreatedDate(Instant.now());
+        annotationDTO.setLastModifiedDate(Instant.now());
+
         Set<RectangleDTO> rectangles = new HashSet<>();
 
         RectangleDTO rectangleDTO = new RectangleDTO();
@@ -33,12 +40,11 @@ public class AnnotationSetDTOToPDAnnotationMapperImplTest {
         rectangleDTO.setWidth(10d);
         rectangles.add(rectangleDTO);
 
-        Set<CommentDTO> commentDTOS = new HashSet<>();
         CommentDTO commentDTO = new CommentDTO();
         commentDTO.setContent("comment");
 
         annotationDTO.setRectangles(rectangles);
-        annotationDTO.setComments(commentDTOS);
+        annotationDTO.getComments().add(commentDTO);
 
         annotationSet.add(annotationDTO);
 
