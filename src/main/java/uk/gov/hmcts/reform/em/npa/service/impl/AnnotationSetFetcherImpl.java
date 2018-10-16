@@ -12,9 +12,8 @@ import uk.gov.hmcts.reform.em.npa.service.AnnotationSetFetcher;
 import uk.gov.hmcts.reform.em.npa.service.dto.external.annotation.AnnotationSetDTO;
 
 import java.io.IOException;
+import java.net.ConnectException;
 
-//import org.springframework.beans.factory.annotation.Value;
-//import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 
 @Service
 @Transactional
@@ -44,12 +43,13 @@ public class AnnotationSetFetcherImpl implements AnnotationSetFetcher {
     @Override
     public AnnotationSetDTO fetchAnnotationSet(String documentId, String jwt) throws DocumentTaskProcessingException {
 
-        Request request = new Request.Builder()
-            .addHeader("Authorization", jwt)
-            .addHeader("ServiceAuthorization", authTokenGenerator.generate())
-            .url(annotationApiEndpointBase+annotationEndpoint+documentId).build();
-
         try {
+
+            Request request = new Request.Builder()
+                    .addHeader("Authorization", jwt)
+                    .addHeader("ServiceAuthorization", authTokenGenerator.generate())
+                    .url(annotationApiEndpointBase+annotationEndpoint+documentId).build();
+
             Response response = okHttpClient.newCall(request).execute();
 
             if (response.isSuccessful()) {
@@ -60,6 +60,8 @@ public class AnnotationSetFetcherImpl implements AnnotationSetFetcher {
             }
 
         } catch (IOException e) {
+            throw new DocumentTaskProcessingException("Could not access the annotation set", e);
+        } catch (RuntimeException e) {
             throw new DocumentTaskProcessingException("Could not access the annotation set", e);
         }
     }
