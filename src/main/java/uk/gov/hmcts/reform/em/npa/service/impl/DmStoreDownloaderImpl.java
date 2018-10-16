@@ -42,26 +42,35 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
     @Override
     public File downloadFile(String id) throws DocumentTaskProcessingException {
 
-        Request request = new Request.Builder()
-            .addHeader("user-roles", "caseworker")
-            .addHeader("ServiceAuthorization", authTokenGenerator.generate())
-            .url(dmStoreAppBaseUrl+String.format(dmStoreAppDocumentBinaryEndpointPattern, id))
-            .build();
-
         try {
+
+            Request request = new Request.Builder()
+                    .addHeader("user-roles", "caseworker")
+                    .addHeader("ServiceAuthorization", authTokenGenerator.generate())
+                    .url(dmStoreAppBaseUrl+String.format(dmStoreAppDocumentBinaryEndpointPattern, id))
+                    .build();
+
             Response response = okHttpClient.newCall(request).execute();
 
-            Path tempPath = Paths.get(System.getProperty("java.io.tmpdir") + "/" + id + ".pdf");
+            if (response.isSuccessful()) {
 
-            try {
-                Files.copy(response.body().byteStream(), tempPath, StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException e) {
-                throw new DocumentTaskProcessingException("Could not copy the file to a temp location", e);
+                Path tempPath = Paths.get(System.getProperty("java.io.tmpdir") + "/" + id + ".pdf");
+
+                try {
+                    Files.copy(response.body().byteStream(), tempPath, StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException e) {
+                    throw new DocumentTaskProcessingException("Could not copy the file to a temp location", e);
+                }
+
+                return tempPath.toFile();
+
+            } else {
+                throw new DocumentTaskProcessingException("Could not access the binary. HTTP response: " + response.code());
             }
 
-            return tempPath.toFile();
-
         } catch (IOException e) {
+            throw new DocumentTaskProcessingException("Could not access the binary", e);
+        } catch (RuntimeException e) {
             throw new DocumentTaskProcessingException("Could not access the binary", e);
         }
 
