@@ -200,7 +200,9 @@ public class DocumentTaskResourceIntTest {
         documentTaskDTO.setOutputDocumentId("BBBBBB");
 
         mockInterceptor.addRule(new Rule.Builder().get().url(emAnnotationAppBaseUrl + "/api/annotation-sets/filter?documentId=AAAAAAAAAA")
-                .respond("{ \"annotations\" : [] }"));
+                .respond("{ \"annotations\" : [{\"color\":\"ff0011\", \"page\": 1, \"rectangles\": [{\"x\":0, \"y\":0, \"width\":10, \"height\":\"10\"}]}] }"));
+
+
 
         mockInterceptor.addRule(new Rule.Builder().post().url(dmBaseUrl + "/documents/" + documentTaskDTO.getOutputDocumentId())
                 .respond("{\"_links\":{\"self\":{\"href\":\"http://aa.bvv.com/new-doc_url\"}}}"));
