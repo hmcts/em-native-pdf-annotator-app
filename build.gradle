@@ -187,9 +187,8 @@ bootJar {
 def coverageExclusionList = [
     '**uk/gov/hmcts/reform/em/npa/Application*',
     '**uk/gov/hmcts/reform/em/npa/appinsights/*',
+    '**uk/gov/hmcts/reform/em/npa/config/*',
     '**uk/gov/hmcts/reform/em/npa/domain/*',
-    '**uk/gov/hmcts/reform/em/npa/service/impl/*',
-    '**uk/gov/hmcts/reform/em/npa/batch/*',
     '**uk/gov/hmcts/reform/em/npa/service/dto/external/annotation/*',
 ]
 
