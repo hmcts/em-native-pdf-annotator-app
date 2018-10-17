@@ -37,7 +37,7 @@
                 <constraints nullable="true" />
             </column>
 
-            <column name="jwt" type="varchar(2000)">
+            <column name="jwt" type="varchar(4000)">
                 <constraints nullable="true" />
             </column>
 
