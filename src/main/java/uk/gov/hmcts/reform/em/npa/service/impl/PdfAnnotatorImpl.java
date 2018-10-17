@@ -40,7 +40,7 @@ public class PdfAnnotatorImpl implements PdfAnnotator {
             return new File(annotatedPathFile);
 
         } catch (IOException e) {
-            throw new DocumentTaskProcessingException("Could not load the file " + file.getName(), e);
+            throw new DocumentTaskProcessingException("Could not load the file " + file.getName() + ". Error: " + e.getMessage(), e);
         }
 
 

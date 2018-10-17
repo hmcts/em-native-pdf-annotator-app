@@ -69,9 +69,9 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
             }
 
         } catch (IOException e) {
-            throw new DocumentTaskProcessingException("Could not access the binary", e);
+            throw new DocumentTaskProcessingException("Could not access the binary: " + e.getMessage(), e);
         } catch (RuntimeException e) {
-            throw new DocumentTaskProcessingException("Could not access the binary", e);
+            throw new DocumentTaskProcessingException("Could not access the binary: " + e.getMessage(), e);
         }
 
     }

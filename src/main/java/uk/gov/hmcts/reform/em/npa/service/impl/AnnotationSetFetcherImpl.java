@@ -60,9 +60,9 @@ public class AnnotationSetFetcherImpl implements AnnotationSetFetcher {
             }
 
         } catch (IOException e) {
-            throw new DocumentTaskProcessingException("Could not access the annotation set", e);
+            throw new DocumentTaskProcessingException("Could not access the annotation set:" + e.getMessage(), e);
         } catch (RuntimeException e) {
-            throw new DocumentTaskProcessingException("Could not access the annotation set", e);
+            throw new DocumentTaskProcessingException("Could not access the annotation set:" + e.getMessage(), e);
         }
     }
 }

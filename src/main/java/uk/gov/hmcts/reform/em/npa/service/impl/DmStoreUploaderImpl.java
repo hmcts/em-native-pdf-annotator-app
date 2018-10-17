@@ -51,22 +51,23 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
     }
 
     private void uploadNewDocument(File file, DocumentTask documentTask) throws DocumentTaskProcessingException {
-        MultipartBody requestBody = new MultipartBody
-                .Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("classification", "PUBLIC")
-                .addFormDataPart("files", file.getName(), RequestBody.create(MediaType.get("application/pdf"), file))
-                .build();
-
-        Request request = new Request.Builder()
-                .addHeader("user-id", getUserId(documentTask))
-                .addHeader("user-roles", "caseworker")
-                .addHeader("ServiceAuthorization", authTokenGenerator.generate())
-                .url(dmStoreAppBaseUrl + dmStoreUploadEndpoint)
-                .method("POST", requestBody)
-                .build();
 
         try {
+
+            MultipartBody requestBody = new MultipartBody
+                    .Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("classification", "PUBLIC")
+                    .addFormDataPart("files", file.getName(), RequestBody.create(MediaType.get("application/pdf"), file))
+                    .build();
+
+            Request request = new Request.Builder()
+                    .addHeader("user-id", getUserId(documentTask))
+                    .addHeader("user-roles", "caseworker")
+                    .addHeader("ServiceAuthorization", authTokenGenerator.generate())
+                    .url(dmStoreAppBaseUrl + dmStoreUploadEndpoint)
+                    .method("POST", requestBody)
+                    .build();
 
             Response response = okHttpClient.newCall(request).execute();
 
@@ -90,7 +91,9 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
             }
 
         } catch (IOException e) {
-            throw new DocumentTaskProcessingException("Couldn't upload the file", e);
+            throw new DocumentTaskProcessingException("Couldn't upload the file: " + e.getMessage(), e);
+        } catch (RuntimeException e) {
+            throw new DocumentTaskProcessingException("Couldn't upload the file: " + e.getMessage(), e);
         }
     }
 
