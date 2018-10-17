@@ -5,9 +5,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Optional;
-import java.util.Set;
-import java.util.StringJoiner;
-import java.util.stream.Collectors;
 
 /**
  * Utility class for Spring Security.
@@ -36,57 +33,4 @@ public final class SecurityUtils {
             });
     }
 
-    /**
-     * Get the JWT of the current user.
-     *
-     * @return the JWT of the current user
-     */
-    public static Optional<String> getCurrentUserJWT() {
-        SecurityContext securityContext = SecurityContextHolder.getContext();
-        return Optional.ofNullable(securityContext.getAuthentication())
-            .filter(authentication -> authentication.getCredentials() instanceof String)
-            .map(authentication -> (String) authentication.getCredentials());
-    }
-
-    /**
-     * Check if a user is authenticated.
-     *
-     * @return true if the user is authenticated, false otherwise
-     */
-    public static boolean isAuthenticated() {
-        SecurityContext securityContext = SecurityContextHolder.getContext();
-        return Optional.ofNullable(securityContext.getAuthentication())
-            .map(authentication -> authentication.getAuthorities().stream()
-                .noneMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(AuthoritiesConstants.ANONYMOUS)))
-            .orElse(false);
-    }
-
-    /**
-     * If the current user has a specific authority (security role).
-     * <p>
-     * The name of this method comes from the isUserInRole() method in the Servlet API
-     *
-     * @param authority the authority to check
-     * @return true if the current user has the authority, false otherwise
-     */
-    public static boolean isCurrentUserInRole(String authority) {
-        SecurityContext securityContext = SecurityContextHolder.getContext();
-        return Optional.ofNullable(securityContext.getAuthentication())
-            .map(authentication -> authentication.getAuthorities().stream()
-                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(authority)))
-            .orElse(false);
-    }
-
-    public static Optional<Set<String>> getRoles() {
-        SecurityContext securityContext = SecurityContextHolder.getContext();
-        return Optional.ofNullable(securityContext.getAuthentication())
-                .map(authentication ->
-                        authentication.getAuthorities().stream().map(authority -> authority.getAuthority())
-                                .collect(Collectors.toSet()));
-
-    }
-
-    public static String getCommaSeparetedRoles() {
-        return getRoles().get().stream().collect(Collectors.joining(","));
-    }
 }
