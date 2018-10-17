@@ -1,10 +1,8 @@
 package uk.gov.hmcts.reform.em.npa.batch;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
-import uk.gov.hmcts.reform.em.npa.config.audit.AsyncEntityAuditEventWriter;
 import uk.gov.hmcts.reform.em.npa.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.npa.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.npa.service.AnnotationSetFetcher;
@@ -50,11 +48,7 @@ public class DocumentTaskItemProcessor implements ItemProcessor<DocumentTask, Do
 
         } catch (DocumentTaskProcessingException e) {
 
-            String stackTrace = ExceptionUtils.getStackTrace(e);
-
-            log.error("DocumentTaskProcessingException: " + e.getMessage() + " stack trace: " + stackTrace);
-
-            System.out.print(e.getMessage() + " " + stackTrace);
+            log.error(e.getMessage(), e);
 
             item.setTaskState(TaskState.FAILED);
 

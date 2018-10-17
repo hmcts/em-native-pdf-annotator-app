@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.em.npa.service.AnnotationSetFetcher;
 import uk.gov.hmcts.reform.em.npa.service.dto.external.annotation.AnnotationSetDTO;
 
 import java.io.IOException;
-import java.net.ConnectException;
 
 
 @Service
@@ -59,10 +58,8 @@ public class AnnotationSetFetcherImpl implements AnnotationSetFetcher {
                 throw new DocumentTaskProcessingException("Could not access the annotation set. Http error code " + response.code());
             }
 
-        } catch (IOException e) {
-            throw new DocumentTaskProcessingException("Could not access the annotation set:" + e.getMessage(), e);
-        } catch (RuntimeException e) {
-            throw new DocumentTaskProcessingException("Could not access the annotation set:" + e.getMessage(), e);
+        } catch (RuntimeException | IOException e) {
+            throw new DocumentTaskProcessingException(String.format("Could not access the annotation set: %s", e.getMessage()), e);
         }
     }
 }

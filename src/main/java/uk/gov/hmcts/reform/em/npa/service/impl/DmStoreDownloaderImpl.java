@@ -3,12 +3,9 @@ package uk.gov.hmcts.reform.em.npa.service.impl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-//import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-//import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-//import uk.gov.hmcts.reform.em.npa.config.security.SecurityUtils;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.em.npa.service.DmStoreDownloader;
 
@@ -18,6 +15,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+
+//import org.springframework.beans.factory.annotation.Value;
+//import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+//import uk.gov.hmcts.reform.em.npa.config.security.SecurityUtils;
 
 @Service
 @Transactional
@@ -68,10 +69,8 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
                 throw new DocumentTaskProcessingException("Could not access the binary. HTTP response: " + response.code());
             }
 
-        } catch (IOException e) {
-            throw new DocumentTaskProcessingException("Could not access the binary: " + e.getMessage(), e);
-        } catch (RuntimeException e) {
-            throw new DocumentTaskProcessingException("Could not access the binary: " + e.getMessage(), e);
+        } catch (RuntimeException | IOException e) {
+            throw new DocumentTaskProcessingException(String.format("Could not access the binary: %s", e.getMessage()), e);
         }
 
     }
