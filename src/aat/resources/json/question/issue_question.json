@@ -1,0 +1,8 @@
+{
+  "questionRoundId": 1,
+  "subject": "My Second Question",
+  "questionText": "If a wood chuck could chuck wood?",
+  "questionState": {
+    "state_name": "ISSUED"
+  }
+}
