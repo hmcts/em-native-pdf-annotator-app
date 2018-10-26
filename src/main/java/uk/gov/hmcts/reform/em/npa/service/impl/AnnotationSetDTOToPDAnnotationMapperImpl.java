@@ -61,6 +61,8 @@ public class AnnotationSetDTOToPDAnnotationMapperImpl implements AnnotationSetDT
                     markup.setColor(getColor(annotationDTO));
                     markup.setRectangle(position);
                     markup.setQuadPoints(getQuadsWithRectangle(position));
+                    markup.setPrinted(true);
+
                     if (annotationDTO.getCreatedDate() != null) {
                         markup.setCreationDate(GregorianCalendar.from(ZonedDateTime.ofInstant(annotationDTO.getCreatedDate(), ZoneId.systemDefault())));
                     }
@@ -78,6 +80,8 @@ public class AnnotationSetDTOToPDAnnotationMapperImpl implements AnnotationSetDT
                     PDAnnotationPopup pdAnnotationPopup = new PDAnnotationPopup();
                     pdAnnotationPopup.setContents(allComments);
                     pdAnnotationPopup.setRectangle(position);
+                    pdAnnotationPopup.setPrinted(true);
+
                     if (annotationDTO.getLastModifiedDate() != null) {
                         pdAnnotationPopup.setModifiedDate(GregorianCalendar.from(ZonedDateTime.ofInstant(annotationDTO.getLastModifiedDate(), ZoneId.systemDefault())));
                     }
