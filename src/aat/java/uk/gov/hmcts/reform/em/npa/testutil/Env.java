@@ -42,11 +42,11 @@ public class Env {
     }
 
     public static String getAnnotationApiUrl() {
-        return require("EM_ANNOTATION_APP_URL");
+        return require("EM_ANNO_APP_URL");
     }
 
     public static String getDmApiUrl() {
-        return require("DM_API_URL");
+        return require("DM_STORE_APP_URL");
     }
 
     public static String require(String name) {
