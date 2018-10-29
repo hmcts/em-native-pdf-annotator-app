@@ -47,6 +47,7 @@ public class TestUtil {
     }
 
     public RequestSpecification s2sAuthRequest() throws Exception {
+        RestAssured.useRelaxedHTTPSValidation();
         return RestAssured
                 .given()
                 .header("ServiceAuthorization", "Bearer " + getS2sToken())

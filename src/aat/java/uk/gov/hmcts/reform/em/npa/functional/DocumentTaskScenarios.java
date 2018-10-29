@@ -19,10 +19,10 @@ public class DocumentTaskScenarios {
     @Test
     public void testGetDocumentTasks() throws Exception {
 
-            testUtil.authRequest()
-                .request("GET", Env.getTestUrl() + "/api/document-tasks")
-            .then()
-                .statusCode(200);
+        testUtil.authRequest()
+            .request("GET", Env.getTestUrl() + "/api/document-tasks")
+        .then()
+            .statusCode(200);
 
     }
 
@@ -33,7 +33,8 @@ public class DocumentTaskScenarios {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("inputDocumentId", nonExistentDocumentId);
 
-        testUtil.authRequest()
+        testUtil
+            .authRequest()
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .body(jsonObject)
                 .request("POST", Env.getTestUrl() + "/api/document-tasks")
@@ -53,7 +54,8 @@ public class DocumentTaskScenarios {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("inputDocumentId", newDocId);
 
-        testUtil.authRequest()
+        testUtil
+            .authRequest()
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .body(jsonObject)
                 .request("POST", Env.getTestUrl() + "/api/document-tasks")
@@ -75,17 +77,14 @@ public class DocumentTaskScenarios {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("inputDocumentId", newDocId);
 
-        RestAssured
-                .given()
-                .header("ServiceAuthorization", "Bearer " + testUtil.getS2sToken())
-                .header("Authorization", "Bearer " + testUtil.getIdamToken("test@test.com"))
-                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                .body(jsonObject)
-                .request("POST", Env.getTestUrl() + "/api/document-tasks")
-                .then()
-                .statusCode(201)
-                .body("inputDocumentId", equalTo(newDocId))
-                .body("taskState", equalTo(TaskState.DONE.toString()));
+        testUtil.authRequest()
+            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .body(jsonObject)
+            .request("POST", Env.getTestUrl() + "/api/document-tasks")
+            .then()
+            .statusCode(201)
+            .body("inputDocumentId", equalTo(newDocId))
+            .body("taskState", equalTo(TaskState.DONE.toString()));
 
     }
 
