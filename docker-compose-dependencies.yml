@@ -23,6 +23,30 @@ services:
     ports:
       - 4502:8489
 
+  annotation-api:
+    image: pawelblue/rpa-em-annotation-api:latest
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://annotation-api-db:5432/anno
+      - SPRING_DATASOURCE_USERNAME=anno
+      - SPRING_DATASOURCE_PASSWORD=anno
+      - S2S_BASE_URI=http://service-auth-provider-app:8489
+      - IDAM_API_BASE_URI=http://idam-api:8080
+      - ENABLE_LIQUIBASE=true
+    links:
+    - annotation-api-db
+    depends_on:
+    - annotation-api-db
+    ports:
+    - 4623:8080
+
+  annotation-api-db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_DB=anno
+      - POSTGRES_USER=anno
+      - POSTGRES_PASSWORD=anno
+
   dm-store:
     image: hmcts/dm-store:latest
     command: --wait-for-database 30
@@ -68,7 +92,7 @@ services:
     image: hmcts/dm-store-db:latest
 
   idam-api:
-    image: docker.artifactory.reform.hmcts.net/auth/idam-api:1620c9973d85ca622904ecbf01c47a4abb91f7c9
+    image: docker.artifactory.reform.hmcts.net/auth/idam-api:latest
     command: --wait-for-database 60
     environment:
       - IDAM_SUPERUSER_EMAIL
