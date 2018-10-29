@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.npa.functional;
 
-import io.restassured.RestAssured;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.springframework.http.MediaType;

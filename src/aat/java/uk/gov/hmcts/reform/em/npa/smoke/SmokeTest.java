@@ -1,13 +1,21 @@
 package uk.gov.hmcts.reform.em.npa.smoke;
 
+import io.restassured.RestAssured;
 import org.junit.Test;
-
-import static org.junit.Assert.assertTrue;
+import uk.gov.hmcts.reform.em.npa.testutil.Env;
 
 public class SmokeTest {
 
     @Test
-    public void should_be_true() {
-        assertTrue(true);
+    public void testHealthEndpoint() {
+
+        RestAssured.useRelaxedHTTPSValidation();
+
+        RestAssured.given()
+            .request("GET", Env.getTestUrl() + "/health")
+            .then()
+            .statusCode(200);
+
+
     }
 }
