@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.npa.testutil;
 
-import com.microsoft.applicationinsights.core.dependencies.gson.JsonObject;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
