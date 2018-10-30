@@ -1,6 +1,10 @@
 package uk.gov.hmcts.reform.em.npa.functional;
 
+import io.restassured.response.Response;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
 import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import uk.gov.hmcts.reform.em.npa.domain.enumeration.TaskState;
@@ -9,6 +13,7 @@ import uk.gov.hmcts.reform.em.npa.testutil.Env;
 
 import static org.hamcrest.CoreMatchers.*;
 
+import java.io.File;
 import java.util.UUID;
 
 public class DocumentTaskScenarios {
@@ -84,6 +89,37 @@ public class DocumentTaskScenarios {
             .statusCode(201)
             .body("inputDocumentId", equalTo(newDocId))
             .body("taskState", equalTo(TaskState.DONE.toString()));
+
+    }
+
+    @Test
+    public void testPostDocumentTaskNotEmptyAnnotationSet() throws Exception {
+
+        String newDocId = testUtil.uploadDocument();
+
+        String annotationSetId = testUtil.createAnnotationSetForDocumentId(newDocId);
+
+        testUtil.saveAnnotation(annotationSetId);
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("inputDocumentId", newDocId);
+
+        Response response = testUtil.authRequest()
+                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                .body(jsonObject)
+                .request("POST", Env.getTestUrl() + "/api/document-tasks");
+
+        Assert.assertEquals(201, response.getStatusCode());
+        Assert.assertEquals( response.getBody().jsonPath().getString("inputDocumentId"), newDocId);
+        Assert.assertEquals( response.getBody().jsonPath().getString("taskState"), TaskState.DONE.toString());
+
+        File file = testUtil.getDocumentBinary(response.getBody().jsonPath().getString("outputDocumentId"));
+
+        PDDocument pdDocument = PDDocument.load(file);
+
+        PDPage page = pdDocument.getPage(0);
+
+        Assert.assertNotNull(page.getAnnotations());
 
     }
 

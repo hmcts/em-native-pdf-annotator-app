@@ -1,12 +1,20 @@
 package uk.gov.hmcts.reform.em.npa.testutil;
 
+import com.microsoft.applicationinsights.core.dependencies.gson.JsonObject;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.Assert;
 import org.springframework.http.MediaType;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 public class TestUtil {
@@ -14,16 +22,73 @@ public class TestUtil {
     private String s2sToken;
     private String idamToken;
 
-    public void createAnnotationSetForDocumentId(String documentId) throws Exception {
+    public File getDocumentBinary(String documentId) throws Exception {
+        Response response = s2sAuthRequest()
+                .header("user-roles", "caseworker")
+                .request("GET", Env.getDmApiUrl() + "/documents/" + documentId + "/binary");
+
+        Path tempPath = Paths.get(System.getProperty("java.io.tmpdir") + "/" + documentId + "-test.pdf");
+
+        Files.copy(response.getBody().asInputStream(), tempPath, StandardCopyOption.REPLACE_EXISTING);
+
+        return tempPath.toFile();
+    }
+
+    public String saveAnnotation(String annotationSetId) throws Exception {
+
+        UUID annotationId = UUID.randomUUID();
+        JSONObject createAnnotations = new JSONObject();
+        createAnnotations.put("annotationSetId", annotationSetId);
+        createAnnotations.put("id", annotationId);
+        createAnnotations.put("annotationType", "highlight");
+        createAnnotations.put("page", 1);
+        createAnnotations.put("color", "d1d1d1");
+
+        JSONArray comments = new JSONArray();
+        JSONObject comment = new JSONObject();
+        comment.put("content", "text");
+        comment.put("annotationId", annotationId);
+        comment.put("id", UUID.randomUUID().toString());
+        comments.put(0, comment);
+        createAnnotations.put("comments", comments);
+
+        JSONArray rectangles = new JSONArray();
+        JSONObject rectangle = new JSONObject();
+        rectangle.put("id", UUID.randomUUID().toString());
+        rectangle.put("annotationId", annotationId);
+        rectangle.put("x", 0f);
+        rectangle.put("y", 0f);
+        rectangle.put("width", 10f);
+        rectangle.put("height", 10f);
+        rectangles.put(0, rectangle);
+        createAnnotations.put("rectangles", rectangles);
+
+        Response response = authRequest()
+                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                .body(createAnnotations)
+                .request("POST", Env.getAnnotationApiUrl() + "/api/annotations");
+
+        System.out.println ("XX   " + response.getBody().asString());
+        Assert.assertEquals(201, response.getStatusCode());
+
+        return annotationId.toString();
+
+    }
+
+    public String createAnnotationSetForDocumentId(String documentId) throws Exception {
         UUID annotationSetId = UUID.randomUUID();
         JSONObject createAnnotationSet = new JSONObject();
         createAnnotationSet.put("documentId", documentId);
         createAnnotationSet.put("id", annotationSetId);
 
-        authRequest()
+        Response response = authRequest()
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .body(createAnnotationSet)
                 .request("POST", Env.getAnnotationApiUrl() + "/api/annotation-sets");
+
+        Assert.assertEquals(201, response.getStatusCode());
+
+        return annotationSetId.toString();
     }
 
     public String uploadDocument() throws Exception {
@@ -50,8 +115,7 @@ public class TestUtil {
         RestAssured.useRelaxedHTTPSValidation();
         return RestAssured
                 .given()
-                .header("ServiceAuthorization", "Bearer " + getS2sToken())
-                .header("Authorization", "Bearer " + getIdamToken("test@test.com"));
+                .header("ServiceAuthorization", "Bearer " + getS2sToken());
     }
 
     public String getIdamToken(String username) {
