@@ -67,7 +67,6 @@ public class TestUtil {
                 .body(createAnnotations)
                 .request("POST", Env.getAnnotationApiUrl() + "/api/annotations");
 
-        System.out.println ("XX   " + response.getBody().asString());
         Assert.assertEquals(201, response.getStatusCode());
 
         return annotationId.toString();
