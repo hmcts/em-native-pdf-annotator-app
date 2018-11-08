@@ -251,4 +251,11 @@
         <gav regex="true">.*</gav>
         <cve>CVE-2018-11040</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: dom4j-1.6.1.jar
+   ]]></notes>
+        <gav regex="true">^org\.zenframework\.z8\.dependencies\.commons:dom4j-1\.6\.1:.*$</gav>
+        <cve>CVE-2018-1000632</cve>
+    </suppress>
 </suppressions>
