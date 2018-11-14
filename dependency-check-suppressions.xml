@@ -256,4 +256,24 @@
         <gav regex="true">.*</gav>
         <cve>CVE-2018-1000632</cve>
     </suppress>
+    <suppress>
+        <notes>Gatling 3.0.1</notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2018-13661</cve>
+    </suppress>
+    <suppress>
+        <notes>Gatling netty</notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2014-3488</cve>
+    </suppress>
+    <suppress>
+        <notes>netty</notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2015-2156</cve>
+    </suppress>
+    <suppress>
+        <notes>Scala library</notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2017-15288</cve>
+    </suppress>
 </suppressions>
