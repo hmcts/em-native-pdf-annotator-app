@@ -1,24 +1,25 @@
 package uk.gov.hmcts.reform.em.npa.performance
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
+import uk.gov.hmcts.reform.em.npa.testutil.Env
 
-class NpaSmoke extends Simulation {
+class NpaSmoke extends Simulation with HttpConfiguration {
 
     object Health {
 
-      val health = exec(http("health")
-        .get("http://localhost:8080/health"))
+      val run = exec(http("health")
+        .get(Env.getTestUrl + "/health")
+        .check(
+          status.find.in(200)
+        ))
+        .exec( session => {
+          println( "Response:" )
+          println( session( "RESPONSE_DATA" ).as[String] )
+          session
+      })
     }
 
-    val httpProtocol = http
-      .header("Content-Type", "application/json")
-    //  .proxy(
-    //    Proxy("http://proxyout.reform.hmcts.net", 8080)
-    //      .httpsPort(8080)
-    //    )
-
-
-    val scn = scenario("NPA smoke test").exec(Health.health)
+    val scn = scenario("NPA smoke test").exec(Health.run)
 
     setUp(scn.inject(atOnceUsers(1)).protocols(httpProtocol))
 }

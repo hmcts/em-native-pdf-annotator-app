@@ -21,6 +21,11 @@ public class TestUtil {
     private String s2sToken;
     private String idamToken;
     private String documentId;
+    private String annotationSetId;
+
+    public String getAnnotationSetId() {
+        return this.annotationSetId;
+    }
 
     public String getDocumentId() {
         return this.documentId;
@@ -93,7 +98,8 @@ public class TestUtil {
 
         Assert.assertEquals(201, response.getStatusCode());
 
-        return annotationSetId.toString();
+        this.annotationSetId = annotationSetId.toString();
+        return this.annotationSetId;
     }
 
     public String uploadDocument(String pdfName) throws Exception {
@@ -107,7 +113,7 @@ public class TestUtil {
                 .get("_embedded.documents[0]._links.self.href");
 
         this.documentId = newDocUrl.substring(newDocUrl.lastIndexOf("/") + 1);
-        return newDocUrl.substring(newDocUrl.lastIndexOf("/") + 1);
+        return this.documentId;
     }
 
     public String uploadDocument() throws Exception {
@@ -124,6 +130,10 @@ public class TestUtil {
         return RestAssured
                 .given()
                 .header("ServiceAuthorization", "Bearer " + getS2sToken());
+    }
+
+    public String getIdamToken() {
+        return getIdamToken("test@test.com");
     }
 
     public String getIdamToken(String username) {

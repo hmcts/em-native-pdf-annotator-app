@@ -2,9 +2,11 @@ package uk.gov.hmcts.reform.em.npa.performance
 
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
-import uk.gov.hmcts.reform.em.npa.testutil.Env
+import uk.gov.hmcts.reform.em.npa.testutil.{Env, TestUtil}
 
 trait HttpConfiguration {
+
+    val testUtil = new TestUtil
 
     val headers = Map(
         """Content-Type""" -> """application/json""")

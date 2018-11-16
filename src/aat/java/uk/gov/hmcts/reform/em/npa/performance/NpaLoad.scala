@@ -1,66 +1,93 @@
 package uk.gov.hmcts.reform.em.npa.performance
 
-import io.gatling.core.Predef._
-import io.gatling.core.structure.{ScenarioBuilder}
-import io.gatling.http.Predef._
+import io.gatling.http.Predef.{http, status}
 
+import io.gatling.core.Predef._
+import io.gatling.http.Predef._
 import org.json.JSONObject
-import uk.gov.hmcts.reform.em.npa.testutil.{Env, TestUtil}
+import scala.concurrent.duration._
+import uk.gov.hmcts.reform.em.npa.testutil.Env
 
 class NpaLoad extends Simulation with HttpConfiguration {
 
-
-  val testUtil = new TestUtil
-
-  object Setup {
-
-    def run = exec()
-    val newDocId: String = testUtil.uploadDocument("one-page.pdf")
-    val annotations = 20
-    val pdfPages = 1
-
-    val annotationSetId: String = testUtil.createAnnotationSetForDocumentId(newDocId)
-
-    for (i <- 1 to annotations) {
-      for (p <- 1 to pdfPages) {
-        testUtil.saveAnnotation(annotationSetId, p)
-      }
-    }
-  }
-
   object CreateTask {
 
-    val newDocId = testUtil.getDocumentId
-    val jsonObject = new JSONObject
-    jsonObject.put("inputDocumentId", newDocId)
-    println(newDocId)
-
-    def createTask = exec(http("createTask")
-      .post(Env.getTestUrl + "/api/document-tasks")
-      .header("Authorization", testUtil.getIdamToken("test@test.com"))
-      .header("ServiceAuthorization",  testUtil.getS2sToken())
-      .body(StringBody(jsonObject.toString))
-      .check(
-        status.find.in(201),
-        jsonPath("$.inputDocumentId").exists,
-        jsonPath("$.outputDocumentId").exists,
-        jsonPath("$.taskState").in("DONE")
-      )
-    )
+    var jsonObject = new JSONObject().put("inputDocumentId", testUtil.getDocumentId).toString()
+    def run = exec(
+          http("create-npa-task-" + testConfig.pdfName)
+            .post(Env.getTestUrl + "/api/document-tasks")
+            .header("Authorization", testUtil.getIdamToken())
+            .header("ServiceAuthorization", testUtil.getS2sToken())
+            .body(StringBody(jsonObject))
+            .check(
+              status.find.in(201),
+              jsonPath("$.inputDocumentId").exists,
+              jsonPath("$.outputDocumentId").exists,
+              jsonPath("$.taskState").in("DONE"),
+              jsonPath("$").saveAs("RESPONSE_DATA")
+            )
+        ).exec(session => {
+          println("Response:")
+          println(session("RESPONSE_DATA").as[String])
+          session
+        })
   }
 
-  val setup = scenario("setup").exec(Setup.run)
-  val createClaimScenario: ScenarioBuilder = scenario("Create NPA task")
-    .exec(
-      CreateTask.createTask
-    )
+  object Setup {
+    def run = exec()
+      testUtil.uploadDocument(testConfig.pdfName)
+      testUtil.createAnnotationSetForDocumentId(testUtil.getDocumentId)
 
-  setUp(setup.exec(createClaimScenario)
+      var page = 1
+      for (i <- 1 to testConfig.totalAnnotations) {
+        if (page >= testConfig.pages) {
+          page = 1
+        } else {
+          page = page + 1
+        }
+        testUtil.saveAnnotation(testUtil.getAnnotationSetId(), page)
+      }
+  }
+
+  object testConfigOnePages {
+    var pdfName = "one-page.pdf"
+    var pages = 1
+    var totalAnnotations = 10
+  }
+
+  object testConfigTenPages {
+    var pdfName = "ten-page.pdf"
+    var pages = 10
+    var totalAnnotations = 100
+  }
+
+  object testConfigFiveHundredPages {
+    var pdfName = "five-hundred-page.pdf"
+    var pages = 500
+    var totalAnnotations = 5000
+  }
+
+  object testConfigHundredPages {
+    var pdfName = "hundred-page.pdf"
+    var pages = 100
+    var totalAnnotations = 1000
+  }
+
+  var testConfig = testConfigOnePages
+  val setup = scenario("setup").exec(Setup.run)
+  val createTaskScenario = scenario("create-npa-task")
+      .exec(setup)
+      .pause(10)
+      .exec(
+        CreateTask.run
+      )
+
+  setUp(
+    createTaskScenario
     .inject(atOnceUsers(1))
     .protocols(httpProtocol))
-//    .maxDuration(10 minutes)
+    .maxDuration(10 minutes)
     .assertions(
-      global.responseTime.max.lt(5000),
       forAll.failedRequests.count.lt(1)
     )
 }
