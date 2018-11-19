@@ -276,4 +276,9 @@
         <gav regex="true">.*</gav>
         <cve>CVE-2017-15288</cve>
     </suppress>
+    <suppress>
+        <notes>App Insights gauva</notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2018-10237</cve>
+    </suppress>
 </suppressions>
