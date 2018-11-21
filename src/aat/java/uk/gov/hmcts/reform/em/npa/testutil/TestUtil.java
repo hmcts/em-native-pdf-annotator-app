@@ -20,6 +20,16 @@ public class TestUtil {
 
     private String s2sToken;
     private String idamToken;
+    private String documentId;
+    private String annotationSetId;
+
+    public String getAnnotationSetId() {
+        return this.annotationSetId;
+    }
+
+    public String getDocumentId() {
+        return this.documentId;
+    }
 
     public File getDocumentBinary(String documentId) throws Exception {
         Response response = s2sAuthRequest()
@@ -33,14 +43,13 @@ public class TestUtil {
         return tempPath.toFile();
     }
 
-    public String saveAnnotation(String annotationSetId) throws Exception {
-
+    public String saveAnnotation(String annotationSetId, Integer pageNum) throws Exception {
         UUID annotationId = UUID.randomUUID();
         JSONObject createAnnotations = new JSONObject();
         createAnnotations.put("annotationSetId", annotationSetId);
         createAnnotations.put("id", annotationId);
         createAnnotations.put("annotationType", "highlight");
-        createAnnotations.put("page", 1);
+        createAnnotations.put("page", pageNum);
         createAnnotations.put("color", "d1d1d1");
 
         JSONArray comments = new JSONArray();
@@ -70,7 +79,10 @@ public class TestUtil {
         Assert.assertEquals(201, response.getStatusCode());
 
         return annotationId.toString();
+    }
 
+    public String saveAnnotation(String annotationSetId) throws Exception {
+        return saveAnnotation(annotationSetId, 1);
     }
 
     public String createAnnotationSetForDocumentId(String documentId) throws Exception {
@@ -86,22 +98,26 @@ public class TestUtil {
 
         Assert.assertEquals(201, response.getStatusCode());
 
-        return annotationSetId.toString();
+        this.annotationSetId = annotationSetId.toString();
+        return this.annotationSetId;
     }
 
-    public String uploadDocument() throws Exception {
-
+    public String uploadDocument(String pdfName) throws Exception {
         String newDocUrl = s2sAuthRequest()
                 .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
-                .multiPart("files", "test.pdf",  ClassLoader.getSystemResourceAsStream("annotationTemplate.pdf"), "application/pdf")
+                .multiPart("files", "test.pdf",  ClassLoader.getSystemResourceAsStream(pdfName), "application/pdf")
                 .multiPart("classification", "PUBLIC")
                 .request("POST", Env.getDmApiUrl() + "/documents")
                 .getBody()
                 .jsonPath()
                 .get("_embedded.documents[0]._links.self.href");
 
-        return newDocUrl.substring(newDocUrl.lastIndexOf("/") + 1);
+        this.documentId = newDocUrl.substring(newDocUrl.lastIndexOf("/") + 1);
+        return this.documentId;
+    }
 
+    public String uploadDocument() throws Exception {
+        return uploadDocument("annotationTemplate.pdf");
     }
 
     public RequestSpecification authRequest() throws Exception {
@@ -114,6 +130,10 @@ public class TestUtil {
         return RestAssured
                 .given()
                 .header("ServiceAuthorization", "Bearer " + getS2sToken());
+    }
+
+    public String getIdamToken() {
+        return getIdamToken("test@test.com");
     }
 
     public String getIdamToken(String username) {
@@ -177,10 +197,10 @@ public class TestUtil {
                     .body(jsonObject.toString())
                     .post(Env.getS2SURL() + "/lease");
             s2sToken = response.getBody().asString();
+            s2sToken = response.getBody().print();
         }
 
         return s2sToken;
-
     }
 
 }

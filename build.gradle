@@ -16,7 +16,8 @@ plugins {
     id "net.ltgt.apt" version "0.18"
     id 'jacoco'
     id 'org.liquibase.gradle' version '2.0.1'
-//    id "com.github.spacialcircumstances.gradle-cucumber-reporting" version "0.0.11"
+   // id "com.github.spacialcircumstances.gradle-cucumber-reporting" version "0.0.11"
+    id "com.github.lkishalmi.gatling" version "3.0.1"
 }
 
 apply plugin: 'java'
@@ -27,7 +28,6 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'org.owasp.dependencycheck'
 apply plugin: 'com.github.ben-manes.versions'
 apply plugin: 'idea'
-
 
 dependencyManagement {
     imports {
@@ -223,6 +223,9 @@ sonarqube {
 
 sourceSets {
     aat {
+        scala {
+            srcDirs = ['src/aat/java']
+        }
         java {
             compileClasspath += main.output
             runtimeClasspath += main.output
@@ -231,7 +234,38 @@ sourceSets {
         resources {
             srcDir('src/aat/resources')
         }
+        compileClasspath += configurations.gatling
     }
+}
+
+configurations {
+    gatling
+}
+
+gatling {
+    logLevel = "INFO"
+}
+
+task gatlingRunAAT(type: JavaExec) {
+    group = 'gatling'
+    description = 'Run gatling tests'
+    new File("${buildDir}/reports/tests/performance").mkdirs()
+    classpath = sourceSets.aat.runtimeClasspath + configurations.gatling
+    main = "io.gatling.app.Gatling"
+    args = ['-s', 'uk.gov.hmcts.reform.em.npa.performance.NpaLoad',
+            '-rf', "${buildDir}/reports/tests/performance"
+    ]
+}
+
+task gatlingRunSmoke(type: JavaExec) {
+    group = 'gatling'
+    description = 'Run gatling tests'
+    new File("${buildDir}/reports/tests/performance").mkdirs()
+    classpath = sourceSets.aat.runtimeClasspath + configurations.gatling
+    main = "io.gatling.app.Gatling"
+    args = ['-s', 'uk.gov.hmcts.reform.em.npa.performance.NpaSmoke',
+            '-rf', "${buildDir}/reports/tests/performance"
+    ]
 }
 
 task functional(type: Test) {
