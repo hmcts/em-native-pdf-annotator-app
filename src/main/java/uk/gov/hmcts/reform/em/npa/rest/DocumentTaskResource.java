@@ -1,5 +1,9 @@
 package uk.gov.hmcts.reform.em.npa.rest;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -9,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.reform.em.npa.batch.DocumentTaskItemProcessor;
+import uk.gov.hmcts.reform.em.npa.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.npa.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.npa.rest.errors.BadRequestAlertException;
 import uk.gov.hmcts.reform.em.npa.rest.util.HeaderUtil;
@@ -26,6 +31,8 @@ import java.util.Optional;
  */
 @RestController
 @RequestMapping("/api")
+@Api(value="document tasks", description = "Operations pertaining to document tasks")
+
 public class DocumentTaskResource {
 
     private final Logger log = LoggerFactory.getLogger(DocumentTaskResource.class);
@@ -45,6 +52,13 @@ public class DocumentTaskResource {
      * @return the ResponseEntity with status 201 (Created) and with body the new documentTaskDTO, or with status 400 (Bad Request) if the documentTask has already an ID
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
+    @ApiOperation(value = "Create a documentTaskDTO", notes = "A POST request to create a documentTaskDTO")
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Successfully created", response = DocumentTaskDTO.class),
+            @ApiResponse(code = 400, message = "documentTaskDTO not valid, invalid id"),
+            @ApiResponse(code = 401, message = "Unauthorised"),
+            @ApiResponse(code = 403, message = "Forbidden"),
+    })
     @PostMapping("/document-tasks")
     ////@Timed
     public ResponseEntity<DocumentTaskDTO> createDocumentTask(@RequestBody DocumentTaskDTO documentTaskDTO, @RequestHeader(value="Authorization", required=false) String authorisationHeader) throws URISyntaxException {
@@ -70,6 +84,15 @@ public class DocumentTaskResource {
      * or with status 500 (Internal Server Error) if the documentTaskDTO couldn't be updated
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
+    @ApiOperation(value = "Update an existing documentTaskDTO", notes = "A PUT request to update a documentTaskDTO")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success", response = DocumentTaskDTO.class),
+            @ApiResponse(code = 400, message = "documentTaskDTO not valid"),
+            @ApiResponse(code = 500, message = "documentTaskDTO couldn't be updated"),
+            @ApiResponse(code = 401, message = "Unauthorised"),
+            @ApiResponse(code = 403, message = "Forbidden"),
+            @ApiResponse(code = 404, message = "Not Found"),
+    })
     @PutMapping("/document-tasks")
     //@Timed
     public ResponseEntity<DocumentTaskDTO> updateDocumentTask(@RequestBody DocumentTaskDTO documentTaskDTO, @RequestHeader(value="Authorization", required=false) String authorisationHeader) throws URISyntaxException {
@@ -90,6 +113,13 @@ public class DocumentTaskResource {
      * @param pageable the pagination information
      * @return the ResponseEntity with status 200 (OK) and the list of documentTasks in body
      */
+    @ApiOperation(value = "Get all documentTaskDTOs", notes = "A GET request without a body is used to retrieve all documentTaskDTOs")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success", response = DocumentTaskDTO.class, responseContainer = "List"),
+            @ApiResponse(code = 401, message = "Unauthorised"),
+            @ApiResponse(code = 403, message = "Forbidden"),
+            @ApiResponse(code = 404, message = "Not Found"),
+    })
     @GetMapping("/document-tasks")
     //@Timed
     public ResponseEntity<List<DocumentTaskDTO>> getAllDocumentTasks(Pageable pageable) {
@@ -105,6 +135,13 @@ public class DocumentTaskResource {
      * @param id the id of the documentTaskDTO to retrieve
      * @return the ResponseEntity with status 200 (OK) and with body the documentTaskDTO, or with status 404 (Not Found)
      */
+    @ApiOperation(value = "Get an existing documentTaskDTO", notes = "A GET request to retrieve a documentTaskDTO")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success", response = DocumentTaskDTO.class),
+            @ApiResponse(code = 401, message = "Unauthorised"),
+            @ApiResponse(code = 403, message = "Forbidden"),
+            @ApiResponse(code = 404, message = "Not Found"),
+    })
     @GetMapping("/document-tasks/{id}")
     //@Timed
     public ResponseEntity<DocumentTaskDTO> getDocumentTask(@PathVariable Long id) {
@@ -119,6 +156,13 @@ public class DocumentTaskResource {
      * @param id the id of the documentTaskDTO to delete
      * @return the ResponseEntity with status 200 (OK)
      */
+    @ApiOperation(value = "Delete a documentTaskDTO", notes = "A DELETE request to delete a documentTaskDTO")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 401, message = "Unauthorised"),
+            @ApiResponse(code = 403, message = "Forbidden"),
+            @ApiResponse(code = 404, message = "Not Found"),
+    })
     @DeleteMapping("/document-tasks/{id}")
     //@Timed
     public ResponseEntity<Void> deleteDocumentTask(@PathVariable Long id) {

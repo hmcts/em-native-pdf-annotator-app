@@ -26,7 +26,8 @@ public class SwaggerConfiguration {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
                 .apis(RequestHandlerSelectors.any())
-                .paths(PathSelectors.regex("/rpa-native-pdf-annotator-app(.*)"))
+                .paths(PathSelectors.regex("/api(.*)"))
+//                .paths(PathSelectors.regex("/rpa-native-pdf-annotator-app(.*)"))
                 .build()
                 .apiInfo(apiInfo());
     }
