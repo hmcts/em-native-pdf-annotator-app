@@ -1,0 +1,164 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ${NAMESPACE}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${SERVICE_NAME}
+  namespace: ${NAMESPACE}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ${SERVICE_NAME}
+  template:
+    metadata:
+      labels:
+        app: ${SERVICE_NAME}
+    spec:
+      initContainers:
+        - name: init-wait-db
+          image: busybox
+          command: ['sh', '-c', 'for i in $(seq 1 300); do nc -zvw1 shared-database 5432 && exit 0 || sleep 3; done; exit 1']
+      containers:
+        - image: ${IMAGE_NAME}
+          name: ${SERVICE_NAME}
+          envFrom:
+            - configMapRef:
+                name: ${SERVICE_NAME}-config
+
+          # These are obtained from environment variables.  If it's
+          # an environment variable, it can be used here.  Projects
+          # would usually source custom values from:
+          #   - Jenkins Azure Keyvault plugin (e.g. secrets)
+          #   - Your project's Jenkinsfile
+# TODO add variables from vault and jenkins cnp manually. See bookmarked CMC-citizen-frontend AKS branch for examples
+# TODO import all the main.tf variables into here aswell, and remove the existing ones
+# TODO merge if the em-anno merge works
+          env:
+            - name: POSTGRES_HOST
+              value: "${POSTGRES_HOST}"
+            - name: POSTGRES_DATABASE
+              value: "${POSTGRES_DATABASE}"
+            - name: POSTGRES_USER
+              value: "${POSTGRES_USER}"
+            - name: POSTGRES_PASSWORD
+              value: "${POSTGRES_PASSWORD}"
+          resources:
+            requests:
+              memory: "1024Mi"
+              cpu: "200m"
+            limits:
+              memory: "2048Mi"
+              cpu: "2500m"
+          ports:
+            - containerPort: 4550
+              name: http
+          imagePullPolicy: Always
+---
+#
+# Service
+#
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${SERVICE_NAME}
+  namespace: ${NAMESPACE}
+  labels:
+    app: ${SERVICE_NAME}
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 4550
+  selector:
+    app: ${SERVICE_NAME}
+---
+#
+# Ingress
+#
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ${SERVICE_NAME}
+  namespace: ${NAMESPACE}
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+    - host: ${SERVICE_FQDN}
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: ${SERVICE_NAME}
+              servicePort: 80
+---
+#
+# DATABASE
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: shared-database-initdb
+  namespace: ${NAMESPACE}
+data:
+  initdb.sql: |
+    CREATE USER emnpa WITH PASSWORD 'emnpa';
+    CREATE DATABASE emnpa WITH OWNER = emnpa ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shared-database
+  namespace: ${NAMESPACE}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shared-database
+  template:
+    metadata:
+      labels:
+        app: shared-database
+    spec:
+      containers:
+        - image: postgres:10.5-alpine
+          name: shared-database
+          resources:
+            requests:
+              memory: '256Mi'
+              cpu: '200m'
+            limits:
+              memory: '1024Mi'
+              cpu: '1000m'
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5432
+              name: postgres
+          volumeMounts:
+            - mountPath: /docker-entrypoint-initdb.d
+              name: initdb
+              readOnly: true
+      volumes:
+        - name: initdb
+          configMap:
+            name: shared-database-initdb
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shared-database
+  namespace: ${NAMESPACE}
+  labels:
+    app: shared-database
+spec:
+  ports:
+    - port: 5432
+  selector:
+    app: shared-database
+  clusterIP: None

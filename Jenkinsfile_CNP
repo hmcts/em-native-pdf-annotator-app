@@ -16,7 +16,7 @@ properties([
 def type = "java"
 def product = "em"
 def component = "npa"
-
+def vault = "rpa"
 def channel = '#rpa-pipeline'
 
 List<LinkedHashMap<String, Object>> secrets = [
@@ -34,8 +34,17 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 
 withPipeline(type , product, component) {
     enableSlackNotifications(channel)
-    enableDbMigration()
     loadVaultSecrets(secrets)
+    setVaultName(vault)
+
+//    enablePerformanceTest(15)
+//    enableApiGatewayTest(15)
+//    enableFullFunctionalTest(30)
+//    enableMutationTest(120)
+//    enableCrossBrowserTest(120)
+    enableDockerBuild()
+    enableDeployToAKS()
+
 
     after('checkout') {
         echo '${product}-${component} out'
