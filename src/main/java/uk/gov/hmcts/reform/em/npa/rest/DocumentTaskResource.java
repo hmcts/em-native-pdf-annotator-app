@@ -31,8 +31,6 @@ import java.util.Optional;
  */
 @RestController
 @RequestMapping("/api")
-@Api(value="document tasks", description = "Operations pertaining to document tasks")
-
 public class DocumentTaskResource {
 
     private final Logger log = LoggerFactory.getLogger(DocumentTaskResource.class);
