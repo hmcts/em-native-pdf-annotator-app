@@ -1,9 +1,15 @@
 ---
+#
+# NAMESPACE - Defines a logical grouping of resources
+#
 apiVersion: v1
 kind: Namespace
 metadata:
   name: ${NAMESPACE}
 ---
+#
+# DEPLOYMENT - Defines the image to use, all env variables, exposed ports and resource limits
+#
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -29,24 +35,70 @@ spec:
           envFrom:
             - configMapRef:
                 name: ${SERVICE_NAME}-config
-
-          # These are obtained from environment variables.  If it's
-          # an environment variable, it can be used here.  Projects
-          # would usually source custom values from:
-          #   - Jenkins Azure Keyvault plugin (e.g. secrets)
-          #   - Your project's Jenkinsfile
-# TODO add variables from vault and jenkins cnp manually. See bookmarked CMC-citizen-frontend AKS branch for examples
-# TODO import all the main.tf variables into here aswell, and remove the existing ones
-# TODO merge if the em-anno merge works
           env:
+#            Import variables from vault
+            - name: S2S_KEY
+              value: '${S2S_TOKEN}'
+            - name: APPINSIGHTS_INSTRUMENTATIONKEY
+              value: '${APPINSIGHTS_INSTRUMENTATIONKEY}'
+#           Use the postgres db created for the app further down the file
             - name: POSTGRES_HOST
-              value: "${POSTGRES_HOST}"
+              value: 'shared-database'
             - name: POSTGRES_DATABASE
-              value: "${POSTGRES_DATABASE}"
+              value: 'emnpa'
             - name: POSTGRES_USER
-              value: "${POSTGRES_USER}"
+              value: 'emnpa'
             - name: POSTGRES_PASSWORD
-              value: "${POSTGRES_PASSWORD}"
+              value: 'emnpa'
+#           Copy over variables from main.tf
+            - name: SPRING_DATASOURCE_URL
+              value: 'jdbc:postgresql://shared-database:5432/emnpa?ssl=disable'
+            - name: SPRING_DATASOURCE_USERNAME
+              value: 'emnpa'
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: 'emnpa'
+            - name: ENABLE_DB_MIGRATE
+              value: 'true'
+            - name: REFORM_SERVICE_NAME
+              value: 'em-anno' # See em_anno_app_url in variables.tf
+            - name: REFORM_TEAM
+              value: 'evidence'
+            - name: REFORM_SERVICE_TYPE
+              value: 'java'
+            - name: REFORM_ENVIRONMENT
+              value: 'preview'
+            - name: PACKAGES_NAME
+              value: 'em-anno'
+            - name: PACKAGES_PROJECT
+              value: 'evidence'
+            - name: PACKAGES_ENVIRONMENT
+              value: 'preview'
+            - name: ROOT_APPENDER
+              value: 'JSON_CONSOLE'
+            - name: JSON_CONSOLE_PRETTY_PRINT
+              value: 'false'
+            - name: LOG_OUTPUT
+              value: 'single'
+            - name: ROOT_LOGGING_LEVEL
+              value: 'INFO'
+            - name: LOG_LEVEL_SPRING_WEB
+              value: 'INFO'
+            - name: LOG_LEVEL_DM
+              value: 'INFO'
+            - name: SHOW_SQL
+              value: 'true'
+            - name: ENDPOINTS_HEALTH_SENSITIVE
+              value: 'false'
+            - name: ENDPOINTS_INFO_SENSITIVE
+              value: 'false'
+            - name: S2S_NAMES_WHITELIST
+              value: 'em_api,em_gw,ccd_gw,ccd_data,sscs,divorce_document_upload,divorce_document_generator,probate_backend,jui_webapp,pui_webapp'
+            - name: CASE_WORKER_ROLES
+              value: 'caseworker-probate,caseworker-cmc,caseworker-sscs,caseworker-divorce'
+            - name: ENABLE_IDAM_HEALTH_CHECK
+              value: 'false'
+            - name: ENABLE_S2S_HEALTH_CHECK
+              value: 'false'
           resources:
             requests:
               memory: "1024Mi"
@@ -55,12 +107,13 @@ spec:
               memory: "2048Mi"
               cpu: "2500m"
           ports:
-            - containerPort: 4550
+            - containerPort: 8080 #TODO Check this is correct.
               name: http
           imagePullPolicy: Always
+# TODO Pawel, should the port be written in src/main/resources/application.yaml?
 ---
 #
-# Service
+# SERVICE - exposes containers internally to the cluster - enables service discovery via internal DNS
 #
 apiVersion: v1
 kind: Service
@@ -74,12 +127,12 @@ spec:
     - name: http
       protocol: TCP
       port: 80
-      targetPort: 4550
+      targetPort: 8080 #TODO Check this is correct
   selector:
     app: ${SERVICE_NAME}
 ---
 #
-# Ingress
+# INGRESS - makes it accessible from outside the cluster
 #
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -99,7 +152,7 @@ spec:
               servicePort: 80
 ---
 #
-# DATABASE
+# DATABASE - Create a DB to run PRs on
 #
 apiVersion: v1
 kind: ConfigMap
@@ -111,6 +164,9 @@ data:
     CREATE USER emnpa WITH PASSWORD 'emnpa';
     CREATE DATABASE emnpa WITH OWNER = emnpa ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
 ---
+#
+# DEPLOYMENT - Defines the image & port for the postgres DB
+#
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -149,6 +205,9 @@ spec:
           configMap:
             name: shared-database-initdb
 ---
+#
+# SERVICE - Expose the postgres container internally to the cluster
+#
 apiVersion: v1
 kind: Service
 metadata:

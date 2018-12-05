@@ -20,7 +20,8 @@ def vault = "rpa"
 def channel = '#rpa-pipeline'
 
 List<LinkedHashMap<String, Object>> secrets = [
-        secret('em-s2s-token', 'S2S_TOKEN')
+        secret('em-s2s-token', 'S2S_TOKEN'),
+        secret('AppInsightsInstrumentationKey', 'APPINSIGHTS_INSTRUMENTATIONKEY'),
 ]
 
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
@@ -34,8 +35,6 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 
 withPipeline(type , product, component) {
     enableSlackNotifications(channel)
-    loadVaultSecrets(secrets)
-    setVaultName(vault)
 
 //    enablePerformanceTest(15)
 //    enableApiGatewayTest(15)
@@ -44,6 +43,8 @@ withPipeline(type , product, component) {
 //    enableCrossBrowserTest(120)
     enableDockerBuild()
     enableDeployToAKS()
+    loadVaultSecrets(secrets)
+    setVaultName(vault)
 
 
     after('checkout') {
