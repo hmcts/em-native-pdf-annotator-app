@@ -99,6 +99,8 @@ spec:
               value: 'false'
             - name: ENABLE_S2S_HEALTH_CHECK
               value: 'false'
+            - name: ENABLE_LIQUIBASE # This builds the postgres container
+              value: 'true'
           resources:
             requests:
               memory: "1024Mi"
