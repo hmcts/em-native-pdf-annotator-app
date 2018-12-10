@@ -39,6 +39,8 @@ spec:
 #            Import variables from vault
             - name: S2S_KEY
               value: '${S2S_TOKEN}'
+            - name: S2S_TOKEN
+              value: '${S2S_TOKEN}'
             - name: APPINSIGHTS_INSTRUMENTATIONKEY
               value: '${APPINSIGHTS_INSTRUMENTATIONKEY}'
 #           Use the postgres db created for the app further down the file
