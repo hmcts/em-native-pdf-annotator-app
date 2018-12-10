@@ -39,7 +39,7 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 env.IDAM_API_URL = 'https://preprod-idamapi.reform.hmcts.net:3511'
 env.S2S_URL = 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
 env.DM_STORE_APP_URL = 'http://dm-store-aat.service.core-compute-aat.internal'
-env.EM_ANNO_APP_URL = 'http://em_anno-aat.service.core-compute-aat.internal'
+env.EM_ANNO_APP_URL = 'http://em-anno-aat.service.core-compute-aat.internal'
 
 withPipeline(type , product, component) {
     enableSlackNotifications(channel)
