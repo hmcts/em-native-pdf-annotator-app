@@ -22,6 +22,7 @@ def channel = '#rpa-pipeline'
 List<LinkedHashMap<String, Object>> secrets = [
         secret('em-s2s-token', 'S2S_TOKEN'),
         secret('AppInsightsInstrumentationKey', 'APPINSIGHTS_INSTRUMENTATIONKEY'),
+        secret('microservicekey-em-npa-app', 'S2S_KEY'),
 ]
 
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {

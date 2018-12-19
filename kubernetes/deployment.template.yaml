@@ -38,6 +38,8 @@ spec:
           env:
 #            Import variables from vault
             - name: S2S_KEY
+              value: '${S2S_KEY}'
+            - name: S2S_TOKEN
               value: '${S2S_TOKEN}'
             - name: APPINSIGHTS_INSTRUMENTATIONKEY
               value: '${APPINSIGHTS_INSTRUMENTATIONKEY}'
