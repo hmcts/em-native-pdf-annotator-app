@@ -19,7 +19,7 @@ def component = "anno"
 def vault = "rpa-aat"
 def channel = '#rpa-pipeline'
 
-List<LinkedHashMap<String, Object>> secrets = [
+def secrets = [
         'app-vault-nonprod': [
                 secret('em-s2s-token', 'S2S_TOKEN'),
                 secret('AppInsightsInstrumentationKey', 'APPINSIGHTS_INSTRUMENTATIONKEY'),
