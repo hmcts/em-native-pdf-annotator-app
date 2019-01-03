@@ -16,7 +16,7 @@ properties([
 def type = "java"
 def product = "em"
 def component = "anno"
-def vault = "rpa-aat"
+def vault = "rpa-${env}"
 def channel = '#rpa-pipeline'
 
 def secrets = [
