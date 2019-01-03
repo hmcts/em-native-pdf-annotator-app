@@ -358,4 +358,32 @@
         <gav regex="true">^org\.bouncycastle:bcprov-jdk15on:.*$</gav>
         <cve>CVE-2018-1000613</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: pdfbox-2.0.11.jar
+   ]]></notes>
+        <gav regex="true">^org\.apache\.pdfbox:pdfbox:.*$</gav>
+        <cpe>cpe:/a:apache:pdfbox</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: pdfbox-2.0.11.jar
+   ]]></notes>
+        <gav regex="true">^org\.apache\.pdfbox:pdfbox:.*$</gav>
+        <cve>CVE-2018-11797</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: fontbox-2.0.11.jar
+   ]]></notes>
+        <gav regex="true">^org\.apache\.pdfbox:fontbox:.*$</gav>
+        <cpe>cpe:/a:apache:pdfbox</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: fontbox-2.0.11.jar
+   ]]></notes>
+        <gav regex="true">^org\.apache\.pdfbox:fontbox:.*$</gav>
+        <cve>CVE-2018-11797</cve>
+    </suppress>
 </suppressions>
