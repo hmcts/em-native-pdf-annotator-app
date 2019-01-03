@@ -16,11 +16,10 @@ properties([
 def type = "java"
 def product = "em"
 def component = "npa"
-def vault = "rpa-${env}"
 def channel = '#rpa-pipeline'
 
 def secrets = [
-    'app-vault-nonprod': [
+    'rpa-${env}': [
         secret('em-s2s-token', 'S2S_TOKEN'),
         secret('AppInsightsInstrumentationKey', 'APPINSIGHTS_INSTRUMENTATIONKEY'),
     ],
@@ -57,7 +56,6 @@ withPipeline(type , product, component) {
     enableDockerBuild()
     enableDeployToAKS()
     loadVaultSecrets(secrets)
-    setVaultName(vault)
 
 
     after('checkout') {
