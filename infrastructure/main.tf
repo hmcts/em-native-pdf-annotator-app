@@ -3,6 +3,7 @@ locals {
   ase_name = "${data.terraform_remote_state.core_apps_compute.ase_name[0]}"
   local_env = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview" ) ? "aat" : "saat" : var.env}"
   shared_vault_name = "${var.shared_product_name}-${local.local_env}"
+  tags = "${merge(var.common_tags, map("Team Contact", "#rpe"))}"
 }
 # "${local.ase_name}"
 # "${local.app_full_name}"
@@ -158,4 +159,11 @@ resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
   name = "${local.app_full_name}-POSTGRES-DATABASE"
   value = "${module.db.postgresql_database}"
   vault_uri = "${module.local_key_vault.key_vault_uri}"
+}
+
+resource "azurerm_resource_group" "rg" {
+  name     = "${var.product}-${var.env}"
+  location = "${var.location}"
+
+  tags = "${local.tags}"
 }
