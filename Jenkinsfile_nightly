@@ -16,11 +16,17 @@ properties([
 def type = "java"
 def product = "em"
 def component = "anno"
-
+def vault = "rpa-${env}"
 def channel = '#rpa-pipeline'
 
-List<LinkedHashMap<String, Object>> secrets = [
-    secret('em-s2s-token', 'S2S_TOKEN')
+def secrets = [
+        'app-vault-nonprod': [
+                secret('em-s2s-token', 'S2S_TOKEN'),
+                secret('AppInsightsInstrumentationKey', 'APPINSIGHTS_INSTRUMENTATIONKEY'),
+        ],
+        's2s-${env}'      : [
+                secret('microservicekey-em-npa-app', 'S2S_KEY')
+        ]
 ]
 
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
@@ -32,10 +38,27 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
     ]
 }
 
+// Vars needed for AKS testing - keep values in sync with: /src/kubernetes/deployment.template.yaml
+// THESE WILL BE OVERWRITTEN IN ASE DEPLOYMENTS WITH TERRAFORM OUTPUTS.TF
+// THESE CAN BE PICKED UP IN INTEGRATION-TEST CODE DIRECTLY
+env.IDAM_API_URL = 'https://preprod-idamapi.reform.hmcts.net:3511'
+env.S2S_URL = 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
+env.DM_STORE_APP_URL = 'http://dm-store-aat.service.core-compute-aat.internal'
+env.EM_ANNO_APP_URL = 'http://em-anno-aat.service.core-compute-aat.internal'
+
 withNightlyPipeline(type, product, component) {
     enableSlackNotifications(channel)
-    enableDbMigration()
+
+//    enablePerformanceTest(15)
+//    enableApiGatewayTest(15)
+//    enableFullFunctionalTest(30)
+//    enableMutationTest(120)
+//    enableCrossBrowserTest(120)
+    enableDockerBuild()
+    enableDeployToAKS()
     loadVaultSecrets(secrets)
+    setVaultName(vault)
+
 
     after('checkout') {
         echo '${product}-${component} out'

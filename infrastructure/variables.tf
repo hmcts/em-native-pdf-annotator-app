@@ -117,6 +117,21 @@ variable "endpoints_health_sensitive" {
 variable "endpoints_info_sensitive" {
   default = "true"
 }
+
+variable "appinsights_instrumentation_key" {
+  description = "Instrumentation key of the App Insights instance this webapp should use. Module will create own App Insights resource if this is not provided"
+  default     = ""
+}
+variable "appinsights_location" {
+  type        = "string"
+  default     = "West Europe"
+  description = "Location for Application Insights"
+}
+variable "application_type" {
+  type        = "string"
+  default     = "Web"
+  description = "Type of Application Insights (Web/Other)"
+}
 ////////////////////////////////////////////////
 // Toggle Features
 ////////////////////////////////////////////////
