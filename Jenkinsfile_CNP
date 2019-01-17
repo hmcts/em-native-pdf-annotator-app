@@ -29,6 +29,8 @@ def secrets = [
     ]
 ]
 
+echo "vault: ${vault} - s2s-${env}"
+
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
     [ $class: 'AzureKeyVaultSecret',
       secretType: 'Secret',
