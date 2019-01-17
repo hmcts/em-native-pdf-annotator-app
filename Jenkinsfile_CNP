@@ -1,14 +1,14 @@
 #!groovy
 
 properties([
-    [
-        $class: 'GithubProjectProperty',
-        displayName: 'Evidence NPA App',
-        projectUrlStr: 'https://github.com/hmcts/rpa-native-pdf-annotator-app'
-    ],
-    pipelineTriggers([
-        [$class: 'GitHubPushTrigger']
-    ])
+        [
+                $class: 'GithubProjectProperty',
+                displayName: 'Evidence NPA App',
+                projectUrlStr: 'https://github.com/hmcts/rpa-native-pdf-annotator-app'
+        ],
+        pipelineTriggers([
+                [$class: 'GitHubPushTrigger']
+        ])
 ])
 
 @Library("Infrastructure")
@@ -16,17 +16,14 @@ properties([
 def type = "java"
 def product = "em"
 def component = "npa"
-def vault = 'rpa'
+def vault = "rpa"
 def channel = '#rpa-pipeline'
 
-def secrets = [
-    'rpa-${env}': [
+List<LinkedHashMap<String, Object>> secrets = [
         secret('em-s2s-token', 'S2S_TOKEN'),
         secret('AppInsightsInstrumentationKey', 'APPINSIGHTS_INSTRUMENTATIONKEY'),
-    ],
-    's2s-${env}'      : [
-        secret('microservicekey-em-npa-app', 'S2S_KEY')
-    ]
+        secret('microservicekey-em-npa-app', 'S2S_KEY'),
+
 ]
 
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
@@ -38,16 +35,15 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
     ]
 }
 
+// Vars needed for AKS testing - keep values in sync with: /src/kubernetes/deployment.template.yaml
+// THESE WILL BE OVERWRITTEN IN ASE DEPLOYMENTS WITH TERRAFORM OUTPUTS.TF
+// THESE CAN BE PICKED UP IN INTEGRATION-TEST CODE DIRECTLY
+env.IDAM_API_URL = 'https://preprod-idamapi.reform.hmcts.net:3511'
+env.S2S_URL = 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
+env.DM_STORE_APP_URL = 'http://dm-store-aat.service.core-compute-aat.internal'
+env.EM_ANNO_APP_URL = 'http://em-anno-aat.service.core-compute-aat.internal'
 
 withPipeline(type , product, component) {
-    // Vars needed for AKS testing - keep values in sync with: /src/kubernetes/deployment.template.yaml
-    // THESE WILL BE OVERWRITTEN IN ASE DEPLOYMENTS WITH TERRAFORM OUTPUTS.TF
-    // THESE CAN BE PICKED UP IN INTEGRATION-TEST CODE DIRECTLY
-    env.IDAM_API_URL = 'https://preprod-idamapi.reform.hmcts.net:3511'
-    env.S2S_URL = 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
-    env.DM_STORE_APP_URL = 'http://dm-store-aat.service.core-compute-aat.internal'
-    env.EM_ANNO_APP_URL = 'http://em-anno-aat.service.core-compute-aat.internal'
-
     enableSlackNotifications(channel)
 
 //    enablePerformanceTest(15)
@@ -55,9 +51,9 @@ withPipeline(type , product, component) {
 //    enableFullFunctionalTest(30)
 //    enableMutationTest(120)
 //    enableCrossBrowserTest(120)
-    loadVaultSecrets(secrets)
     enableDockerBuild()
     enableDeployToAKS()
+    loadVaultSecrets(secrets)
     setVaultName(vault)
 
 
