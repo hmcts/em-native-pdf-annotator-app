@@ -16,7 +16,7 @@ properties([
 def type = "java"
 def product = "em"
 def component = "npa"
-def vault = "rpa-${env}"
+def vault = 'rpa-${env}'
 def channel = '#rpa-pipeline'
 
 def secrets = [
@@ -28,8 +28,6 @@ def secrets = [
         secret('microservicekey-em-npa-app', 'S2S_KEY')
     ]
 ]
-
-echo "vault: ${vault} - s2s-${env}"
 
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
     [ $class: 'AzureKeyVaultSecret',
