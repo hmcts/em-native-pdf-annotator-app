@@ -20,11 +20,11 @@ def vault = "rpa-${env}"
 def channel = '#rpa-pipeline'
 
 def secrets = [
-    "rpa-${env}": [
+    'rpa-${env}': [
         secret('em-s2s-token', 'S2S_TOKEN'),
         secret('AppInsightsInstrumentationKey', 'APPINSIGHTS_INSTRUMENTATIONKEY'),
     ],
-    "s2s-${env}"      : [
+    's2s-${env}'      : [
         secret('microservicekey-em-npa-app', 'S2S_KEY')
     ]
 ]
