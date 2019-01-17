@@ -54,10 +54,11 @@ withPipeline(type , product, component) {
 //    enableFullFunctionalTest(30)
 //    enableMutationTest(120)
 //    enableCrossBrowserTest(120)
+    loadVaultSecrets(secrets)
     enableDockerBuild()
     enableDeployToAKS()
-    loadVaultSecrets(secrets)
-    setVaultName(vault)
+
+    //setVaultName(vault)
 
 
     after('checkout') {
