@@ -22,7 +22,7 @@ module "app" {
   https_only="false"
   common_tags  = "${var.common_tags}"
   asp_rg = "${var.shared_product_name}-${var.env}"
-  asp_name = "${var.shared_product_name}-${var.env}"
+  asp_name = "${var.shared_product_name}-anno-${var.env}"
   appinsights_instrumentation_key = "${var.appinsights_instrumentation_key}"
 
   app_settings = {
