@@ -38,9 +38,10 @@ def vaultOverrides = [
         'spreview': 'saat'
 ]
 
-withNightlyPipeline(type, product, component) {
+withPipeline(type , product, component) {
     enableSlackNotifications(channel)
     enableDbMigration()
+    enableDockerBuild()
     overrideVaultEnvironments(vaultOverrides)
     loadVaultSecrets(secrets)
 
