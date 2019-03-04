@@ -1,0 +1,60 @@
+postgresql:
+  initdbScripts:
+    init.sql: |-
+      CREATE USER emnpa WITH PASSWORD 'emnpa';
+      CREATE DATABASE emnpa WITH OWNER = emnpa ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+  nameOverride: rpa-native-pdf-annotator-db
+  persistence:
+    enabled: false
+
+npa-app:
+  image: ${IMAGE_NAME}
+  ingressHost: ${SERVICE_FQDN}
+  applicationPort: 8080
+  cpuRequests: 25m
+  environment:
+    # Import variables from vault
+    S2S_KEY: ${S2S_KEY}
+    S2S_TOKEN: ${S2S_TOKEN}
+    APPINSIGHTS_INSTRUMENTATIONKEY: ${APPINSIGHTS_INSTRUMENTATIONKEY}
+
+    # Compare the next 2 sections. Is it postgres-host or spring datasource that the program will look for?
+    POSTGRES_HOST: rpa-native-pdf-annotator-db
+    POSTGRES_DATABASE: emnpa
+    POSTGRES_USER: emnpa
+    POSTGRES_PASSWORD: emnpa
+
+    SPRING_DATASOURCE_URL: jdbc:postgresql://rpa-native-pdf-annotator-db:5432/emnpa?ssl=disable
+    SPRING_DATASOURCE_USERNAME: emnpa
+    SPRING_DATASOURCE_PASSWORD: emnpa
+
+    ENABLE_DB_MIGRATE: true
+    REFORM_SERVICE_NAME: em-anno
+    REFORM_TEAM: evidence
+    REFORM_SERVICE_TYPE: java
+    REFORM_ENVIRONMENT: preview
+    PACKAGES_NAME: em-anno
+    PACKAGES_PROJECT: evidence
+    PACKAGES_ENVIRONMENT: preview
+    ROOT_APPENDER: JSON_CONSOLE
+    JSON_CONSOLE_PRETTY_PRINT: false
+    LOG_OUTPUT: single
+    ROOT_LOGGING_LEVEL: INFO
+    LOG_LEVEL_SPRING_WEB: INFO
+    LOG_LEVEL_DM: INFO
+    SHOW_SQL: true
+    ENDPOINTS_HEALTH_SENSITIVE: false
+    ENDPOINTS_INFO_SENSITIVE: false
+    S2S_NAMES_WHITELIST: em_api,em_gw,ccd_gw,ccd_data,sscs,divorce_document_upload,divorce_document_generator,probate_backend,jui_webapp,pui_webapp
+    CASE_WORKER_ROLES: caseworker-probate,caseworker-cmc,caseworker-sscs,caseworker-divorce
+    ENABLE_IDAM_HEALTH_CHECK: false
+    ENABLE_S2S_HEALTH_CHECK: false
+    ENABLE_LIQUIBASE: true
+
+    # Needed?
+    # CLAIM_STORE_URL: http://${SERVICE_NAME}-alias_defined_in_requirements.yaml
+
+    # The rest of the env variables from our docker-compose
+    SERVER_PORT: 8080
+    IDAM_USER_BASE_URI: http://idam-api:8080
+    IDAM_S2S_BASE_URI: http://service-auth-provider-api:8080

@@ -111,10 +111,9 @@ spec:
               memory: "2048Mi"
               cpu: "2500m"
           ports:
-            - containerPort: 8080 #TODO Check this is correct.
+            - containerPort: 8080
               name: http
           imagePullPolicy: Always
-# TODO Pawel, should the port be written in src/main/resources/application.yaml?
 ---
 #
 # SERVICE - exposes containers internally to the cluster - enables service discovery via internal DNS
@@ -131,7 +130,7 @@ spec:
     - name: http
       protocol: TCP
       port: 80
-      targetPort: 8080 #TODO Check this is correct
+      targetPort: 8080
   selector:
     app: ${SERVICE_NAME}
 ---

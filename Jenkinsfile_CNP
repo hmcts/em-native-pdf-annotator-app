@@ -35,6 +35,7 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 withPipeline(type , product, component) {
     enableSlackNotifications(channel)
     enableDbMigration()
+    installCharts()
     loadVaultSecrets(secrets)
 
     after('checkout') {
