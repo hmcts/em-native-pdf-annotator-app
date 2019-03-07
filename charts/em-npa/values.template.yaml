@@ -24,7 +24,7 @@ npa-app:
     POSTGRES_USER: emnpa
     POSTGRES_PASSWORD: emnpa
 
-    SPRING_DATASOURCE_URL: jdbc:postgresql://rpa-native-pdf-annotator-db:5432/emnpa?ssl=disable
+    SPRING_DATASOURCE_URL: jdbc:postgresql://${SERVICE_NAME}-rpa-native-pdf-annotator-db:5432/emnpa?ssl=disable
     SPRING_DATASOURCE_USERNAME: emnpa
     SPRING_DATASOURCE_PASSWORD: emnpa
 
@@ -56,5 +56,5 @@ npa-app:
 
     # The rest of the env variables from our docker-compose
     SERVER_PORT: 8080
-    IDAM_USER_BASE_URI: http://idam-api:8080
-    IDAM_S2S_BASE_URI: http://service-auth-provider-api:8080
+#    IDAM_USER_BASE_URI: http://idam-api:8080
+#    IDAM_S2S_BASE_URI: http://service-auth-provider-api:8080

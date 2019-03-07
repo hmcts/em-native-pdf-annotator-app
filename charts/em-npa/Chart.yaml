@@ -1,4 +1,4 @@
-name: rpa-native-pdf-annotator-app
+name: em-npa
 home: https://github.com/hmcts/rpa-native-pdf-annotator-app
 version: 0.0.1 # WHAT SHOULD THIS BE
 description: Helm chart for the HMCTS Native PDF Annotator API

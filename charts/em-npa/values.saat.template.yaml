@@ -2,5 +2,5 @@ npa-app:
   environment:
     IDAM_API_BASE_URI: https://preprod-idamapi.reform.hmcts.net:3511
     S2S_BASE_URI: http://rpe-service-auth-provider-saat.service.core-compute-saat.internal
-    DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
-    EM_ANNO_APP_URL: http://em-anno-aat.service.core-compute-aat.internal
+    DM_STORE_APP_URL: http://dm-store-saat.service.core-compute-saat.internal
+    EM_ANNO_APP_URL: http://em-anno-saat.service.core-compute-saat.internal
