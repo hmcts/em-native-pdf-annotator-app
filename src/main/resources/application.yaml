@@ -45,6 +45,9 @@ base-urls:
   test-url: ${TEST_URL:http://localhost:8080}
 
 management:
+  endpoint:
+    health:
+      show-details: "always"
   endpoints:
     web:
       base-path: '/'
@@ -116,11 +119,3 @@ idam:
     url: ${S2S_BASE_URI:http://localhost:4502}
     totp_secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
     microservice: em_npa_app
-
-  management:
-    endpoint:
-      health:
-        show-details: "always"
-    endpoints:
-      web:
-        base-path: "/"
