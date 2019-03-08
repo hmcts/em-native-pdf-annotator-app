@@ -16,16 +16,16 @@ npa-app:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
   applicationPort: 8080
-  keyVaults:
-    em-npa:
-      resourceGroup: em-npa
-      # Pawel, what secrets do we need in here, and what should they be called?
-      secrets:
-        - S2S_TOKEN
-        - S2S_KEY
-        - APPINSIGHTS_INSTRUMENTATIONKEY
-        # FUNCTIONAL_TEST_CLIENT_S2S_TOKEN or microservicekey-em-gw?
-        - FUNCTIONAL_TEST_CLIENT_S2S_TOKEN
+#  keyVaults:
+#    em-npa:
+#      resourceGroup: em-npa
+#      # Pawel, what secrets do we need in here, and what should they be called?
+#      secrets:
+#        - S2S_TOKEN
+#        - s2s_key
+#        - AppInsightsInstrumentationKey
+#        # FUNCTIONAL_TEST_CLIENT_S2S_TOKEN or microservicekey-em-gw?
+#        - microservicekey-em-gw
   environment:
 #    # Import variables from vault
 #    S2S_KEY: ${S2S_KEY}

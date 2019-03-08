@@ -22,9 +22,9 @@ def secrets = [
         's2s-${env}': [
                 secret('microservicekey-em-gw', 'FUNCTIONAL_TEST_CLIENT_S2S_TOKEN')
         ],
-        'rpa-${env}': [
-                secret('AppInsightsInstrumentationKey', 'APPINSIGHTS_INSTRUMENTATIONKEY')
-        ]
+//        'rpa-${env}': [
+//                secret('AppInsightsInstrumentationKey', 'APPINSIGHTS_INSTRUMENTATIONKEY')
+//        ]
 ]
 
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
