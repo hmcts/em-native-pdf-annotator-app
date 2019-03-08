@@ -44,10 +44,10 @@ def vaultOverrides = [
 withPipeline(type , product, component) {
     enableSlackNotifications(channel)
     enableDbMigration()
-    installCharts()
     enableDockerBuild()
     overrideVaultEnvironments(vaultOverrides)
     loadVaultSecrets(secrets)
+    installCharts()
 
     after('checkout') {
         echo '${product}-${component} out'
