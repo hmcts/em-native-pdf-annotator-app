@@ -16,20 +16,21 @@ npa-app:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
   applicationPort: 8080
-  keyVaults:
-    em-npa:
-      resourceGroup: em-npa
-      # Pawel, what secrets do we need in here, and what should they be called?
-      secrets:
-#        - APPINSIGHTS_INSTRUMENTATIONKEY
-        # FUNCTIONAL_TEST_CLIENT_S2S_TOKEN or microservicekey-em-gw?
-        - FUNCTIONAL_TEST_CLIENT_S2S_TOKEN
-        - S2S_TOKEN
-        - S2S_KEY
+#  keyVaults:
+#    em-npa:
+#      resourceGroup: em-npa
+#      # Pawel, what secrets do we need in here, and what should they be called?
+#      secrets:
+##        - APPINSIGHTS_INSTRUMENTATIONKEY
+#        # FUNCTIONAL_TEST_CLIENT_S2S_TOKEN or microservicekey-em-gw?
+#        - FUNCTIONAL_TEST_CLIENT_S2S_TOKEN
+#        - S2S_TOKEN
+#        - S2S_KEY
   environment:
 #    # Import variables from vault
 #    S2S_KEY: ${S2S_KEY}
 #    S2S_TOKEN: ${S2S_TOKEN}
+#    FUNCTIONAL_TEST_CLIENT_S2S_TOKEN: ${FUNCTIONAL_TEST_CLIENT_S2S_TOKEN}
 #    APPINSIGHTS_INSTRUMENTATIONKEY: ${APPINSIGHTS_INSTRUMENTATIONKEY}
     # Compare the next 2 sections. Is it postgres-host or spring datasource that the program will look for?
     POSTGRES_HOST: rpa-native-pdf-annotator-db
