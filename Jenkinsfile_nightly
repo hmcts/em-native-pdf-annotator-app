@@ -21,6 +21,9 @@ def channel = '#rpa-pipeline'
 def secrets = [
         's2s-${env}': [
                 secret('microservicekey-em-gw', 'FUNCTIONAL_TEST_CLIENT_S2S_TOKEN')
+        ],
+        'rpa-${env}': [
+                secret('AppInsightsInstrumentationKey', 'APPINSIGHTS_INSTRUMENTATIONKEY')
         ]
 ]
 
