@@ -21,7 +21,7 @@ npa-app:
       resourceGroup: em-npa
       # Pawel, what secrets do we need in here, and what should they be called?
       secrets:
-        - APPINSIGHTS_INSTRUMENTATIONKEY
+#        - APPINSIGHTS_INSTRUMENTATIONKEY
         # FUNCTIONAL_TEST_CLIENT_S2S_TOKEN or microservicekey-em-gw?
         - FUNCTIONAL_TEST_CLIENT_S2S_TOKEN
         - S2S_TOKEN
