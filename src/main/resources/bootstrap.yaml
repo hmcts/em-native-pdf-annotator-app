@@ -8,6 +8,6 @@ spring:
       paths: /mnt/secrets/em-npa
       aliases:
         em-npa.FUNCTIONAL_TEST_CLIENT_S2S_TOKEN: FUNCTIONAL_TEST_CLIENT_S2S_TOKEN
-        em-npa.APPINSIGHTS_INSTRUMENTATIONKEY: appinsights_instrumentation_key
+        em-npa.APPINSIGHTS_INSTRUMENTATIONKEY: APPINSIGHTS_INSTRUMENTATIONKEY
         em-npa.S2S_TOKEN: S2S_TOKEN
         em-npa.S2S_KEY: S2S_KEY
