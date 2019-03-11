@@ -33,7 +33,7 @@ spring:
     job:
       enabled: false
       jobCronExpression: ${JOB_CRON_EXPRESSION:"*/5 * * * * *"}
-    initialize-schema: neverfbas
+    initialize-schema: never
 
 base-urls:
   idam-url: ${IDAM_API_URL:http://localhost:4501}
