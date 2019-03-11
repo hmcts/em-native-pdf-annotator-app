@@ -5,8 +5,7 @@ spring:
       enabled: true
 #      parent directory prefixes the property names
       prefixed: true
-      paths: /mnt/secrets/em-npa
+      paths: /mnt/secrets/s2s, /mnt/secrets/rpa
       aliases:
-        em-npa.microservicekey-em-gw: FUNCTIONAL_TEST_CLIENT_S2S_TOKEN
-        em-npa.s2s_key: s2s_key
-        em-npa.AppInsightsInstrumentationKey: APPINSIGHTS_INSTRUMENTATIONKEY
+        s2s.microservicekey-em-npa-app: S2S_KEY
+        rpa.AppInsightsInstrumentationKey: APPINSIGHTS_INSTRUMENTATIONKEY
