@@ -1,4 +1,5 @@
-FROM hmcts/cnp-java-base:openjdk-8u191-jre-alpine3.9-2.0
+FROM hmcts/cnp-java-base:openjdk-8u181-jre-alpine3.8-1.0
+
 MAINTAINER "HMCTS Team <https://github.com/hmcts>"
 LABEL maintainer = "HMCTS Team <https://github.com/hmcts>"
 
