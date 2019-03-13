@@ -1,14 +1,7 @@
-FROM hmcts/cnp-java-base:openjdk-8u181-jre-alpine3.8-1.0
+FROM hmcts/cnp-java-base:openjdk-8u191-jre-alpine3.9-2.0.1
 
-MAINTAINER "HMCTS Team <https://github.com/hmcts>"
-LABEL maintainer = "HMCTS Team <https://github.com/hmcts>"
+COPY build/libs/rpa-native-pdf-annotator-app.jar /opt/app/
 
-# Mandatory!
-ENV APP rpa-native-pdf-annotator-app.jar
-ENV APPLICATION_TOTAL_MEMORY 512M
-ENV APPLICATION_SIZE_ON_DISK_IN_MB 53
+CMD ["rpa-native-pdf-annotator-app.jar"]
 
-# Optional
-ENV JAVA_OPTS ""
-
-COPY build/libs/$APP /opt/app/
+EXPOSE 8080
