@@ -51,6 +51,10 @@ management:
   endpoints:
     web:
       base-path: '/'
+      exposure:
+        include:
+         - health
+         - info
   health:
     db:
       enabled: true
