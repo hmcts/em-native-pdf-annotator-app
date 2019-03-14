@@ -6,7 +6,7 @@ buildscript {
 
 plugins {
     id 'application'
-    id 'io.spring.dependency-management' version '1.0.7.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.4.RELEASE'
     id 'org.springframework.boot' version '2.1.3.RELEASE'
     id 'org.owasp.dependencycheck' version '4.0.1'
     id 'com.github.ben-manes.versions' version '0.17.0'
@@ -29,11 +29,11 @@ apply plugin: 'org.owasp.dependencycheck'
 apply plugin: 'com.github.ben-manes.versions'
 apply plugin: 'idea'
 
-//dependencyManagement {
-//    imports {
-//        mavenBom 'org.springframework.cloud:spring-cloud-openfeign:2.0.2.BUILD-SNAPSHOT'
-//    }
-//}
+dependencyManagement {
+    imports {
+        mavenBom 'org.springframework.cloud:spring-cloud-openfeign:2.1.1.RELEASE'
+    }
+}
 
 if (!project.hasProperty('runList')) {
     project.ext.runList = 'main'
@@ -107,7 +107,7 @@ dependencyCheck {
 
 def versions = [
         postgresql         : '42.2.2',
-        springBoot         : '2.1.2.RELEASE',
+        springBoot         : '2.1.3.RELEASE',
         springfoxSwagger   : '2.7.0',
         h2                 : '1.4.197',
         liquibase          : '3.5.3',
