@@ -18,7 +18,7 @@ spring:
     enabled: ${ENABLE_LIQUIBASE:false}
     change-log: classpath:/db/db.changelog-master.xml
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/emnpa}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/emnpa}
     username: ${SPRING_DATASOURCE_USERNAME:emnpa}
     password: ${SPRING_DATASOURCE_PASSWORD:emnpa}
     tomcat:
@@ -34,15 +34,6 @@ spring:
       enabled: false
       jobCronExpression: ${JOB_CRON_EXPRESSION:"*/5 * * * * *"}
     initialize-schema: never
-
-base-urls:
-  idam-url: ${IDAM_API_URL:http://localhost:4501}
-  idam-user: ${IDAM_API_USER:test@test.com}
-  idam-user-role: ${IDAM_API_USER_ROLE:caseworker}
-  idam-s2s: ${S2S_URL:http://localhost:4502}
-  s2s-name: ${S2S_SERVICE_NAME:em_gw}
-  s2s-token: ${S2S_TOKEN:AAAAAAAAAAAAAAAA}
-  test-url: ${TEST_URL:http://localhost:8080}
 
 management:
   endpoints:
@@ -95,6 +86,12 @@ auth:
       client:
         baseUrl: ${S2S_BASE_URI:http://localhost:4502}
 
+idam:
+  s2s-auth:
+    url: ${S2S_BASE_URI:http://localhost:4502}
+    totp_secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
+    microservice: em_npa_app
+
 azure:
   app_insights_key: ${APPINSIGHTS_INSTRUMENTATIONKEY:true}
   application-insights:
@@ -110,9 +107,3 @@ em-annotation-app:
 
 dm-store-app:
   base-url: ${DM_STORE_APP_URL:http://localhost:4603}
-
-idam:
-  s2s-auth:
-    url: ${S2S_BASE_URI:http://localhost:4502}
-    totp_secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
-    microservice: em_npa_app
