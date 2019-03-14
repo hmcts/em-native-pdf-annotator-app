@@ -25,12 +25,12 @@ npa-app:
       resourceGroup: rpe-service-auth-provider
       secrets:
         - microservicekey-em-npa-app
-  readinessDelay: 80
-  readinessTimeout: 60
-  readinessPeriod: 10
-  livenessDelay: 80
-  livenessTimeout: 60
-  livenessPeriod: 10
+  readinessDelay: 60
+  readinessTimeout: 20
+  readinessPeriod: 50
+  livenessDelay: 60
+  livenessTimeout: 20
+  livenessPeriod: 50
   environment:
     # Compare the next 2 sections. Is it postgres-host or spring datasource that the program will look for?
     POSTGRES_HOST: rpa-native-pdf-annotator-db
