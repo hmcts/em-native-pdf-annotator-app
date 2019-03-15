@@ -44,7 +44,7 @@ module "app" {
     ENABLE_DB_MIGRATE="false"
 
     # idam
-    IDAM_API_BASE_URI = "${var.idam_api_url}"
+    IDAM_API_BASE_URI = "${var.idam_api_base_uri}"
     S2S_BASE_URI = "http://${var.s2s_url}-${local.local_env}.service.core-compute-${local.local_env}.internal"
     S2S_KEY = "${data.azurerm_key_vault_secret.s2s_key.value}"
 
@@ -63,7 +63,6 @@ module "app" {
     PACKAGES_PROJECT = "${var.team_name}"
     PACKAGES_ENVIRONMENT = "${var.env}"
 
-    ROOT_APPENDER = "${var.root_appender}"
     JSON_CONSOLE_PRETTY_PRINT = "${var.json_console_pretty_print}"
     LOG_OUTPUT = "${var.log_output}"
 
@@ -111,16 +110,6 @@ data "azurerm_key_vault" "shared_key_vault" {
   name = "${local.shared_vault_name}"
   resource_group_name = "${local.shared_vault_name}"
 }
-
-//data "azurerm_key_vault_secret" "s2s_secret" {
-//  name = "em-npa-s2s-token"
-//  vault_uri = "${data.azurerm_key_vault.shared_key_vault.vault_uri}"
-//}
-//
-//data "azurerm_key_vault_secret" "oauth2_secret" {
-//  name = "show-oauth2-token"
-//  vault_uri = "${data.azurerm_key_vault.shared_key_vault.vault_uri}"
-//}
 
 module "local_key_vault" {
   source = "git@github.com:hmcts/moj-module-key-vault?ref=master"

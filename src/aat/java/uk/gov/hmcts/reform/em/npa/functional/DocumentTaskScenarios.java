@@ -6,7 +6,14 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringRunner;
+import uk.gov.hmcts.reform.em.npa.Application;
 import uk.gov.hmcts.reform.em.npa.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.npa.testutil.TestUtil;
 import uk.gov.hmcts.reform.em.npa.testutil.Env;
@@ -16,16 +23,21 @@ import static org.hamcrest.CoreMatchers.*;
 import java.io.File;
 import java.util.UUID;
 
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = Application.class, properties = "SpringBootTest")
+@TestPropertySource(locations = "classpath:application-aat.yaml")
+@ActiveProfiles("aat")
 public class DocumentTaskScenarios {
 
-    TestUtil testUtil = new TestUtil();
+    @Autowired
+    TestUtil testUtil;
 
     @Test
     public void testGetDocumentTasks() throws Exception {
 
         testUtil.authRequest()
             .request("GET", Env.getTestUrl() + "/api/document-tasks")
-        .then()
+            .then()
             .statusCode(200);
 
     }
@@ -39,14 +51,14 @@ public class DocumentTaskScenarios {
 
         testUtil
             .authRequest()
-                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                .body(jsonObject)
-                .request("POST", Env.getTestUrl() + "/api/document-tasks")
+            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .body(jsonObject)
+            .request("POST", Env.getTestUrl() + "/api/document-tasks")
             .then()
-                .statusCode(201)
-                .body("inputDocumentId", equalTo(nonExistentDocumentId.toString()))
-                .body("taskState", equalTo(TaskState.FAILED.toString()))
-                .body("failureDescription", equalTo("Could not access the binary. HTTP response: 404"));
+            .statusCode(201)
+            .body("inputDocumentId", equalTo(nonExistentDocumentId.toString()))
+            .body("taskState", equalTo(TaskState.FAILED.toString()))
+            .body("failureDescription", equalTo("Could not access the binary. HTTP response: 404"));
 
     }
 
@@ -60,14 +72,14 @@ public class DocumentTaskScenarios {
 
         testUtil
             .authRequest()
-                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                .body(jsonObject)
-                .request("POST", Env.getTestUrl() + "/api/document-tasks")
+            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .body(jsonObject)
+            .request("POST", Env.getTestUrl() + "/api/document-tasks")
             .then()
-                .statusCode(201)
-                .body("inputDocumentId", equalTo(newDocId))
-                .body("taskState", equalTo(TaskState.FAILED.toString()))
-                .body("failureDescription", startsWith("Could not access the annotation set."));
+            .statusCode(201)
+            .body("inputDocumentId", equalTo(newDocId))
+            .body("taskState", equalTo(TaskState.FAILED.toString()))
+            .body("failureDescription", startsWith("Could not access the annotation set."));
 
     }
 
@@ -105,9 +117,9 @@ public class DocumentTaskScenarios {
         jsonObject.put("inputDocumentId", newDocId);
 
         Response response = testUtil.authRequest()
-                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                .body(jsonObject)
-                .request("POST", Env.getTestUrl() + "/api/document-tasks");
+            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .body(jsonObject)
+            .request("POST", Env.getTestUrl() + "/api/document-tasks");
 
         Assert.assertEquals(201, response.getStatusCode());
         Assert.assertEquals( response.getBody().jsonPath().getString("inputDocumentId"), newDocId);
