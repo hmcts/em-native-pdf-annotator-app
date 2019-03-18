@@ -28,7 +28,10 @@ public class IdamHelper {
     public String getIdamToken() {
         createUser();
 
-        return client.authenticateUser(USERNAME, PASSWORD);
+        String authClientResponse = client.authenticateUser(USERNAME, PASSWORD);
+        System.out.println("LLL");
+        System.out.println(authClientResponse);
+        return authClientResponse;
     }
 
     private void createUser() {
