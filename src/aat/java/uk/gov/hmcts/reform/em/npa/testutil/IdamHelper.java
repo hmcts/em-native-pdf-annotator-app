@@ -32,6 +32,8 @@ public class IdamHelper {
     }
 
     private void createUser() {
+        System.out.println("JJJ");
+        System.out.println(idamUrl);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("email", USERNAME);
         jsonObject.put("password", PASSWORD);
