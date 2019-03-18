@@ -44,7 +44,8 @@ public class IdamHelper {
             .given()
             .header("Content-Type", "application/json")
             .body(jsonObject.toString())
-            .post(idamUrl + "/testing-support/accounts");
+            .post(idamUrl + "/testing-support/accounts")
+            .prettyPrint();
     }
 
 }
