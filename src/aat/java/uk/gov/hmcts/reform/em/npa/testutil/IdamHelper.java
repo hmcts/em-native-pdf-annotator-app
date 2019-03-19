@@ -26,10 +26,17 @@ public class IdamHelper {
     private String redirect;
 
     public String getIdamToken() {
+        System.out.println("JJJ - printing idamUrl");
+        System.out.println(idamUrl);
+        System.out.println("JJJ - printing client_secret");
+        System.out.println(secret);
+        System.out.println("JJJ - printing redirect uri");
+        System.out.println(redirect);
+        System.out.println("JJJ - printing idam client id, used in Oauth2Config");
+        System.out.println("${idam.client.id:}");
         createUser();
-
         String authClientResponse = client.authenticateUser(USERNAME, PASSWORD);
-        System.out.println("LLL");
+        System.out.println("JJJ - return from authenticateUser");
         System.out.println(authClientResponse);
         return authClientResponse;
     }
