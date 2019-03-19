@@ -112,6 +112,8 @@ public class TestUtil {
     }
 
     public String uploadDocument(String pdfName) throws Exception {
+        System.out.println("JJJ - Dm Api Url");
+        System.out.println(Env.getDmApiUrl());
         String newDocUrl = s2sAuthRequest()
                 .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
                 .multiPart("files", "test.pdf",  ClassLoader.getSystemResourceAsStream(pdfName), "application/pdf")
