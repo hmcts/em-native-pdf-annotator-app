@@ -32,9 +32,6 @@ public class IdamHelper {
         System.out.println(secret);
         System.out.println("JJJ - printing redirect uri");
         System.out.println(redirect);
-        System.out.println("JJJ - printing idam client id, used in Oauth2Config");
-        System.out.println(${idam.client.id});
-        System.out.println("${idam.client.id}");
         createUser();
         String authClientResponse = client.authenticateUser(USERNAME, PASSWORD);
         System.out.println("JJJ - return from authenticateUser");
