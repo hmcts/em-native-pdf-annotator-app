@@ -26,22 +26,12 @@ public class IdamHelper {
     private String redirect;
 
     public String getIdamToken() {
-        System.out.println("JJJ - printing idamUrl");
-        System.out.println(idamUrl);
-        System.out.println("JJJ - printing client_secret");
-        System.out.println(secret);
-        System.out.println("JJJ - printing redirect uri");
-        System.out.println(redirect);
         createUser();
         String authClientResponse = client.authenticateUser(USERNAME, PASSWORD);
-        System.out.println("JJJ - return from authenticateUser");
-        System.out.println(authClientResponse);
         return authClientResponse;
     }
 
     private void createUser() {
-        System.out.println("JJJ");
-        System.out.println(idamUrl);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("email", USERNAME);
         jsonObject.put("password", PASSWORD);
