@@ -22,10 +22,24 @@ public class TestUtil {
 
     private String documentId;
     private String annotationSetId;
-    private String idamAuth;
-    private String s2sAuth;
 
-    public TestUtil(@Autowired IdamHelper idamHelper, @Autowired S2sHelper s2sHelper) {
+    private final String idamAuth;
+    private final String s2sAuth;
+
+    public TestUtil() {
+        IdamHelper idamHelper = new IdamHelper(
+            Env.getIdamUrl(),
+            Env.getOAuthClient(),
+            Env.getOAuthSecret(),
+            Env.getOAuthRedirect()
+        );
+
+        S2sHelper s2sHelper = new S2sHelper(
+            Env.getS2sUrl(),
+            Env.getS2sSecret(),
+            Env.getS2sMicroservice()
+        );
+
         idamAuth = idamHelper.getIdamToken();
         s2sAuth = s2sHelper.getS2sToken();
 

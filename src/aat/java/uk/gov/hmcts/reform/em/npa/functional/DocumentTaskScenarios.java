@@ -6,14 +6,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
-import uk.gov.hmcts.reform.em.npa.Application;
 import uk.gov.hmcts.reform.em.npa.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.npa.testutil.TestUtil;
 import uk.gov.hmcts.reform.em.npa.testutil.Env;
@@ -23,14 +16,9 @@ import static org.hamcrest.CoreMatchers.*;
 import java.io.File;
 import java.util.UUID;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = Application.class, properties = "SpringBootTest")
-@TestPropertySource(locations = "classpath:application-aat.yaml")
-@ActiveProfiles("aat")
 public class DocumentTaskScenarios {
 
-    @Autowired
-    TestUtil testUtil;
+    TestUtil testUtil = new TestUtil();
 
     @Test
     public void testGetDocumentTasks() throws Exception {
