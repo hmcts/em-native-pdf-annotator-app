@@ -58,7 +58,7 @@ services:
       - POSTGRES_PASSWORD=anno
 
   dm-store:
-    image: hmcts.azurecr.io/hmcts/dm-store:latest
+    image: hmcts/dm-store:latest
     command: --wait-for-database 30
     environment:
       - SERVER_PORT=8080
@@ -100,13 +100,7 @@ services:
       - 4603:8080
 
   dm-store-db:
-    image: postgres
-    environment:
-      - POSTGRES_USER=evidence
-      - POSTGRES_PASSWORD=evidence
-      - POSTGRES_DB=evidence
-    ports:
-      - 5435:5432
+    image: hmcts/dm-store-db:latest
 
   idam-api:
     image: hmcts.azurecr.io/hmcts/tidam-api:latest
