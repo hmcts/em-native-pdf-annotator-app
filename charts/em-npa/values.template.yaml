@@ -34,12 +34,6 @@ npa-app:
       secrets:
         - microservicekey-em-npa-app
   environment:
-    # Compare the next 2 sections. Is it postgres-host or spring datasource that the program will look for?
-#    POSTGRES_HOST: rpa-native-pdf-annotator-db
-#    POSTGRES_DATABASE: emnpa
-#    POSTGRES_USER: emnpa
-#    POSTGRES_PASSWORD: emnpa
-
     SPRING_DATASOURCE_URL: jdbc:postgresql://${SERVICE_NAME}-rpa-native-pdf-annotator-db:5432/emnpa?ssl=disable
     SPRING_DATASOURCE_USERNAME: emnpa
     SPRING_DATASOURCE_PASSWORD: emnpa
@@ -67,10 +61,3 @@ npa-app:
     ENABLE_S2S_HEALTH_CHECK: false
     ENABLE_LIQUIBASE: true
     SERVER_PORT: 8080
-
-#    # Endpoints
-#    IDAM_API_BASE_URI: https://preprod-idamapi.reform.hmcts.net:3511
-#    S2S_BASE_URI: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-#    DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
-#    EM_ANNO_APP_URL: http://em-anno-aat.service.core-compute-aat.internal
-#    IDAM_S2S_AUTH_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
