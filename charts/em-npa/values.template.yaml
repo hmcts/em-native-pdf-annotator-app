@@ -45,11 +45,11 @@ npa-app:
     SPRING_DATASOURCE_PASSWORD: emnpa
 
     ENABLE_DB_MIGRATE: true
-    REFORM_SERVICE_NAME: em-anno
+    REFORM_SERVICE_NAME: em-npa
     REFORM_TEAM: evidence
     REFORM_SERVICE_TYPE: java
     REFORM_ENVIRONMENT: preview
-    PACKAGES_NAME: em-anno
+    PACKAGES_NAME: em-npa
     PACKAGES_PROJECT: evidence
     PACKAGES_ENVIRONMENT: preview
     ROOT_APPENDER: JSON_CONSOLE
@@ -68,9 +68,9 @@ npa-app:
     ENABLE_LIQUIBASE: true
     SERVER_PORT: 8080
 
-    # Endpoints
-    IDAM_API_BASE_URI: https://preprod-idamapi.reform.hmcts.net:3511
-    S2S_BASE_URI: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-    DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
-    EM_ANNO_APP_URL: http://em-anno-aat.service.core-compute-aat.internal
-    IDAM_S2S_AUTH_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+#    # Endpoints
+#    IDAM_API_BASE_URI: https://preprod-idamapi.reform.hmcts.net:3511
+#    S2S_BASE_URI: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+#    DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
+#    EM_ANNO_APP_URL: http://em-anno-aat.service.core-compute-aat.internal
+#    IDAM_S2S_AUTH_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
