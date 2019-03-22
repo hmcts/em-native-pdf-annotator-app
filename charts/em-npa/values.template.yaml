@@ -35,10 +35,10 @@ npa-app:
         - microservicekey-em-npa-app
   environment:
     # Compare the next 2 sections. Is it postgres-host or spring datasource that the program will look for?
-    POSTGRES_HOST: rpa-native-pdf-annotator-db
-    POSTGRES_DATABASE: emnpa
-    POSTGRES_USER: emnpa
-    POSTGRES_PASSWORD: emnpa
+#    POSTGRES_HOST: rpa-native-pdf-annotator-db
+#    POSTGRES_DATABASE: emnpa
+#    POSTGRES_USER: emnpa
+#    POSTGRES_PASSWORD: emnpa
 
     SPRING_DATASOURCE_URL: jdbc:postgresql://${SERVICE_NAME}-rpa-native-pdf-annotator-db:5432/emnpa?ssl=disable
     SPRING_DATASOURCE_USERNAME: emnpa
