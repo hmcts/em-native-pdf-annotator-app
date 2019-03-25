@@ -471,4 +471,14 @@
         <gav regex="true">.*</gav>
         <cve>CVE-2011-2732</cve>
     </suppress>
+    <suppress>
+        <notes>No new release available</notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2005-4838</cve>
+    </suppress>
+    <suppress>
+        <notes>No new release available</notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2006-7196</cve>
+    </suppress>
 </suppressions>
