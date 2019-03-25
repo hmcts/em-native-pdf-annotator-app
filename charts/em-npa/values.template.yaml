@@ -1,12 +1,8 @@
 postgresql:
-#  initdbScripts:
-#    init.sql: |-
-#      CREATE USER emnpa WITH PASSWORD 'emnpa';
-#      CREATE DATABASE emnpa WITH OWNER = emnpa ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
   postgresqlUsername: emnpa
   postgresqlPassword: emnpa
   postgresqlDatabase: emnpa
-  nameOverride: rpa-native-pdf-annotator-db
+  nameOverride: rpa-npa-db
   persistence:
     enabled: false
   tags:
