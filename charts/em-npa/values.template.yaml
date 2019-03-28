@@ -30,7 +30,7 @@ npa-app:
       secrets:
         - microservicekey-em-npa-app
   environment:
-    SPRING_DATASOURCE_URL: jdbc:postgresql://${SERVICE_NAME}-rpa-native-pdf-annotator-db:5432/emnpa?ssl=disable
+    SPRING_DATASOURCE_URL: jdbc:postgresql://${SERVICE_NAME}-rpa-npa-db:5432/emnpa?ssl=disable
     SPRING_DATASOURCE_USERNAME: emnpa
     SPRING_DATASOURCE_PASSWORD: emnpa
 
