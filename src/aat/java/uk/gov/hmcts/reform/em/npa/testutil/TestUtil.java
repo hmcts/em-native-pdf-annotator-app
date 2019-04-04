@@ -17,6 +17,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
+import static io.restassured.specification.ProxySpecification.host;
+
 @Service
 public class TestUtil {
 
@@ -40,10 +42,10 @@ public class TestUtil {
             Env.getS2sMicroservice()
         );
 
+        RestAssured.useRelaxedHTTPSValidation();
+
         idamAuth = idamHelper.getIdamToken();
         s2sAuth = s2sHelper.getS2sToken();
-
-        RestAssured.useRelaxedHTTPSValidation();
     }
 
     public String getAnnotationSetId() {
