@@ -14,6 +14,7 @@ npa-app:
   livenessTimeout: 5
   livenessPeriod: 15
   livenessFailureThreshold: 10
+  livenessPath: '/health'
   keyVaults:
     rpa:
       resourceGroup: rpa
@@ -55,4 +56,3 @@ npa-app:
     ENABLE_S2S_HEALTH_CHECK: false
     ENABLE_LIQUIBASE: true
     SERVER_PORT: 8080
-
