@@ -29,7 +29,7 @@ npa-app:
     SPRING_DATASOURCE_USERNAME: "{{ .Values.postgresql.postgresqlUsername}}"
     SPRING_DATASOURCE_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
     # Regardless of environment, point towards AAT instances. Overwrite in product charts etc.
-    IDAM_API_BASE_URI: https://preprod-idamapi.reform.hmcts.net:3511
+    IDAM_API_BASE_URI: https://idam-api.aat.platform.hmcts.net
     S2S_BASE_URI: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
     DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
     EM_ANNO_APP_URL: http://em-anno-aat.service.core-compute-aat.internal
