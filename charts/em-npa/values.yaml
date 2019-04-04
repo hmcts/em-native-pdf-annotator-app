@@ -1,25 +1,20 @@
-postgresql:
-  postgresqlUsername: emnpa
-  postgresqlPassword: emnpa
-  postgresqlDatabase: emnpa
-  nameOverride: rpa-npa-db
-  persistence:
-    enabled: false
-  tags:
-    postgresql-pod: true
-
 npa-app:
-  image: ${IMAGE_NAME}
-  ingressHost: ${SERVICE_FQDN}
+  postgresql:
+    postgresqlUsername: emnpa
+    postgresqlPassword: emnpa
+    postgresqlDatabase: emnpa
+    nameOverride: rpa-npa-db
+  image: 'https://hmcts.azurecr.io/hmcts/em-npa:latest'
   applicationPort: 8080
-  readinessDelay: 20
-  readinessTimeout: 20
-  readinessFailureThreshold: 7
+  readinessDelay: 40
+  readinessTimeout: 5
   readinessPeriod: 15
-  livenessDelay: 20
-  livenessTimeout: 20
+  readinessFailureThreshold: 10
+  livenessDelay: 40
+  livenessTimeout: 5
   livenessPeriod: 15
-  livenessFailureThreshold: 7
+  livenessFailureThreshold: 10
+  livenessPath: '/health'
   keyVaults:
     rpa:
       resourceGroup: rpa
@@ -30,9 +25,14 @@ npa-app:
       secrets:
         - microservicekey-em-npa-app
   environment:
-    SPRING_DATASOURCE_URL: jdbc:postgresql://${SERVICE_NAME}-rpa-npa-db:5432/emnpa?ssl=disable
-    SPRING_DATASOURCE_USERNAME: emnpa
-    SPRING_DATASOURCE_PASSWORD: emnpa
+    SPRING_DATASOURCE_URL: jdbc:postgresql://{{ .Release.Name }}-{{ .Values.postgresql.nameOverride}}:5432/{{ .Values.postgresql.postgresqlDatabase}}?ssl=disable
+    SPRING_DATASOURCE_USERNAME: "{{ .Values.postgresql.postgresqlUsername}}"
+    SPRING_DATASOURCE_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
+    # Regardless of environment, point towards AAT instances. Overwrite in product charts etc.
+    IDAM_API_BASE_URI: https://idam-api.aat.platform.hmcts.net
+    S2S_BASE_URI: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+    DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
+    EM_ANNO_APP_URL: http://em-anno-aat.service.core-compute-aat.internal
 
     ENABLE_DB_MIGRATE: true
     REFORM_SERVICE_NAME: em-npa
