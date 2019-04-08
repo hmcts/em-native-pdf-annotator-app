@@ -481,4 +481,39 @@
         <gav regex="true">.*</gav>
         <cve>CVE-2006-7196</cve>
     </suppress>
+    <suppress>
+        <notes>No new release available</notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2000-1210</cve>
+    </suppress>
+    <suppress>
+        <notes>No new release available</notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2001-0590</cve>
+    </suppress>
+    <suppress>
+        <notes>No new release available</notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2002-0493</cve>
+    </suppress>
+    <suppress>
+        <notes>No new release available</notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2007-1358</cve>
+    </suppress>
+    <suppress>
+        <notes>No new release available</notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2007-2449</cve>
+    </suppress>
+    <suppress>
+        <notes>No new release available</notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2008-0128</cve>
+    </suppress>
+    <suppress>
+        <notes>No new release available</notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2009-2696</cve>
+    </suppress>
 </suppressions>
