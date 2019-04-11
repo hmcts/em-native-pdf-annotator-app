@@ -1,10 +1,10 @@
-java:
+npa:
   postgresql:
     postgresqlUsername: emnpa
     postgresqlPassword: emnpa
     postgresqlDatabase: emnpa
     nameOverride: rpa-npa-db
-  image: 'https://hmcts.azurecr.io/hmcts/em-npa:latest'
+  image: 'hmcts.azurecr.io/hmcts/em-npa:latest'
   applicationPort: 8080
   readinessDelay: 40
   readinessTimeout: 5
@@ -25,7 +25,7 @@ java:
       secrets:
         - microservicekey-em-npa-app
   environment:
-    SPRING_DATASOURCE_URL: "jdbc:postgresql://{{ .Release.Name }}-{{ .Values.postgresql.nameOverride}}:5432/{{ .Values.postgresql.postgresqlDatabase}}?ssl=disable"
+    SPRING_DATASOURCE_URL: jdbc:postgresql://{{ .Release.Name }}-{{ .Values.postgresql.nameOverride}}:5432/{{ .Values.postgresql.postgresqlDatabase}}?ssl=disable
     SPRING_DATASOURCE_USERNAME: "{{ .Values.postgresql.postgresqlUsername}}"
     SPRING_DATASOURCE_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
     # Regardless of environment, point towards AAT instances. Overwrite in product charts etc.
