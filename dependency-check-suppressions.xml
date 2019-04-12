@@ -516,4 +516,9 @@
         <gav regex="true">.*</gav>
         <cve>CVE-2009-2696</cve>
     </suppress>
+    <suppress>
+        <notes>No new release available</notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2019-3795</cve>
+    </suppress>
 </suppressions>
