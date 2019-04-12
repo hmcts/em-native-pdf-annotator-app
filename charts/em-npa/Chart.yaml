@@ -1,6 +1,6 @@
 name: em-npa
 home: https://github.com/hmcts/rpa-native-pdf-annotator-app
-version: 0.0.8
+version: 0.0.9
 description: HMCTS Native PDF Annotator API
 maintainers:
   - name: HMCTS EM Team
