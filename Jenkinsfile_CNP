@@ -53,4 +53,8 @@ withPipeline(type , product, component) {
     overrideVaultEnvironments(vaultOverrides)
     loadVaultSecrets(secrets)
     installCharts()
+
+    after('smoketest:aat') {
+        sh "rm -rf infrastructure/"
+    }
 }
