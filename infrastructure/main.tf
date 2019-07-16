@@ -95,6 +95,7 @@ module "db" {
   sku_tier = "GeneralPurpose"
   storage_mb = "51200"
   common_tags  = "${var.common_tags}"
+  subscription = "${var.subscription}"
 }
 
 provider "vault" {
