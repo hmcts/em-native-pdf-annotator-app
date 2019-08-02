@@ -13,7 +13,7 @@ services:
       - 5433:5432
 
   service-auth-provider-app:
-    image: hmcts.azurecr.io/hmcts/rpe-service-auth-provider:latest
+    image: hmctspublic.azurecr.io/rpe/service-auth-provider:latest
     environment:
       - jwtKey=wThK0f0/lh3FlxFcL4xUWDMI5C1J9KyQBgXV4wseh1e5J1uYJIjvTvArHxQDrYoHJ23xFxjHkOnvNbR5dXRoxA==
       - microserviceKeys_em_gw=AAAAAAAAAAAAAAAA
@@ -34,7 +34,7 @@ services:
       - 4502:8489
 
   annotation-api:
-    image: hmcts.azurecr.io/hmcts/em-anno:latest
+    image: hmctspublic.azurecr.io/em/anno:latest
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://annotation-api-db:5432/anno
       - SPRING_DATASOURCE_USERNAME=anno
@@ -58,7 +58,7 @@ services:
       - POSTGRES_PASSWORD=anno
 
   dm-store:
-    image: hmcts/dm-store:latest
+    image: hmctspublic.azurecr.io/dm/store:latest
     command: --wait-for-database 30
     environment:
       - SERVER_PORT=8080
@@ -100,7 +100,12 @@ services:
       - 4603:8080
 
   dm-store-db:
-    image: hmcts/dm-store-db:latest
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_DB=evidence
+      - POSTGRES_USER=evidence
+      - POSTGRES_PASSWORD=evidence
 
   idam-api:
     image: hmcts.azurecr.io/hmcts/tidam-api:latest
