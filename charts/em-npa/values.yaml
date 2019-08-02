@@ -4,7 +4,7 @@ npa:
     postgresqlPassword: emnpa
     postgresqlDatabase: emnpa
     nameOverride: rpa-npa-db
-  image: 'hmcts.azurecr.io/hmcts/em-npa:latest'
+  image: 'hmctspublic.azurecr.io/em/npa:latest'
   applicationPort: 8080
   readinessDelay: 45
   readinessTimeout: 5
