@@ -18,6 +18,7 @@ plugins {
     id 'org.liquibase.gradle' version '2.0.1'
    // id "com.github.spacialcircumstances.gradle-cucumber-reporting" version "0.0.11"
     id "com.github.lkishalmi.gatling" version "3.0.1"
+    id 'au.com.dius.pact' version '3.5.24'
 }
 
 apply plugin: 'java'
@@ -108,10 +109,36 @@ dependencyCheck {
 def versions = [
         postgresql         : '42.2.6',
         springBoot         : '2.0.5.RELEASE',
-        springfoxSwagger   : '2.7.0',
+        springfoxSwagger   : '2.9.2',
         h2                 : '1.4.197',
         liquibase          : '3.5.3',
+        pact_version       : '3.5.24'
 ]
+
+sourceSets {
+    aat {
+        scala {
+            srcDirs = ['src/aat/java']
+        }
+        java {
+            compileClasspath += main.output
+            runtimeClasspath += main.output
+            srcDir('src/aat/java')
+        }
+        resources {
+            srcDir('src/aat/resources')
+        }
+        compileClasspath += configurations.gatling
+    }
+    contractTest {
+        java {
+            compileClasspath += main.output
+            runtimeClasspath += main.output
+            srcDir file('src/contractTest/java')
+        }
+        resources.srcDir file('src/contactTest/resources')
+    }
+}
 
 dependencies {
     compile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.11'
@@ -151,7 +178,7 @@ dependencies {
     compile "org.hibernate.validator:hibernate-validator"
     compile group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.1'
     compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '1.0.1'
-    
+
     compile 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
     compile "org.hibernate.validator:hibernate-validator"
@@ -164,8 +191,9 @@ dependencies {
         exclude group: 'com.vaadin.external.google', module: 'android-json'
     }
 
-    testCompile("org.springframework.boot:spring-boot-starter-test")
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile("org.springframework.boot:spring-boot-starter-test") {
+        exclude group: 'com.vaadin.external.google', module: 'android-json'
+    }
     testCompile group: 'com.h2database', name: 'h2', version: '1.4.197'
     testCompile 'com.github.gmazzo:okhttp-mock:1.0.4'
     testCompile 'io.rest-assured:rest-assured:3.2.0'
@@ -175,6 +203,25 @@ dependencies {
     compile group: 'uk.gov.hmcts.reform', name: 'java-logging-spring', version: '3.0.1'
     compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.3'
     compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version:'0.0.4'
+    testCompileOnly 'junit:junit:4.12'
+    testRuntimeOnly 'org.junit.vintage:junit-vintage-engine:5.3.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.2'
+
+    testCompile "org.junit.jupiter:junit-jupiter-api:5.3.2"
+    testRuntime "org.junit.jupiter:junit-jupiter-engine:5.3.2"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.3.2"
+
+    //pact contract testing
+    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-junit5_2.12', version: versions.pact_version
+    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-java8_2.12', version: versions.pact_version
+
+    contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.3.2")
+    contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.3.2")
+    contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.3.2')
+
+    contractTestCompile sourceSets.main.runtimeClasspath
+    contractTestCompile sourceSets.test.runtimeClasspath
 }
 
 bootJar {
@@ -224,22 +271,7 @@ sonarqube {
     }
 }
 
-sourceSets {
-    aat {
-        scala {
-            srcDirs = ['src/aat/java']
-        }
-        java {
-            compileClasspath += main.output
-            runtimeClasspath += main.output
-            srcDir('src/aat/java')
-        }
-        resources {
-            srcDir('src/aat/resources')
-        }
-        compileClasspath += configurations.gatling
-    }
-}
+
 
 configurations {
     gatling
@@ -247,6 +279,53 @@ configurations {
 
 gatling {
     logLevel = "INFO"
+}
+
+configurations {
+    contractTestCompile.extendsFrom testCompile
+    contractTestRuntime.extendsFrom testRuntime
+}
+
+
+idea {
+    module {
+        testSourceDirs += project.sourceSets.aat.java.srcDirs
+        testResourceDirs += project.sourceSets.aat.resources.srcDirs
+        testSourceDirs += project.sourceSets.contractTest.java.srcDirs
+        testResourceDirs += project.sourceSets.contractTest.resources.srcDirs
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+task contract(type: Test) {
+    group = 'Delivery pipeline'
+    description = 'Runs the consumer Pact tests'
+    useJUnitPlatform()
+    testClassesDirs = sourceSets.contractTest.output.classesDirs
+    classpath = sourceSets.contractTest.runtimeClasspath
+    include "uk/gov/hmcts/reform/em/npa/**"
+    systemProperty 'pact.rootDir', "${rootDir}/pacts"
+    environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
+}
+
+project.ext {
+    pactVersion = getCheckedOutGitCommitHash()
+}
+
+def getCheckedOutGitCommitHash() {
+    'git rev-parse --verify --short HEAD'.execute().text.trim()
+}
+
+pact {
+    publish {
+        pactDirectory = 'target/pacts'
+        pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
+        tags = [System.getenv("PACT_BRANCH_NAME") ?: 'Dev']
+        version = project.pactVersion
+    }
 }
 
 task gatlingRunAAT(type: JavaExec) {
@@ -296,5 +375,4 @@ task migratePostgresDatabase(dependsOn: 'liquibaseUpdate')
 dependencyCheck {
     suppressionFile = 'dependency-check-suppressions.xml'
 }
-
 compileJava.dependsOn processResources
