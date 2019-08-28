@@ -6,9 +6,9 @@ buildscript {
 
 plugins {
     id 'application'
-    id 'io.spring.dependency-management' version '1.0.4.RELEASE'
-    id 'org.springframework.boot' version '2.1.2.RELEASE'
-    id 'org.owasp.dependencycheck' version '5.1.0'
+    id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+    id 'org.springframework.boot' version '2.1.6.RELEASE'
+    id 'org.owasp.dependencycheck' version '5.2.1'
     id 'com.github.ben-manes.versions' version '0.17.0'
     id 'org.sonarqube' version '2.6.2'
     id "net.ltgt.apt-eclipse" version "0.18"
@@ -373,6 +373,14 @@ task smoke(type: Test) {
 task migratePostgresDatabase(dependsOn: 'liquibaseUpdate')
 
 dependencyCheck {
+    // Specifies if the build should be failed if a CVSS score above a specified level is identified.
+    // range of 0-10 fails the build, anything greater and it doesn't fail the build
+    failBuildOnCVSS = System.getProperty('dependencyCheck.failBuild') == 'false' ? 11 : 0
     suppressionFile = 'dependency-check-suppressions.xml'
+    analyzers {
+        // Disable scanning of .NET related binaries
+        assemblyEnabled = false
+    }
 }
+
 compileJava.dependsOn processResources
