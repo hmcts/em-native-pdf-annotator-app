@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ApplicationInsightsAgent>
+    <AgentLogger>INFO</AgentLogger>
+    <Instrumentation>
+        <BuiltIn enabled="true">
+            <HTTP enabled="true"/>
+        </BuiltIn>
+        <Class name="uk.gov.hmcts.reform.em.npa.rest.DocumentTaskResource">
+            <Method name="createDocumentTask" reportCaughtExceptions="true"/>
+            <Method name="updateDocumentTask" reportCaughtExceptions="true"/>
+            <Method name="getAllDocumentTasks" reportCaughtExceptions="true"/>
+            <Method name="getDocumentTask" reportCaughtExceptions="true"/>
+            <Method name="deleteDocumentTask" reportCaughtExceptions="true"/>
+        </Class>
+        <Class name="org.apache.tomcat.websocket.server.WsFilter">
+            <Method name="doFilter" reportCaughtExceptions="true"/>
+        </Class>
+        <Class name="com.microsoft.applicationinsights.web.internal.WebRequestTrackingFilter">
+            <Method name="doFilter" reportCaughtExceptions="true"/>
+        </Class>
+        <Class name="org.springframework.security.web.access.ExceptionTranslationFilter">
+            <Method name="doFilter" reportCaughtExceptions="true"/>
+        </Class>
+        <Class name="org.springframework.security.web.session.SessionManagementFilter">
+            <Method name="doFilter" reportCaughtExceptions="true"/>
+        </Class>
+        <Class name="org.springframework.security.web.authentication.AnonymousAuthenticationFilter">
+            <Method name="doFilter" reportCaughtExceptions="true"/>
+        </Class>
+        <Class name="org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter">
+            <Method name="doFilter" reportCaughtExceptions="true"/>
+        </Class>
+        <Class name="org.springframework.security.web.savedrequest.RequestCacheAwareFilter">
+            <Method name="doFilter" reportCaughtExceptions="true"/>
+        </Class>
+        <Class name="org.springframework.security.web.header.HeaderWriterFilter">
+            <Method name="doFilterInternal" reportCaughtExceptions="true"/>
+        </Class>
+        <Class name="org.springframework.security.web.context.SecurityContextPersistenceFilter">
+            <Method name="doFilter" reportCaughtExceptions="true"/>
+        </Class>
+        <Class name="org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter">
+            <Method name="doFilterInternal" reportCaughtExceptions="true"/>
+        </Class>
+        <Class name="uk.gov.hmcts.reform.logging.filters.RequestStatusLoggingFilter">
+            <Method name="doFilter" reportCaughtExceptions="true"/>
+        </Class>
+    </Instrumentation>
+</ApplicationInsightsAgent>
