@@ -108,7 +108,7 @@ services:
       - POSTGRES_PASSWORD=evidence
 
   idam-api:
-    image: hmcts.azurecr.io/hmcts/tidam-api:latest
+    image: hmctsprivate.azurecr.io/tidam/api:latest
     healthcheck:
       interval: 10s
       timeout: 10s
