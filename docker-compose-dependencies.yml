@@ -57,56 +57,6 @@ services:
       - POSTGRES_USER=anno
       - POSTGRES_PASSWORD=anno
 
-  dm-store:
-    image: hmctspublic.azurecr.io/dm/store:latest
-    command: --wait-for-database 30
-    environment:
-      - SERVER_PORT=8080
-      - IDAM_SUPERUSER_EMAIL
-      - IDAM_SECRET_KEY=AAAAAAAAAAAAAAAA
-      - GOV_NOTIFY_API_KEY
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://dm-store-db:5432/evidence
-      - SPRING_DATASOURCE_USERNAME=evidence
-      - SPRING_DATASOURCE_PASSWORD=evidence
-      - SPRING_PROFILES_ACTIVE=dev
-      - IDAM_TESTING_SUPPORT_ENABLED=true
-      - LOGGING_LEVEL_UK_GOV_HMCTS_IDAM=DEBUG
-      - IDAM_S2S_BASE_URI=http://service-auth-provider-app:8489
-      - S2S_NAMES_WHITELIST=em_npa_app,sscs,divorce,ccd,em_gw,ccd_gw,em_stitching_api,em_ccd_orchestrator,dg_docassembly_api
-      - http_proxy=
-      - https_proxy=
-      - no_proxy=
-      #      logging env vars
-      - ROOT_APPENDER=JSON_CONSOLE
-      - JSON_CONSOLE_PRETTY_PRINT=false
-      - REFORM_SERVICE_TYPE=java
-      - REFORM_SERVICE_NAME=dm-store
-      - REFORM_TEAM=evidence
-      - REFORM_ENVIRONMENT=docker
-      #      healthcheck env vars
-      - PACKAGES_ENVIRONMENT=docker
-      - PACKAGES_PROJECT=evidence
-      - PACKAGES_NAME=dm-store
-      - PACKAGES_VERSION=unkown
-      #      debug mode
-      - JAVA_OPTS=-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005
-    links:
-      - dm-store-db
-      - service-auth-provider-app
-    depends_on:
-      - dm-store-db
-      - service-auth-provider-app
-    ports:
-      - 4603:8080
-
-  dm-store-db:
-    image: postgres
-    restart: always
-    environment:
-      - POSTGRES_DB=evidence
-      - POSTGRES_USER=evidence
-      - POSTGRES_PASSWORD=evidence
-
   idam-api:
     image: hmctsprivate.azurecr.io/tidam/api:latest
     healthcheck:
@@ -150,3 +100,80 @@ services:
       - POSTGRES_DB=idam
     ports:
       - 5434:5432
+
+  dm-store:
+    image: hmctspublic.azurecr.io/dm/store:latest
+    environment:
+      - SERVER_PORT=8080
+      - IDAM_SUPERUSER_EMAIL
+      - IDAM_SECRET_KEY=AAAAAAAAAAAAAAAA
+      - GOV_NOTIFY_API_KEY
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://dm-store-db:5432/evidence
+      - SPRING_DATASOURCE_USERNAME=evidence
+      - SPRING_DATASOURCE_PASSWORD=evidence
+      - SPRING_PROFILES_ACTIVE=dev
+      - ENABLE_AZURE_STORAGE_CONTAINER=true
+      - ENABLE_POSTGRES_BLOB_STORAGE=false
+      - STORAGEACCOUNT_PRIMARY_CONNECTION_STRING=DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azure-storage-emulator-azurite:10000/devstoreaccount1
+      - STORAGE_CONTAINER_DOCUMENT_CONTAINER_NAME=hmctstestcontainer
+      - BLOBSTORE_MIGRATE_CCD_PUBLIC_KEY_REQUIRED=false
+      - BLOBSTORE_MIGRATE_CCD_PUBLIC_KEY="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDiQ//gc/G53d9dLCtf123fIYo49gUySuJuxOcw2GtieWTMSy+O7RNtsAIjVf3mCOdDNuN69tZNPEWMdaW8n11s9MwYFahtxDecyn0KIP9MvPsfSMSbxhp/f7kfbdB/H/S5eYea66JTyeJS6uNd76RdHttx0mLO30ZkRcXB25c2SIXhRYsdoeKS5GXHDdNejkQM0S/Ev94x2UunApmYHjWN1XcDhsEsAeF4WHnvYh2XiMn9vHY44AqvbWLlAmCgzaXpz8Xhl0fO7jDKSeReDyuM3UTMaiFFaxuvliGol7aIXq/aVe/miiD2SLxHZ6RxAPW80bhXrzJMTLTCqhCEhzfv someone@somewhere.sometime"
+      - IDAM_TESTING_SUPPORT_ENABLED=true
+      - LOGGING_LEVEL_UK_GOV_HMCTS_IDAM=DEBUG
+      - IDAM_S2S_BASE_URI=http://service-auth-provider-app:8489
+      - S2S_NAMES_WHITELIST=em_npa_app,sscs,divorce,ccd,em_gw,ccd_gw,em_stitching_api,em_ccd_orchestrator
+      - http_proxy=
+      - https_proxy=
+      - no_proxy=
+      #      logging env vars
+      - ROOT_APPENDER=JSON_CONSOLE
+      - JSON_CONSOLE_PRETTY_PRINT=false
+      - REFORM_SERVICE_TYPE=java
+      - REFORM_SERVICE_NAME=dm-store
+      - REFORM_TEAM=evidence
+      - REFORM_ENVIRONMENT=docker
+      #      healthcheck env vars
+      - PACKAGES_ENVIRONMENT=docker
+      - PACKAGES_PROJECT=evidence
+      - PACKAGES_NAME=dm-store
+      - PACKAGES_VERSION=unkown
+      #      debug mode
+      - JAVA_OPTS=-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005
+    links:
+      - dm-store-db
+      - service-auth-provider-app
+    depends_on:
+      - dm-store-db
+      - service-auth-provider-app
+    ports:
+      - 4603:8080
+
+  dm-store-db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_DB=evidence
+      - POSTGRES_USER=evidence
+      - POSTGRES_PASSWORD=evidence
+    ports:
+      - 5435:5432
+
+  azure-storage-emulator-azurite:
+    image: arafato/azurite
+    ports:
+      - 10000:10000
+    environment:
+      executable: "blob"
+    volumes:
+      - ccd-docker-azure-blob-data:/opt/azurite/folder
+
+  make-container-call:
+    image: byrnedo/alpine-curl
+    command: -XPUT --verbose http://azure-storage-emulator-azurite:10000/devstoreaccount1/hmctstestcontainer?restype=container
+    links:
+      - azure-storage-emulator-azurite
+    depends_on:
+      - azure-storage-emulator-azurite
+
+volumes:
+  ccd-docker-azure-blob-data:
