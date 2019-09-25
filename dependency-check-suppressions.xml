@@ -546,4 +546,8 @@
         <cve>CVE-2019-14439</cve>
         <cwe>611</cwe>
     </suppress>
+    <suppress>
+        <cve>CVE-2019-14540</cve>
+        <cve>CVE-2019-16335</cve>
+    </suppress>
 </suppressions>
