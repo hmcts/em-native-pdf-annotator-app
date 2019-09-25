@@ -20,11 +20,11 @@ npa:
       secrets:
         - AppInsightsInstrumentationKey
         - microservicekey-em-npa-app
-#        - npa-POSTGRES-DATABASE
-#        - npa-POSTGRES-HOST
-#        - npa-POSTGRES-PASS
-#        - npa-POSTGRES-PORT
-#        - npa-POSTGRES-USER
+        - npa-POSTGRES-DATABASE
+        - npa-POSTGRES-HOST
+        - npa-POSTGRES-PASS
+        - npa-POSTGRES-PORT
+        - npa-POSTGRES-USER
   environment:
     SPRING_DATASOURCE_URL: jdbc:postgresql://{{ .Release.Name }}-{{ .Values.postgresql.nameOverride}}:5432/postgres?ssl=disable
     SPRING_DATASOURCE_USERNAME: "{{ .Values.postgresql.postgresqlUsername}}"
