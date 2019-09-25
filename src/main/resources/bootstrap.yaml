@@ -9,3 +9,4 @@ spring:
       aliases:
         microservicekey-em-npa-app: S2S_KEY
         AppInsightsInstrumentationKey: APPINSIGHTS_INSTRUMENTATIONKEY
+        npa-POSTGRES-PASS: SPRING_DATASOURCE_PASSWORD
