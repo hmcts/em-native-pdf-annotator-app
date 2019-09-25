@@ -4,8 +4,8 @@ spring:
 #      properties are loaded from given paths
       enabled: true
 #      parent directory prefixes the property names
-      prefixed: true
-      paths: /mnt/secrets/s2s, /mnt/secrets/rpa
+      prefixed: false
+      paths: /mnt/secrets/em-npa
       aliases:
-        s2s.microservicekey-em-npa-app: S2S_KEY
-        rpa.AppInsightsInstrumentationKey: APPINSIGHTS_INSTRUMENTATIONKEY
+        microservicekey-em-npa-app: S2S_KEY
+        AppInsightsInstrumentationKey: APPINSIGHTS_INSTRUMENTATIONKEY
