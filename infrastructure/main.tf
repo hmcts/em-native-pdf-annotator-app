@@ -4,6 +4,7 @@ locals {
   local_env = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview" ) ? "aat" : "saat" : var.env}"
   shared_vault_name = "${var.shared_product_name}-${local.local_env}"
   tags = "${merge(var.common_tags, map("Team Contact", "#rpe"))}"
+  vaultName = "${local.app_full_name}-${var.env}"
 }
 # "${local.ase_name}"
 # "${local.app_full_name}"
@@ -23,7 +24,7 @@ module "app" {
   common_tags  = "${var.common_tags}"
   asp_rg = "${var.shared_product_name}-${var.env}"
   asp_name = "${var.shared_product_name}-anno-${var.env}"
-  appinsights_instrumentation_key = "${var.appinsights_instrumentation_key}"
+  appinsights_instrumentation_key = "${data.azurerm_key_vault_secret.app_insights_key.value}"
 
   app_settings = {
     POSTGRES_HOST = "${module.db.host_name}"
@@ -112,12 +113,29 @@ data "azurerm_key_vault_secret" "s2s_key" {
   key_vault_id = "${data.azurerm_key_vault.s2s_vault.id}"
 }
 
+data "azurerm_key_vault" "key_vault" {
+  name = "${module.key_vault.key_vault_name}"
+  resource_group_name = "${module.key_vault.key_vault_name}"
+}
+
+resource "azurerm_key_vault_secret" "local_s2s_key" {
+  name         = "microservicekey-em-npa-app"
+  value        = "${data.azurerm_key_vault_secret.s2s_key.value}"
+  key_vault_id = "${data.azurerm_key_vault.key_vault.id}"
+}
+
 data "azurerm_key_vault" "shared_key_vault" {
   name = "${local.shared_vault_name}"
   resource_group_name = "${local.shared_vault_name}"
 }
 
-module "local_key_vault" {
+data "azurerm_key_vault" "product" {
+  name = "${var.shared_product_name}-${var.env}"
+  resource_group_name = "${var.shared_product_name}-${var.env}"
+}
+
+# Copy s2s key from shared to local vault
+module "key_vault" {
   source = "git@github.com:hmcts/cnp-module-key-vault?ref=master"
   product = "${local.app_full_name}"
   env = "${var.env}"
@@ -126,41 +144,53 @@ module "local_key_vault" {
   resource_group_name = "${module.app.resource_group_name}"
   product_group_object_id = "5d9cd025-a293-4b97-a0e5-6f43efce02c0"
   common_tags = "${var.common_tags}"
+  managed_identity_object_id = "${var.managed_identity_object_id}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-USER" {
   name = "${var.component}-POSTGRES-USER"
   value = "${module.db.user_name}"
-  key_vault_id = "${data.azurerm_key_vault.shared_key_vault.id}"
+  key_vault_id = "${data.azurerm_key_vault.key_vault.id}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-PASS" {
   name = "${var.component}-POSTGRES-PASS"
   value = "${module.db.postgresql_password}"
-  key_vault_id = "${data.azurerm_key_vault.shared_key_vault.id}"
+  key_vault_id = "${data.azurerm_key_vault.key_vault.id}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_HOST" {
   name = "${var.component}-POSTGRES-HOST"
   value = "${module.db.host_name}"
-  key_vault_id = "${data.azurerm_key_vault.shared_key_vault.id}"
+  key_vault_id = "${data.azurerm_key_vault.key_vault.id}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_PORT" {
   name = "${var.component}-POSTGRES-PORT"
   value = "${module.db.postgresql_listen_port}"
-  key_vault_id = "${data.azurerm_key_vault.shared_key_vault.id}"
+  key_vault_id = "${data.azurerm_key_vault.key_vault.id}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
   name = "${var.component}-POSTGRES-DATABASE"
   value = "${module.db.postgresql_database}"
-  key_vault_id = "${data.azurerm_key_vault.shared_key_vault.id}"
+  key_vault_id = "${data.azurerm_key_vault.key_vault.id}"
 }
 
 resource "azurerm_resource_group" "rg" {
   name     = "${var.product}-${var.env}"
   location = "${var.location}"
-
   tags = "${local.tags}"
+}
+
+# Load AppInsights key from rpa vault
+data "azurerm_key_vault_secret" "app_insights_key" {
+  name      = "AppInsightsInstrumentationKey"
+  key_vault_id = "${data.azurerm_key_vault.product.id}"
+}
+
+resource "azurerm_key_vault_secret" "local_app_insights_key" {
+  name         = "AppInsightsInstrumentationKey"
+  value        = "${data.azurerm_key_vault_secret.app_insights_key.value}"
+  key_vault_id = "${data.azurerm_key_vault.local_key_vault.id}"
 }

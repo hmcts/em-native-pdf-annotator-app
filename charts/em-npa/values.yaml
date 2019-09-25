@@ -13,15 +13,18 @@ npa:
   livenessTimeout: 5
   livenessPeriod: 15
   livenessFailureThreshold: 10
+  aadIdentityName: em
   keyVaults:
-    rpa:
-      resourceGroup: rpa
+    em-npa:
+      resourceGroup: em-npa
       secrets:
         - AppInsightsInstrumentationKey
-    s2s:
-      resourceGroup: rpe-service-auth-provider
-      secrets:
         - microservicekey-em-npa-app
+        - npa-POSTGRES-DATABASE
+        - npa-POSTGRES-HOST
+        - npa-POSTGRES-PASS
+        - npa-POSTGRES-PORT
+        - npa-POSTGRES-USER
   environment:
     SPRING_DATASOURCE_URL: jdbc:postgresql://{{ .Release.Name }}-{{ .Values.postgresql.nameOverride}}:5432/postgres?ssl=disable
     SPRING_DATASOURCE_USERNAME: "{{ .Values.postgresql.postgresqlUsername}}"
@@ -31,6 +34,7 @@ npa:
     S2S_BASE_URI: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
     DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
     EM_ANNO_APP_URL: http://em-anno-aat.service.core-compute-aat.internal
+
     ENABLE_DB_MIGRATE: true
     REFORM_SERVICE_NAME: em-npa
     REFORM_TEAM: evidence
@@ -51,5 +55,5 @@ npa:
     CASE_WORKER_ROLES: caseworker-probate,caseworker-cmc,caseworker-sscs,caseworker-divorce
     ENABLE_IDAM_HEALTH_CHECK: false
     ENABLE_S2S_HEALTH_CHECK: false
-    ENABLE_LIQUIBASE: true
+    ENABLE_LIQUIBASE: false
     SERVER_PORT: 8080
