@@ -17,7 +17,7 @@ plugins {
     id 'jacoco'
     id 'org.liquibase.gradle' version '2.0.1'
    // id "com.github.spacialcircumstances.gradle-cucumber-reporting" version "0.0.11"
-    id "com.github.lkishalmi.gatling" version "3.0.1"
+    id "com.github.lkishalmi.gatling" version "3.2.9"
 }
 
 apply plugin: 'java'
