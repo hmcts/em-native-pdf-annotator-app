@@ -5,7 +5,6 @@ npa:
   keyVaults:
     em-npa:
       secrets:
-        - AppInsightsInstrumentationKey
         - microservicekey-em-npa-app
   environment:
     ENABLE_LIQUIBASE: true
