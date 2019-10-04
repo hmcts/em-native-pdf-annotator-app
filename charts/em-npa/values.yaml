@@ -5,50 +5,30 @@ npa:
     nameOverride: rpa-npa-db
   image: 'hmctspublic.azurecr.io/em/npa:latest'
   applicationPort: 8080
-  readinessDelay: 45
-  readinessTimeout: 5
-  readinessPeriod: 15
-  readinessFailureThreshold: 10
-  livenessDelay: 45
-  livenessTimeout: 5
-  livenessPeriod: 15
-  livenessFailureThreshold: 10
   aadIdentityName: em
   keyVaults:
     em-npa:
-      resourceGroup: em-npa
       secrets:
         - AppInsightsInstrumentationKey
         - microservicekey-em-npa-app
-        - npa-POSTGRES-DATABASE
-        - npa-POSTGRES-HOST
         - npa-POSTGRES-PASS
-        - npa-POSTGRES-PORT
-        - npa-POSTGRES-USER
   environment:
-    SPRING_DATASOURCE_URL: jdbc:postgresql://{{ .Release.Name }}-{{ .Values.postgresql.nameOverride}}:5432/postgres?ssl=disable
-    SPRING_DATASOURCE_USERNAME: "{{ .Values.postgresql.postgresqlUsername}}"
     RUN_DB_MIGRATION_ON_STARTUP: 'false'
-    # Regardless of environment, point towards AAT instances. Overwrite in product charts etc.
-    IDAM_API_BASE_URI: https://idam-api.aat.platform.hmcts.net
-    S2S_BASE_URI: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-    DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
-    EM_ANNO_APP_URL: http://em-anno-aat.service.core-compute-aat.internal
+    IDAM_API_BASE_URI: https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net
+    S2S_BASE_URI: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+    DM_STORE_APP_URL: http://dm-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+    EM_ANNO_APP_URL: http://em-anno-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
 
-    ENABLE_DB_MIGRATE: true
-    REFORM_SERVICE_NAME: em-npa
-    REFORM_TEAM: evidence
-    REFORM_SERVICE_TYPE: java
-    REFORM_ENVIRONMENT: preview
-    PACKAGES_NAME: em-npa
-    PACKAGES_PROJECT: evidence
-    PACKAGES_ENVIRONMENT: preview
+    SPRING_DATASOURCE_USERNAME: annotation@em-npa-postgres-db-{{ .Values.global.environment }}  
+    SPRING_DATASOURCE_URL: jdbc:postgresql://em-npa-postgres-db-{{ .Values.global.environment }}.postgres.database.azure.com:5432/annotation?sslmode=require
+
+    ENABLE_DB_MIGRATE: false
     JSON_CONSOLE_PRETTY_PRINT: false
     LOG_OUTPUT: single
     ROOT_LOGGING_LEVEL: INFO
     LOG_LEVEL_SPRING_WEB: INFO
     LOG_LEVEL_DM: INFO
-    SHOW_SQL: true
+    SHOW_SQL: false
     ENDPOINTS_HEALTH_SENSITIVE: false
     ENDPOINTS_INFO_SENSITIVE: false
     S2S_NAMES_WHITELIST: em_api,em_gw,ccd_gw,ccd_data,sscs,divorce_document_upload,divorce_document_generator,probate_backend,jui_webapp,pui_webapp
