@@ -7,6 +7,6 @@ spring:
       prefixed: false
       paths: /mnt/secrets/em-npa
       aliases:
-        microservicekey-em-npa-app: S2S_KEY
-        AppInsightsInstrumentationKey: APPINSIGHTS_INSTRUMENTATIONKEY
-        npa-POSTGRES-PASS: SPRING_DATASOURCE_PASSWORD
+        microservicekey-em-npa-app: idam.s2s-auth.totp_secret
+        AppInsightsInstrumentationKey: azure.application-insights.instrumentation-key
+        npa-POSTGRES-PASS: spring.datasource.password
