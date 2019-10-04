@@ -51,6 +51,16 @@ if (!project.hasProperty('runList')) {
     project.ext.runList = 'main'
 }
 
+configurations.all {
+    resolutionStrategy {
+        eachDependency { DependencyResolveDetails details ->
+            if (details.requested.group in ['com.fasterxml.jackson.core', 'com.fasterxml.jackson.module', 'com.fasterxml.jackson.datatype']) {
+                details.useVersion '2.10.0'
+            }
+        }
+    }
+}
+
 //loading properties file.
 Properties liquibaseProps = new Properties()
 liquibaseProps.load(new FileInputStream("$projectDir/src/main/resources/liquibase.properties"))
@@ -123,14 +133,14 @@ dependencies {
     compile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.17'
     compile 'com.squareup.okhttp3:okhttp:4.2.1'
     compile("org.springframework.boot:spring-boot-starter-batch")
-    compile "com.fasterxml.jackson.datatype:jackson-datatype-json-org:2.10.0"
-    compile "com.fasterxml.jackson.datatype:jackson-datatype-hppc:2.10.0"
-    compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.10.0"
-    compile "com.fasterxml.jackson.datatype:jackson-datatype-hibernate5:2.10.0"
-    compile "com.fasterxml.jackson.core:jackson-annotations:2.10.0"
-    compile "com.fasterxml.jackson.core:jackson-databind:2.10.0"
-    compile "com.fasterxml.jackson.core:jackson-core:2.10.0"
-    compile "com.fasterxml.jackson.module:jackson-module-afterburner:"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-json-org"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-hppc"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-hibernate5"
+    compile "com.fasterxml.jackson.core:jackson-annotations"
+    compile "com.fasterxml.jackson.core:jackson-databind"
+    compile "com.fasterxml.jackson.core:jackson-core"
+    compile "com.fasterxml.jackson.module:jackson-module-afterburner"
     compile "org.zalando:problem-spring-web:0.24.0-RC.0"
     compile("io.springfox:springfox-swagger2:${versions.springfoxSwagger}")
     compile("io.springfox:springfox-swagger-ui:${versions.springfoxSwagger}")

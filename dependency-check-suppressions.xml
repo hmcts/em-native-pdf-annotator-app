@@ -5,8 +5,101 @@
         <notes><![CDATA[
         false positive, fixed in greater than 5.0.5.RELEASE
         ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring-security-web@.*$</packageUrl>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring-security-.*@.*$</packageUrl>
         <cve>CVE-2018-1258</cve>
+    </suppress>
+
+    <suppress>
+        <notes><![CDATA[
+   kotlin is included as a test dep, suppressing as not used in prod deps
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.jetbrains\.kotlin/kotlin\-stdlib.*@.*$</packageUrl>
+        <cve>CVE-2019-10101</cve>
+        <cve>CVE-2019-10102</cve>
+        <cve>CVE-2019-10103</cve>
+    </suppress>
+
+    <suppress>
+        <notes><![CDATA[Used only for testing not used in prod]]></notes>
+        <gav regex="true">^org\.scala-lang:scala-(compiler|reflect|library):.*$</gav>
+        <cve>CVE-2017-15288</cve>
+        <cve>CVE-2010-5312</cve>
+        <cve>CVE-2016-7103</cve>
+        <cve>CVE-2012-6708</cve>
+        <cve>CVE-2015-9251</cve>
+        <cve>CVE-2019-11358</cve>
+    </suppress>
+
+    <suppress>
+        <notes><![CDATA[Related to Groovy LDAP API which is not used by the service]]></notes>
+        <filePath regex="true">.*org.codehaus.groovy/groovy.*</filePath>
+        <cpe>cpe:/a:apache:groovy</cpe>
+    </suppress>
+
+    <!-- Used in perf test only, not in prod -->
+    <suppress>
+        <notes><![CDATA[
+    file name: gatling-app-3.1.1.jar
+    ]]></notes>
+        <filePath regex="true">.*gatling-app-3.1.1.jar</filePath>
+        <cve>CVE-2018-13661</cve>
+    </suppress>
+
+    <suppress>
+        <notes><![CDATA[
+   file name: gatling-netty-util-3.1.3.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/io\.gatling/gatling\-netty\-util@.*$</packageUrl>
+        <cpe>cpe:/a:netty:netty</cpe>
+    </suppress>
+
+    <suppress>
+        <notes><![CDATA[
+   file name: netty-tcnative-boringssl-static-2.0.25.Final.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/io\.netty/netty\-tcnative\-boringssl\-static@.*$</packageUrl>
+        <cpe>cpe:/a:netty:netty</cpe>
+    </suppress>
+
+    <suppress>
+        <notes><![CDATA[
+   pulled in by liquibase gradle plugin, only used on jenkins
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.liquibase/liquibase\-groovy\-dsl@.*$</packageUrl>
+        <cve>CVE-1999-1338</cve>
+        <cve>CVE-2005-0036</cve>
+        <cve>CVE-2005-0861</cve>
+    </suppress>
+
+    <suppress>
+        <notes><![CDATA[
+   pulled in by liquibase gradle plugin, only used on jenkins
+   ]]></notes>
+        <packageUrl regex="true">^pkg:javascript/bootstrap@.*$</packageUrl>
+        <cve>CVE-2018-14040</cve>
+        <cve>CVE-2018-14041</cve>
+        <cve>CVE-2018-14042</cve>
+        <cve>CVE-2019-8331</cve>
+    </suppress>
+
+    <suppress>
+        <notes><![CDATA[
+   pulled in by liquibase gradle plugin, only used on jenkins and also gatling-charts
+   ]]></notes>
+        <packageUrl regex="true">^pkg:javascript/jquery.*@.*$</packageUrl>
+        <cve>CVE-2010-5312</cve>
+        <cve>CVE-2012-6708</cve>
+        <cve>CVE-2015-9251</cve>
+        <cve>CVE-2016-7103</cve>
+        <cve>CVE-2019-11358</cve>
+    </suppress>
+
+    <suppress>
+        <notes><![CDATA[
+   file name: gatling-charts-3.0.0.jar: moment.min.js
+   ]]></notes>
+        <packageUrl regex="true">^pkg:javascript/moment\.js@.*$</packageUrl>
+        <vulnerabilityName>reDOS - regular expression denial of service</vulnerabilityName>
     </suppress>
 
 </suppressions>
