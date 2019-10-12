@@ -104,7 +104,7 @@ data "azurerm_key_vault" "s2s_vault" {
   name = "s2s-${local.local_env}"
   resource_group_name = "rpe-service-auth-provider-${local.local_env}"
 }
-  
+
 data "azurerm_key_vault" "shared_key_vault" {
   name = "${local.shared_vault_name}"
   resource_group_name = "${local.shared_vault_name}"
@@ -137,7 +137,7 @@ module "key_vault" {
 resource "azurerm_key_vault_secret" "POSTGRES-USER" {
   name = "${var.component}-POSTGRES-USER"
   value = "${module.db.user_name}"
-  key_vault_id = "${data.azurerm_key_vault.key_vault.id}"
+  key_vault_id = "${module.key_vault.key_vault_id}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-PASS" {
