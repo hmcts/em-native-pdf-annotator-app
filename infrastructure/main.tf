@@ -25,6 +25,7 @@ module "app" {
   asp_rg = "${var.shared_product_name}-${var.env}"
   asp_name = "${var.shared_product_name}-anno-${var.env}"
   appinsights_instrumentation_key = "${data.azurerm_key_vault_secret.app_insights_key.value}"
+  enable_ase                      = false
 
   app_settings = {
     POSTGRES_HOST = "${module.db.host_name}"
