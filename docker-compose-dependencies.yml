@@ -12,7 +12,7 @@ services:
     ports:
       - 5433:5432
 
-  service-auth-provider-app:
+  service-auth-provider-api:
     image: hmctspublic.azurecr.io/rpe/service-auth-provider:latest
     environment:
       - jwtKey=wThK0f0/lh3FlxFcL4xUWDMI5C1J9KyQBgXV4wseh1e5J1uYJIjvTvArHxQDrYoHJ23xFxjHkOnvNbR5dXRoxA==
@@ -21,13 +21,13 @@ services:
 #      logging env vars
       - JSON_CONSOLE_PRETTY_PRINT=false
       - REFORM_SERVICE_TYPE=java
-      - REFORM_SERVICE_NAME=service-auth-provider-app
+      - REFORM_SERVICE_NAME=service-auth-provider-api
       - REFORM_TEAM=rpe
       - REFORM_ENVIRONMENT=docker
 #      healthcheck env vars
       - PACKAGES_ENVIRONMENT=docker
       - PACKAGES_PROJECT=rpe
-      - PACKAGES_NAME=service-auth-provider-app
+      - PACKAGES_NAME=service-auth-provider-api
       - PACKAGES_VERSION=unkown
       - TESTING_SUPPORT_ENABLED=true
     ports:
@@ -39,7 +39,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://annotation-api-db:5432/anno
       - SPRING_DATASOURCE_USERNAME=anno
       - SPRING_DATASOURCE_PASSWORD=anno
-      - S2S_BASE_URI=http://service-auth-provider-app:8489
+      - S2S_BASE_URI=http://service-auth-provider-api:8489
       - IDAM_API_BASE_URI=http://idam-api:8080
       - ENABLE_LIQUIBASE=true
     links:
@@ -108,6 +108,7 @@ services:
       - IDAM_SUPERUSER_EMAIL
       - IDAM_SECRET_KEY=AAAAAAAAAAAAAAAA
       - GOV_NOTIFY_API_KEY
+      - ENABLE_DB_MIGRATE=true
       - SPRING_DATASOURCE_URL=jdbc:postgresql://dm-store-db:5432/evidence
       - SPRING_DATASOURCE_USERNAME=evidence
       - SPRING_DATASOURCE_PASSWORD=evidence
@@ -120,13 +121,12 @@ services:
       - BLOBSTORE_MIGRATE_CCD_PUBLIC_KEY="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDiQ//gc/G53d9dLCtf123fIYo49gUySuJuxOcw2GtieWTMSy+O7RNtsAIjVf3mCOdDNuN69tZNPEWMdaW8n11s9MwYFahtxDecyn0KIP9MvPsfSMSbxhp/f7kfbdB/H/S5eYea66JTyeJS6uNd76RdHttx0mLO30ZkRcXB25c2SIXhRYsdoeKS5GXHDdNejkQM0S/Ev94x2UunApmYHjWN1XcDhsEsAeF4WHnvYh2XiMn9vHY44AqvbWLlAmCgzaXpz8Xhl0fO7jDKSeReDyuM3UTMaiFFaxuvliGol7aIXq/aVe/miiD2SLxHZ6RxAPW80bhXrzJMTLTCqhCEhzfv someone@somewhere.sometime"
       - IDAM_TESTING_SUPPORT_ENABLED=true
       - LOGGING_LEVEL_UK_GOV_HMCTS_IDAM=DEBUG
-      - IDAM_S2S_BASE_URI=http://service-auth-provider-app:8489
+      - IDAM_S2S_BASE_URI=http://service-auth-provider-api:8489
       - S2S_NAMES_WHITELIST=em_npa_app,sscs,divorce,ccd,em_gw,ccd_gw,em_stitching_api,em_ccd_orchestrator
       - http_proxy=
       - https_proxy=
       - no_proxy=
       #      logging env vars
-      - ROOT_APPENDER=JSON_CONSOLE
       - JSON_CONSOLE_PRETTY_PRINT=false
       - REFORM_SERVICE_TYPE=java
       - REFORM_SERVICE_NAME=dm-store
@@ -141,10 +141,12 @@ services:
       - JAVA_OPTS=-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005
     links:
       - dm-store-db
-      - service-auth-provider-app
+      - service-auth-provider-api
+      - make-container-call
     depends_on:
       - dm-store-db
-      - service-auth-provider-app
+      - service-auth-provider-api
+      - make-container-call
     ports:
       - 4603:8080
 
