@@ -154,7 +154,6 @@ public class TestUtil {
     public RequestSpecification s2sAuthRequest() throws Exception {
         return RestAssured
             .given()
-            .log().all()
             .header("ServiceAuthorization", s2sAuth);
     }
 
