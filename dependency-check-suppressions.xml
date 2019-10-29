@@ -36,23 +36,6 @@
         <cpe>cpe:/a:apache:groovy</cpe>
     </suppress>
 
-    <!-- Used in perf test only, not in prod -->
-    <suppress>
-        <notes><![CDATA[
-    file name: gatling-app-3.1.1.jar
-    ]]></notes>
-        <filePath regex="true">.*gatling-app-3.1.1.jar</filePath>
-        <cve>CVE-2018-13661</cve>
-    </suppress>
-
-    <suppress>
-        <notes><![CDATA[
-   file name: gatling-netty-util-3.1.3.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/io\.gatling/gatling\-netty\-util@.*$</packageUrl>
-        <cpe>cpe:/a:netty:netty</cpe>
-    </suppress>
-
     <suppress>
         <notes><![CDATA[
    file name: netty-tcnative-boringssl-static-2.0.25.Final.jar
@@ -93,13 +76,4 @@
         <cve>CVE-2016-7103</cve>
         <cve>CVE-2019-11358</cve>
     </suppress>
-
-    <suppress>
-        <notes><![CDATA[
-   file name: gatling-charts-3.0.0.jar: moment.min.js
-   ]]></notes>
-        <packageUrl regex="true">^pkg:javascript/moment\.js@.*$</packageUrl>
-        <vulnerabilityName>reDOS - regular expression denial of service</vulnerabilityName>
-    </suppress>
-
 </suppressions>
