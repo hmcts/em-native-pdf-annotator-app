@@ -1,4 +1,4 @@
-npa:
+java:
   postgresql:
     postgresqlUsername: emnpa
     postgresqlPassword: emnpa
