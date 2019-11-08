@@ -1,3 +1,4 @@
+apiVersion: v1
 name: em-npa
 home: https://github.com/hmcts/rpa-native-pdf-annotator-app
 version: 0.1.8
