@@ -2,12 +2,21 @@ package uk.gov.hmcts.reform.em.npa.smoke;
 
 import io.restassured.RestAssured;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.test.context.junit4.SpringRunner;
+import uk.gov.hmcts.reform.em.EmTestConfig;
+import uk.gov.hmcts.reform.em.npa.testutil.TestUtil;
 
+@SpringBootTest(classes = {TestUtil.class, EmTestConfig.class})
+@PropertySource(value = "classpath:application.yml")
+@RunWith(SpringRunner.class)
 public class SmokeTest {
 
     @Value("${test.url}")
-    String testUrl;
+    private String testUrl;
 
     @Test
     public void testHealthEndpoint() {
