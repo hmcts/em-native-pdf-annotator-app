@@ -12,5 +12,5 @@ java:
     SPRING_DATASOURCE_USERNAME: "{{ .Values.postgresql.postgresqlUsername}}"
     SPRING_DATASOURCE_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
   aadIdentityName:
-postgresql:
-  enabled: true
+  postgresql:
+    enabled: true
