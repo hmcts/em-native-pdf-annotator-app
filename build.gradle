@@ -198,7 +198,7 @@ dependencies {
     compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.5'
     compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version:'0.0.4'
 
-    aatCompile "uk.gov.hmcts.reform:em-test-helper:1.5"
+    aatCompile "uk.gov.hmcts.reform:em-test-helper:1.11"
 
 }
 
