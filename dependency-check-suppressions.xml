@@ -76,4 +76,9 @@
         <cve>CVE-2016-7103</cve>
         <cve>CVE-2019-11358</cve>
     </suppress>
+    <suppress>
+        <notes>Using latest version, no fix yet</notes>
+        <cve>CVE-2019-12418</cve>
+        <cve>CVE-2019-17563</cve>
+    </suppress>
 </suppressions>
