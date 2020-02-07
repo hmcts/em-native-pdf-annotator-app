@@ -127,7 +127,7 @@ dependencyCheck {
 }
 
 def versions = [
-        postgresql         : '42.2.8',
+        postgresql         : '42.2.10',
         springBoot         : '2.0.5.RELEASE',
         springfoxSwagger   : '2.9.2',
         h2                 : '1.4.199',
