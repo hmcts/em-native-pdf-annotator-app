@@ -29,7 +29,7 @@ cd rpa-native-pdf-annotator-app/
 ./buildrundm-docker.sh
 ```
 
-```bash
+`bash
 #Run this script to aquire IDAM credentials required for DM API.
 ./idam.sh
 ```
