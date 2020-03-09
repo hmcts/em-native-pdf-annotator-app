@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.em.npa.config.security;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -13,9 +12,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.*;
-import uk.gov.hmcts.reform.auth.checker.core.RequestAuthorizer;
-import uk.gov.hmcts.reform.auth.checker.core.service.Service;
-import uk.gov.hmcts.reform.auth.checker.spring.serviceonly.AuthCheckerServiceOnlyFilter;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationFilter;
+import uk.gov.hmcts.reform.authorisation.filters.ServiceAuthFilter;
 
 
 @Configuration
@@ -29,12 +27,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Value("${oidc.issuer}")
     private String issuerOverride;
 
-    private final AuthCheckerServiceOnlyFilter authCheckerServiceOnlyFilter;
+    private final ServiceAuthFilter serviceAuthFilter;
 
-    public SecurityConfiguration(final RequestAuthorizer<Service> serviceRequestAuthorizer,
-                                 final AuthenticationManager authenticationManager) {
-        this.authCheckerServiceOnlyFilter = new AuthCheckerServiceOnlyFilter(serviceRequestAuthorizer);
-        this.authCheckerServiceOnlyFilter.setAuthenticationManager(authenticationManager);
+    public SecurityConfiguration(final ServiceAuthFilter serviceAuthFilter) {
+        this.serviceAuthFilter = serviceAuthFilter;
     }
 
     @Override
@@ -52,9 +48,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
-        http.csrf()
-                .disable()
-                .addFilter(authCheckerServiceOnlyFilter)
+        http.csrf().disable()
+                .formLogin().disable()
+                .logout().disable()
+                .addFilterBefore(serviceAuthFilter, BearerTokenAuthenticationFilter.class)
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
@@ -73,7 +70,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         NimbusJwtDecoder jwtDecoder = (NimbusJwtDecoder) JwtDecoders.fromOidcIssuerLocation(issuerUri);
         OAuth2TokenValidator<Jwt> withTimestamp = new JwtTimestampValidator();
         // Using issuerOverride instead of issuerUri as Sidam has wrong issuer currently.
-//        OAuth2TokenValidator<Jwt> withIssuer = new JwtIssuerValidator(issuerOverride);
+        OAuth2TokenValidator<Jwt> withIssuer = new JwtIssuerValidator(issuerOverride);
         OAuth2TokenValidator<Jwt> validator = new DelegatingOAuth2TokenValidator<>(withTimestamp);
         jwtDecoder.setJwtValidator(validator);
 
