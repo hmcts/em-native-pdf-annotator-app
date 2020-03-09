@@ -34,6 +34,16 @@ spring:
       enabled: false
       jobCronExpression: ${JOB_CRON_EXPRESSION:"*/5 * * * * *"}
     initialize-schema: never
+  security:
+    oauth2:
+      client:
+        provider:
+          oidc:
+            issuer-uri: ${OPEN_ID_API_BASE_URI:http://localhost:5000/o}
+        registration:
+          oidc:
+            client-id: microservicekey-em-npa-app
+            client-secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
 
 management:
   endpoint:
