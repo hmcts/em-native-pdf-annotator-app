@@ -93,7 +93,7 @@ authorization:
 auth:
   idam:
     client:
-      baseUrl: ${IDAM_API_BASE_URI:http://localhost:4501}
+      baseUrl: ${IDAM_API_BASE_URI:http://localhost:5000}
   provider:
     service:
       client:
