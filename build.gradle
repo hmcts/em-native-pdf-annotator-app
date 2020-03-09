@@ -223,6 +223,7 @@ def coverageExclusionList = [
     '**uk/gov/hmcts/reform/em/npa/config/logging/*',
     '**uk/gov/hmcts/reform/em/npa/domain/*',
     '**uk/gov/hmcts/reform/em/npa/service/dto/external/annotation/*',
+    '**uk/gov/hmcts/reform/em/npa/config/security/*'
 ]
 
 //(jacocoTestReport | jacocoTestCoverageVerification)
