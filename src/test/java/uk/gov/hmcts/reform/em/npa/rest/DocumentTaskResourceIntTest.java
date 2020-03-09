@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.auth.checker.core.SubjectResolver;
 import uk.gov.hmcts.reform.auth.checker.core.user.User;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.em.npa.Application;
+import uk.gov.hmcts.reform.em.npa.TestSecurityConfiguration;
 import uk.gov.hmcts.reform.em.npa.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.npa.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.npa.repository.DocumentTaskRepository;
@@ -51,7 +52,7 @@ import static uk.gov.hmcts.reform.em.npa.rest.TestUtil.createFormattingConversio
  * @see DocumentTaskResource
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = Application.class)
+@SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
 public class DocumentTaskResourceIntTest {
 
     private static final String DEFAULT_INPUT_DOCUMENT_ID = "AAAAAAAAAA";
