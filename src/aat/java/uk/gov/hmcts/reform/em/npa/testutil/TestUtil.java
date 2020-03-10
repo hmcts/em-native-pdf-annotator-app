@@ -8,8 +8,11 @@ import org.json.JSONObject;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.em.test.ccddata.CcdDataHelper;
+import uk.gov.hmcts.reform.em.test.ccddefinition.CcdDefinitionHelper;
 import uk.gov.hmcts.reform.em.test.dm.DmHelper;
 import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
 import uk.gov.hmcts.reform.em.test.s2s.S2sHelper;
@@ -40,6 +43,12 @@ public class TestUtil {
 
     @Autowired
     private DmHelper dmHelper;
+
+    @MockBean
+    protected CcdDataHelper ccdDataHelper;
+
+    @MockBean
+    protected CcdDefinitionHelper ccdDefinitionHelper;
 
     @Value("${annotation.api.url}")
     private String emAnnotationUrl;
