@@ -152,6 +152,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-starter-actuator")
     compile('org.springframework.boot:spring-boot-starter-data-jpa')
+    compile ("org.springframework.boot:spring-boot-starter-security")
     compile( 'org.apache.httpcomponents:httpclient:4.5.10')
     compile "org.liquibase:liquibase-core"
     liquibaseRuntime "org.liquibase:liquibase-core"
@@ -178,13 +179,9 @@ dependencies {
 
     compile "org.hibernate.validator:hibernate-validator"
     compile "org.mapstruct:mapstruct-jdk8:${mapstruct_version}"
-    compile "org.springframework.boot:spring-boot-starter-security"
-    compile "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
     compile "org.springframework.boot:spring-boot-starter-oauth2-client"
-    compile "io.github.openfeign:feign-httpclient:10.7.0"
-    compile "org.springframework.cloud:spring-cloud-starter-openfeign:2.2.1.RELEASE"
+    compile "org.springframework.security:spring-security-oauth2-resource-server"
     compile "org.springframework.security:spring-security-oauth2-jose:5.2.2.RELEASE"
-
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstruct_version}"
     annotationProcessor "org.hibernate:hibernate-jpamodelgen"
     annotationProcessor ("org.springframework.boot:spring-boot-configuration-processor") {
@@ -202,6 +199,7 @@ dependencies {
     compile group: 'uk.gov.hmcts.reform', name: 'logging', version: '5.1.1-BETA'
     compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.5'
     compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version:'0.0.4'
+    compile group: 'org.springframework.security', name: 'spring-security-oauth2-core', version: '5.3.0.RELEASE'
 
     aatCompile "uk.gov.hmcts.reform:em-test-helper:1.5"
 
