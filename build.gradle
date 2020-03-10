@@ -201,8 +201,7 @@ dependencies {
     compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version:'0.0.4'
     compile group: 'org.springframework.security', name: 'spring-security-oauth2-core', version: '5.3.0.RELEASE'
 
-    aatCompile "uk.gov.hmcts.reform:em-test-helper:1.5"
-
+    aatCompile "uk.gov.hmcts.reform:em-test-helper:1.17.1"
 }
 
 bootJar {
