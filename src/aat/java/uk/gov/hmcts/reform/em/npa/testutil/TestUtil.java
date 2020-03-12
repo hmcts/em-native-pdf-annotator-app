@@ -8,8 +8,11 @@ import org.json.JSONObject;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.em.test.ccddata.CcdDataHelper;
+import uk.gov.hmcts.reform.em.test.ccddefinition.CcdDefinitionHelper;
 import uk.gov.hmcts.reform.em.test.dm.DmHelper;
 import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
 import uk.gov.hmcts.reform.em.test.s2s.S2sHelper;
@@ -40,6 +43,12 @@ public class TestUtil {
 
     @Autowired
     private DmHelper dmHelper;
+
+    @MockBean
+    protected CcdDataHelper ccdDataHelper;
+
+    @MockBean
+    protected CcdDefinitionHelper ccdDefinitionHelper;
 
     @Value("${annotation.api.url}")
     private String emAnnotationUrl;
@@ -127,14 +136,55 @@ public class TestUtil {
 
     public RequestSpecification authRequest() {
         return s2sAuthRequest()
-            .header("Authorization", idamAuth);
+                .header("Authorization", idamAuth);
     }
 
     public RequestSpecification s2sAuthRequest() {
         return RestAssured
-            .given()
-            .log().all()
-            .header("ServiceAuthorization", s2sAuth);
+                .given()
+                .log().all()
+                .header("ServiceAuthorization", s2sAuth);
+    }
+
+    public RequestSpecification emptyIdamAuthRequest() {
+        return s2sAuthRequest()
+                .header("Authorization", null);
+    }
+
+    public RequestSpecification emptyIdamAuthAndEmptyS2SAuth() {
+        return RestAssured
+                .given()
+                .header("ServiceAuthorization", null)
+                .header("Authorization", null);
+    }
+
+    public RequestSpecification validAuthRequestWithEmptyS2SAuth() {
+        return emptyS2sAuthRequest().header("Authorization", idamAuth);
+    }
+
+    public RequestSpecification validS2SAuthWithEmptyIdamAuth() {
+
+        return s2sAuthRequest().header("Authorization", null);
+    }
+
+    private RequestSpecification emptyS2sAuthRequest() {
+
+        return RestAssured.given().header("ServiceAuthorization", null);
+    }
+
+    public RequestSpecification invalidIdamAuthrequest() {
+
+        return s2sAuthRequest().header("Authorization", "invalidIDAMAuthRequest");
+    }
+
+    public RequestSpecification invalidS2SAuth() {
+
+        return invalidS2sAuthRequest().header("Authorization", idamAuth);
+    }
+
+    private RequestSpecification invalidS2sAuthRequest() {
+
+        return RestAssured.given().header("ServiceAuthorization", "invalidS2SAuthorization");
     }
 
 }
