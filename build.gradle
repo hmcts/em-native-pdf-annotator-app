@@ -30,7 +30,7 @@ apply plugin: 'idea'
 
 dependencyManagement {
     imports {
-        mavenBom 'org.springframework.cloud:spring-cloud-openfeign:2.2.2.RELEASE'
+        mavenBom 'org.springframework.cloud:spring-cloud-openfeign:2.1.5.RELEASE'
     }
 }
 
