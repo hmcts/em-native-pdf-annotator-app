@@ -146,7 +146,7 @@ dependencies {
     compile "com.fasterxml.jackson.core:jackson-databind"
     compile "com.fasterxml.jackson.core:jackson-core"
     compile "com.fasterxml.jackson.module:jackson-module-afterburner"
-    compile "org.zalando:problem-spring-web:0.24.0-RC.0"
+    compile "org.zalando:problem-spring-web:0.25.2"
     compile("io.springfox:springfox-swagger2:${versions.springfoxSwagger}")
     compile("io.springfox:springfox-swagger-ui:${versions.springfoxSwagger}")
     compile("org.springframework.boot:spring-boot-starter-web")
@@ -223,31 +223,24 @@ def coverageExclusionList = [
     '**uk/gov/hmcts/reform/em/npa/config/security/*'
 ]
 
-//(jacocoTestReport | jacocoTestCoverageVerification)
-jacoco {
-    toolVersion = '0.7.9' // jacocoMavenPluginVersion
-    reportsDir = file("$buildDir/reports/jacoco")
-}
-
 jacocoTestReport {
     executionData(test)
 
     reports {
         xml.enabled = true
         csv.enabled = true
+
+        xml.destination file("${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml")
     }
 
-    afterEvaluate {
-        classDirectories = files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: coverageExclusionList)
-        })
-    }
 }
+
+project.tasks['sonarqube'].dependsOn jacocoTestReport
 
 sonarqube {
     properties {
         property "sonar.projectName", "${rootProject.name}"
-        property "sonar.jacoco.reportPath", "${project.buildDir}/jacoco/test.exec"
+        property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.destination.path}"
         property "sonar.exclusions", coverageExclusionList.join(", ")
     }
 }
