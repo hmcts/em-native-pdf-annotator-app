@@ -81,7 +81,20 @@
         <cve>CVE-2020-10968</cve>
     </suppress>
 
-
+    <suppress>
+        <notes><![CDATA[
+   file name: feign-core-8.18.0.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.netflix\.feign/feign-core@.*$</packageUrl>
+        <vulnerabilityName>CWE-611: Improper Restriction of XML External Entity Reference ('XXE')</vulnerabilityName>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: feign-jackson-8.18.0.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.netflix\.feign/feign-jackson@.*$</packageUrl>
+        <vulnerabilityName>CWE-611: Improper Restriction of XML External Entity Reference ('XXE')</vulnerabilityName>
+    </suppress>
     <suppress>
         <notes><![CDATA[
         false positive, fixed in greater than 5.0.5.RELEASE
