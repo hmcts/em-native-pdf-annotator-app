@@ -104,7 +104,7 @@ provider "vault" {
 
 data "azurerm_key_vault_secret" "s2s_key" {
   name      = "microservicekey-em-npa-app"
-  vault_uri = "https://s2s-${local.local_env}.vault.azure.net/"
+  key_vault_id = "https://s2s-${local.local_env}.vault.azure.net/"
 }
 
 data "azurerm_key_vault" "shared_key_vault" {
@@ -126,31 +126,31 @@ module "local_key_vault" {
 resource "azurerm_key_vault_secret" "POSTGRES-USER" {
   name = "${local.app_full_name}-POSTGRES-USER"
   value = "${module.db.user_name}"
-  vault_uri = "${module.local_key_vault.key_vault_uri}"
+  key_vault_id = "${module.local_key_vault.key_key_vault_id}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-PASS" {
   name = "${local.app_full_name}-POSTGRES-PASS"
   value = "${module.db.postgresql_password}"
-  vault_uri = "${module.local_key_vault.key_vault_uri}"
+  key_vault_id = "${module.local_key_vault.key_key_vault_id}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_HOST" {
   name = "${local.app_full_name}-POSTGRES-HOST"
   value = "${module.db.host_name}"
-  vault_uri = "${module.local_key_vault.key_vault_uri}"
+  key_vault_id = "${module.local_key_vault.key_key_vault_id}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_PORT" {
   name = "${local.app_full_name}-POSTGRES-PORT"
   value = "${module.db.postgresql_listen_port}"
-  vault_uri = "${module.local_key_vault.key_vault_uri}"
+  key_vault_id = "${module.local_key_vault.key_key_vault_id}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
   name = "${local.app_full_name}-POSTGRES-DATABASE"
   value = "${module.db.postgresql_database}"
-  vault_uri = "${module.local_key_vault.key_vault_uri}"
+  key_vault_id = "${module.local_key_vault.key_key_vault_id}"
 }
 
 resource "azurerm_resource_group" "rg" {
