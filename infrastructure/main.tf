@@ -126,6 +126,7 @@ module "local_key_vault" {
   product_group_object_id = "5d9cd025-a293-4b97-a0e5-6f43efce02c0"
   common_tags = "${var.common_tags}"
   managed_identity_object_id = "${var.managed_identity_object_id}"
+  sku_name = "GP_Gen5_2"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-USER" {
