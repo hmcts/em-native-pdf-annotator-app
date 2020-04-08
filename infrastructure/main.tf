@@ -101,10 +101,14 @@ module "db" {
 provider "vault" {
   address = "https://vault.reform.hmcts.net:6200"
 }
+data "azurerm_key_vault" "s2s_vault" {
+  name = "s2s-${local.local_env}"
+  resource_group_name = "rpe-service-auth-provider-${local.local_env}"
+}
 
 data "azurerm_key_vault_secret" "s2s_key" {
   name      = "microservicekey-em-npa-app"
-  key_vault_id = "https://s2s-${local.local_env}.vault.azure.net/"
+  key_vault_id = "${data.azurerm_key_vault.s2s_vault.id}"
 }
 
 data "azurerm_key_vault" "shared_key_vault" {
@@ -125,33 +129,33 @@ module "local_key_vault" {
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-USER" {
-  name = "${local.app_full_name}-POSTGRES-USER"
+  name = "${var.component}-POSTGRES-USER"
   value = "${module.db.user_name}"
-  key_vault_id = "${module.local_key_vault.key_key_vault_id}"
+  key_vault_id = "${data.azurerm_key_vault.shared_key_vault.id}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-PASS" {
-  name = "${local.app_full_name}-POSTGRES-PASS"
+  name = "${var.component}-POSTGRES-PASS"
   value = "${module.db.postgresql_password}"
-  key_vault_id = "${module.local_key_vault.key_key_vault_id}"
+  key_vault_id = "${data.azurerm_key_vault.shared_key_vault.id}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_HOST" {
-  name = "${local.app_full_name}-POSTGRES-HOST"
+  name = "${var.component}-POSTGRES-HOST"
   value = "${module.db.host_name}"
-  key_vault_id = "${module.local_key_vault.key_key_vault_id}"
+  key_vault_id = "${data.azurerm_key_vault.shared_key_vault.id}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_PORT" {
-  name = "${local.app_full_name}-POSTGRES-PORT"
+  name = "${var.component}-POSTGRES-PORT"
   value = "${module.db.postgresql_listen_port}"
-  key_vault_id = "${module.local_key_vault.key_key_vault_id}"
+  key_vault_id = "${data.azurerm_key_vault.shared_key_vault.id}"
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
-  name = "${local.app_full_name}-POSTGRES-DATABASE"
+  name = "${var.component}-POSTGRES-DATABASE"
   value = "${module.db.postgresql_database}"
-  key_vault_id = "${module.local_key_vault.key_key_vault_id}"
+  key_vault_id = "${data.azurerm_key_vault.shared_key_vault.id}"
 }
 
 resource "azurerm_resource_group" "rg" {
