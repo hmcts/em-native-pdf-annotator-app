@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.npa.redaction;
 
-import com.sun.tools.javac.util.List;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.npa.service.dto.external.redaction.RedactionDTO;
@@ -10,6 +9,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 @Service
 public class ImageRedaction {
