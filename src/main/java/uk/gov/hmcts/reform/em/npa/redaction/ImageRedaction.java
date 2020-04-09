@@ -27,12 +27,7 @@ public class ImageRedaction {
         Graphics2D graph = img.createGraphics();
 
         redactionDTOList.stream().forEach(redactionDTO -> {
-            graph.setColor(Color.BLACK);
-            graph.fill(new Rectangle(
-                    redactionDTO.getXCoordinate(),
-                    redactionDTO.getYCoordinate(),
-                    redactionDTO.getWidth(),
-                    redactionDTO.getHeight()));
+            drawRectangle(redactionDTO, graph);
         });
         graph.dispose();
 
@@ -53,18 +48,27 @@ public class ImageRedaction {
     public File redaction(File imageFile, RedactionDTO redactionDTO) throws IOException {
         BufferedImage img = ImageIO.read(imageFile);
         Graphics2D graph = img.createGraphics();
-
-        graph.setColor(Color.BLACK);
-        graph.fill(new Rectangle(
-                        redactionDTO.getXCoordinate(),
-                        redactionDTO.getYCoordinate(),
-                        redactionDTO.getWidth(),
-                        redactionDTO.getHeight()));
+        drawRectangle(redactionDTO, graph);
         graph.dispose();
 
         String fileType = FilenameUtils.getExtension(imageFile.getName());
         final File alteredImage = File.createTempFile("altered", "." + fileType);
         ImageIO.write(img, fileType, alteredImage);
         return alteredImage;
+    }
+
+    /**
+     * Draw Rectangle onto image to obscure content
+     *
+     * @param redactionDTO Information for where to draw the rectangle on the image
+     * @param graph Representation of the image
+     */
+    private void drawRectangle(RedactionDTO redactionDTO, Graphics2D graph) {
+        graph.setColor(Color.BLACK);
+        graph.fill(new Rectangle(
+                redactionDTO.getXCoordinate(),
+                redactionDTO.getYCoordinate(),
+                redactionDTO.getWidth(),
+                redactionDTO.getHeight()));
     }
 }

@@ -9,6 +9,7 @@ import org.apache.pdfbox.rendering.PDFRenderer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.npa.service.dto.external.redaction.RedactionDTO;
+import uk.gov.hmcts.reform.em.npa.service.impl.RedactionProcessingException;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -123,17 +124,24 @@ public class PdfRedaction {
      */
     private PDPage transformToPdf(File pageImage) throws IOException {
         PDDocument newDocument = new PDDocument();
-        PDPage newPage = new PDPage();
-        PDRectangle mediaBox = newPage.getMediaBox();
-        newDocument.addPage(newPage);
+        PDPageContentStream contentStream = null;
 
-        BufferedImage awtImage = ImageIO.read(pageImage);
-        PDImageXObject pdImageXObject = LosslessFactory.createFromImage(newDocument, awtImage);
-        PDPageContentStream contentStream = new PDPageContentStream(newDocument, newPage, PDPageContentStream.AppendMode.APPEND, false);
+        try {
+            PDPage newPage = new PDPage();
+            PDRectangle mediaBox = newPage.getMediaBox();
+            newDocument.addPage(newPage);
 
-        contentStream.drawImage(pdImageXObject, 0, 0, mediaBox.getWidth(), mediaBox.getHeight());
-        contentStream.close();
+            BufferedImage awtImage = ImageIO.read(pageImage);
+            PDImageXObject pdImageXObject = LosslessFactory.createFromImage(newDocument, awtImage);
+            contentStream = new PDPageContentStream(newDocument, newPage, PDPageContentStream.AppendMode.APPEND, false);
+            contentStream.drawImage(pdImageXObject, 0, 0, mediaBox.getWidth(), mediaBox.getHeight());
 
-        return newPage;
+            return newPage;
+        } catch (IOException e) {
+            throw new RedactionProcessingException("Error transforming image file to PDF page");
+        } finally {
+            contentStream.close();
+            newDocument.close();
+        }
     }
 }
