@@ -123,25 +123,19 @@ public class PdfRedaction {
      * @throws IOException
      */
     private PDPage transformToPdf(File pageImage) throws IOException {
-        PDDocument newDocument = new PDDocument();
-        PDPageContentStream contentStream = null;
+        PDPage newPage = new PDPage();
 
-        try {
-            PDPage newPage = new PDPage();
+        try (PDDocument newDocument = new PDDocument(); PDPageContentStream contentStream = new PDPageContentStream(newDocument, newPage, PDPageContentStream.AppendMode.APPEND, false)) {
             PDRectangle mediaBox = newPage.getMediaBox();
             newDocument.addPage(newPage);
 
             BufferedImage awtImage = ImageIO.read(pageImage);
             PDImageXObject pdImageXObject = LosslessFactory.createFromImage(newDocument, awtImage);
-            contentStream = new PDPageContentStream(newDocument, newPage, PDPageContentStream.AppendMode.APPEND, false);
             contentStream.drawImage(pdImageXObject, 0, 0, mediaBox.getWidth(), mediaBox.getHeight());
 
             return newPage;
         } catch (IOException e) {
             throw new RedactionProcessingException("Error transforming image file to PDF page");
-        } finally {
-            contentStream.close();
-            newDocument.close();
         }
     }
 }
