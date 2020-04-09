@@ -14,7 +14,10 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class PdfRedaction {
@@ -22,19 +25,26 @@ public class PdfRedaction {
     @Autowired
     private ImageRedaction imageRedaction;
 
+    /**
+     * Applying Redaction to pdf file
+     *
+     * @param documentFile pdf file to be redacted
+     * @param redactionDTOList list of redactions to be applied to the pdf
+     * @return the redacted file
+     * @throws IOException
+     */
     public File redaction(File documentFile, List<RedactionDTO> redactionDTOList) throws IOException {
         PDDocument document = PDDocument.load(documentFile);
-
+        PDFRenderer pdfRenderer = new PDFRenderer(document);
         document.setDocumentInformation(new PDDocumentInformation());
 
-        PDFRenderer pdfRenderer = new PDFRenderer(document);
-
-        // iterate through redaction list and redact required pages and areas
-        for (RedactionDTO redactionDTO : redactionDTOList) {
-            // how to handle pages that have multiple redaction?
-            File pageImage = transformToImage(pdfRenderer, redactionDTO.getPageNumber() /* -1 ? */);
-            PDPage newPage = transformToPdf(pageImage, redactionDTO);
-            document = replacePage(document, redactionDTO.getPageNumber(), newPage);
+        for (Map.Entry<Integer, List<RedactionDTO>> pageRedactionSet : groupByPageNumber(redactionDTOList).entrySet()) {
+            File pageImage = transformToImage(pdfRenderer, pageRedactionSet.getKey() /* -1 ? */);
+            for (RedactionDTO redactionDTO : redactionDTOList) {
+                pageImage = imageRedaction.redaction(pageImage, redactionDTO);
+            }
+            PDPage newPage = transformToPdf(pageImage);
+            document = replacePage(document, pageRedactionSet.getKey() /* -1 ? */, newPage);
         }
 
         final File newFile = File.createTempFile("altered", ".pdf");
@@ -45,12 +55,34 @@ public class PdfRedaction {
     }
 
     /**
-     * need to remove old page and replace with new PDPage
+     * Group the list of redactionDTO objects by page number
      *
-     * @param document
-     * @param index
-     * @param page
-     * @return
+     * @param redactionDTOList the list to be grouped
+     * @return Map consisting of page number key and Redaction list for that page
+     */
+    private Map<Integer, List<RedactionDTO>> groupByPageNumber(List<RedactionDTO> redactionDTOList) {
+        Map<Integer, List<RedactionDTO>> resultMap = new HashMap<>();
+
+        for (RedactionDTO redactionDTO : redactionDTOList) {
+            if (!resultMap.containsKey(redactionDTO.getPageNumber())) {
+                List<RedactionDTO> list = new ArrayList<>();
+                list.add(redactionDTO);
+                resultMap.put(redactionDTO.getPageNumber(), list);
+            } else {
+                resultMap.get(redactionDTO.getPageNumber()).add(redactionDTO);
+            }
+        }
+
+        return resultMap;
+    }
+
+    /**
+     * Replace old version of page in PDF with newly redacted one
+     *
+     * @param document The PDF document to be redacted
+     * @param index The page number in the PDF (zero indexed)
+     * @param page The redacted page to be inserted into the PDF
+     * @return the pdf document with the newly redacted page inserted at the required position
      */
     private PDDocument replacePage(PDDocument document, final int index, final PDPage page) {
         if (index >= document.getNumberOfPages()) {
@@ -68,8 +100,8 @@ public class PdfRedaction {
      * Transform PDF Page to Image
      *
      * @param pdfRenderer
-     * @param pageNumber
-     * @return
+     * @param pageNumber The page number in the PDF (zero indexed)
+     * @return The file containing the converted page
      * @throws IOException
      */
     private File transformToImage(PDFRenderer pdfRenderer, int pageNumber) throws IOException {
@@ -83,20 +115,19 @@ public class PdfRedaction {
     }
 
     /**
-     * convert it back to pdf after redaction on image
+     * Convert the page back to pdf after redaction on image
      *
-     * @param pageImage
-     * @param redactionDTO
-     * @return
+     * @param pageImage The file containing the PDF page image
+     * @return The newly redacted page in PDF format
      * @throws IOException
      */
-    private PDPage transformToPdf(File pageImage, RedactionDTO redactionDTO) throws IOException {
+    private PDPage transformToPdf(File pageImage) throws IOException {
         PDDocument newDocument = new PDDocument();
         PDPage newPage = new PDPage();
         PDRectangle mediaBox = newPage.getMediaBox();
         newDocument.addPage(newPage);
 
-        BufferedImage awtImage = ImageIO.read(imageRedaction.redaction(pageImage, redactionDTO));
+        BufferedImage awtImage = ImageIO.read(pageImage);
         PDImageXObject pdImageXObject = LosslessFactory.createFromImage(newDocument, awtImage);
         PDPageContentStream contentStream = new PDPageContentStream(newDocument, newPage, PDPageContentStream.AppendMode.APPEND, false);
 

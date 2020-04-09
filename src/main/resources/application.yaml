@@ -122,3 +122,8 @@ dm-store-app:
 # Delete when issueOverride variable is no longer used in SecurityConfiguration.class
 oidc:
   issuer: ${OIDC_ISSUER_BASE_URI:http://localhost:8080/openam/oauth2/hmcts}
+
+redaction:
+  multipart:
+    image-ext: ${REDACTION_MULTIPART_WHITELIST_EXT:jpg,jpeg,bmp,tif,tiff,png,apng,gif,ico,cur,jfif,pjpeg,pjp,svg,webp}
+
