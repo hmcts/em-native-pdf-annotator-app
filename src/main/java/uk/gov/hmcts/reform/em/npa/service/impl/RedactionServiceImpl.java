@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.npa.service.impl;
 
-import com.sun.tools.javac.util.List;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +12,7 @@ import uk.gov.hmcts.reform.em.npa.service.dto.external.redaction.RedactionDTO;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 public class RedactionServiceImpl implements RedactionService {
