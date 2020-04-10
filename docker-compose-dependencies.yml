@@ -5,6 +5,7 @@ services:
 
   rpa-native-pdf-annotator-db:
     image: postgres
+    container_name: npa-db
     environment:
       - POSTGRES_USER=emnpa
       - POSTGRES_PASSWORD=emnpa
@@ -14,6 +15,7 @@ services:
 
   service-auth-provider-api:
     image: hmctspublic.azurecr.io/rpe/service-auth-provider:latest
+    container_name: npa-service-auth
     environment:
       - jwtKey=wThK0f0/lh3FlxFcL4xUWDMI5C1J9KyQBgXV4wseh1e5J1uYJIjvTvArHxQDrYoHJ23xFxjHkOnvNbR5dXRoxA==
       - microserviceKeys_em_gw=AAAAAAAAAAAAAAAA
@@ -35,12 +37,14 @@ services:
 
   annotation-api:
     image: hmctspublic.azurecr.io/em/anno:latest
+    container_name: npa-anno-api
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://annotation-api-db:5432/anno
       - SPRING_DATASOURCE_USERNAME=anno
       - SPRING_DATASOURCE_PASSWORD=anno
       - S2S_BASE_URI=http://service-auth-provider-api:8489
-      - IDAM_API_BASE_URI=http://idam-api:8080
+      - IDAM_API_BASE_URI=http://idam-api:5000
+      - OPEN_ID_API_BASE_URI=http://idam-api:5000/o
       - ENABLE_LIQUIBASE=true
     links:
     - annotation-api-db
@@ -50,6 +54,7 @@ services:
     - 4623:8080
 
   annotation-api-db:
+    container_name: npa-anno-db
     image: postgres
     restart: always
     environment:
@@ -59,6 +64,7 @@ services:
 
   idam-api:
     image: hmctspublic.azurecr.io/idam/api:stable
+    container_name: npa-idam-api
     healthcheck:
       interval: 10s
       timeout: 10s
@@ -98,6 +104,7 @@ services:
 
   idam-web-public:
     image: hmctspublic.azurecr.io/idam/web-public:stable
+    container_name: npa-idam-web-public-api
     environment:
       - JAVA_OPTS=-Xms128m -Xms512m
       - STRATEGIC_SERVICE_URL=http://idam-api:5000
@@ -108,6 +115,7 @@ services:
 
   idam-web-admin:
     image: hmctspublic.azurecr.io/idam/web-admin:stable
+    container_name: npa-idam-web-admin-api
     environment:
       - JAVA_OPTS=-Xms128m -Xms512m
       - STRATEGIC_SERVICE_URL=http://idam-api:5000
@@ -118,6 +126,7 @@ services:
       - idam-api
 
   smtp-server:
+    container_name: npa-smtp-server
     image: mailhog/mailhog
     ports:
       - 1025:1025
@@ -125,6 +134,7 @@ services:
 
   dm-store:
     image: hmctspublic.azurecr.io/dm/store:latest
+    container_name: npa-dm-store
     environment:
       - SERVER_PORT=8080
       - IDAM_SUPERUSER_EMAIL
@@ -174,6 +184,7 @@ services:
 
   dm-store-db:
     image: postgres
+    container_name: npa-dm-store-db
     restart: always
     environment:
       - POSTGRES_DB=evidence
@@ -184,6 +195,7 @@ services:
 
   fr-am:
     image: hmctsprivate.azurecr.io/idam/idam-fr-am:latest
+    container_name: npa-fr-am
     environment:
       - JAVA_TOOL_OPTIONS=-Xms128m -Xmx512m -XX:MaxPermSize=512m
     hostname: localam
@@ -195,6 +207,7 @@ services:
 
   fr-idm:
     image: hmctsprivate.azurecr.io/idam/idam-fr-idm:latest
+    container_name: npa-fr-idm
     environment:
       - JAVA_TOOL_OPTIONS=-Xms128m -Xmx512m -XX:MaxPermSize=512m
     hostname: localidm
@@ -206,6 +219,7 @@ services:
       - shared-db
 
   shared-db:
+    container_name: npa-shared-db
     image: hmctsprivate.azurecr.io/idam/shared-db:latest
     ports:
       - 5430:5432
