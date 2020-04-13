@@ -54,7 +54,7 @@ public class MarkUpResource {
             @ApiResponse(code = 403, message = "Forbidden"),
     })
     @PostMapping("/markups")
-    public ResponseEntity<RedactionDTO> createMarkUp(@RequestBody RedactionDTO redactionDTO) throws URISyntaxException {
+    public ResponseEntity<RedactionDTO> createMarkUp(@Valid @RequestBody RedactionDTO redactionDTO) throws URISyntaxException {
 
         log.debug("REST request to save MarkUp : {}", redactionDTO);
 
