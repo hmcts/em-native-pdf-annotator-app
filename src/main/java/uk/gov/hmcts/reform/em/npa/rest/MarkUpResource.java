@@ -10,8 +10,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.reform.em.npa.rest.errors.EmptyResponseException;
+import uk.gov.hmcts.reform.em.npa.rest.errors.ValidationErrorException;
 import uk.gov.hmcts.reform.em.npa.rest.util.HeaderUtil;
 import uk.gov.hmcts.reform.em.npa.rest.util.PaginationUtil;
 import uk.gov.hmcts.reform.em.npa.service.MarkUpService;
@@ -22,6 +24,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * REST controller for managing Redaction MarkUps.
@@ -54,15 +57,21 @@ public class MarkUpResource {
             @ApiResponse(code = 403, message = "Forbidden"),
     })
     @PostMapping("/markups")
-    public ResponseEntity<RedactionDTO> createMarkUp(@Valid @RequestBody RedactionDTO redactionDTO) throws URISyntaxException {
+    public ResponseEntity<RedactionDTO> createMarkUp(@Valid @RequestBody RedactionDTO redactionDTO,
+                                                     BindingResult result) throws URISyntaxException {
 
         log.debug("REST request to save MarkUp : {}", redactionDTO);
 
+        if (result.hasErrors()) {
+            throw new ValidationErrorException(result.getFieldErrors().stream()
+                    .map(fe -> String.format("%s - %s", fe.getField(), fe.getCode()))
+                    .collect(Collectors.joining(",")));
+        }
 
-        RedactionDTO result = markUpService.save(redactionDTO);
-        return ResponseEntity.created(new URI("/api/markups/" + result.getId()))
-                .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
-                .body(result);
+        RedactionDTO response = markUpService.save(redactionDTO);
+        return ResponseEntity.created(new URI("/api/markups/" + response.getId()))
+                .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, response.getId().toString()))
+                .body(response);
     }
 
 
@@ -82,13 +91,20 @@ public class MarkUpResource {
             @ApiResponse(code = 404, message = "Not Found"),
     })
     @PutMapping("/markups")
-    public ResponseEntity<RedactionDTO> updateMarkUp(@Valid @RequestBody RedactionDTO redactionDTO) {
+    public ResponseEntity<RedactionDTO> updateMarkUp(@Valid @RequestBody RedactionDTO redactionDTO,
+                                                     BindingResult result) {
         log.debug("REST request to update MarkUp : {}", redactionDTO);
 
-        RedactionDTO result = markUpService.save(redactionDTO);
+        if (result.hasErrors()) {
+            throw new ValidationErrorException(result.getFieldErrors().stream()
+                    .map(fe -> String.format("%s - %s", fe.getField(), fe.getCode()))
+                    .collect(Collectors.joining(",")));
+        }
+
+        RedactionDTO response = markUpService.save(redactionDTO);
         return ResponseEntity.ok()
                 .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, redactionDTO.getId().toString()))
-                .body(result);
+                .body(response);
     }
 
     /**
