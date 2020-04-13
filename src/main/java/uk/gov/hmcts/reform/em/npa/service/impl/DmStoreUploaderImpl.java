@@ -40,7 +40,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
     @Override
     public void uploadFile(File file, DocumentTask documentTask) throws DocumentTaskProcessingException {
         if (documentTask.getOutputDocumentId() != null) {
-            uploadNewDocumentVersion(file, documentTask);
+            uploadNewDocumentVersion(file, documentTask.getOutputDocumentId());
         } else {
             uploadNewDocument(file, documentTask);
         }
@@ -91,7 +91,8 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
         }
     }
 
-    private void uploadNewDocumentVersion(File file, DocumentTask documentTask) throws DocumentTaskProcessingException {
+    @Override
+    public void uploadNewDocumentVersion(File file, String documentId) throws DocumentTaskProcessingException {
 
         try {
 
@@ -105,7 +106,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
                     .addHeader("user-id", securityUtils.getCurrentUserLogin().orElse(Constants.ANONYMOUS_USER))
                     .addHeader("user-roles", "caseworker")
                     .addHeader("ServiceAuthorization", authTokenGenerator.generate())
-                    .url(dmStoreAppBaseUrl + dmStoreUploadEndpoint + "/" + documentTask.getOutputDocumentId())
+                    .url(dmStoreAppBaseUrl + dmStoreUploadEndpoint + "/" + documentId)
                     .method("POST", requestBody)
                     .build();
 

@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import uk.gov.hmcts.reform.em.npa.redaction.ImageRedaction;
 import uk.gov.hmcts.reform.em.npa.redaction.PdfRedaction;
+import uk.gov.hmcts.reform.em.npa.service.DmStoreDownloader;
+import uk.gov.hmcts.reform.em.npa.service.DmStoreUploader;
 import uk.gov.hmcts.reform.em.npa.service.RedactionService;
 import uk.gov.hmcts.reform.em.npa.service.dto.external.redaction.RedactionDTO;
 
@@ -19,6 +21,14 @@ public class RedactionServiceImpl implements RedactionService {
 
     private final Logger log = LoggerFactory.getLogger(RedactionService.class);
 
+    private final DmStoreDownloader dmStoreDownloader;
+    private final DmStoreUploader dmStoreUploader;
+
+    public RedactionServiceImpl (DmStoreDownloader dmStoreDownloader, DmStoreUploader dmStoreUploader){
+        this.dmStoreDownloader = dmStoreDownloader;
+        this.dmStoreUploader = dmStoreUploader;
+    }
+
     @Autowired
     private PdfRedaction pdfRedaction;
     @Autowired
@@ -30,23 +40,29 @@ public class RedactionServiceImpl implements RedactionService {
     @Override
     public String redactFile(UUID documentId, List<RedactionDTO> redactionDTOList) {
         try {
-            // call doc store to get doc by documentId
-            // remove this placeholder with a call to doc store client code:
-            File file = new File("");
-            String fileType = FilenameUtils.getExtension(file.getName());
+
+            File originalFile = dmStoreDownloader.downloadFile(documentId.toString());
+
+            String fileType = FilenameUtils.getExtension(originalFile.getName());
+            File updatedFile;
             if (fileType.equals("pdf")) {
                 log.info("Applying redaction to PDF file");
-                File redactedPDF = pdfRedaction.redaction(file, redactionDTOList);
+                updatedFile = pdfRedaction.redaction(originalFile, redactionDTOList);
             } else if (imageExtensionsList.contains(fileType)) {
                 log.info("Applying redaction to Image Document");
-                File redactedImage = imageRedaction.redaction(file, redactionDTOList);
+                updatedFile = imageRedaction.redaction(originalFile, redactionDTOList);
             } else {
                 throw new FileTypeException("Redaction cannot be applied to the file type provided");
             }
-            // call to save the redactedImage file to the doc store
-            return "doc_store_id";
+
+            dmStoreUploader.uploadNewDocumentVersion(updatedFile, documentId.toString());
+
+        } catch (DocumentTaskProcessingException e) {
+            log.error(e.getMessage(), e);
         } catch (IOException e) {
             throw new RuntimeException();
         }
+
+        return documentId.toString();
     }
 }
