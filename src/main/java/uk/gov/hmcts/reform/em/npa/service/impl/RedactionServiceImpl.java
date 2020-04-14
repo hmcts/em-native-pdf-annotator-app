@@ -40,7 +40,6 @@ public class RedactionServiceImpl implements RedactionService {
     @Override
     public String redactFile(UUID documentId, List<RedactionDTO> redactionDTOList) {
         try {
-
             File originalFile = dmStoreDownloader.downloadFile(documentId.toString());
 
             String fileType = FilenameUtils.getExtension(originalFile.getName());
@@ -60,6 +59,7 @@ public class RedactionServiceImpl implements RedactionService {
         } catch (DocumentTaskProcessingException e) {
             log.error(e.getMessage(), e);
         } catch (IOException e) {
+            log.error(e.getMessage(), e);
             throw new RuntimeException();
         }
 
