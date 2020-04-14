@@ -7,68 +7,67 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.em.test.ccddata.CcdDataHelper;
+import uk.gov.hmcts.reform.em.test.ccddefinition.CcdDefinitionHelper;
+import uk.gov.hmcts.reform.em.test.dm.DmHelper;
+import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
+import uk.gov.hmcts.reform.em.test.s2s.S2sHelper;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
-
-import static io.restassured.specification.ProxySpecification.host;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class TestUtil {
 
-    private String documentId;
     private String annotationSetId;
 
-    private final String idamAuth;
-    private final String s2sAuth;
+    private String idamAuth;
+    private String s2sAuth;
 
-    public TestUtil() {
-        IdamHelper idamHelper = new IdamHelper(
-            Env.getIdamUrl(),
-            Env.getOAuthClient(),
-            Env.getOAuthSecret(),
-            Env.getOAuthRedirect()
-        );
+    @Autowired
+    private IdamHelper idamHelper;
 
-        S2sHelper s2sHelper = new S2sHelper(
-            Env.getS2sUrl(),
-            Env.getS2sSecret(),
-            Env.getS2sMicroservice()
-        );
+    @Autowired
+    private S2sHelper s2sHelper;
 
+    @Autowired
+    private DmHelper dmHelper;
+
+    @MockBean
+    protected CcdDataHelper ccdDataHelper;
+
+    @MockBean
+    protected CcdDefinitionHelper ccdDefinitionHelper;
+
+    @Value("${annotation.api.url}")
+    private String emAnnotationUrl;
+
+    @PostConstruct
+    public void init() {
+        idamHelper.createUser("a@b.com", Stream.of("caseworker").collect(Collectors.toList()));
         RestAssured.useRelaxedHTTPSValidation();
-
-        idamAuth = idamHelper.getIdamToken();
+        idamAuth = idamHelper.authenticateUser("a@b.com");
         s2sAuth = s2sHelper.getS2sToken();
     }
 
-    public String getAnnotationSetId() {
-        return this.annotationSetId;
-    }
-
-    public String getDocumentId() {
-        return this.documentId;
-    }
-
     public File getDocumentBinary(String documentId) throws Exception {
-        Response response = s2sAuthRequest()
-                .header("user-roles", "caseworker")
-                .request("GET", Env.getDmApiUrl() + "/documents/" + documentId + "/binary");
-
         Path tempPath = Paths.get(System.getProperty("java.io.tmpdir") + "/" + documentId + "-test.pdf");
-
-        Files.copy(response.getBody().asInputStream(), tempPath, StandardCopyOption.REPLACE_EXISTING);
-
+        Files.copy(dmHelper.getDocumentBinary(documentId), tempPath, StandardCopyOption.REPLACE_EXISTING);
         return tempPath.toFile();
     }
 
-    public String saveAnnotation(String annotationSetId, Integer pageNum) throws Exception {
+    public String saveAnnotation(String annotationSetId, Integer pageNum) {
         UUID annotationId = UUID.randomUUID();
         JSONObject createAnnotations = new JSONObject();
         createAnnotations.put("annotationSetId", annotationSetId);
@@ -99,7 +98,7 @@ public class TestUtil {
         Response response = authRequest()
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .body(createAnnotations)
-                .request("POST", Env.getAnnotationApiUrl() + "/api/annotations");
+                .request("POST", emAnnotationUrl + "/api/annotations");
 
         Assert.assertEquals(201, response.getStatusCode());
 
@@ -119,7 +118,7 @@ public class TestUtil {
         Response response = authRequest()
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .body(createAnnotationSet)
-                .request("POST", Env.getAnnotationApiUrl() + "/api/annotation-sets");
+                .request("POST", emAnnotationUrl + "/api/annotation-sets");
 
         Assert.assertEquals(201, response.getStatusCode());
 
@@ -128,39 +127,64 @@ public class TestUtil {
     }
 
     public String uploadDocument(String pdfName) throws Exception {
-        String newDocUrl = s2sAuthRequest()
-                .header("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
-                .multiPart("files", "test.pdf",  ClassLoader.getSystemResourceAsStream(pdfName), "application/pdf")
-                .multiPart("classification", "PUBLIC")
-                .request("POST", Env.getDmApiUrl() + "/documents")
-                .getBody()
-                .jsonPath()
-                .get("_embedded.documents[0]._links.self.href");
-
-        this.documentId = newDocUrl.substring(newDocUrl.lastIndexOf("/") + 1);
-        return this.documentId;
+        return dmHelper.uploadAndGetId(ClassLoader.getSystemResourceAsStream(pdfName), "application/pdf", pdfName);
     }
 
     public String uploadDocument() throws Exception {
         return uploadDocument("annotationTemplate.pdf");
     }
 
-    public RequestSpecification authRequest() throws Exception {
+    public RequestSpecification authRequest() {
         return s2sAuthRequest()
-            .header("Authorization", idamAuth);
+                .header("Authorization", idamAuth);
     }
 
-    public RequestSpecification s2sAuthRequest() throws Exception {
+    public RequestSpecification s2sAuthRequest() {
         return RestAssured
-            .given()
-            .header("ServiceAuthorization", s2sAuth);
+                .given()
+                .log().all()
+                .header("ServiceAuthorization", s2sAuth);
     }
 
-    public String getIdamAuth() {
-        return idamAuth;
+    public RequestSpecification emptyIdamAuthRequest() {
+        return s2sAuthRequest()
+                .header("Authorization", null);
     }
 
-    public String getS2sAuth() {
-        return s2sAuth;
+    public RequestSpecification emptyIdamAuthAndEmptyS2SAuth() {
+        return RestAssured
+                .given()
+                .header("ServiceAuthorization", null)
+                .header("Authorization", null);
     }
+
+    public RequestSpecification validAuthRequestWithEmptyS2SAuth() {
+        return emptyS2sAuthRequest().header("Authorization", idamAuth);
+    }
+
+    public RequestSpecification validS2SAuthWithEmptyIdamAuth() {
+
+        return s2sAuthRequest().header("Authorization", null);
+    }
+
+    private RequestSpecification emptyS2sAuthRequest() {
+
+        return RestAssured.given().header("ServiceAuthorization", null);
+    }
+
+    public RequestSpecification invalidIdamAuthrequest() {
+
+        return s2sAuthRequest().header("Authorization", "invalidIDAMAuthRequest");
+    }
+
+    public RequestSpecification invalidS2SAuth() {
+
+        return invalidS2sAuthRequest().header("Authorization", idamAuth);
+    }
+
+    private RequestSpecification invalidS2sAuthRequest() {
+
+        return RestAssured.given().header("ServiceAuthorization", "invalidS2SAuthorization");
+    }
+
 }

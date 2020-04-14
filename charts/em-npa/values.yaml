@@ -1,56 +1,39 @@
-npa:
+java:
   postgresql:
     postgresqlUsername: emnpa
     postgresqlPassword: emnpa
-    postgresqlDatabase: emnpa
     nameOverride: rpa-npa-db
-  image: 'hmcts.azurecr.io/hmcts/em-npa:latest'
+  image: 'hmctspublic.azurecr.io/em/npa:latest'
   applicationPort: 8080
-  readinessDelay: 45
-  readinessTimeout: 5
-  readinessPeriod: 15
-  readinessFailureThreshold: 10
-  livenessDelay: 45
-  livenessTimeout: 5
-  livenessPeriod: 15
-  livenessFailureThreshold: 10
+  aadIdentityName: em
   keyVaults:
-    rpa:
-      resourceGroup: rpa
+    em-npa:
       secrets:
         - AppInsightsInstrumentationKey
-    s2s:
-      resourceGroup: rpe-service-auth-provider
-      secrets:
         - microservicekey-em-npa-app
+        - npa-POSTGRES-PASS
   environment:
-    SPRING_DATASOURCE_URL: jdbc:postgresql://{{ .Release.Name }}-{{ .Values.postgresql.nameOverride}}:5432/{{ .Values.postgresql.postgresqlDatabase}}?ssl=disable
-    SPRING_DATASOURCE_USERNAME: "{{ .Values.postgresql.postgresqlUsername}}"
-    SPRING_DATASOURCE_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
-    # Regardless of environment, point towards AAT instances. Overwrite in product charts etc.
-    IDAM_API_BASE_URI: https://idam-api.aat.platform.hmcts.net
-    S2S_BASE_URI: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-    DM_STORE_APP_URL: http://dm-store-aat.service.core-compute-aat.internal
-    EM_ANNO_APP_URL: http://em-anno-aat.service.core-compute-aat.internal
-    ENABLE_DB_MIGRATE: true
-    REFORM_SERVICE_NAME: em-npa
-    REFORM_TEAM: evidence
-    REFORM_SERVICE_TYPE: java
-    REFORM_ENVIRONMENT: preview
-    PACKAGES_NAME: em-npa
-    PACKAGES_PROJECT: evidence
-    PACKAGES_ENVIRONMENT: preview
+    RUN_DB_MIGRATION_ON_STARTUP: 'false'
+    IDAM_API_BASE_URI: https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net
+    OPEN_ID_API_BASE_URI: https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net/o
+    OIDC_ISSUER_BASE_URI: https://forgerock-am.service.core-compute-idam-{{ .Values.global.environment }}.internal:8443/openam/oauth2/hmcts
+    S2S_BASE_URI: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+    DM_STORE_APP_URL: http://dm-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+    EM_ANNO_APP_URL: http://em-anno-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+
+    SPRING_DATASOURCE_USERNAME: annotation@em-npa-postgres-db-{{ .Values.global.environment }}  
+    SPRING_DATASOURCE_URL: jdbc:postgresql://em-npa-postgres-db-{{ .Values.global.environment }}.postgres.database.azure.com:5432/annotation?sslmode=require
+
+    ENABLE_DB_MIGRATE: false
     JSON_CONSOLE_PRETTY_PRINT: false
     LOG_OUTPUT: single
     ROOT_LOGGING_LEVEL: INFO
     LOG_LEVEL_SPRING_WEB: INFO
     LOG_LEVEL_DM: INFO
-    SHOW_SQL: true
+    SHOW_SQL: false
     ENDPOINTS_HEALTH_SENSITIVE: false
     ENDPOINTS_INFO_SENSITIVE: false
-    S2S_NAMES_WHITELIST: em_api,em_gw,ccd_gw,ccd_data,sscs,divorce_document_upload,divorce_document_generator,probate_backend,jui_webapp,pui_webapp
-    CASE_WORKER_ROLES: caseworker-probate,caseworker-cmc,caseworker-sscs,caseworker-divorce
     ENABLE_IDAM_HEALTH_CHECK: false
     ENABLE_S2S_HEALTH_CHECK: false
-    ENABLE_LIQUIBASE: true
+    ENABLE_LIQUIBASE: false
     SERVER_PORT: 8080

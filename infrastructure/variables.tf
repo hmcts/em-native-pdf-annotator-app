@@ -60,6 +60,14 @@ variable "idam_api_base_uri" {
   default = "http://betaDevBccidamAppLB.reform.hmcts.net:80"
 }
 
+variable "open_id_api_base_uri" {
+  default = "idam-api"
+}
+
+variable "oidc_issuer_base_uri" {
+  default = "idam-api"
+}
+
 variable "s2s_url" {
   default = "rpe-service-auth-provider"
 }
@@ -132,6 +140,9 @@ variable "application_type" {
   default     = "Web"
   description = "Type of Application Insights (Web/Other)"
 }
+variable "managed_identity_object_id" {
+  default = ""
+}
 ////////////////////////////////////////////////
 // Toggle Features
 ////////////////////////////////////////////////
@@ -145,16 +156,6 @@ variable "enable_s2s_healthcheck" {
 
 variable "managed_identity_object_id" {
   default = ""
-}
-////////////////////////////////////////////////
-// Whitelists
-////////////////////////////////////////////////
-variable "s2s_names_whitelist" {
-  default = "em_api,em_gw,ccd_gw,ccd_data,sscs,divorce_document_upload,divorce_document_generator,probate_backend,jui_webapp,pui_webapp"
-}
-
-variable "case_worker_roles" {
-  default = "caseworker-probate,caseworker-cmc,caseworker-sscs,caseworker-divorce"
 }
 ////////////////////////////////////////////////
 // Addtional

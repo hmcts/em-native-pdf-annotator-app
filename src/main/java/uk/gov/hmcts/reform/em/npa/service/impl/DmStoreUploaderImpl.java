@@ -5,9 +5,9 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.hmcts.reform.auth.checker.core.SubjectResolver;
-import uk.gov.hmcts.reform.auth.checker.core.user.User;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.em.npa.config.Constants;
+import uk.gov.hmcts.reform.em.npa.config.security.SecurityUtils;
 import uk.gov.hmcts.reform.em.npa.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.npa.service.DmStoreUploader;
 
@@ -22,19 +22,19 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
 
     private final AuthTokenGenerator authTokenGenerator;
 
-    private final SubjectResolver<User> userResolver;
-
     private final String dmStoreAppBaseUrl;
 
     private final String dmStoreUploadEndpoint = "/documents";
 
+    private final SecurityUtils securityUtils;
+
     public DmStoreUploaderImpl(OkHttpClient okHttpClient, AuthTokenGenerator authTokenGenerator,
                                @Value("${dm-store-app.base-url}") String dmStoreAppBaseUrl,
-                               SubjectResolver<User> userResolver) {
+                               SecurityUtils securityUtils) {
         this.okHttpClient = okHttpClient;
         this.authTokenGenerator = authTokenGenerator;
         this.dmStoreAppBaseUrl = dmStoreAppBaseUrl;
-        this.userResolver = userResolver;
+        this.securityUtils = securityUtils;
     }
 
     @Override
@@ -58,7 +58,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
                     .build();
 
             Request request = new Request.Builder()
-                    .addHeader("user-id", getUserId(documentTask))
+                    .addHeader("user-id", securityUtils.getCurrentUserLogin().orElse(Constants.ANONYMOUS_USER))
                     .addHeader("user-roles", "caseworker")
                     .addHeader("ServiceAuthorization", authTokenGenerator.generate())
                     .url(dmStoreAppBaseUrl + dmStoreUploadEndpoint)
@@ -102,7 +102,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
                     .build();
 
             Request request = new Request.Builder()
-                    .addHeader("user-id", getUserId(documentTask))
+                    .addHeader("user-id", securityUtils.getCurrentUserLogin().orElse(Constants.ANONYMOUS_USER))
                     .addHeader("user-roles", "caseworker")
                     .addHeader("ServiceAuthorization", authTokenGenerator.generate())
                     .url(dmStoreAppBaseUrl + dmStoreUploadEndpoint + "/" + documentTask.getOutputDocumentId())
@@ -118,11 +118,6 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
         } catch (RuntimeException | IOException e) {
             throw new DocumentTaskProcessingException("Couldn't upload the file", e);
         }
-    }
-
-    private String getUserId(DocumentTask documentTask) {
-        User user = userResolver.getTokenDetails(documentTask.getJwt());
-        return user.getPrincipal();
     }
 
 }

@@ -8,93 +8,9 @@
         <cve>CVE-2020-1938</cve>
         <cve>CVE-2019-17195</cve>
         <cve>CVE-2020-1935</cve>
-        <cve>CVE-2019-12086</cve>
-        <cve>CVE-2019-9658</cve>
-        <cve>CVE-2018-10237</cve>
-        <cve>CVE-2019-10102</cve>
-        <cve>CVE-2019-10101</cve>
-        <cve>CVE-2019-10103</cve>
-        <cve>CVE-2018-1258</cve>
-        <cve>CVE-2018-1000613</cve>
-        <cve>CVE-2017-13098</cve>
-        <cve>CVE-2018-1000180</cve>
-        <cve>CVE-2019-12814</cve>
-        <cve>CVE-2017-15288</cve>
-        <cve>CVE-2005-0036</cve>
-        <cve>CVE-2005-0861</cve>
-        <cve>CVE-1999-1338</cve>
-        <cve>CVE-2016-6497</cve>
-        <cve>CVE-2018-14042</cve>
-        <cve>CVE-2019-8331</cve>
-        <cve>CVE-2018-14041</cve>
-        <cve>CVE-2018-14040</cve>
-        <cve>CVE-2015-9251</cve>
-        <cve>CVE-2019-11358</cve>
-        <cve>CVE-2012-6708</cve>
-        <cve>CVE-2016-7103</cve>
-        <cve>CVE-2010-5312</cve>
-
-        <cve>CVE-2018-20200</cve>
-        <cve>CVE-2018-10936</cve>
-        <cve>CVE-2019-11065</cve>
-        <cve>CVE-2019-3795</cve>
-        <cve>CVE-2019-0221</cve>
-        <cve>CVE-2019-0232</cve>
-        <cve>CVE-2019-10072</cve>
-        <cve>CVE-2019-12086</cve>
-        <cve>CVE-2019-12384</cve>
-        <cve>CVE-2018-10054</cve>
-        <cve>CVE-2018-14335</cve>
-
-        <cve>CVE-2019-10086</cve>
-        <cve>CVE-2019-14379</cve>
-        <cve>CVE-2019-14439</cve>
-        <cve>CVE-2019-16335</cve>
-        <cve>CVE-2019-14540</cve>
-        <cve>CVE-2019-16370</cve>
-        <cve>CVE-2019-15052</cve>
-        <cve>CVE-2018-11797</cve>
-        <cve>CVE-2019-14892</cve>
-        <cve>CVE-2019-14893</cve>
-        <cve>CVE-2019-16942</cve>
-        <cve>CVE-2019-16943</cve>
-        <cve>CVE-2019-17267</cve>
-        <cve>CVE-2019-17531</cve>
-        <cve>CVE-2019-20330</cve>
-        <cve>CVE-2020-10672</cve>
-        <cve>CVE-2020-10673</cve>
-        <cve>CVE-2020-10978</cve>
-        <cve>CVE-2020-10969</cve>
-        <cve>CVE-2020-11111</cve>
-        <cve>CVE-2020-11112</cve>
-        <cve>CVE-2020-11113</cve>
-        <cve>CVE-2020-8840</cve>
-        <cve>CVE-2020-9546</cve>
-        <cve>CVE-2020-9547</cve>
-        <cve>CVE-2020-9548</cve>
-        <cve>CVE-2014-3488</cve>
-        <cve>CVE-2015-2156</cve>
-        <cve>CVE-2019-16869</cve>
-        <cve>CVE-2019-20444</cve>
-        <cve>CVE-2019-20445</cve>
-        <cve>CVE-2019-16869</cve>
-        <cve>CVE-2020-10968</cve>
     </suppress>
 
-    <suppress>
-        <notes><![CDATA[
-   file name: feign-core-8.18.0.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.netflix\.feign/feign-core@.*$</packageUrl>
-        <vulnerabilityName>CWE-611: Improper Restriction of XML External Entity Reference ('XXE')</vulnerabilityName>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-   file name: feign-jackson-8.18.0.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.netflix\.feign/feign-jackson@.*$</packageUrl>
-        <vulnerabilityName>CWE-611: Improper Restriction of XML External Entity Reference ('XXE')</vulnerabilityName>
-    </suppress>
+
     <suppress>
         <notes><![CDATA[
         false positive, fixed in greater than 5.0.5.RELEASE

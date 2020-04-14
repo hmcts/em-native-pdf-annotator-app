@@ -1,5 +1,4 @@
 dependencies:
   - name: java
-    version: '~2.0.4'
-    repository: '@hmcts'
-    alias: npa
+    version: '~2.16.0'
+    repository: '@hmctspublic'
