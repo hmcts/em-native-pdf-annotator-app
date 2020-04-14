@@ -36,20 +36,22 @@ public class PdfRedaction {
      */
     public File redaction(File documentFile, List<RedactionDTO> redactionDTOList) throws IOException {
         PDDocument document = PDDocument.load(documentFile);
+        PDDocument newDocument = new PDDocument();
+
         PDFRenderer pdfRenderer = new PDFRenderer(document);
         document.setDocumentInformation(new PDDocumentInformation());
 
         for (Map.Entry<Integer, List<RedactionDTO>> pageRedactionSet : groupByPageNumber(redactionDTOList).entrySet()) {
-            File pageImage = transformToImage(pdfRenderer, pageRedactionSet.getKey() /* -1 ? */);
-            for (RedactionDTO redactionDTO : redactionDTOList) {
-                pageImage = imageRedaction.redaction(pageImage, redactionDTO);
-            }
-            PDPage newPage = transformToPdf(pageImage);
-            document = replacePage(document, pageRedactionSet.getKey() /* -1 ? */, newPage);
+            File pageImage = transformToImage(pdfRenderer, pageRedactionSet.getKey() - 1);
+            pageImage = imageRedaction.redaction(pageImage, pageRedactionSet.getValue());
+            PDPage newPage = transformToPdf(pageImage, newDocument);
+            document = replacePage(document, pageRedactionSet.getKey() - 1, document.importPage(newPage));
         }
 
         final File newFile = File.createTempFile("altered", ".pdf");
+
         document.save(newFile);
+        newDocument.close();
         document.close();
 
         return newFile;
@@ -106,7 +108,6 @@ public class PdfRedaction {
      * @throws IOException
      */
     private File transformToImage(PDFRenderer pdfRenderer, int pageNumber) throws IOException {
-        // page number is 0 indexed so may need to subtract 1 from value in DTO
         BufferedImage img = pdfRenderer.renderImageWithDPI(pageNumber, 300, ImageType.RGB);
 
         final File alteredImage = File.createTempFile("altered", ".png");
@@ -122,10 +123,9 @@ public class PdfRedaction {
      * @return The newly redacted page in PDF format
      * @throws IOException
      */
-    private PDPage transformToPdf(File pageImage) throws IOException {
+    private PDPage transformToPdf(File pageImage, PDDocument newDocument) throws IOException {
         PDPage newPage = new PDPage();
-
-        try (PDDocument newDocument = new PDDocument(); PDPageContentStream contentStream = new PDPageContentStream(newDocument, newPage, PDPageContentStream.AppendMode.APPEND, false)) {
+        try (PDPageContentStream contentStream = new PDPageContentStream(newDocument, newPage, PDPageContentStream.AppendMode.APPEND, false)) {
             PDRectangle mediaBox = newPage.getMediaBox();
             newDocument.addPage(newPage);
 
