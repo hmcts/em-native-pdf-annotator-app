@@ -37,23 +37,22 @@ public class PdfRedaction {
     public File redaction(File documentFile, List<RedactionDTO> redactionDTOList) throws IOException {
         PDDocument document = PDDocument.load(documentFile);
         PDFRenderer pdfRenderer = new PDFRenderer(document);
-        PDDocument newDocument = new PDDocument();
+        final File newFile = File.createTempFile("altered", ".pdf");
 
         document.setDocumentInformation(new PDDocumentInformation());
+        try (PDDocument newDocument = new PDDocument()) {
 
-        for (Map.Entry<Integer, List<RedactionDTO>> pageRedactionSet : groupByPageNumber(redactionDTOList).entrySet()) {
-            File pageImage = transformToImage(pdfRenderer, pageRedactionSet.getKey() - 1);
-            pageImage = imageRedaction.redaction(pageImage, pageRedactionSet.getValue());
-            PDPage newPage = transformToPdf(pageImage, newDocument);
-            document = replacePage(document, pageRedactionSet.getKey() - 1, document.importPage(newPage));
+            for (Map.Entry<Integer, List<RedactionDTO>> pageRedactionSet : groupByPageNumber(redactionDTOList).entrySet()) {
+                File pageImage = transformToImage(pdfRenderer, pageRedactionSet.getKey() - 1);
+                pageImage = imageRedaction.redaction(pageImage, pageRedactionSet.getValue());
+                PDPage newPage = transformToPdf(pageImage, newDocument);
+                replacePage(document, pageRedactionSet.getKey() - 1, document.importPage(newPage));
+            }
+
+            document.save(newFile);
         }
 
-        final File newFile = File.createTempFile("altered", ".pdf");
-        document.save(newFile);
-
-        newDocument.close();
         document.close();
-
         return newFile;
     }
 

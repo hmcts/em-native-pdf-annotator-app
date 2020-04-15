@@ -34,8 +34,19 @@ public class PdfRedactionTest {
     }
 
     public void initRedactionDTOList() {
+        RedactionDTO dto = new RedactionDTO();
+
+        dto.setPageNumber(1);
+        dto.setXCoordinate(100);
+        dto.setYCoordinate(100);
+        dto.setHeight(100);
+        dto.setWidth(100);
+
+        redactionDTOList.add(dto);
+
         for (int i = 0; i < 5 ; i++) {
             RedactionDTO redactionDTO = new RedactionDTO();
+
             redactionDTO.setPageNumber(i + 1);
             redactionDTO.setXCoordinate(100 * (i + 1));
             redactionDTO.setYCoordinate(100 * (i + 1));

@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.npa.redaction.ImageRedaction;
 import uk.gov.hmcts.reform.em.npa.redaction.PdfRedaction;
 import uk.gov.hmcts.reform.em.npa.service.DmStoreDownloader;
@@ -17,9 +18,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
+@Service
 public class RedactionServiceImpl implements RedactionService {
 
-    private final Logger log = LoggerFactory.getLogger(RedactionService.class);
+    private final Logger log = LoggerFactory.getLogger(RedactionServiceImpl.class);
 
     private final DmStoreDownloader dmStoreDownloader;
     private final DmStoreUploader dmStoreUploader;
@@ -60,7 +62,7 @@ public class RedactionServiceImpl implements RedactionService {
             log.error(e.getMessage(), e);
         } catch (IOException e) {
             log.error(e.getMessage(), e);
-            throw new RuntimeException();
+            throw new FileTypeException("File processing error");
         }
 
         return documentId.toString();

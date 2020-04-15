@@ -38,6 +38,7 @@ public class ImageRedactionTest {
     public void initRedactionDTOList() {
         for (int i = 0; i < 5 ; i++) {
             RedactionDTO redactionDTO = new RedactionDTO();
+
             redactionDTO.setPageNumber(i + 1);
             redactionDTO.setXCoordinate(100 * (i + 1));
             redactionDTO.setYCoordinate(100 * (i + 1));
