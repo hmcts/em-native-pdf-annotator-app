@@ -99,7 +99,7 @@ resource "azurerm_resource_group" "rg" {
   tags = "${local.tags}"
 }
 
- Load AppInsights key from rpa vault
+# Load AppInsights key from rpa vault
 data "azurerm_key_vault_secret" "app_insights_key" {
   name      = "AppInsightsInstrumentationKey"
   key_vault_id = "${data.azurerm_key_vault.shared_key_vault.id}"
