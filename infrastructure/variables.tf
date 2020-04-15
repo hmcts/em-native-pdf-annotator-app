@@ -154,9 +154,6 @@ variable "enable_s2s_healthcheck" {
     default = "false"
 }
 
-variable "managed_identity_object_id" {
-  default = ""
-}
 ////////////////////////////////////////////////
 // Addtional
 ////////////////////////////////////////////////
