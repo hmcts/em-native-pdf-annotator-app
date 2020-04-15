@@ -39,16 +39,16 @@ data "azurerm_key_vault" "shared_key_vault" {
   resource_group_name = "${local.shared_vault_name}"
 }
 
-#data "azurerm_key_vault_secret" "s2s_key" {
-#  name      = "microservicekey-em-npa-app"
-#  key_vault_id = "${data.azurerm_key_vault.s2s_vault.id}"
-#}
+data "azurerm_key_vault_secret" "s2s_key" {
+  name      = "microservicekey-em-npa-app"
+  key_vault_id = "${data.azurerm_key_vault.s2s_vault.id}"
+}
 
-#resource "azurerm_key_vault_secret" "local_s2s_key" {
-#  name         = "microservicekey-em-npa-app"
-#  value        = "${data.azurerm_key_vault_secret.s2s_key.value}"
-#  key_vault_id = "${module.key_vault.key_vault_id}"
-#}
+resource "azurerm_key_vault_secret" "local_s2s_key" {
+  name         = "microservicekey-em-npa-app"
+  value        = "${data.azurerm_key_vault_secret.s2s_key.value}"
+  key_vault_id = "${module.key_vault.key_vault_id}"
+}
 
 # Copy s2s key from shared to local vault
 module "key_vault" {
@@ -63,35 +63,35 @@ module "key_vault" {
   managed_identity_object_id = "${var.managed_identity_object_id}"
 }
 
-#resource "azurerm_key_vault_secret" "POSTGRES-USER" {
-#  name = "${var.component}-POSTGRES-USER"
-#  value = "${module.db.user_name}"
-#  key_vault_id = "${module.key_vault.key_vault_id}"
-#}
+resource "azurerm_key_vault_secret" "POSTGRES-USER" {
+  name = "${var.component}-POSTGRES-USER"
+  value = "${module.db.user_name}"
+  key_vault_id = "${module.key_vault.key_vault_id}"
+}
 
-#resource "azurerm_key_vault_secret" "POSTGRES-PASS" {
-#  name = "${var.component}-POSTGRES-PASS"
-#  value = "${module.db.postgresql_password}"
-#  key_vault_id = "${module.key_vault.key_vault_id}"
-#}
+resource "azurerm_key_vault_secret" "POSTGRES-PASS" {
+  name = "${var.component}-POSTGRES-PASS"
+  value = "${module.db.postgresql_password}"
+  key_vault_id = "${module.key_vault.key_vault_id}"
+}
 
-#resource "azurerm_key_vault_secret" "POSTGRES_HOST" {
-#  name = "${var.component}-POSTGRES-HOST"
-#  value = "${module.db.host_name}"
-#  key_vault_id = "${module.key_vault.key_vault_id}"
-#}
+resource "azurerm_key_vault_secret" "POSTGRES_HOST" {
+  name = "${var.component}-POSTGRES-HOST"
+  value = "${module.db.host_name}"
+  key_vault_id = "${module.key_vault.key_vault_id}"
+}
 
-#resource "azurerm_key_vault_secret" "POSTGRES_PORT" {
-#  name = "${var.component}-POSTGRES-PORT"
-#  value = "${module.db.postgresql_listen_port}"
-#  key_vault_id = "${module.key_vault.key_vault_id}"
-#}
+resource "azurerm_key_vault_secret" "POSTGRES_PORT" {
+  name = "${var.component}-POSTGRES-PORT"
+  value = "${module.db.postgresql_listen_port}"
+  key_vault_id = "${module.key_vault.key_vault_id}"
+}
 
-#resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
-#  name = "${var.component}-POSTGRES-DATABASE"
-#  value = "${module.db.postgresql_database}"
-#  key_vault_id = "${module.key_vault.key_vault_id}"
-#}
+resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
+  name = "${var.component}-POSTGRES-DATABASE"
+  value = "${module.db.postgresql_database}"
+  key_vault_id = "${module.key_vault.key_vault_id}"
+}
 
 resource "azurerm_resource_group" "rg" {
   name     = "${var.product}-${var.component}-${var.env}"
@@ -99,14 +99,14 @@ resource "azurerm_resource_group" "rg" {
   tags = "${local.tags}"
 }
 
-# Load AppInsights key from rpa vault
-#data "azurerm_key_vault_secret" "app_insights_key" {
-#  name      = "AppInsightsInstrumentationKey"
-#  key_vault_id = "${data.azurerm_key_vault.shared_key_vault.id}"
-#}
+ Load AppInsights key from rpa vault
+data "azurerm_key_vault_secret" "app_insights_key" {
+  name      = "AppInsightsInstrumentationKey"
+  key_vault_id = "${data.azurerm_key_vault.shared_key_vault.id}"
+}
 
-#resource "azurerm_key_vault_secret" "local_app_insights_key" {
-#  name         = "AppInsightsInstrumentationKey"
-#  value        = "${data.azurerm_key_vault_secret.app_insights_key.value}"
-#  key_vault_id = "${module.key_vault.key_vault_id}"
-#}
+resource "azurerm_key_vault_secret" "local_app_insights_key" {
+  name         = "AppInsightsInstrumentationKey"
+  value        = "${data.azurerm_key_vault_secret.app_insights_key.value}"
+  key_vault_id = "${module.key_vault.key_vault_id}"
+}
