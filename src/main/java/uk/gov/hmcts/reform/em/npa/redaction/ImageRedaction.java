@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.em.npa.redaction;
 
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.em.npa.service.dto.external.redaction.RedactionDTO;
+import uk.gov.hmcts.reform.em.npa.domain.RedactionDTO;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
