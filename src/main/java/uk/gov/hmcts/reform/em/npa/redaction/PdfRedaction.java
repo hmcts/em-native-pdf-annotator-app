@@ -8,7 +8,7 @@ import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.em.npa.service.dto.external.redaction.RedactionDTO;
+import uk.gov.hmcts.reform.em.npa.domain.RedactionDTO;
 import uk.gov.hmcts.reform.em.npa.service.impl.RedactionProcessingException;
 
 import javax.imageio.ImageIO;
@@ -37,21 +37,22 @@ public class PdfRedaction {
     public File redaction(File documentFile, List<RedactionDTO> redactionDTOList) throws IOException {
         PDDocument document = PDDocument.load(documentFile);
         PDFRenderer pdfRenderer = new PDFRenderer(document);
-        document.setDocumentInformation(new PDDocumentInformation());
+        final File newFile = File.createTempFile("altered", ".pdf");
 
-        for (Map.Entry<Integer, List<RedactionDTO>> pageRedactionSet : groupByPageNumber(redactionDTOList).entrySet()) {
-            File pageImage = transformToImage(pdfRenderer, pageRedactionSet.getKey() /* -1 ? */);
-            for (RedactionDTO redactionDTO : redactionDTOList) {
-                pageImage = imageRedaction.redaction(pageImage, redactionDTO);
+        document.setDocumentInformation(new PDDocumentInformation());
+        try (PDDocument newDocument = new PDDocument()) {
+
+            for (Map.Entry<Integer, List<RedactionDTO>> pageRedactionSet : groupByPageNumber(redactionDTOList).entrySet()) {
+                File pageImage = transformToImage(pdfRenderer, pageRedactionSet.getKey() - 1);
+                pageImage = imageRedaction.redaction(pageImage, pageRedactionSet.getValue());
+                PDPage newPage = transformToPdf(pageImage, newDocument);
+                replacePage(document, pageRedactionSet.getKey() - 1, document.importPage(newPage));
             }
-            PDPage newPage = transformToPdf(pageImage);
-            document = replacePage(document, pageRedactionSet.getKey() /* -1 ? */, newPage);
+
+            document.save(newFile);
         }
 
-        final File newFile = File.createTempFile("altered", ".pdf");
-        document.save(newFile);
         document.close();
-
         return newFile;
     }
 
@@ -62,19 +63,19 @@ public class PdfRedaction {
      * @return Map consisting of page number key and Redaction list for that page
      */
     private Map<Integer, List<RedactionDTO>> groupByPageNumber(List<RedactionDTO> redactionDTOList) {
-        Map<Integer, List<RedactionDTO>> resultMap = new HashMap<>();
+        Map<Integer, List<RedactionDTO>> pageMap = new HashMap<>();
 
         for (RedactionDTO redactionDTO : redactionDTOList) {
-            if (!resultMap.containsKey(redactionDTO.getPageNumber())) {
+            if (!pageMap.containsKey(redactionDTO.getPageNumber())) {
                 List<RedactionDTO> list = new ArrayList<>();
                 list.add(redactionDTO);
-                resultMap.put(redactionDTO.getPageNumber(), list);
+                pageMap.put(redactionDTO.getPageNumber(), list);
             } else {
-                resultMap.get(redactionDTO.getPageNumber()).add(redactionDTO);
+                pageMap.get(redactionDTO.getPageNumber()).add(redactionDTO);
             }
         }
 
-        return resultMap;
+        return pageMap;
     }
 
     /**
@@ -106,7 +107,6 @@ public class PdfRedaction {
      * @throws IOException
      */
     private File transformToImage(PDFRenderer pdfRenderer, int pageNumber) throws IOException {
-        // page number is 0 indexed so may need to subtract 1 from value in DTO
         BufferedImage img = pdfRenderer.renderImageWithDPI(pageNumber, 300, ImageType.RGB);
 
         final File alteredImage = File.createTempFile("altered", ".png");
@@ -122,10 +122,9 @@ public class PdfRedaction {
      * @return The newly redacted page in PDF format
      * @throws IOException
      */
-    private PDPage transformToPdf(File pageImage) throws IOException {
+    private PDPage transformToPdf(File pageImage, PDDocument newDocument) throws IOException {
         PDPage newPage = new PDPage();
-
-        try (PDDocument newDocument = new PDDocument(); PDPageContentStream contentStream = new PDPageContentStream(newDocument, newPage, PDPageContentStream.AppendMode.APPEND, false)) {
+        try (PDPageContentStream contentStream = new PDPageContentStream(newDocument, newPage, PDPageContentStream.AppendMode.APPEND, false)) {
             PDRectangle mediaBox = newPage.getMediaBox();
             newDocument.addPage(newPage);
 
