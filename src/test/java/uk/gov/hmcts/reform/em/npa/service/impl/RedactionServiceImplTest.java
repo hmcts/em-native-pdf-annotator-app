@@ -101,14 +101,4 @@ public class RedactionServiceImplTest {
         String result = redactionService.redactFile(docStoreUUID, redactionDTOList);
         Assert.assertEquals(result, docStoreUUID.toString());
     }
-
-    @Test(expected = FileTypeException.class)
-    public void redactIOErrorTest() throws DocumentTaskProcessingException {
-        UUID docStoreUUID = UUID.randomUUID();
-
-        Mockito.when(dmStoreDownloader.downloadFile(docStoreUUID.toString())).thenReturn(new File("x."));
-        initRedactionDTOList();
-
-        redactionService.redactFile(docStoreUUID, redactionDTOList);
-    }
 }
