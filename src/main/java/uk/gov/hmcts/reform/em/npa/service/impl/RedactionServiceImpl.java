@@ -41,9 +41,9 @@ public class RedactionServiceImpl implements RedactionService {
     public String redactFile(UUID documentId, List<RedactionDTO> redactionDTOList) {
         try {
             File originalFile = dmStoreDownloader.downloadFile(documentId.toString());
-
             String fileType = FilenameUtils.getExtension(originalFile.getName());
             File updatedFile;
+
             if (fileType.equals("pdf")) {
                 log.info("Applying redaction to PDF file");
                 updatedFile = pdfRedaction.redaction(originalFile, redactionDTOList);

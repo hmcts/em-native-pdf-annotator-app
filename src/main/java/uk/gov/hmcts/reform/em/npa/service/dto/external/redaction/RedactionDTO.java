@@ -2,8 +2,10 @@ package uk.gov.hmcts.reform.em.npa.service.dto.external.redaction;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
+@Setter
 @Getter
 @EqualsAndHashCode
 @ToString

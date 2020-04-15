@@ -36,9 +36,9 @@ public class PdfRedaction {
      */
     public File redaction(File documentFile, List<RedactionDTO> redactionDTOList) throws IOException {
         PDDocument document = PDDocument.load(documentFile);
+        PDFRenderer pdfRenderer = new PDFRenderer(document);
         PDDocument newDocument = new PDDocument();
 
-        PDFRenderer pdfRenderer = new PDFRenderer(document);
         document.setDocumentInformation(new PDDocumentInformation());
 
         for (Map.Entry<Integer, List<RedactionDTO>> pageRedactionSet : groupByPageNumber(redactionDTOList).entrySet()) {
@@ -49,8 +49,8 @@ public class PdfRedaction {
         }
 
         final File newFile = File.createTempFile("altered", ".pdf");
-
         document.save(newFile);
+
         newDocument.close();
         document.close();
 
@@ -64,19 +64,19 @@ public class PdfRedaction {
      * @return Map consisting of page number key and Redaction list for that page
      */
     private Map<Integer, List<RedactionDTO>> groupByPageNumber(List<RedactionDTO> redactionDTOList) {
-        Map<Integer, List<RedactionDTO>> resultMap = new HashMap<>();
+        Map<Integer, List<RedactionDTO>> pageMap = new HashMap<>();
 
         for (RedactionDTO redactionDTO : redactionDTOList) {
-            if (!resultMap.containsKey(redactionDTO.getPageNumber())) {
+            if (!pageMap.containsKey(redactionDTO.getPageNumber())) {
                 List<RedactionDTO> list = new ArrayList<>();
                 list.add(redactionDTO);
-                resultMap.put(redactionDTO.getPageNumber(), list);
+                pageMap.put(redactionDTO.getPageNumber(), list);
             } else {
-                resultMap.get(redactionDTO.getPageNumber()).add(redactionDTO);
+                pageMap.get(redactionDTO.getPageNumber()).add(redactionDTO);
             }
         }
 
-        return resultMap;
+        return pageMap;
     }
 
     /**

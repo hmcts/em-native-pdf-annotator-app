@@ -15,7 +15,7 @@ import java.util.List;
 public class ImageRedaction {
 
     /**
-     * Apply multiple redactions to an image file
+     * Apply redaction to an image file
      *
      * @param imageFile the image to which the redactions are to be applied to
      * @param redactionDTOList a list containing the information for the redactions to be applied to the image
