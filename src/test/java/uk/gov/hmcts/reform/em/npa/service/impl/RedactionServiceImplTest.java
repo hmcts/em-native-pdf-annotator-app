@@ -1,45 +1,53 @@
 package uk.gov.hmcts.reform.em.npa.service.impl;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
-import uk.gov.hmcts.reform.em.npa.Application;
-import uk.gov.hmcts.reform.em.npa.TestSecurityConfiguration;
+import org.mockito.MockitoAnnotations;
+import uk.gov.hmcts.reform.em.npa.domain.RedactionDTO;
 import uk.gov.hmcts.reform.em.npa.redaction.ImageRedaction;
 import uk.gov.hmcts.reform.em.npa.redaction.PdfRedaction;
 import uk.gov.hmcts.reform.em.npa.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.npa.service.DmStoreUploader;
-import uk.gov.hmcts.reform.em.npa.service.RedactionService;
-import uk.gov.hmcts.reform.em.npa.domain.RedactionDTO;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
+
 public class RedactionServiceImplTest {
 
-    @Autowired
-    private RedactionService redactionService;
+    @InjectMocks
+    private RedactionServiceImpl redactionService;
 
-    @MockBean
+    @Mock
     private DmStoreDownloader dmStoreDownloader;
-    @MockBean
+
+    @Mock
     private DmStoreUploader dmStoreUploader;
-    @MockBean
+
+    @Mock
     private PdfRedaction pdfRedaction;
-    @MockBean
+
+    @Mock
     private ImageRedaction imageRedaction;
 
     private List<RedactionDTO> redactionDTOList = new ArrayList<>();
+
+    @Before
+    public void setUp(){
+
+        MockitoAnnotations.initMocks(this);
+        ((RedactionServiceImpl) redactionService).imageExtensionsList = Arrays.asList("png","jpeg");
+        initRedactionDTOList();
+
+    }
 
     public void initRedactionDTOList() {
         for (int i = 0; i < 5 ; i++) {
@@ -57,12 +65,11 @@ public class RedactionServiceImplTest {
 
     @Test
     public void redactPdfFileTest() throws DocumentTaskProcessingException, IOException {
+
         UUID docStoreUUID = UUID.randomUUID();
         File mockFile = new File("test.pdf");
-
         Mockito.when(dmStoreDownloader.downloadFile(docStoreUUID.toString())).thenReturn(mockFile);
         Mockito.when(pdfRedaction.redaction(mockFile, redactionDTOList)).thenReturn(mockFile);
-        initRedactionDTOList();
 
         String result = redactionService.redactFile(docStoreUUID, redactionDTOList);
         Assert.assertEquals(result, docStoreUUID.toString());
@@ -70,12 +77,11 @@ public class RedactionServiceImplTest {
 
     @Test
     public void redactImageFileTest() throws DocumentTaskProcessingException, IOException {
+
         UUID docStoreUUID = UUID.randomUUID();
         File mockFile = new File("test.png");
-
         Mockito.when(dmStoreDownloader.downloadFile(docStoreUUID.toString())).thenReturn(mockFile);
         Mockito.when(imageRedaction.redaction(mockFile, redactionDTOList)).thenReturn(mockFile);
-        initRedactionDTOList();
 
         String result = redactionService.redactFile(docStoreUUID, redactionDTOList);
         Assert.assertEquals(result, docStoreUUID.toString());
@@ -83,20 +89,19 @@ public class RedactionServiceImplTest {
 
     @Test(expected = FileTypeException.class)
     public void redactInvalidFileTest() throws DocumentTaskProcessingException {
+
         UUID docStoreUUID = UUID.randomUUID();
         File mockFile = new File("test.txt");
-
         Mockito.when(dmStoreDownloader.downloadFile(docStoreUUID.toString())).thenReturn(mockFile);
-        initRedactionDTOList();
+
         redactionService.redactFile(docStoreUUID, redactionDTOList);
     }
 
     @Test
     public void redactDocumentTaskProcessingErrorTest() throws DocumentTaskProcessingException {
-        UUID docStoreUUID = UUID.randomUUID();
 
+        UUID docStoreUUID = UUID.randomUUID();
         Mockito.when(dmStoreDownloader.downloadFile(docStoreUUID.toString())).thenThrow(DocumentTaskProcessingException.class);
-        initRedactionDTOList();
 
         String result = redactionService.redactFile(docStoreUUID, redactionDTOList);
         Assert.assertEquals(result, docStoreUUID.toString());
