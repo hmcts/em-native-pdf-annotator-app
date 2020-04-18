@@ -187,6 +187,7 @@
         <cve>CVE-2012-6708</cve>
         <cve>CVE-2015-9251</cve>
         <cve>CVE-2019-11358</cve>
+        <cve>CVE-2016-2427</cve>
     </suppress>
 
     <suppress>
