@@ -17,6 +17,7 @@ plugins {
     id 'jacoco'
     id 'org.liquibase.gradle' version '2.0.2'
    // id "com.github.spacialcircumstances.gradle-cucumber-reporting" version "0.0.11"
+    id 'au.com.dius.pact' version '3.6.14'
 }
 
 apply plugin: 'java'
@@ -115,6 +116,27 @@ repositories {
     }
 }
 
+sourceSets {
+    aat {
+        java {
+            compileClasspath += main.output
+            runtimeClasspath += main.output
+            srcDir('src/aat/java')
+        }
+        resources {
+            srcDir('src/aat/resources')
+        }
+    }
+    contractTest {
+        java {
+            compileClasspath += main.output
+            runtimeClasspath += main.output
+            srcDir file('src/contractTest/java')
+        }
+        resources.srcDir file('src/contactTest/resources')
+    }
+}
+
 dependencyCheck {
     // Specifies if the build should be failed if a CVSS score above a specified level is identified.
     // range of 0-10 fails the build, anything greater and it doesn't fail the build
@@ -202,6 +224,18 @@ dependencies {
     compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version:'0.0.4'
     compile group: 'org.springframework.security', name: 'spring-security-oauth2-core', version: '5.3.0.RELEASE'
 
+    //pact contract testing
+    testCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: '2.0.11'
+    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-junit5_2.12', version: '3.5.24'
+    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-java8_2.12', version: '3.5.24'
+
+    contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.3.2")
+    contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.3.2")
+    contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.3.2')
+    
+    contractTestCompile sourceSets.main.runtimeClasspath
+    contractTestCompile sourceSets.test.runtimeClasspath
+    
     aatCompile "uk.gov.hmcts.reform:em-test-helper:1.17.1"
 }
 
@@ -257,6 +291,23 @@ sourceSets {
             srcDir('src/aat/resources')
         }
     }
+    contractTest {
+        java {
+            compileClasspath += main.output
+            runtimeClasspath += main.output
+            srcDir file('src/contractTest/java')
+        }
+        resources.srcDir file('src/contactTest/resources')
+    }
+}
+
+idea {
+    module {
+        testSourceDirs += project.sourceSets.aat.java.srcDirs
+        testResourceDirs += project.sourceSets.aat.resources.srcDirs
+        testSourceDirs += project.sourceSets.contractTest.java.srcDirs
+        testResourceDirs += project.sourceSets.contractTest.resources.srcDirs
+    }
 }
 
 task functional(type: Test) {
@@ -283,6 +334,34 @@ task migratePostgresDatabase(dependsOn: 'liquibaseUpdate')
 
 dependencyCheck {
     suppressionFile = 'dependency-check-suppressions.xml'
+}
+
+task contract(type: Test) {
+    group = 'Delivery pipeline'
+    description = 'Runs the consumer Pact tests'
+    useJUnitPlatform()
+    testClassesDirs = sourceSets.contractTest.output.classesDirs
+    classpath = sourceSets.contractTest.runtimeClasspath
+    include "uk/gov/hmcts/reform/em/npa/**"
+    systemProperty 'pact.rootDir', "${rootDir}/pacts"
+    environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
+}
+
+project.ext {
+    pactVersion = getCheckedOutGitCommitHash()
+}
+
+def getCheckedOutGitCommitHash() {
+    'git rev-parse --verify --short HEAD'.execute().text.trim()
+}
+
+pact {
+    publish {
+        pactDirectory = 'target/pacts'
+        pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
+        tags = [System.getenv("PACT_BRANCH_NAME") ?: 'Dev']
+        version = project.pactVersion
+    }
 }
 
 compileJava.dependsOn processResources
