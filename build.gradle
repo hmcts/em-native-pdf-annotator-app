@@ -17,7 +17,7 @@ plugins {
     id 'jacoco'
     id 'org.liquibase.gradle' version '2.0.2'
    // id "com.github.spacialcircumstances.gradle-cucumber-reporting" version "0.0.11"
-    id 'au.com.dius.pact' version '3.6.14'
+    id 'au.com.dius.pact' version '4.0.4'
 }
 
 apply plugin: 'java'
@@ -116,6 +116,16 @@ repositories {
     }
 }
 
+def versions = [
+        postgresql         : '42.2.8',
+        springBoot         : '2.0.5.RELEASE',
+        springfoxSwagger   : '2.9.2',
+        h2                 : '1.4.199',
+        liquibase          : '3.8.0',
+        serenity           : '2.0.23',
+        pact_version       : '3.5.24'
+]
+
 sourceSets {
     aat {
         java {
@@ -147,14 +157,6 @@ dependencyCheck {
         assemblyEnabled = false
     }
 }
-
-def versions = [
-        postgresql         : '42.2.8',
-        springBoot         : '2.0.5.RELEASE',
-        springfoxSwagger   : '2.9.2',
-        h2                 : '1.4.199',
-        liquibase          : '3.8.0',
-]
 
 dependencies {
     compile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.19'
@@ -215,7 +217,6 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.13'
     testCompile group: 'com.h2database', name: 'h2', version: '1.4.200'
     testCompile 'com.github.gmazzo:okhttp-mock:1.3.2'
-    testCompile 'io.rest-assured:rest-assured:3.2.0'
     testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
     liquibaseRuntime "com.h2database:h2"
     compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: '5.1.1'
@@ -225,9 +226,9 @@ dependencies {
     compile group: 'org.springframework.security', name: 'spring-security-oauth2-core', version: '5.3.0.RELEASE'
 
     //pact contract testing
-    testCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: '2.0.11'
-    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-junit5_2.12', version: '3.5.24'
-    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-java8_2.12', version: '3.5.24'
+    testCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
+    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-junit5_2.12', version: versions.pact_version
+    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-java8_2.12', version: versions.pact_version
 
     contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.3.2")
     contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.3.2")
@@ -343,7 +344,7 @@ task contract(type: Test) {
     testClassesDirs = sourceSets.contractTest.output.classesDirs
     classpath = sourceSets.contractTest.runtimeClasspath
     include "uk/gov/hmcts/reform/em/npa/**"
-    systemProperty 'pact.rootDir', "${rootDir}/pacts"
+    systemProperty 'pact.rootDir', "target/pacts"
     environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }
 
