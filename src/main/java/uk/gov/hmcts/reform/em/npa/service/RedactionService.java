@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.em.npa.service;
 
-import uk.gov.hmcts.reform.em.npa.domain.RedactionDTO;
+import uk.gov.hmcts.reform.em.npa.domain.MarkUpDTO;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface RedactionService {
 
-    String redactFile(UUID documentId, List<RedactionDTO> redactionDTOList);
+    String redactFile(String jwt, String caseId, UUID documentId, List<MarkUpDTO> markUpDTOList);
 }

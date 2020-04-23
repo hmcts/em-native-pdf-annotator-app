@@ -8,7 +8,7 @@ import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.em.npa.domain.RedactionDTO;
+import uk.gov.hmcts.reform.em.npa.domain.MarkUpDTO;
 import uk.gov.hmcts.reform.em.npa.service.impl.RedactionProcessingException;
 
 import javax.imageio.ImageIO;
@@ -30,11 +30,11 @@ public class PdfRedaction {
      * Applying Redaction to pdf file
      *
      * @param documentFile pdf file to be redacted
-     * @param redactionDTOList list of redactions to be applied to the pdf
+     * @param markUpDTOList list of redactions to be applied to the pdf
      * @return the redacted file
      * @throws IOException
      */
-    public File redaction(File documentFile, List<RedactionDTO> redactionDTOList) throws IOException {
+    public File redaction(File documentFile, List<MarkUpDTO> markUpDTOList) throws IOException {
         PDDocument document = PDDocument.load(documentFile);
         PDFRenderer pdfRenderer = new PDFRenderer(document);
         final File newFile = File.createTempFile("altered", ".pdf");
@@ -42,7 +42,7 @@ public class PdfRedaction {
         document.setDocumentInformation(new PDDocumentInformation());
         try (PDDocument newDocument = new PDDocument()) {
 
-            for (Map.Entry<Integer, List<RedactionDTO>> pageRedactionSet : groupByPageNumber(redactionDTOList).entrySet()) {
+            for (Map.Entry<Integer, List<MarkUpDTO>> pageRedactionSet : groupByPageNumber(markUpDTOList).entrySet()) {
                 File pageImage = transformToImage(pdfRenderer, pageRedactionSet.getKey() - 1);
                 pageImage = imageRedaction.redaction(pageImage, pageRedactionSet.getValue());
                 PDPage newPage = transformToPdf(pageImage, newDocument);
@@ -59,19 +59,19 @@ public class PdfRedaction {
     /**
      * Group the list of redactionDTO objects by page number
      *
-     * @param redactionDTOList the list to be grouped
+     * @param markUpDTOList the list to be grouped
      * @return Map consisting of page number key and Redaction list for that page
      */
-    private Map<Integer, List<RedactionDTO>> groupByPageNumber(List<RedactionDTO> redactionDTOList) {
-        Map<Integer, List<RedactionDTO>> pageMap = new HashMap<>();
+    private Map<Integer, List<MarkUpDTO>> groupByPageNumber(List<MarkUpDTO> markUpDTOList) {
+        Map<Integer, List<MarkUpDTO>> pageMap = new HashMap<>();
 
-        for (RedactionDTO redactionDTO : redactionDTOList) {
-            if (!pageMap.containsKey(redactionDTO.getPageNumber())) {
-                List<RedactionDTO> list = new ArrayList<>();
-                list.add(redactionDTO);
-                pageMap.put(redactionDTO.getPageNumber(), list);
+        for (MarkUpDTO markUpDTO : markUpDTOList) {
+            if (!pageMap.containsKey(markUpDTO.getPageNumber())) {
+                List<MarkUpDTO> list = new ArrayList<>();
+                list.add(markUpDTO);
+                pageMap.put(markUpDTO.getPageNumber(), list);
             } else {
-                pageMap.get(redactionDTO.getPageNumber()).add(redactionDTO);
+                pageMap.get(markUpDTO.getPageNumber()).add(markUpDTO);
             }
         }
 

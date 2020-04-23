@@ -9,8 +9,7 @@ import lombok.ToString;
 @Getter
 @EqualsAndHashCode
 @ToString
-public class RedactionDTO {
-    // Json ignore for which fields?
+public class MarkUpDTO {
     private int pageNumber;
     private int xCoordinate;
     private int yCoordinate;

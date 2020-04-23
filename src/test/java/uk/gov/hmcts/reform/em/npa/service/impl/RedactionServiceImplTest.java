@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.npa.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -7,7 +8,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import uk.gov.hmcts.reform.em.npa.domain.RedactionDTO;
+import uk.gov.hmcts.reform.em.npa.ccd.client.CcdDataApiCaseUpdater;
+import uk.gov.hmcts.reform.em.npa.ccd.client.CcdDataApiEventCreator;
+import uk.gov.hmcts.reform.em.npa.ccd.dto.CcdCallbackDto;
+import uk.gov.hmcts.reform.em.npa.domain.MarkUpDTO;
 import uk.gov.hmcts.reform.em.npa.redaction.ImageRedaction;
 import uk.gov.hmcts.reform.em.npa.redaction.PdfRedaction;
 import uk.gov.hmcts.reform.em.npa.service.DmStoreDownloader;
@@ -20,11 +24,18 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import static org.mockito.ArgumentMatchers.eq;
 
 public class RedactionServiceImplTest {
 
     @InjectMocks
     private RedactionServiceImpl redactionService;
+
+    @Mock
+    private CcdDataApiEventCreator ccdDataApiEventCreator;
+
+    @Mock
+    private CcdDataApiCaseUpdater ccdDataApiCaseUpdater;
 
     @Mock
     private DmStoreDownloader dmStoreDownloader;
@@ -38,40 +49,60 @@ public class RedactionServiceImplTest {
     @Mock
     private ImageRedaction imageRedaction;
 
-    private List<RedactionDTO> redactionDTOList = new ArrayList<>();
+    private List<MarkUpDTO> markUpDTOList = new ArrayList<>();
+
+    private CcdCallbackDto ccdCallbackDto;
+
+    private ObjectMapper mapper = new ObjectMapper();
+
+    private String caseDataJson = "  {\"caseDocuments\":[{" +
+            "    \"value\": {" +
+            "      \"documentName\": \"Prosecution doc 1\"," +
+            "      \"documentType\": \"Prosecution\"," +
+            "      \"documentLink\": {" +
+            "        \"document_url\":\"documentUrl\"," +
+            "        \"document_filename\":\"prosecution1.pdf\"," +
+            "        \"document_binary_url\":\"documentUrlBinary\"" +
+            "      }," +
+            "      \"customDatetimeField\":\"2019-02-07T11:05:20.000\"," +
+            "      \"createdBy\":\"Jeroen\"" +
+            "    }}]" +
+            "  }";
 
     @Before
-    public void setUp(){
-
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
-        ((RedactionServiceImpl) redactionService).imageExtensionsList = Arrays.asList("png","jpeg");
+        redactionService.imageExtensionsList = Arrays.asList("png","jpeg");
+        redactionService.ccdEventTrigger = "redactionDocumentUpload";
         initRedactionDTOList();
-
+        ccdCallbackDto = Mockito.mock(CcdCallbackDto.class);
     }
 
     public void initRedactionDTOList() {
         for (int i = 0; i < 5 ; i++) {
-            RedactionDTO redactionDTO = new RedactionDTO();
+            MarkUpDTO markUpDTO = new MarkUpDTO();
 
-            redactionDTO.setPageNumber(i + 1);
-            redactionDTO.setXCoordinate(100 * (i + 1));
-            redactionDTO.setYCoordinate(100 * (i + 1));
-            redactionDTO.setHeight(100 * (i + 1));
-            redactionDTO.setWidth(100 * (i + 1));
+            markUpDTO.setPageNumber(i + 1);
+            markUpDTO.setXCoordinate(100 * (i + 1));
+            markUpDTO.setYCoordinate(100 * (i + 1));
+            markUpDTO.setHeight(100 * (i + 1));
+            markUpDTO.setWidth(100 * (i + 1));
 
-            redactionDTOList.add(redactionDTO);
+            markUpDTOList.add(markUpDTO);
         }
     }
 
     @Test
     public void redactPdfFileTest() throws DocumentTaskProcessingException, IOException {
-
         UUID docStoreUUID = UUID.randomUUID();
         File mockFile = new File("test.pdf");
+        Mockito.when(ccdDataApiEventCreator.executeTrigger(eq("caseId"), eq("redactionDocumentUpload"), eq("jwt")))
+                .thenReturn(ccdCallbackDto);
+        Mockito.when(ccdCallbackDto.getCaseData()).thenReturn(mapper.readTree(caseDataJson));
         Mockito.when(dmStoreDownloader.downloadFile(docStoreUUID.toString())).thenReturn(mockFile);
-        Mockito.when(pdfRedaction.redaction(mockFile, redactionDTOList)).thenReturn(mockFile);
+        Mockito.when(pdfRedaction.redaction(mockFile, markUpDTOList)).thenReturn(mockFile);
 
-        String result = redactionService.redactFile(docStoreUUID, redactionDTOList);
+        String result = redactionService.redactFile("jwt", "caseId", docStoreUUID, markUpDTOList);
         Assert.assertEquals(result, docStoreUUID.toString());
     }
 
@@ -80,10 +111,13 @@ public class RedactionServiceImplTest {
 
         UUID docStoreUUID = UUID.randomUUID();
         File mockFile = new File("test.png");
+        Mockito.when(ccdDataApiEventCreator.executeTrigger(eq("caseId"), eq("redactionDocumentUpload"), eq("jwt")))
+                .thenReturn(ccdCallbackDto);
+        Mockito.when(ccdCallbackDto.getCaseData()).thenReturn(mapper.readTree(caseDataJson));
         Mockito.when(dmStoreDownloader.downloadFile(docStoreUUID.toString())).thenReturn(mockFile);
-        Mockito.when(imageRedaction.redaction(mockFile, redactionDTOList)).thenReturn(mockFile);
+        Mockito.when(imageRedaction.redaction(mockFile, markUpDTOList)).thenReturn(mockFile);
 
-        String result = redactionService.redactFile(docStoreUUID, redactionDTOList);
+        String result = redactionService.redactFile("jwt", "caseId", docStoreUUID, markUpDTOList);
         Assert.assertEquals(result, docStoreUUID.toString());
     }
 
@@ -92,18 +126,22 @@ public class RedactionServiceImplTest {
 
         UUID docStoreUUID = UUID.randomUUID();
         File mockFile = new File("test.txt");
+        Mockito.when(ccdDataApiEventCreator.executeTrigger(eq("caseId"), eq("redactionDocumentUpload"), eq("jwt")))
+                .thenReturn(ccdCallbackDto);
         Mockito.when(dmStoreDownloader.downloadFile(docStoreUUID.toString())).thenReturn(mockFile);
 
-        redactionService.redactFile(docStoreUUID, redactionDTOList);
+        redactionService.redactFile("jwt", "caseId", docStoreUUID, markUpDTOList);
     }
 
     @Test
     public void redactDocumentTaskProcessingErrorTest() throws DocumentTaskProcessingException {
 
         UUID docStoreUUID = UUID.randomUUID();
+        Mockito.when(ccdDataApiEventCreator.executeTrigger(eq("caseId"), eq("redactionDocumentUpload"), eq("jwt")))
+                .thenReturn(ccdCallbackDto);
         Mockito.when(dmStoreDownloader.downloadFile(docStoreUUID.toString())).thenThrow(DocumentTaskProcessingException.class);
 
-        String result = redactionService.redactFile(docStoreUUID, redactionDTOList);
+        String result = redactionService.redactFile("jwt", "caseId", docStoreUUID, markUpDTOList);
         Assert.assertEquals(result, docStoreUUID.toString());
     }
 }

@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.em.npa.redaction;
 
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.em.npa.domain.RedactionDTO;
+import uk.gov.hmcts.reform.em.npa.domain.MarkUpDTO;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -18,15 +18,15 @@ public class ImageRedaction {
      * Apply redaction to an image file
      *
      * @param imageFile the image to which the redactions are to be applied to
-     * @param redactionDTOList a list containing the information for the redactions to be applied to the image
+     * @param markUpDTOList a list containing the information for the redactions to be applied to the image
      * @return the redacted image
      * @throws IOException
      */
-    public File redaction(File imageFile, List<RedactionDTO> redactionDTOList) throws IOException {
+    public File redaction(File imageFile, List<MarkUpDTO> markUpDTOList) throws IOException {
         BufferedImage img = ImageIO.read(imageFile);
         Graphics2D graph = img.createGraphics();
 
-        redactionDTOList.stream().forEach(redactionDTO -> {
+        markUpDTOList.stream().forEach(redactionDTO -> {
             graph.setColor(Color.BLACK);
             graph.fill(new Rectangle(
                     redactionDTO.getXCoordinate(),

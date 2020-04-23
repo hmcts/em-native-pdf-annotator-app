@@ -14,7 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.em.npa.Application;
 import uk.gov.hmcts.reform.em.npa.TestSecurityConfiguration;
-import uk.gov.hmcts.reform.em.npa.domain.RedactionDTO;
+import uk.gov.hmcts.reform.em.npa.domain.MarkUpDTO;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
@@ -26,7 +26,7 @@ public class PdfRedactionTest {
     @Autowired
     private PdfRedaction pdfRedaction;
 
-    private List<RedactionDTO> redactionDTOList = new ArrayList<>();
+    private List<MarkUpDTO> markUpDTOList = new ArrayList<>();
 
     @Before
     public void setup() {
@@ -34,7 +34,7 @@ public class PdfRedactionTest {
     }
 
     public void initRedactionDTOList() {
-        RedactionDTO dto = new RedactionDTO();
+        MarkUpDTO dto = new MarkUpDTO();
 
         dto.setPageNumber(1);
         dto.setXCoordinate(100);
@@ -42,30 +42,30 @@ public class PdfRedactionTest {
         dto.setHeight(100);
         dto.setWidth(100);
 
-        redactionDTOList.add(dto);
+        markUpDTOList.add(dto);
 
         for (int i = 0; i < 5 ; i++) {
-            RedactionDTO redactionDTO = new RedactionDTO();
+            MarkUpDTO markUpDTO = new MarkUpDTO();
 
-            redactionDTO.setPageNumber(i + 1);
-            redactionDTO.setXCoordinate(100 * (i + 1));
-            redactionDTO.setYCoordinate(100 * (i + 1));
-            redactionDTO.setHeight(100 * (i + 1));
-            redactionDTO.setWidth(100 * (i + 1));
+            markUpDTO.setPageNumber(i + 1);
+            markUpDTO.setXCoordinate(100 * (i + 1));
+            markUpDTO.setYCoordinate(100 * (i + 1));
+            markUpDTO.setHeight(100 * (i + 1));
+            markUpDTO.setWidth(100 * (i + 1));
 
-            redactionDTOList.add(redactionDTO);
+            markUpDTOList.add(markUpDTO);
         }
     }
 
     @Test
     public void pdfRedactionTest() throws IOException {
-        File result = pdfRedaction.redaction(TEST_PDF_FILE, redactionDTOList);
+        File result = pdfRedaction.redaction(TEST_PDF_FILE, markUpDTOList);
         Assert.assertTrue(result.getName().contains("altered"));
         Assert.assertTrue(result.getName().contains(".pdf"));
     }
 
     @Test(expected = IOException.class)
     public void pdfRedactionFailureTest() throws IOException {
-        File result = pdfRedaction.redaction(new File("invalid_file"), redactionDTOList);
+        File result = pdfRedaction.redaction(new File("invalid_file"), markUpDTOList);
     }
 }

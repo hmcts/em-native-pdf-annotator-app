@@ -125,6 +125,13 @@ dm-store-app:
 oidc:
   issuer: ${OIDC_ISSUER_BASE_URI:http://localhost:8080/openam/oauth2/hmcts}
 
+ccd:
+  data:
+    api:
+      url: ${CCD_DATA_API_URL:http://localhost:4452}
+  event:
+    trigger: redactionUploadDocument
+
 redaction:
   multipart:
     image-ext: ${REDACTION_MULTIPART_WHITELIST_EXT:jpg,jpeg,bmp,tif,tiff,png,apng,gif,ico,cur,jfif,pjpeg,pjp,svg,webp}
