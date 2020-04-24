@@ -13,7 +13,7 @@ import java.util.UUID;
 @Getter
 @EqualsAndHashCode
 @ToString
-public class RedactionDTO {
+public class MarkUpDTO {
     // Json ignore for which fields?
     @NotBlank(message = "UUID cannot be Blank")
     private UUID id;

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.npa.config.security.SecurityUtils;
 import uk.gov.hmcts.reform.em.npa.domain.MarkUp;
-import uk.gov.hmcts.reform.em.npa.domain.RedactionDTO;
+import uk.gov.hmcts.reform.em.npa.domain.MarkUpDTO;
 import uk.gov.hmcts.reform.em.npa.repository.MarkUpRepository;
 import uk.gov.hmcts.reform.em.npa.service.MarkUpService;
 import uk.gov.hmcts.reform.em.npa.service.mapper.MarkUpMapper;
@@ -41,10 +41,10 @@ public class MarkUpServiceImpl implements MarkUpService {
     }
 
     @Override
-    public RedactionDTO save(RedactionDTO redactionDTO) {
-        log.debug("Request to save MArkUp : {}", redactionDTO);
+    public MarkUpDTO save(MarkUpDTO MarkUpDTO) {
+        log.debug("Request to save MArkUp : {}", MarkUpDTO);
 
-        MarkUp markUp = markUpMapper.toEntity(redactionDTO);
+        MarkUp markUp = markUpMapper.toEntity(MarkUpDTO);
         markUp.setCreatedBy(
                     securityUtils.getCurrentUserLogin()
                             .orElseThrow(() -> new UsernameNotFoundException("User not found."))
@@ -55,7 +55,7 @@ public class MarkUpServiceImpl implements MarkUpService {
     }
 
     @Override
-    public Page<RedactionDTO> findAllByDocumentId(UUID documentId, Pageable pageable) {
+    public Page<MarkUpDTO> findAllByDocumentId(UUID documentId, Pageable pageable) {
         Optional<String> user = securityUtils.getCurrentUserLogin();
         if (user.isPresent()) {
             return markUpRepository.findByDocumentIdAndCreatedBy(documentId, user.get(), pageable)
