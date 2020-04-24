@@ -1,12 +1,10 @@
 package uk.gov.hmcts.reform.em.npa.service.impl;
 
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,9 +12,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.npa.ccd.client.CcdDataApiCaseUpdater;
 import uk.gov.hmcts.reform.em.npa.ccd.client.CcdDataApiEventCreator;
-import uk.gov.hmcts.reform.em.npa.ccd.dto.CcdCallbackDto;
 import uk.gov.hmcts.reform.em.npa.ccd.domain.CcdCaseDocument;
 import uk.gov.hmcts.reform.em.npa.ccd.domain.CcdDocument;
+import uk.gov.hmcts.reform.em.npa.ccd.dto.CcdCallbackDto;
 import uk.gov.hmcts.reform.em.npa.domain.MarkUpDTO;
 import uk.gov.hmcts.reform.em.npa.redaction.ImageRedaction;
 import uk.gov.hmcts.reform.em.npa.redaction.PdfRedaction;
@@ -79,7 +77,7 @@ public class RedactionServiceImpl implements RedactionService {
             } else {
                 throw new FileTypeException("Redaction cannot be applied to the file type provided");
             }
-            dmStoreUploader.uploadNewDocumentVersion(updatedFile, documentId.toString());
+//            dmStoreUploader.uploadNewDocumentVersion(updatedFile, documentId.toString());
             updateCcdCaseDocuments(ccdCallbackDto, JsonNodeFactory.instance.missingNode(), originalFile);
             // delete markups for session
         } catch (DocumentTaskProcessingException e) {
