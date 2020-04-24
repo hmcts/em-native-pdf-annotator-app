@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.npa.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import uk.gov.hmcts.reform.em.npa.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.npa.service.impl.DocumentTaskProcessingException;
 
@@ -9,6 +10,6 @@ public interface DmStoreUploader {
 
     void uploadFile(File file, DocumentTask documentTask) throws DocumentTaskProcessingException;
 
-    void uploadNewDocumentVersion(File file, String documentId) throws DocumentTaskProcessingException;
+    JsonNode uploadDocument(File file) throws DocumentTaskProcessingException;
 
 }

@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.em.npa.service.impl;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,22 +30,62 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
 
     private final SecurityUtils securityUtils;
 
+    private final ObjectMapper objectMapper;
+
     public DmStoreUploaderImpl(OkHttpClient okHttpClient, AuthTokenGenerator authTokenGenerator,
                                @Value("${dm-store-app.base-url}") String dmStoreAppBaseUrl,
-                               SecurityUtils securityUtils) {
+                               SecurityUtils securityUtils, ObjectMapper objectMapper) {
         this.okHttpClient = okHttpClient;
         this.authTokenGenerator = authTokenGenerator;
         this.dmStoreAppBaseUrl = dmStoreAppBaseUrl;
         this.securityUtils = securityUtils;
+        this.objectMapper = objectMapper;
     }
 
     @Override
     public void uploadFile(File file, DocumentTask documentTask) throws DocumentTaskProcessingException {
         if (documentTask.getOutputDocumentId() != null) {
-            uploadNewDocumentVersion(file, documentTask.getOutputDocumentId());
+            uploadNewDocumentVersion(file, documentTask);
         } else {
             uploadNewDocument(file, documentTask);
         }
+    }
+
+    @Override
+    public JsonNode uploadDocument(File file) throws DocumentTaskProcessingException {
+
+        // DRY ?
+        try {
+
+            MultipartBody requestBody = new MultipartBody
+                .Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("classification", "PUBLIC")
+                .addFormDataPart("files", file.getName(), RequestBody.create(MediaType.get("application/pdf"), file))
+                .build();
+
+            Request request = new Request.Builder()
+                .addHeader("user-id", securityUtils.getCurrentUserLogin().orElse(Constants.ANONYMOUS_USER))
+                .addHeader("user-roles", "caseworker")
+                .addHeader("ServiceAuthorization", authTokenGenerator.generate())
+                .url(dmStoreAppBaseUrl + dmStoreUploadEndpoint)
+                .method("POST", requestBody)
+                .build();
+
+            Response response = okHttpClient.newCall(request).execute();
+
+            if (response.isSuccessful()) {
+
+                return objectMapper.readTree(response.body().string());
+
+            } else {
+                throw new DocumentTaskProcessingException("Couldn't upload the file. Response code: " + response.code(), null);
+            }
+
+        } catch (RuntimeException | IOException e) {
+            throw new DocumentTaskProcessingException(String.format("Couldn't upload the file:  %s", e.getMessage()), e);
+        }
+
     }
 
     private void uploadNewDocument(File file, DocumentTask documentTask) throws DocumentTaskProcessingException {
@@ -91,8 +133,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
         }
     }
 
-    @Override
-    public void uploadNewDocumentVersion(File file, String documentId) throws DocumentTaskProcessingException {
+    private void uploadNewDocumentVersion(File file, DocumentTask documentTask) throws DocumentTaskProcessingException {
 
         try {
 
@@ -106,7 +147,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
                     .addHeader("user-id", securityUtils.getCurrentUserLogin().orElse(Constants.ANONYMOUS_USER))
                     .addHeader("user-roles", "caseworker")
                     .addHeader("ServiceAuthorization", authTokenGenerator.generate())
-                    .url(dmStoreAppBaseUrl + dmStoreUploadEndpoint + "/" + documentId)
+                    .url(dmStoreAppBaseUrl + dmStoreUploadEndpoint + "/" + documentTask.getOutputDocumentId())
                     .method("POST", requestBody)
                     .build();
 
