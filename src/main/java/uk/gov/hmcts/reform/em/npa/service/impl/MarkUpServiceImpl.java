@@ -9,9 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.npa.config.security.SecurityUtils;
 import uk.gov.hmcts.reform.em.npa.domain.MarkUp;
+import uk.gov.hmcts.reform.em.npa.domain.RedactionDTO;
 import uk.gov.hmcts.reform.em.npa.repository.MarkUpRepository;
 import uk.gov.hmcts.reform.em.npa.service.MarkUpService;
-import uk.gov.hmcts.reform.em.npa.service.dto.external.redaction.RedactionDTO;
 import uk.gov.hmcts.reform.em.npa.service.mapper.MarkUpMapper;
 
 import java.util.Optional;

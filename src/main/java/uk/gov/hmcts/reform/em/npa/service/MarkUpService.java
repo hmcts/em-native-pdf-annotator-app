@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.em.npa.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import uk.gov.hmcts.reform.em.npa.service.dto.external.redaction.RedactionDTO;
+import uk.gov.hmcts.reform.em.npa.domain.RedactionDTO;
 
 import java.util.UUID;
 

@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.em.npa.service.mapper;
 
 import org.mapstruct.Mapper;
 import uk.gov.hmcts.reform.em.npa.domain.MarkUp;
-import uk.gov.hmcts.reform.em.npa.service.dto.external.redaction.RedactionDTO;
+import uk.gov.hmcts.reform.em.npa.domain.RedactionDTO;
 
 /**
  * Mapper for the entity MarkUp and its DTO RedactionDTO.
