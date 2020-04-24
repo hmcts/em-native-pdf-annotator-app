@@ -24,10 +24,6 @@ public class MarkUp implements Serializable {
     @Id
     private UUID id;
 
-    @Size(min = 1, max = 30)
-    @Column(name = "name", length = 30, nullable = false)
-    private String name;
-
     @Column(name = "document_id", nullable = false)
     private UUID documentId;
 

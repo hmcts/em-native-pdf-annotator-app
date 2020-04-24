@@ -15,6 +15,9 @@ public class RedactionDTO {
     @NotBlank(message = "UUID cannot be Blank")
     private UUID id;
 
+    @NotBlank(message = "documentId cannot be Blank")
+    private UUID documentId;
+
     @NotBlank(message = "pageNumber cannot be Blank")
     private int pageNumber;
 
