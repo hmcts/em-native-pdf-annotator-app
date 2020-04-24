@@ -10,6 +10,6 @@ public interface DmStoreUploader {
 
     void uploadFile(File file, DocumentTask documentTask) throws DocumentTaskProcessingException;
 
-    JsonNode uploadNewDocument(File file) throws DocumentTaskProcessingException;
+    JsonNode uploadDocument(File file) throws DocumentTaskProcessingException;
 
 }

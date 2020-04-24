@@ -52,7 +52,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
     }
 
     @Override
-    public JsonNode uploadNewDocument(File file) throws DocumentTaskProcessingException {
+    public JsonNode uploadDocument(File file) throws DocumentTaskProcessingException {
 
         // DRY ?
         try {

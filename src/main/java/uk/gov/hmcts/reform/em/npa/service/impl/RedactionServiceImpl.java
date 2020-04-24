@@ -77,8 +77,10 @@ public class RedactionServiceImpl implements RedactionService {
             } else {
                 throw new FileTypeException("Redaction cannot be applied to the file type provided");
             }
-//            dmStoreUploader.uploadNewDocumentVersion(updatedFile, documentId.toString());
-            updateCcdCaseDocuments(ccdCallbackDto, JsonNodeFactory.instance.missingNode(), originalFile);
+
+            JsonNode updatedDocRes = dmStoreUploader.uploadDocument(updatedFile);
+
+            updateCcdCaseDocuments(ccdCallbackDto, updatedDocRes, originalFile);
             // delete markups for session
         } catch (DocumentTaskProcessingException e) {
             log.error(e.getMessage(), e);
