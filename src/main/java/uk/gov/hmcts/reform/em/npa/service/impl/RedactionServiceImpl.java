@@ -107,6 +107,7 @@ public class RedactionServiceImpl implements RedactionService {
     private void updateCcdCaseDocuments(CcdCallbackDto ccdCallbackDto,
                                         JsonNode documentStoreResponse,
                                         File originalDocumentFile) throws JsonProcessingException {
+
         ObjectMapper mapper = new ObjectMapper();
         JsonNode caseDocuments = ccdCallbackDto.getCaseData().findValue("caseDocuments");
 
