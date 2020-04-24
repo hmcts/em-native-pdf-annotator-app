@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.em.npa.service.dto.external.annotation.CommentDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.external.annotation.IdamDetailsDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.external.annotation.RectangleDTO;
 
-import java.io.File;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;

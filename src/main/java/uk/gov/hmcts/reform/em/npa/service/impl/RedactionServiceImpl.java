@@ -3,50 +3,63 @@ package uk.gov.hmcts.reform.em.npa.service.impl;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.em.npa.domain.RedactionDTO;
 import uk.gov.hmcts.reform.em.npa.redaction.ImageRedaction;
 import uk.gov.hmcts.reform.em.npa.redaction.PdfRedaction;
+import uk.gov.hmcts.reform.em.npa.service.DmStoreDownloader;
+import uk.gov.hmcts.reform.em.npa.service.DmStoreUploader;
 import uk.gov.hmcts.reform.em.npa.service.RedactionService;
-import uk.gov.hmcts.reform.em.npa.service.dto.external.redaction.RedactionDTO;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
+@Service
 public class RedactionServiceImpl implements RedactionService {
 
-    private final Logger log = LoggerFactory.getLogger(RedactionService.class);
+    private final Logger log = LoggerFactory.getLogger(RedactionServiceImpl.class);
 
-    @Autowired
+    private DmStoreDownloader dmStoreDownloader;
+    private DmStoreUploader dmStoreUploader;
     private PdfRedaction pdfRedaction;
-    @Autowired
     private ImageRedaction imageRedaction;
 
     @Value("#{'${redaction.multipart.image-ext}'.split(',')}")
     java.util.List<String> imageExtensionsList;
 
+    public RedactionServiceImpl (DmStoreDownloader dmStoreDownloader, DmStoreUploader dmStoreUploader,
+                                 PdfRedaction pdfRedaction, ImageRedaction imageRedaction) {
+        this.dmStoreDownloader = dmStoreDownloader;
+        this.dmStoreUploader = dmStoreUploader;
+        this.pdfRedaction = pdfRedaction;
+        this.imageRedaction = imageRedaction;
+    }
+
     @Override
     public String redactFile(UUID documentId, List<RedactionDTO> redactionDTOList) {
         try {
-            // call doc store to get doc by documentId
-            // remove this placeholder with a call to doc store client code:
-            File file = new File("");
-            String fileType = FilenameUtils.getExtension(file.getName());
+            File originalFile = dmStoreDownloader.downloadFile(documentId.toString());
+            String fileType = FilenameUtils.getExtension(originalFile.getName());
+            File updatedFile;
             if (fileType.equals("pdf")) {
                 log.info("Applying redaction to PDF file");
-                File redactedPDF = pdfRedaction.redaction(file, redactionDTOList);
+                updatedFile = pdfRedaction.redaction(originalFile, redactionDTOList);
             } else if (imageExtensionsList.contains(fileType)) {
                 log.info("Applying redaction to Image Document");
-                File redactedImage = imageRedaction.redaction(file, redactionDTOList);
+                updatedFile = imageRedaction.redaction(originalFile, redactionDTOList);
             } else {
                 throw new FileTypeException("Redaction cannot be applied to the file type provided");
             }
-            // call to save the redactedImage file to the doc store
-            return "doc_store_id";
+            dmStoreUploader.uploadNewDocumentVersion(updatedFile, documentId.toString());
+        } catch (DocumentTaskProcessingException e) {
+            log.error(e.getMessage(), e);
         } catch (IOException e) {
-            throw new RuntimeException();
+            log.error(e.getMessage(), e);
+            throw new FileTypeException("File processing error");
         }
+        return documentId.toString();
     }
 }
