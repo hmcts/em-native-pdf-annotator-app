@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,9 +14,12 @@ import uk.gov.hmcts.reform.em.npa.ccd.client.CcdDataApiEventCreator;
 import uk.gov.hmcts.reform.em.npa.ccd.domain.CcdCaseDocument;
 import uk.gov.hmcts.reform.em.npa.ccd.domain.CcdDocument;
 import uk.gov.hmcts.reform.em.npa.ccd.dto.CcdCallbackDto;
+import uk.gov.hmcts.reform.em.npa.config.Constants;
+import uk.gov.hmcts.reform.em.npa.config.security.SecurityUtils;
 import uk.gov.hmcts.reform.em.npa.domain.MarkUpDTO;
 import uk.gov.hmcts.reform.em.npa.redaction.ImageRedaction;
 import uk.gov.hmcts.reform.em.npa.redaction.PdfRedaction;
+import uk.gov.hmcts.reform.em.npa.repository.MarkUpRepository;
 import uk.gov.hmcts.reform.em.npa.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.npa.service.DmStoreUploader;
 import uk.gov.hmcts.reform.em.npa.service.RedactionService;
@@ -39,6 +41,8 @@ public class RedactionServiceImpl implements RedactionService {
     private DmStoreUploader dmStoreUploader;
     private PdfRedaction pdfRedaction;
     private ImageRedaction imageRedaction;
+    private MarkUpRepository markUpRepository;
+    private SecurityUtils securityUtils;
 
     @Value("${ccd.event.trigger}")
     String ccdEventTrigger;
@@ -48,13 +52,16 @@ public class RedactionServiceImpl implements RedactionService {
 
     public RedactionServiceImpl (CcdDataApiEventCreator ccdDataApiEventCreator, CcdDataApiCaseUpdater ccdDataApiCaseUpdater,
                                  DmStoreDownloader dmStoreDownloader, DmStoreUploader dmStoreUploader,
-                                 PdfRedaction pdfRedaction, ImageRedaction imageRedaction) {
+                                 PdfRedaction pdfRedaction, ImageRedaction imageRedaction,
+                                 MarkUpRepository markUpRepository, SecurityUtils securityUtils) {
         this.ccdDataApiEventCreator = ccdDataApiEventCreator;
         this.ccdDataApiCaseUpdater = ccdDataApiCaseUpdater;
         this.dmStoreDownloader = dmStoreDownloader;
         this.dmStoreUploader = dmStoreUploader;
         this.pdfRedaction = pdfRedaction;
         this.imageRedaction = imageRedaction;
+        this.markUpRepository = markUpRepository;
+        this.securityUtils = securityUtils;
     }
 
     @Override
@@ -81,7 +88,9 @@ public class RedactionServiceImpl implements RedactionService {
             JsonNode updatedDocRes = dmStoreUploader.uploadDocument(updatedFile);
 
             updateCcdCaseDocuments(ccdCallbackDto, updatedDocRes, originalFile);
-            // delete markups for session
+
+            markUpRepository.deleteAllByDocumentIdAndCreatedBy(documentId, securityUtils.getCurrentUserLogin().orElse(Constants.ANONYMOUS_USER));
+
         } catch (DocumentTaskProcessingException e) {
             log.error(e.getMessage(), e);
         } catch (IOException e) {
