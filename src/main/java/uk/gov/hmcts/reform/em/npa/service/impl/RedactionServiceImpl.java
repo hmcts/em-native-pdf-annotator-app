@@ -27,13 +27,15 @@ import uk.gov.hmcts.reform.em.npa.service.RedactionService;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.StreamSupport;
 
 @Service
 public class RedactionServiceImpl implements RedactionService {
 
     private final Logger log = LoggerFactory.getLogger(RedactionServiceImpl.class);
+
+    private static final String REDACTION_SUFFIX = "-Redacted";
 
     private CcdDataApiEventCreator ccdDataApiEventCreator;
     private CcdDataApiCaseUpdater ccdDataApiCaseUpdater;
@@ -96,6 +98,9 @@ public class RedactionServiceImpl implements RedactionService {
         } catch (IOException e) {
             log.error(e.getMessage(), e);
             throw new FileTypeException("File processing error");
+        } catch (NoSuchElementException e) {
+            log.error(e.getMessage(), e);
+            throw new RuntimeException("Document not found in CCD Case Documents");
         } finally {
             if (ccdCallbackDto != null) {
                 ccdDataApiCaseUpdater.executeUpdate(ccdCallbackDto, jwt);
@@ -110,11 +115,17 @@ public class RedactionServiceImpl implements RedactionService {
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode caseDocuments = ccdCallbackDto.getCaseData().findValue("caseDocuments");
+        JsonNode maybeOriginalCaseDocument = StreamSupport
+                .stream(Spliterators.spliteratorUnknownSize(caseDocuments.iterator(), Spliterator.ORDERED), false)
+                .parallel()
+                .filter(caseDocument -> caseDocument.get("value").get("documentLink").get("document_filename").asText().equals(originalDocumentFile.getName()))
+                .findFirst()
+                .get();
 
         CcdCaseDocument caseDocument =
                 CcdCaseDocument.builder()
-                        .documentName(originalDocumentFile.getName() + "-Redacted")
-                        .documentType("") // need to find a way to get this doc type
+                        .documentName(FilenameUtils.getBaseName(originalDocumentFile.getName()) + REDACTION_SUFFIX)
+                        .documentType(maybeOriginalCaseDocument.get("value").get("documentType").asText() + REDACTION_SUFFIX)
                         .documentLink(
                                 CcdDocument.builder()
                                         .documentUrl(documentStoreResponse.at("/_embedded/documents").get(0).at("/_links/self/href").asText())

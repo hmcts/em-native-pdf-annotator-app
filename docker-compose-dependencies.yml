@@ -3,16 +3,6 @@ version: '2.1'
 
 services:
 
-  rpa-native-pdf-annotator-db:
-    image: postgres
-    container_name: npa-db
-    environment:
-      - POSTGRES_USER=emnpa
-      - POSTGRES_PASSWORD=emnpa
-      - POSTGRES_DB=emnpa
-    ports:
-      - 5433:5432
-
   service-auth-provider-api:
     image: hmctspublic.azurecr.io/rpe/service-auth-provider:latest
     container_name: npa-service-auth
@@ -193,6 +183,92 @@ services:
     ports:
       - 5435:5432
 
+  ccd-data-store-api:
+    image: hmctspublic.azurecr.io/ccd/data-store-api:latest
+    container_name: npa-ccd-data-store-api
+    environment:
+      DATA_STORE_DB_HOST: shared-database
+      DATA_STORE_DB_PORT: 5432
+      DATA_STORE_DB_USERNAME: shared
+      DATA_STORE_DB_PASSWORD: shared
+      DATA_STORE_DB_USE_SSL: "false"
+      DATA_STORE_IDAM_KEY: AAAAAAAAAAAAAAAA
+      DATA_STORE_TOKEN_SECRET: iuasbcuasdcbasdgcasdgcuysachjsacyasdgjcgasdj
+      DATA_STORE_S2S_AUTHORISED_SERVICES: ccd_gw,fpl_case_service,ccd_data,ccd_ps,em_npa_app
+      DEFINITION_STORE_HOST: http://ccd-definition-store-api:4451
+      USER_PROFILE_HOST: http://ccd-user-profile-api:4453
+      IDAM_USER_URL: http://idam-api:5000
+      IDAM_S2S_URL: http://service-auth-provider-api:8489
+      REFORM_SERVICE_NAME: ccd-data-store-api
+      REFORM_TEAM: ccd
+      REFORM_ENVIRONMENT: local
+      APPINSIGHTS_INSTRUMENTATIONKEY: key
+      ELASTIC_SEARCH_ENABLED: "false"
+      ELASTIC_SEARCH_HOSTS: ccd-elasticsearch:9200
+      ELASTIC_SEARCH_DATA_NODES_HOSTS: "http://ccd-elasticsearch:9200"
+      CCD_DM_DOMAIN: http://dm-store:8080
+      JAVA_TOOL_OPTIONS: -Xms128m -Xmx512m -XX:MaxPermSize=512m
+    ports:
+      - 4452:4452
+    depends_on:
+      - shared-db
+      - ccd-user-profile-api
+      - ccd-definition-store-api
+      - idam-api
+      - service-auth-provider-api
+
+  ccd-definition-store-api:
+    image: hmctspublic.azurecr.io/ccd/definition-store-api:latest
+    container_name: npa-ccd-definition-store-api
+    environment:
+      DEFINITION_STORE_DB_HOST: shared-database
+      DEFINITION_STORE_DB_PORT: 5432
+      DEFINITION_STORE_DB_USERNAME: shared
+      DEFINITION_STORE_DB_PASSWORD: shared
+      DEFINITION_STORE_DB_USE_SSL: "false"
+      DEFINITION_STORE_IDAM_KEY: AAAAAAAAAAAAAAAA
+      DEFINITION_STORE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_gw,ccd_admin
+      USER_PROFILE_HOST: http://ccd-user-profile-api:4453
+      IDAM_USER_URL: http://idam-api:5000
+      IDAM_S2S_URL: http://service-auth-provider-api:8489
+      REFORM_SERVICE_NAME: ccd-definition-store-api
+      REFORM_TEAM: ccd
+      REFORM_ENVIRONMENT: local
+      APPINSIGHTS_INSTRUMENTATIONKEY: key
+      ELASTIC_SEARCH_ENABLED: "false"
+      ELASTIC_SEARCH_HOST: "ccd-elasticsearch"
+      ELASTIC_SEARCH_FAIL_ON_IMPORT: "true"
+      JAVA_TOOL_OPTIONS: -Xms128m -Xmx512m -XX:MaxPermSize=512m
+    ports:
+      - 4451:4451
+    depends_on:
+      - shared-db
+      - ccd-user-profile-api
+      - idam-api
+      - service-auth-provider-api
+
+  ccd-user-profile-api:
+    image: hmctspublic.azurecr.io/ccd/user-profile-api:latest
+    container_name: npa-ccd-user-profile-api
+    environment:
+      USER_PROFILE_DB_HOST: shared-database
+      USER_PROFILE_DB_PORT: 5432
+      USER_PROFILE_DB_USERNAME: shared
+      USER_PROFILE_DB_PASSWORD: shared
+      USER_PROFILE_DB_USE_SSL: "false"
+      USER_PROFILE_S2S_AUTHORISED_SERVICES: ccd_data,ccd_definition,ccd_admin
+      IDAM_S2S_URL: http://service-auth-provider-api:8489
+      REFORM_SERVICE_NAME: ccd-user-profile-api
+      REFORM_TEAM: ccd
+      REFORM_ENVIRONMENT: local
+      APPINSIGHTS_INSTRUMENTATIONKEY: key
+      JAVA_TOOL_OPTIONS: -Xms128m -Xmx512m -XX:MaxPermSize=512m
+    ports:
+      - 4453:4453
+    depends_on:
+      - shared-db
+      - service-auth-provider-api
+
   fr-am:
     image: hmctsprivate.azurecr.io/idam/idam-fr-am:latest
     container_name: npa-fr-am
@@ -222,7 +298,7 @@ services:
     container_name: npa-shared-db
     image: hmctsprivate.azurecr.io/idam/shared-db:latest
     ports:
-      - 5430:5432
+      - 5432:5432
 
   azure-storage-emulator-azurite:
     image: arafato/azurite

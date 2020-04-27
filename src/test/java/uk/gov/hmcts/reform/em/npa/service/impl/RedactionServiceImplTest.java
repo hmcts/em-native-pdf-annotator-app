@@ -12,9 +12,11 @@ import org.mockito.MockitoAnnotations;
 import uk.gov.hmcts.reform.em.npa.ccd.client.CcdDataApiCaseUpdater;
 import uk.gov.hmcts.reform.em.npa.ccd.client.CcdDataApiEventCreator;
 import uk.gov.hmcts.reform.em.npa.ccd.dto.CcdCallbackDto;
+import uk.gov.hmcts.reform.em.npa.config.security.SecurityUtils;
 import uk.gov.hmcts.reform.em.npa.domain.MarkUpDTO;
 import uk.gov.hmcts.reform.em.npa.redaction.ImageRedaction;
 import uk.gov.hmcts.reform.em.npa.redaction.PdfRedaction;
+import uk.gov.hmcts.reform.em.npa.repository.MarkUpRepository;
 import uk.gov.hmcts.reform.em.npa.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.npa.service.DmStoreUploader;
 
@@ -50,25 +52,70 @@ public class RedactionServiceImplTest {
     @Mock
     private ImageRedaction imageRedaction;
 
+    @Mock
+    private MarkUpRepository markUpRepository;
+
+    @Mock
+    private SecurityUtils securityUtils;
+
     private List<MarkUpDTO> markUpDTOList = new ArrayList<>();
 
     private CcdCallbackDto ccdCallbackDto;
 
     private ObjectMapper mapper = new ObjectMapper();
 
-    private String caseDataJson = "  {\"caseDocuments\":[{" +
-            "    \"value\": {" +
-            "      \"documentName\": \"Prosecution doc 1\"," +
-            "      \"documentType\": \"Prosecution\"," +
-            "      \"documentLink\": {" +
-            "        \"document_url\":\"documentUrl\"," +
-            "        \"document_filename\":\"prosecution1.pdf\"," +
-            "        \"document_binary_url\":\"documentUrlBinary\"" +
-            "      }," +
-            "      \"customDatetimeField\":\"2019-02-07T11:05:20.000\"," +
-            "      \"createdBy\":\"Jeroen\"" +
-            "    }}]" +
-            "  }";
+    private String caseDataJson = "{" +
+            "  \"caseDocuments\":[{" +
+            "        \"value\": {" +
+            "          \"documentName\": \"Prosecution doc 1\"," +
+            "          \"documentType\": \"Prosecution\"," +
+            "          \"documentLink\": {" +
+            "            \"document_url\":\"documentUrl\"," +
+            "            \"document_filename\":\"prosecution1.pdf\"," +
+            "            \"document_binary_url\":\"documentUrl/binary\"" +
+            "          }," +
+            "          \"customDatetimeField\":\"2019-02-07T11:05:20.000\"," +
+            "          \"createdBy\":\"Jeroen\"" +
+            "        }}, {" +
+            "        \"value\": {" +
+            "          \"documentName\": \"Prosecution doc 2\"," +
+            "          \"documentType\": \"Prosecution\"," +
+            "          \"documentLink\": {" +
+            "            \"document_url\":\"documentUrl\"," +
+            "            \"document_filename\":\"prosecution2.png\"," +
+            "            \"document_binary_url\":\"documentUrl/binary\"" +
+            "          }," +
+            "          \"customDatetimeField\":\"2019-02-07T12:05:20.000\"," +
+            "          \"createdBy\":\"Jeroen\"" +
+            "        }}" +
+            "    ]" +
+            "}";
+
+    private String documentStoreResponse = "{" +
+            "\"_embedded\": {" +
+            "\"documents\": [{" +
+            "\"modifiedOn\": \"2020-04-23T14:37:02+0000\"," +
+            "\"size\": 19496," +
+            "\"createdBy\": \"7f0fd7bf-48c0-4462-9056-38c1190e391f\"," +
+            "\"_links\": {" +
+            "\"thumbnail\": {" +
+            "\"href\": \"http://localhost:4603/documents/0e38e3ad-171f-4d27-bf54-e41f2ed744eb/thumbnail\"" +
+            "}," +
+            "\"binary\": {" +
+            "\"href\": \"http://localhost:4603/documents/0e38e3ad-171f-4d27-bf54-e41f2ed744eb/binary\"" +
+            "}," +
+            "\"self\": {" +
+            "\"href\": \"http://localhost:4603/documents/0e38e3ad-171f-4d27-bf54-e41f2ed744eb\"" +
+            "}" +
+            "}," +
+            "\"lastModifiedBy\": \"7f0fd7bf-48c0-4462-9056-38c1190e391f\"," +
+            "\"originalDocumentName\": \"stitched9163237694642183694.pdf\"," +
+            "\"mimeType\": \"application/pdf\"," +
+            "\"classification\": \"PUBLIC\"," +
+            "\"createdOn\": \"2020-04-23T14:37:02+0000\"" +
+            "}]" +
+            "}" +
+            "}";
 
     @Before
     public void setUp() {
@@ -93,32 +140,32 @@ public class RedactionServiceImplTest {
         }
     }
 
-    @Ignore
     @Test
     public void redactPdfFileTest() throws DocumentTaskProcessingException, IOException {
         UUID docStoreUUID = UUID.randomUUID();
-        File mockFile = new File("test.pdf");
+        File mockFile = new File("prosecution1.pdf");
         Mockito.when(ccdDataApiEventCreator.executeTrigger(eq("caseId"), eq("redactionDocumentUpload"), eq("jwt")))
                 .thenReturn(ccdCallbackDto);
         Mockito.when(ccdCallbackDto.getCaseData()).thenReturn(mapper.readTree(caseDataJson));
         Mockito.when(dmStoreDownloader.downloadFile(docStoreUUID.toString())).thenReturn(mockFile);
         Mockito.when(pdfRedaction.redaction(mockFile, markUpDTOList)).thenReturn(mockFile);
+        Mockito.when(dmStoreUploader.uploadDocument(mockFile)).thenReturn(mapper.readTree(documentStoreResponse));
 
         String result = redactionService.redactFile("jwt", "caseId", docStoreUUID, markUpDTOList);
         Assert.assertEquals(result, docStoreUUID.toString());
     }
 
-    @Ignore
     @Test
     public void redactImageFileTest() throws DocumentTaskProcessingException, IOException {
 
         UUID docStoreUUID = UUID.randomUUID();
-        File mockFile = new File("test.png");
+        File mockFile = new File("prosecution2.png");
         Mockito.when(ccdDataApiEventCreator.executeTrigger(eq("caseId"), eq("redactionDocumentUpload"), eq("jwt")))
                 .thenReturn(ccdCallbackDto);
         Mockito.when(ccdCallbackDto.getCaseData()).thenReturn(mapper.readTree(caseDataJson));
         Mockito.when(dmStoreDownloader.downloadFile(docStoreUUID.toString())).thenReturn(mockFile);
         Mockito.when(imageRedaction.redaction(mockFile, markUpDTOList)).thenReturn(mockFile);
+        Mockito.when(dmStoreUploader.uploadDocument(mockFile)).thenReturn(mapper.readTree(documentStoreResponse));
 
         String result = redactionService.redactFile("jwt", "caseId", docStoreUUID, markUpDTOList);
         Assert.assertEquals(result, docStoreUUID.toString());
