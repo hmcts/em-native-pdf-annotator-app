@@ -14,17 +14,4 @@ public class CcdCaseDocument {
     private LocalDateTime createdDatetime;
     private long size;
     private String createdBy;
-//            {
-//                "value": {
-//                    "documentName": "Prosecution doc 2",
-//                    "documentType": "Prosecution",
-//                    "documentLink": {
-//                        "document_url": "documentUrl",
-//                        "document_filename": "prosecution2.pdf",
-//                        "document_binary_url": "documentUrl/binary"
-//                    },
-//                    "createdDatetime": "2019-02-07T12:05:20.000",
-//                    "createdBy": "Jeroen"
-//                }
-//            }
 }

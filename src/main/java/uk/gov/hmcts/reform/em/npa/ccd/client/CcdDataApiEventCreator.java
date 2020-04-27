@@ -18,7 +18,6 @@ public class CcdDataApiEventCreator {
     private final OkHttpClient http;
     private final AuthTokenGenerator authTokenGenerator;
     private final String ccdDataBaseUrl;
-    private final String ccdTriggerPath = "/cases/%s/event-triggers/%s";
     private final CcdCallbackDtoCreator ccdCallbackDtoCreator;
 
     public CcdDataApiEventCreator(OkHttpClient http, AuthTokenGenerator authTokenGenerator,
@@ -42,7 +41,7 @@ public class CcdDataApiEventCreator {
                 .addHeader("Authorization", jwt)
                 .addHeader("experimental", "true")
                 .addHeader("ServiceAuthorization", authTokenGenerator.generate())
-                .url(String.format(ccdDataBaseUrl + ccdTriggerPath,
+                .url(String.format(ccdDataBaseUrl + "/cases/%s/event-triggers/%s",
                         caseId,
                         triggerId))
                 .get()

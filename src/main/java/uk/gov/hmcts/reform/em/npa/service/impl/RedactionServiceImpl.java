@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.em.npa.ccd.client.CcdDataApiEventCreator;
 import uk.gov.hmcts.reform.em.npa.ccd.domain.CcdCaseDocument;
 import uk.gov.hmcts.reform.em.npa.ccd.domain.CcdDocument;
 import uk.gov.hmcts.reform.em.npa.ccd.dto.CcdCallbackDto;
+import uk.gov.hmcts.reform.em.npa.ccd.exception.CaseDocumentNotFoundException;
 import uk.gov.hmcts.reform.em.npa.config.Constants;
 import uk.gov.hmcts.reform.em.npa.config.security.SecurityUtils;
 import uk.gov.hmcts.reform.em.npa.domain.MarkUpDTO;
@@ -36,6 +37,7 @@ public class RedactionServiceImpl implements RedactionService {
     private final Logger log = LoggerFactory.getLogger(RedactionServiceImpl.class);
 
     private static final String REDACTION_SUFFIX = "-Redacted";
+    private static final String EMBEDDED_DOCUMENTS = "/_embedded/documents";
 
     private CcdDataApiEventCreator ccdDataApiEventCreator;
     private CcdDataApiCaseUpdater ccdDataApiCaseUpdater;
@@ -98,9 +100,6 @@ public class RedactionServiceImpl implements RedactionService {
         } catch (IOException e) {
             log.error(e.getMessage(), e);
             throw new FileTypeException("File processing error");
-        } catch (NoSuchElementException e) {
-            log.error(e.getMessage(), e);
-            throw new RuntimeException("Document not found in CCD Case Documents");
         } finally {
             if (ccdCallbackDto != null) {
                 ccdDataApiCaseUpdater.executeUpdate(ccdCallbackDto, jwt);
@@ -115,27 +114,27 @@ public class RedactionServiceImpl implements RedactionService {
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode caseDocuments = ccdCallbackDto.getCaseData().findValue("caseDocuments");
-        JsonNode maybeOriginalCaseDocument = StreamSupport
+        JsonNode originalCaseDocument = StreamSupport
                 .stream(Spliterators.spliteratorUnknownSize(caseDocuments.iterator(), Spliterator.ORDERED), false)
                 .parallel()
                 .filter(caseDocument -> caseDocument.get("value").get("documentLink").get("document_filename").asText().equals(originalDocumentFile.getName()))
                 .findFirst()
-                .get();
+                .orElseThrow(CaseDocumentNotFoundException::new);
 
         CcdCaseDocument caseDocument =
                 CcdCaseDocument.builder()
                         .documentName(FilenameUtils.getBaseName(originalDocumentFile.getName()) + REDACTION_SUFFIX)
-                        .documentType(maybeOriginalCaseDocument.get("value").get("documentType").asText() + REDACTION_SUFFIX)
+                        .documentType(originalCaseDocument.get("value").get("documentType").asText() + REDACTION_SUFFIX)
                         .documentLink(
                                 CcdDocument.builder()
-                                        .documentUrl(documentStoreResponse.at("/_embedded/documents").get(0).at("/_links/self/href").asText())
-                                        .documentFileName(documentStoreResponse.at("/_embedded/documents").get(0).at("/originalDocumentName").asText())
-                                        .documentBinaryUrl(documentStoreResponse.at("/_embedded/documents").get(0).at("/_links/binary/href").asText())
+                                        .documentUrl(documentStoreResponse.at(EMBEDDED_DOCUMENTS).get(0).at("/_links/self/href").asText())
+                                        .documentFileName(documentStoreResponse.at(EMBEDDED_DOCUMENTS).get(0).at("/originalDocumentName").asText())
+                                        .documentBinaryUrl(documentStoreResponse.at(EMBEDDED_DOCUMENTS).get(0).at("/_links/binary/href").asText())
                                         .build()
                         )
                         .createdDatetime(LocalDateTime.now())
-                        .size(documentStoreResponse.at("/_embedded/documents").get(0).at("/size").asLong())
-                        .createdBy(documentStoreResponse.at("/_embedded/documents").get(0).at("/createdBy").asText())
+                        .size(documentStoreResponse.at(EMBEDDED_DOCUMENTS).get(0).at("/size").asLong())
+                        .createdBy(documentStoreResponse.at(EMBEDDED_DOCUMENTS).get(0).at("/createdBy").asText())
                         .build();
 
         ((ArrayNode) caseDocuments).add(mapper.writeValueAsString(caseDocument));
