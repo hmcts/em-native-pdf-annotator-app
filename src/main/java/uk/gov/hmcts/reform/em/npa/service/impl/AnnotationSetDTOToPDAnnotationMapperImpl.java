@@ -10,9 +10,6 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationPopup;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationTextMarkup;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.npa.service.AnnotationSetDTOToPDAnnotationMapper;
@@ -20,6 +17,7 @@ import uk.gov.hmcts.reform.em.npa.service.dto.external.annotation.AnnotationDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.external.annotation.CommentDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.external.annotation.IdamDetailsDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.external.annotation.RectangleDTO;
+import uk.gov.hmcts.reform.em.npa.service.exception.DocumentTaskProcessingException;
 
 import java.io.IOException;
 import java.time.ZoneId;

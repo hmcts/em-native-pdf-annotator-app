@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.em.npa.service.impl;
+package uk.gov.hmcts.reform.em.npa.service.exception;
 
 public class RedactionProcessingException extends RuntimeException {
     public RedactionProcessingException(Exception e) {

@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.em.npa.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -19,6 +18,8 @@ import uk.gov.hmcts.reform.em.npa.redaction.PdfRedaction;
 import uk.gov.hmcts.reform.em.npa.repository.MarkUpRepository;
 import uk.gov.hmcts.reform.em.npa.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.npa.service.DmStoreUploader;
+import uk.gov.hmcts.reform.em.npa.service.exception.DocumentTaskProcessingException;
+import uk.gov.hmcts.reform.em.npa.service.exception.FileTypeException;
 
 import java.io.File;
 import java.io.IOException;

@@ -18,7 +18,7 @@ import uk.gov.hmcts.reform.em.npa.testutil.TestUtil;
 import java.util.Arrays;
 import java.util.UUID;
 
-@SpringBootTest(classes = {TestUtil.class, EmTestConfig.class})
+@SpringBootTest(classes = {TestUtil.class, EmTestConfig.class, ExtendedCcdHelper.class})
 @PropertySource(value = "classpath:application.yml")
 @RunWith(SpringRunner.class)
 public class RedactionScenarios {
