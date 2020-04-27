@@ -35,9 +35,15 @@ public class MarkUp implements Serializable {
     private Integer pageNumber;
 
     @Column(name = "x_coordinate")
-    private Double xCoordinate;
+    private Integer xCoordinate;
 
     @Column(name = "y_coordinate")
-    private Double yCoordinate;
+    private Integer yCoordinate;
+
+    @Column(nullable = false)
+    private Integer width;
+
+    @Column(nullable = false)
+    private Integer height;
 
 }

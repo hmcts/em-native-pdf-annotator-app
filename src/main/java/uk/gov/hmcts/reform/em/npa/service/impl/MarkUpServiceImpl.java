@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.em.npa.repository.MarkUpRepository;
 import uk.gov.hmcts.reform.em.npa.service.MarkUpService;
 import uk.gov.hmcts.reform.em.npa.service.mapper.MarkUpMapper;
 
-import java.util.Optional;
 import java.util.UUID;
 
 /**

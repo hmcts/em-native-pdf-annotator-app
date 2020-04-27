@@ -25,14 +25,14 @@ public class MarkUpDTO {
     private int pageNumber;
 
     @NotBlank(message = "xCoordinate cannot be Blank")
-    private int xCoordinate;
+    private Integer xCoordinate;
 
     @NotBlank(message = "yCoordinateID cannot be Blank")
-    private int yCoordinate;
+    private Integer yCoordinate;
 
     @NotBlank(message = "Width cannot be Blank")
-    private int width;
+    private Integer width;
 
     @NotBlank(message = "Height cannot be Blank")
-    private int height;
+    private Integer height;
 }
