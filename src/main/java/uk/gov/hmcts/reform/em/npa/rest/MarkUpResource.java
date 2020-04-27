@@ -46,7 +46,7 @@ public class MarkUpResource {
     /**
      * POST  /markups : Create a new markup.
      *
-     * @param MarkUpDTO the MarkUpDTO to create
+     * @param markUpDTO the MarkUpDTO to create
      * @return the ResponseEntity with status 201 (Created) and with body the new MarkUpDTO
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
@@ -57,10 +57,10 @@ public class MarkUpResource {
             @ApiResponse(code = 403, message = "Forbidden"),
     })
     @PostMapping("/markups")
-    public ResponseEntity<MarkUpDTO> createMarkUp(@Valid @RequestBody MarkUpDTO MarkUpDTO,
+    public ResponseEntity<MarkUpDTO> createMarkUp(@Valid @RequestBody MarkUpDTO markUpDTO,
                                                      BindingResult result) throws URISyntaxException {
 
-        log.debug("REST request to save MarkUp : {}", MarkUpDTO);
+        log.debug("REST request to save MarkUp : {}", markUpDTO);
 
         if (result.hasErrors()) {
             throw new ValidationErrorException(result.getFieldErrors().stream()
@@ -68,7 +68,7 @@ public class MarkUpResource {
                     .collect(Collectors.joining(",")));
         }
 
-        MarkUpDTO response = markUpService.save(MarkUpDTO);
+        MarkUpDTO response = markUpService.save(markUpDTO);
         return ResponseEntity.created(new URI("/api/markups/" + response.getId()))
                 .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, response.getId().toString()))
                 .body(response);
@@ -78,7 +78,7 @@ public class MarkUpResource {
     /**
      * PUT  /markups : Updates an existing markup.
      *
-     * @param MarkUpDTO the MarkUpDTO to update
+     * @param markUpDTO the MarkUpDTO to update
      * @return the ResponseEntity with status 200 (OK) and with body the updated MarkUpDTO,
      * or with status 500 (Internal Server Error) if the markup couldn't be updated
      */
@@ -91,9 +91,9 @@ public class MarkUpResource {
             @ApiResponse(code = 404, message = "Not Found"),
     })
     @PutMapping("/markups")
-    public ResponseEntity<MarkUpDTO> updateMarkUp(@Valid @RequestBody MarkUpDTO MarkUpDTO,
+    public ResponseEntity<MarkUpDTO> updateMarkUp(@Valid @RequestBody MarkUpDTO markUpDTO,
                                                      BindingResult result) {
-        log.debug("REST request to update MarkUp : {}", MarkUpDTO);
+        log.debug("REST request to update MarkUp : {}", markUpDTO);
 
         if (result.hasErrors()) {
             throw new ValidationErrorException(result.getFieldErrors().stream()
@@ -101,9 +101,9 @@ public class MarkUpResource {
                     .collect(Collectors.joining(",")));
         }
 
-        MarkUpDTO response = markUpService.save(MarkUpDTO);
+        MarkUpDTO response = markUpService.save(markUpDTO);
         return ResponseEntity.ok()
-                .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, MarkUpDTO.getId().toString()))
+                .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, markUpDTO.getId().toString()))
                 .body(response);
     }
 

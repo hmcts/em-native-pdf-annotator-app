@@ -30,7 +30,7 @@ public class MarkUpServiceImpl implements MarkUpService {
 
     private MarkUpMapper markUpMapper;
 
-    private final SecurityUtils securityUtils;
+    private SecurityUtils securityUtils;
 
     public MarkUpServiceImpl(MarkUpRepository markUpRepository,
                              MarkUpMapper markUpMapper,
@@ -56,13 +56,12 @@ public class MarkUpServiceImpl implements MarkUpService {
 
     @Override
     public Page<MarkUpDTO> findAllByDocumentId(UUID documentId, Pageable pageable) {
-        Optional<String> user = securityUtils.getCurrentUserLogin();
-        if (user.isPresent()) {
-            return markUpRepository.findByDocumentIdAndCreatedBy(documentId, user.get(), pageable)
+
+        String user = securityUtils.getCurrentUserLogin()
+            .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+
+        return markUpRepository.findByDocumentIdAndCreatedBy(documentId, user, pageable)
                     .map(markUpMapper::toDto);
-        } else {
-            throw new UsernameNotFoundException("User not found");
-        }
     }
 
     @Override
