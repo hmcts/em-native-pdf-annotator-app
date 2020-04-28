@@ -24,6 +24,8 @@ import uk.gov.hmcts.reform.em.npa.repository.MarkUpRepository;
 import uk.gov.hmcts.reform.em.npa.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.npa.service.DmStoreUploader;
 import uk.gov.hmcts.reform.em.npa.service.RedactionService;
+import uk.gov.hmcts.reform.em.npa.service.exception.DocumentTaskProcessingException;
+import uk.gov.hmcts.reform.em.npa.service.exception.FileTypeException;
 
 import java.io.File;
 import java.io.IOException;

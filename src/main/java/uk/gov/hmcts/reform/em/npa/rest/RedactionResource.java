@@ -25,7 +25,7 @@ public class RedactionResource {
 
     @ApiOperation(value = "Burn markups onto Document", notes = "A POST request to burn markups onto Document")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Successfully redacted", response = String.class),
+            @ApiResponse(code = 200, message = "Successfully redacted", response = String.class),
             @ApiResponse(code = 400, message = "Invalid request"),
             @ApiResponse(code = 401, message = "Unauthorised"),
             @ApiResponse(code = 403, message = "Forbidden"),
@@ -33,15 +33,18 @@ public class RedactionResource {
     @PostMapping("/redaction")
     public ResponseEntity<String> save(HttpServletRequest request,
                                        @RequestBody RedactionRequest redactionRequest) {
-
-        String jwt = request.getHeader("authorization");
-        return ResponseEntity.ok(
-                redactionService.redactFile(
+        String jwt = request.getHeader("Authorization");
+        try {
+            String newDocumentId = redactionService.redactFile(
                     jwt,
                     redactionRequest.getCaseId(),
                     redactionRequest.getDocumentId(),
-                    redactionRequest.getMarkups()
-                )
-        );
+                    redactionRequest.getMarkups());
+            return ResponseEntity.ok(newDocumentId);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
     }
 }
