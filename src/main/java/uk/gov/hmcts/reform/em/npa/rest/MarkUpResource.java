@@ -12,7 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import uk.gov.hmcts.reform.em.npa.domain.MarkUpDTO;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.MarkUpDTO;
 import uk.gov.hmcts.reform.em.npa.rest.errors.EmptyResponseException;
 import uk.gov.hmcts.reform.em.npa.rest.errors.ValidationErrorException;
 import uk.gov.hmcts.reform.em.npa.rest.util.HeaderUtil;

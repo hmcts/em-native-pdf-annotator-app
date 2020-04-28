@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.em.npa.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -13,7 +12,7 @@ import uk.gov.hmcts.reform.em.npa.ccd.client.CcdDataApiCaseUpdater;
 import uk.gov.hmcts.reform.em.npa.ccd.client.CcdDataApiEventCreator;
 import uk.gov.hmcts.reform.em.npa.ccd.dto.CcdCallbackDto;
 import uk.gov.hmcts.reform.em.npa.config.security.SecurityUtils;
-import uk.gov.hmcts.reform.em.npa.domain.MarkUpDTO;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.MarkUpDTO;
 import uk.gov.hmcts.reform.em.npa.redaction.ImageRedaction;
 import uk.gov.hmcts.reform.em.npa.redaction.PdfRedaction;
 import uk.gov.hmcts.reform.em.npa.repository.MarkUpRepository;
@@ -131,8 +130,8 @@ public class RedactionServiceImplTest {
             MarkUpDTO markUpDTO = new MarkUpDTO();
 
             markUpDTO.setPageNumber(i + 1);
-            markUpDTO.setXCoordinate(100 * (i + 1));
-            markUpDTO.setYCoordinate(100 * (i + 1));
+            markUpDTO.setXcoordinate(100 * (i + 1));
+            markUpDTO.setYcoordinate(100 * (i + 1));
             markUpDTO.setHeight(100 * (i + 1));
             markUpDTO.setWidth(100 * (i + 1));
 

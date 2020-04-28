@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.em.npa.ccd.dto.CcdCallbackDto;
 import uk.gov.hmcts.reform.em.npa.ccd.exception.CaseDocumentNotFoundException;
 import uk.gov.hmcts.reform.em.npa.config.Constants;
 import uk.gov.hmcts.reform.em.npa.config.security.SecurityUtils;
-import uk.gov.hmcts.reform.em.npa.domain.MarkUpDTO;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.MarkUpDTO;
 import uk.gov.hmcts.reform.em.npa.redaction.ImageRedaction;
 import uk.gov.hmcts.reform.em.npa.redaction.PdfRedaction;
 import uk.gov.hmcts.reform.em.npa.repository.MarkUpRepository;

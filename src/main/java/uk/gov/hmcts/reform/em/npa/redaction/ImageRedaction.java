@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.em.npa.redaction;
 
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.em.npa.domain.MarkUpDTO;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.MarkUpDTO;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -29,8 +29,8 @@ public class ImageRedaction {
         markUpDTOList.stream().forEach(redactionDTO -> {
             graph.setColor(Color.BLACK);
             graph.fill(new Rectangle(
-                    redactionDTO.getXCoordinate(),
-                    redactionDTO.getYCoordinate(),
+                    redactionDTO.getXcoordinate(),
+                    redactionDTO.getYcoordinate(),
                     redactionDTO.getWidth(),
                     redactionDTO.getHeight()));
         });

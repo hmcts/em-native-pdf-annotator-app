@@ -13,7 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import uk.gov.hmcts.reform.em.npa.config.security.SecurityUtils;
 import uk.gov.hmcts.reform.em.npa.domain.MarkUp;
-import uk.gov.hmcts.reform.em.npa.domain.MarkUpDTO;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.MarkUpDTO;
 import uk.gov.hmcts.reform.em.npa.repository.MarkUpRepository;
 import uk.gov.hmcts.reform.em.npa.service.mapper.MarkUpMapper;
 
@@ -64,8 +64,8 @@ public class MarkUpServiceImplTest {
         Assert.assertEquals(markUpDTO.getId(), updatedDto.getId());
         Assert.assertEquals(markUpDTO.getHeight(), updatedDto.getHeight());
         Assert.assertEquals(markUpDTO.getWidth(), updatedDto.getWidth());
-        Assert.assertEquals(markUpDTO.getXCoordinate(), updatedDto.getXCoordinate());
-        Assert.assertEquals(markUpDTO.getYCoordinate(), updatedDto.getYCoordinate());
+        Assert.assertEquals(markUpDTO.getXcoordinate(), updatedDto.getXcoordinate());
+        Assert.assertEquals(markUpDTO.getYcoordinate(), updatedDto.getYcoordinate());
 
     }
 
@@ -132,8 +132,8 @@ public class MarkUpServiceImplTest {
         markUpDTO.setId(UUID.randomUUID());
         markUpDTO.setHeight(10);
         markUpDTO.setWidth(10);
-        markUpDTO.setXCoordinate(20);
-        markUpDTO.setYCoordinate(30);
+        markUpDTO.setXcoordinate(20);
+        markUpDTO.setYcoordinate(30);
         return markUpDTO;
     }
 }

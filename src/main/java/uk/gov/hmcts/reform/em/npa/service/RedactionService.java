@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.em.npa.service;
 
-import uk.gov.hmcts.reform.em.npa.domain.MarkUpDTO;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.MarkUpDTO;
 
 import java.util.List;
 import java.util.UUID;

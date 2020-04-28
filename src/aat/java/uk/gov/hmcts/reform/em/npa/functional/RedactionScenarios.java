@@ -10,8 +10,8 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.em.EmTestConfig;
-import uk.gov.hmcts.reform.em.npa.domain.MarkUpDTO;
-import uk.gov.hmcts.reform.em.npa.domain.RedactionRequest;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.MarkUpDTO;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionRequest;
 import uk.gov.hmcts.reform.em.npa.testutil.ExtendedCcdHelper;
 import uk.gov.hmcts.reform.em.npa.testutil.TestUtil;
 
@@ -42,8 +42,8 @@ public class RedactionScenarios {
         markUpDTO.setPageNumber(1);
         markUpDTO.setHeight(100);
         markUpDTO.setWidth(100);
-        markUpDTO.setXCoordinate(100);
-        markUpDTO.setYCoordinate(100);
+        markUpDTO.setXcoordinate(100);
+        markUpDTO.setYcoordinate(100);
 
         return  markUpDTO;
     }

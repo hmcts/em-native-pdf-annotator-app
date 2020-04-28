@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uk.gov.hmcts.reform.em.npa.domain.RedactionRequest;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionRequest;
 import uk.gov.hmcts.reform.em.npa.service.RedactionService;
 
 import javax.servlet.http.HttpServletRequest;

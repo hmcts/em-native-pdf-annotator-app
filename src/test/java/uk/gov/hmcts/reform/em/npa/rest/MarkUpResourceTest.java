@@ -13,7 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import uk.gov.hmcts.reform.em.npa.domain.MarkUpDTO;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.MarkUpDTO;
 import uk.gov.hmcts.reform.em.npa.rest.errors.EmptyResponseException;
 import uk.gov.hmcts.reform.em.npa.service.MarkUpService;
 
@@ -56,8 +56,8 @@ public class MarkUpResourceTest {
         Assert.assertEquals(markUpDTO.getId(), response.getId());
         Assert.assertEquals(markUpDTO.getHeight(), response.getHeight());
         Assert.assertEquals(markUpDTO.getWidth(), response.getWidth());
-        Assert.assertEquals(markUpDTO.getXCoordinate(), response.getXCoordinate());
-        Assert.assertEquals(markUpDTO.getYCoordinate(), response.getYCoordinate());
+        Assert.assertEquals(markUpDTO.getXcoordinate(), response.getXcoordinate());
+        Assert.assertEquals(markUpDTO.getYcoordinate(), response.getYcoordinate());
 
         Mockito.verify(markUpService, Mockito.atLeast(1)).save(markUpDTO);
     }
@@ -76,8 +76,8 @@ public class MarkUpResourceTest {
         Assert.assertEquals(markUpDTO.getId(), response.getId());
         Assert.assertEquals(markUpDTO.getHeight(), response.getHeight());
         Assert.assertEquals(markUpDTO.getWidth(), response.getWidth());
-        Assert.assertEquals(markUpDTO.getXCoordinate(), response.getXCoordinate());
-        Assert.assertEquals(markUpDTO.getYCoordinate(), response.getYCoordinate());
+        Assert.assertEquals(markUpDTO.getXcoordinate(), response.getXcoordinate());
+        Assert.assertEquals(markUpDTO.getYcoordinate(), response.getYcoordinate());
 
         Mockito.verify(markUpService, Mockito.atLeast(1)).save(markUpDTO);
     }
@@ -124,8 +124,8 @@ public class MarkUpResourceTest {
         markUpDTO.setId(UUID.randomUUID());
         markUpDTO.setHeight(10);
         markUpDTO.setWidth(10);
-        markUpDTO.setXCoordinate(20);
-        markUpDTO.setYCoordinate(30);
+        markUpDTO.setXcoordinate(20);
+        markUpDTO.setYcoordinate(30);
         return markUpDTO;
     }
 }

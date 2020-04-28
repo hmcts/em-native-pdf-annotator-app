@@ -14,7 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.em.npa.Application;
 import uk.gov.hmcts.reform.em.npa.TestSecurityConfiguration;
-import uk.gov.hmcts.reform.em.npa.domain.MarkUpDTO;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.MarkUpDTO;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
@@ -37,8 +37,8 @@ public class PdfRedactionTest {
         MarkUpDTO dto = new MarkUpDTO();
 
         dto.setPageNumber(1);
-        dto.setXCoordinate(100);
-        dto.setYCoordinate(100);
+        dto.setXcoordinate(100);
+        dto.setYcoordinate(100);
         dto.setHeight(100);
         dto.setWidth(100);
 
@@ -48,8 +48,8 @@ public class PdfRedactionTest {
             MarkUpDTO markUpDTO = new MarkUpDTO();
 
             markUpDTO.setPageNumber(i + 1);
-            markUpDTO.setXCoordinate(100 * (i + 1));
-            markUpDTO.setYCoordinate(100 * (i + 1));
+            markUpDTO.setXcoordinate(100 * (i + 1));
+            markUpDTO.setYcoordinate(100 * (i + 1));
             markUpDTO.setHeight(100 * (i + 1));
             markUpDTO.setWidth(100 * (i + 1));
 

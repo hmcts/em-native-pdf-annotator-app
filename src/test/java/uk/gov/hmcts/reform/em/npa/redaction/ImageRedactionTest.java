@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.em.npa.Application;
 import uk.gov.hmcts.reform.em.npa.TestSecurityConfiguration;
-import uk.gov.hmcts.reform.em.npa.domain.MarkUpDTO;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.MarkUpDTO;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,8 +40,8 @@ public class ImageRedactionTest {
             MarkUpDTO markUpDTO = new MarkUpDTO();
 
             markUpDTO.setPageNumber(i + 1);
-            markUpDTO.setXCoordinate(100 * (i + 1));
-            markUpDTO.setYCoordinate(100 * (i + 1));
+            markUpDTO.setXcoordinate(100 * (i + 1));
+            markUpDTO.setYcoordinate(100 * (i + 1));
             markUpDTO.setHeight(100 * (i + 1));
             markUpDTO.setWidth(100 * (i + 1));
 
