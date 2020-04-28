@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.em.EmTestConfig;
 import uk.gov.hmcts.reform.em.npa.domain.MarkUpDTO;
 import uk.gov.hmcts.reform.em.npa.domain.RedactionRequest;
@@ -52,7 +53,12 @@ public class RedactionScenarios {
     public void testSaveRedactedDocument() throws Exception {
         newDocId = testUtil.uploadDocument();
         String documentString = extendedCcdHelper.getCcdDocumentJson("my doc", newDocId, "annotationTemplate.pdf");
-        String caseId = extendedCcdHelper.createCase(documentString).getId().toString();
+        CaseDetails caseDetails = extendedCcdHelper.createCase(documentString);
+        System.out.println(caseDetails);
+        Long caseIdLong = caseDetails.getId();
+        System.out.println(caseIdLong);
+        String caseId = caseIdLong.toString();
+        System.out.println(caseId);
 
         RedactionRequest redactionRequest = new RedactionRequest();
         redactionRequest.setCaseId(caseId);
