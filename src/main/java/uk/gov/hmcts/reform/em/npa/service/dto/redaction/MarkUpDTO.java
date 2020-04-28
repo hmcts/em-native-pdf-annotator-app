@@ -5,8 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
@@ -15,7 +13,6 @@ import java.util.UUID;
 @EqualsAndHashCode
 @ToString
 public class MarkUpDTO {
-    // Json ignore for which fields?
     @NotNull(message = "UUID cannot be Blank")
     private UUID id;
 
