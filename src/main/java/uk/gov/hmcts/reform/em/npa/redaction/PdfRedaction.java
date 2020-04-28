@@ -9,7 +9,8 @@ import org.apache.pdfbox.rendering.PDFRenderer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.MarkUpDTO;
-import uk.gov.hmcts.reform.em.npa.service.impl.RedactionProcessingException;
+import uk.gov.hmcts.reform.em.npa.service.exception.RedactionProcessingException;
+
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

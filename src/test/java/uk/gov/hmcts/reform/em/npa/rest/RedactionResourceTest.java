@@ -14,9 +14,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.em.npa.Application;
 import uk.gov.hmcts.reform.em.npa.TestSecurityConfiguration;
 import uk.gov.hmcts.reform.em.npa.ccd.exception.CaseDocumentNotFoundException;
-import uk.gov.hmcts.reform.em.npa.domain.MarkUpDTO;
-import uk.gov.hmcts.reform.em.npa.domain.RedactionRequest;
+
 import uk.gov.hmcts.reform.em.npa.service.RedactionService;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.MarkUpDTO;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -54,8 +55,8 @@ public class RedactionResourceTest {
         markUpDTO.setPageNumber(1);
         markUpDTO.setHeight(100);
         markUpDTO.setWidth(100);
-        markUpDTO.setXCoordinate(100);
-        markUpDTO.setYCoordinate(100);
+        markUpDTO.setXcoordinate(100);
+        markUpDTO.setYcoordinate(100);
 
         redactionRequest.setMarkups(Arrays.asList(markUpDTO));
 
