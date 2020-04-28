@@ -43,12 +43,18 @@ echo "Setting up IDAM client..."
 # Start all other images
 echo "Starting dependencies..."
 docker-compose ${COMPOSE_FILE} build
-docker-compose ${COMPOSE_FILE} up -d service-auth-provider-api \
+docker-compose ${COMPOSE_FILE} up -d shared-database\
+                                     service-auth-provider-api \
                                      smtp-server \
                                      rpa-native-pdf-annotator-db \
                                      annotation-api-db \
                                      dm-store-db \
                                      dm-store \
+                                     ccd-user-profile-api \
+                                     ccd-definition-store-api \
+                                     ccd-data-store-api \
+                                     ccd-api-gateway \
+                                     ccd-case-management-web \
                                      annotation-api \
                                      azure-storage-emulator-azurite \
                                      make-container-call
