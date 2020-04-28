@@ -232,7 +232,8 @@ def coverageExclusionList = [
     '**uk/gov/hmcts/reform/em/npa/ccd/domain/*',
     '**uk/gov/hmcts/reform/em/npa/ccd/dto/*',
     '**uk/gov/hmcts/reform/em/npa/ccd/exception/*',
-    '**uk/gov/hmcts/reform/em/npa/service/exception/*'
+    '**uk/gov/hmcts/reform/em/npa/service/exception/*',
+    '**uk/gov/hmcts/reform/em/npa/service/dto/redaction/*'
 ]
 
 jacocoTestReport {
