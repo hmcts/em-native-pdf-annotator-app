@@ -2,33 +2,15 @@ package uk.gov.hmcts.reform.em.npa.functional;
 
 import org.json.JSONObject;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.em.EmTestConfig;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.MarkUpDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionRequest;
-import uk.gov.hmcts.reform.em.npa.testutil.ExtendedCcdHelper;
-import uk.gov.hmcts.reform.em.npa.testutil.TestUtil;
 
 import java.util.Arrays;
 import java.util.UUID;
 
-@SpringBootTest(classes = {TestUtil.class, EmTestConfig.class, ExtendedCcdHelper.class})
-@PropertySource(value = "classpath:application.yml")
-@RunWith(SpringRunner.class)
-public class RedactionScenarios {
-
-    @Autowired
-    TestUtil testUtil;
-
-    @Autowired
-    ExtendedCcdHelper extendedCcdHelper;
+public class RedactionScenarios extends BaseTest {
 
     @Value("${test.url}")
     String testUrl;
@@ -52,13 +34,8 @@ public class RedactionScenarios {
     @Test
     public void testSaveRedactedDocument() throws Exception {
         newDocId = testUtil.uploadDocument();
-        String documentString = extendedCcdHelper.getCcdDocumentJson("my doc", newDocId, "annotationTemplate.pdf");
-        CaseDetails caseDetails = extendedCcdHelper.createCase(documentString);
-        System.out.println(caseDetails);
-        Long caseIdLong = caseDetails.getId();
-        System.out.println(caseIdLong);
-        String caseId = caseIdLong.toString();
-        System.out.println(caseId);
+        String documentString = testUtil.getCcdDocumentJson("my doc", newDocId, "annotationTemplate.pdf");
+        String caseId = testUtil.createCase(documentString).getId().toString();
 
         RedactionRequest redactionRequest = new RedactionRequest();
         redactionRequest.setCaseId(caseId);
