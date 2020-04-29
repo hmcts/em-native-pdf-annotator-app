@@ -1,5 +1,5 @@
 #!groovy
-
+import uk.gov.hmcts.contino.AppPipelineDsl
 properties([
         [
                 $class: 'GithubProjectProperty',
@@ -12,7 +12,6 @@ properties([
 ])
 
 @Library("Infrastructure")
-import uk.gov.hmcts.contino.AppPipelineDsl
 
 def type = "java"
 def product = "em"
