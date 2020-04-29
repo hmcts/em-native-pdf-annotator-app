@@ -34,10 +34,10 @@ public class MarkUp implements Serializable {
     private Integer pageNumber;
 
     @Column(name = "x_coordinate")
-    private Integer xCoordinate;
+    private Integer xcoordinate;
 
     @Column(name = "y_coordinate")
-    private Integer yCoordinate;
+    private Integer ycoordinate;
 
     @Column(nullable = false)
     private Integer width;

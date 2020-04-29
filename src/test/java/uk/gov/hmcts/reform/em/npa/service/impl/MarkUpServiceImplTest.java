@@ -121,8 +121,8 @@ public class MarkUpServiceImplTest {
         markUp.setId(UUID.randomUUID());
         markUp.setHeight(10);
         markUp.setWidth(10);
-        markUp.setXCoordinate(20);
-        markUp.setYCoordinate(30);
+        markUp.setXcoordinate(20);
+        markUp.setYcoordinate(30);
         return markUp;
     }
 
