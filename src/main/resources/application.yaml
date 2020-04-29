@@ -103,7 +103,7 @@ idam:
     totp_secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
     microservice: em_npa_app
   s2s-authorised:
-    services: ${S2S_NAMES_WHITELIST:sscs,divorce,ccd,em_gw,jui_webapp,pui_webapp}
+    services: ${S2S_NAMES_WHITELIST:sscs,divorce,ccd,em_gw,jui_webapp,pui_webapp,ccd_data}
 
 azure:
   app_insights_key: ${APPINSIGHTS_INSTRUMENTATIONKEY:true}
@@ -118,8 +118,9 @@ app-insights:
 em-annotation-app:
   base-url: ${EM_ANNO_APP_URL:http://localhost:4623}
 
-dm-store-app:
+document_management:
   base-url: ${DM_STORE_APP_URL:http://localhost:4603}
+  docker_url: http://dm-store:8080
 
 # Delete when issueOverride variable is no longer used in SecurityConfiguration.class
 oidc:

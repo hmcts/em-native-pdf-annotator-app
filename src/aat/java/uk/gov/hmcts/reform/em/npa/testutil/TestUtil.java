@@ -1,11 +1,8 @@
 package uk.gov.hmcts.reform.em.npa.testutil;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -13,23 +10,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.em.test.ccddata.CcdDataHelper;
-import uk.gov.hmcts.reform.em.test.ccddefinition.CcdDefinitionHelper;
 import uk.gov.hmcts.reform.em.test.dm.DmHelper;
 import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
 import uk.gov.hmcts.reform.em.test.s2s.S2sHelper;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -53,106 +44,17 @@ public class TestUtil {
 
     @Value("${annotation.api.url}")
     private String emAnnotationUrl;
-
-    @Value("${test.url}")
-    private String testUrl;
-
-    @Autowired
-    private CcdDataHelper ccdDataHelper;
-
-    @Autowired
-    private CcdDefinitionHelper ccdDefinitionHelper;
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
-    public final String createCaseTemplate = "{\n"
-            + "    \"caseTitle\": null,\n"
-            + "    \"caseOwner\": null,\n"
-            + "    \"caseCreationDate\": null,\n"
-            + "    \"caseDescription\": null,\n"
-            + "    \"caseComments\": null,\n"
-            + "    \"caseDocuments\": [%s],\n"
-            + "    \"bundleConfiguration\": \"f-tests-1-flat-docs.yaml\"\n"
-            + "  }";
-    public final String documentTemplate = "{\n"
-            + "        \"value\": {\n"
-            + "          \"documentName\": \"%s\",\n"
-            + "          \"documentLink\": {\n"
-            + "            \"document_url\": \"%s\",\n"
-            + "            \"document_binary_url\": \"%s/binary\",\n"
-            + "            \"document_filename\": \"%s\"\n"
-            + "          }\n"
-            + "        }\n"
-            + "      }";
-    private String testerUser;
-    private List<String> testerUserRoles = Stream.of("caseworker", "caseworker-publiclaw", "ccd-import").collect(Collectors.toList());
+    @Value("${document_management.url}")
+    private String dmApiUrl;
+    @Value("${document_management.docker_url}")
+    private String dmDocumentApiUrl;
 
     @PostConstruct
-    public void init() throws Exception {
+    public void init() {
         idamHelper.createUser("a@b.com", Stream.of("caseworker").collect(Collectors.toList()));
         RestAssured.useRelaxedHTTPSValidation();
         idamAuth = idamHelper.authenticateUser("a@b.com");
         s2sAuth = s2sHelper.getS2sToken();
-        initTesterUser();
-        importCcdDefinitionFile();
-    }
-
-
-    public void importCcdDefinitionFile() throws Exception {
-        ccdDefinitionHelper.importDefinitionFile(
-                testerUser,
-                "caseworker-publiclaw",
-                getEnvSpecificDefinitionFile());
-    }
-
-    public CaseDetails createCase(String documents) throws Exception {
-        return ccdDataHelper.createCase(testerUser, "PUBLICLAW", getEnvCcdCaseTypeId(), "createCase",
-                objectMapper.readTree(String.format(createCaseTemplate, documents)));
-    }
-
-    public String getEnvCcdCaseTypeId() {
-        return String.format("BUND_ASYNC_%d", testUrl.hashCode());
-    }
-
-    public InputStream getEnvSpecificDefinitionFile() throws Exception {
-        Workbook workbook = new XSSFWorkbook(ClassLoader.getSystemResourceAsStream("npa_functional_tests_ccd_def.xlsx"));
-
-        Sheet caseTypeSheet = workbook.getSheet("CaseType");
-
-        caseTypeSheet.getRow(3).getCell(3).setCellValue(getEnvCcdCaseTypeId());
-
-        for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
-            Sheet sheet = workbook.getSheetAt(i);
-            for (Row row : sheet) {
-                for (Cell cell : row) {
-                    if (cell.getCellType().equals(CellType.STRING)
-                            && cell.getStringCellValue().trim().equals("CCD_BUNDLE_MVP_TYPE_ASYNC")) {
-                        cell.setCellValue(getEnvCcdCaseTypeId());
-                    }
-                    if (cell.getCellType().equals(CellType.STRING)
-                            && cell.getStringCellValue().trim().equals("tester@gmail.com")) {
-                        cell.setCellValue(testerUser);
-                    }
-                }
-            }
-        }
-
-        File outputFile = File.createTempFile("ccd", "ftest-def");
-
-        try (FileOutputStream fileOutputStream = new FileOutputStream(outputFile)) {
-            workbook.write(fileOutputStream);
-        }
-
-        return new FileInputStream(outputFile);
-    }
-
-    public void initTesterUser() {
-        testerUser = String.format("tester-%d@gmail.com", testUrl.hashCode());
-        idamHelper.createUser(testerUser, testerUserRoles);
-    }
-
-    public String getCcdDocumentJson(String documentName, String dmUrl, String fileName) {
-        return String.format(documentTemplate, documentName, dmUrl, dmUrl, fileName);
     }
 
     public File getDocumentBinary(String documentId) throws Exception {
@@ -226,6 +128,33 @@ public class TestUtil {
 
     public String uploadDocument() throws Exception {
         return uploadDocument("annotationTemplate.pdf");
+    }
+
+    public String uploadDocumentAndReturnUrl(String fileName, String mimeType) {
+        try {
+            String url = dmHelper.getDocumentMetadata(
+                    dmHelper.uploadAndGetId(
+                            ClassLoader.getSystemResourceAsStream(fileName), mimeType, fileName))
+                    .links.self.href;
+
+            return getDmApiUrl().equals("http://localhost:4603")
+                    ? url.replaceAll(getDmApiUrl(), getDmDocumentApiUrl())
+                    : url;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String uploadDocumentAndReturnUrl() {
+        return uploadDocumentAndReturnUrl("annotationTemplate.pdf", "application/pdf");
+    }
+
+    public String getDmApiUrl() {
+        return dmApiUrl;
+    }
+
+    public String getDmDocumentApiUrl() {
+        return dmDocumentApiUrl;
     }
 
     public RequestSpecification authRequest() {
