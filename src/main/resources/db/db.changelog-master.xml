@@ -11,7 +11,7 @@
     <include file="changelog/00000000000000_initial_schema.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20180918132136_added_entity_DocumentTask.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20180918132314_added_entity_EntityAuditEvent.xml" relativeToChangelogFile="true"/>
-    <include file="changelog/20200428104614_added_entity_MarkUp.xml" relativeToChangelogFile="true"/>
+    <!--<include file="changelog/20200428104614_added_entity_MarkUp.xml" relativeToChangelogFile="true"/>-->
 
     <changeSet author="linus (generated)" id="1588090163427-2">
         <createTable tableName="markup">
