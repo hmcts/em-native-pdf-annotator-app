@@ -36,7 +36,7 @@ s2s:
 
 ccd-def:
   api:
-    url: 'http://localhost:4451'
+    url: ${CCD_DEF_API:http://localhost:4451}
 
 document_management:
   url: ${DM_STORE_APP_URL:http://localhost:4603}
