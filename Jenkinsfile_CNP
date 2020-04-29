@@ -1,5 +1,4 @@
 #!groovy
-import uk.gov.hmcts.contino.AppPipelineDsl
 
 properties([
         [
@@ -13,6 +12,7 @@ properties([
 ])
 
 @Library("Infrastructure")
+import uk.gov.hmcts.contino.AppPipelineDsl
 
 def type = "java"
 def product = "em"
@@ -64,5 +64,8 @@ withPipeline(type , product, component) {
         sh ./publish-swagger-docs.sh
          '''
     }
-    enablePactAs(AppPipelineDsl.PactRoles.CONSUMER)
+    enablePactAs([
+            AppPipelineDsl.PactRoles.CONSUMER
+    ])
+
 }
