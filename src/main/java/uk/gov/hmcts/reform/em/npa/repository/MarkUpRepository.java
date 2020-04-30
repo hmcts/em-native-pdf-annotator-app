@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.npa.domain.MarkUp;
 
 import java.util.UUID;
@@ -19,6 +20,7 @@ public interface MarkUpRepository extends JpaRepository<MarkUp, UUID> {
 
     Page<MarkUp> findByDocumentIdAndCreatedBy(UUID documentId, String createdBy, Pageable pageable);
 
+    @Transactional
     @Modifying
     @Query(value = "DELETE FROM Markup m WHERE m.document_id = :documentId AND m.created_by = :createdBy", nativeQuery = true)
     void deleteAllByDocumentIdAndCreatedBy(@Param("documentId") UUID documentId, @Param("createdBy") String createdBy);
