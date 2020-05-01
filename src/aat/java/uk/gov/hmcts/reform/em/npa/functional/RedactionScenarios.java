@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.em.npa.functional;
 
 import org.json.JSONObject;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,6 @@ import java.util.UUID;
 @SpringBootTest(classes = {TestUtil.class, EmTestConfig.class})
 @PropertySource(value = "classpath:application.yml")
 @RunWith(SpringRunner.class)
-@Ignore
 public class RedactionScenarios {
 
     @Value("${test.url}")
