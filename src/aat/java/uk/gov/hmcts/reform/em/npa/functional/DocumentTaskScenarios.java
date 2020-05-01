@@ -5,6 +5,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.json.JSONObject;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import static org.hamcrest.CoreMatchers.startsWith;
 @SpringBootTest(classes = {TestUtil.class, EmTestConfig.class})
 @PropertySource(value = "classpath:application.yml")
 @RunWith(SpringRunner.class)
+@Ignore
 public class DocumentTaskScenarios {
 
     @Autowired
