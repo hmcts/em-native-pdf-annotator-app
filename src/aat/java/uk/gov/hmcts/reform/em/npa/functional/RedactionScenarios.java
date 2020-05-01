@@ -69,26 +69,26 @@ public class RedactionScenarios {
                 .statusCode(200);
     }
 
-//    @Test
-//    public void testSaveRedactedImageDocument() throws Exception {
-//        String newDocId = testUtil.uploadImageDocumentAndReturnUrl();
-//        String documentString = testUtil.getCcdDocumentJson("my doc", newDocId, "annotationTemplate.pdf");
-//        String caseId = testUtil.createCase(documentString).getId().toString();
-//
-//        RedactionRequest redactionRequest = new RedactionRequest();
-//        redactionRequest.setCaseId(caseId);
-//        redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
-//        redactionRequest.setMarkups(Arrays.asList(createMarkUp()));
-//
-//        JSONObject jsonObject = new JSONObject(redactionRequest);
-//
-//        testUtil.authRequest()
-//                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-//                .body(jsonObject)
-//                .request("POST", testUrl + "/api/redaction")
-//                .then()
-//                .statusCode(200);
-//    }
+    @Test
+    public void testSaveRedactedImageDocument() throws Exception {
+        String newDocId = testUtil.uploadImageDocumentAndReturnUrl();
+        String documentString = testUtil.getCcdDocumentJson("my doc", newDocId, "fist.png");
+        String caseId = testUtil.createCase(documentString).getId().toString();
+
+        RedactionRequest redactionRequest = new RedactionRequest();
+        redactionRequest.setCaseId(caseId);
+        redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
+        redactionRequest.setMarkups(Arrays.asList(createMarkUp()));
+
+        JSONObject jsonObject = new JSONObject(redactionRequest);
+
+        testUtil.authRequest()
+                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                .body(jsonObject)
+                .request("POST", testUrl + "/api/redaction")
+                .then()
+                .statusCode(200);
+    }
 
     @Test
     public void testFailedSaveRedactedRichTextDocument() throws Exception {

@@ -192,7 +192,7 @@ public class TestUtil {
         return uploadDocument("annotationTemplate.pdf");
     }
 
-    public String uploadPdfDocumentAndReturnUrl(String fileName, String mimeType) {
+    public String uploadDocumentAndReturnUrl(String fileName, String mimeType) {
         try {
             String url = dmHelper.getDocumentMetadata(
                     dmHelper.uploadAndGetId(
@@ -208,15 +208,15 @@ public class TestUtil {
     }
 
     public String uploadPdfDocumentAndReturnUrl() {
-        return uploadPdfDocumentAndReturnUrl("annotationTemplate.pdf", "application/pdf");
+        return uploadDocumentAndReturnUrl("annotationTemplate.pdf", "application/pdf");
     }
 
     public String uploadImageDocumentAndReturnUrl() {
-        return uploadPdfDocumentAndReturnUrl("fist.png", "image/png");
+        return uploadDocumentAndReturnUrl("fist.png", "image/png");
     }
 
     public String uploadRichTextDocumentAndReturnUrl() {
-        return uploadPdfDocumentAndReturnUrl("test.rtf", "application/rtf");
+        return uploadDocumentAndReturnUrl("test.rtf", "application/rtf");
     }
 
     public String getDmApiUrl() {
