@@ -15,3 +15,5 @@ azure:
   application-insights:
     instrumentation-key: ${APPINSIGHTS_INSTRUMENTATIONKEY:dummy}
 
+document_management:
+  base-url: ${DM_STORE_APP_URL:http://localhost:4603}
