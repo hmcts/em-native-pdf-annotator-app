@@ -12,6 +12,7 @@ java:
     SPRING_DATASOURCE_USERNAME: "{{ .Values.postgresql.postgresqlUsername}}"
     SPRING_DATASOURCE_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
     CCD_DATA_API_URL: http://ccd-data-store-api-aat.service.core-compute-aat.internal
+    CCD_DATA_API: http://ccd-data-store-api-aat.service.core-compute-aat.internal
 
   postgresql:
     enabled: true
