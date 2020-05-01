@@ -112,4 +112,7 @@
         <packageUrl regex="true">^pkg:maven/com\.nimbusds/nimbus\-jose\-jwt@.*$</packageUrl>
         <cve>CVE-2019-17195</cve>
     </suppress>
+    <suppress>
+        <cve>CVE-2020-9488</cve>
+    </suppress>
 </suppressions>
