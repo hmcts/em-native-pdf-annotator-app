@@ -33,7 +33,7 @@ public class MarkUpScenarios {
     @Test
     public void testCreateMarkUp() throws JsonProcessingException {
 
-        MarkUpDTO markUpDTO = populateMarkUpDTO();
+        MarkUpDTO markUpDTO = testUtil.populateMarkUpDTO(id);
 
         JSONObject jsonObject = new JSONObject(markUpDTO);
 
@@ -59,7 +59,7 @@ public class MarkUpScenarios {
     @Test
     public void testUpdateMarkUp() {
 
-        MarkUpDTO markUpDTO = populateMarkUpDTO();
+        MarkUpDTO markUpDTO = testUtil.populateMarkUpDTO(id);
 
         markUpDTO.setHeight(100);
         markUpDTO.setWidth(60);
@@ -93,16 +93,5 @@ public class MarkUpScenarios {
             .request("DELETE", testUrl + "/api/markups/" + id)
             .then()
             .statusCode(200);
-    }
-
-    private MarkUpDTO populateMarkUpDTO() {
-        MarkUpDTO markUpDTO = new MarkUpDTO();
-        markUpDTO.setDocumentId(id);
-        markUpDTO.setId(id);
-        markUpDTO.setHeight(10);
-        markUpDTO.setWidth(10);
-        markUpDTO.setXcoordinate(20);
-        markUpDTO.setYcoordinate(30);
-        return markUpDTO;
     }
 }

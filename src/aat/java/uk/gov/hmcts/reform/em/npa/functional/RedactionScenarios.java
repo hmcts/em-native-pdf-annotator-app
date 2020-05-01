@@ -9,17 +9,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.em.EmTestConfig;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.MarkUpDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionRequest;
-import uk.gov.hmcts.reform.em.npa.testutil.ExtendedCcdHelper;
 import uk.gov.hmcts.reform.em.npa.testutil.TestUtil;
 
 import java.util.Arrays;
 import java.util.UUID;
 
-@SpringBootTest(classes = {TestUtil.class, EmTestConfig.class, ExtendedCcdHelper.class})
+@SpringBootTest(classes = {TestUtil.class, EmTestConfig.class})
 @PropertySource(value = "classpath:application.yml")
 @RunWith(SpringRunner.class)
 public class RedactionScenarios {
@@ -27,36 +25,34 @@ public class RedactionScenarios {
     @Value("${test.url}")
     String testUrl;
 
-    String newDocId;
-
     @Autowired
     protected TestUtil testUtil;
 
-    @Autowired
-    protected ExtendedCcdHelper extendedCcdHelper;
-
-    @Autowired
-    private CoreCaseDataApi coreCaseDataApi;
+    private static final UUID id = UUID.randomUUID();
 
     private MarkUpDTO createMarkUp() {
-        MarkUpDTO markUpDTO = new MarkUpDTO();
+        MarkUpDTO markUpDTO = testUtil.populateMarkUpDTO(id);
 
-        markUpDTO.setId(UUID.randomUUID());
-        markUpDTO.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
-        markUpDTO.setPageNumber(1);
-        markUpDTO.setHeight(100);
-        markUpDTO.setWidth(100);
-        markUpDTO.setXcoordinate(100);
-        markUpDTO.setYcoordinate(100);
+        JSONObject jsonObject = new JSONObject(markUpDTO);
 
-        return  markUpDTO;
+        MarkUpDTO response = testUtil.authRequest()
+                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                .body(jsonObject)
+                .request("POST", testUrl + "/api/markups")
+                .then()
+                .statusCode(201)
+                .extract()
+                .body()
+                .as(MarkUpDTO.class);
+
+        return response;
     }
 
     @Test
-    public void testSaveRedactedDocument() throws Exception {
-        newDocId = testUtil.uploadDocumentAndReturnUrl();
-        String documentString = extendedCcdHelper.getCcdDocumentJson("my doc", newDocId, "annotationTemplate.pdf");
-        String caseId = extendedCcdHelper.createCase(documentString).getId().toString();
+    public void testSaveRedactedPdfDocument() throws Exception {
+        String newDocId = testUtil.uploadPdfDocumentAndReturnUrl();
+        String documentString = testUtil.getCcdDocumentJson("my doc", newDocId, "annotationTemplate.pdf");
+        String caseId = testUtil.createCase(documentString).getId().toString();
 
         RedactionRequest redactionRequest = new RedactionRequest();
         redactionRequest.setCaseId(caseId);
@@ -71,5 +67,66 @@ public class RedactionScenarios {
                 .request("POST", testUrl + "/api/redaction")
                 .then()
                 .statusCode(200);
+    }
+
+//    @Test
+//    public void testSaveRedactedImageDocument() throws Exception {
+//        String newDocId = testUtil.uploadImageDocumentAndReturnUrl();
+//        String documentString = testUtil.getCcdDocumentJson("my doc", newDocId, "annotationTemplate.pdf");
+//        String caseId = testUtil.createCase(documentString).getId().toString();
+//
+//        RedactionRequest redactionRequest = new RedactionRequest();
+//        redactionRequest.setCaseId(caseId);
+//        redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
+//        redactionRequest.setMarkups(Arrays.asList(createMarkUp()));
+//
+//        JSONObject jsonObject = new JSONObject(redactionRequest);
+//
+//        testUtil.authRequest()
+//                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+//                .body(jsonObject)
+//                .request("POST", testUrl + "/api/redaction")
+//                .then()
+//                .statusCode(200);
+//    }
+
+    @Test
+    public void testFailedSaveRedactedRichTextDocument() throws Exception {
+        String newDocId = testUtil.uploadRichTextDocumentAndReturnUrl();
+        String documentString = testUtil.getCcdDocumentJson("my doc", newDocId, "annotationTemplate.pdf");
+        String caseId = testUtil.createCase(documentString).getId().toString();
+
+        RedactionRequest redactionRequest = new RedactionRequest();
+        redactionRequest.setCaseId(caseId);
+        redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
+        redactionRequest.setMarkups(Arrays.asList(createMarkUp()));
+
+        JSONObject jsonObject = new JSONObject(redactionRequest);
+
+        testUtil.authRequest()
+                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                .body(jsonObject)
+                .request("POST", testUrl + "/api/redaction")
+                .then()
+                .statusCode(400);
+    }
+
+    @Test
+    public void testSaveRedactedDocumentInvalidCCDCaseId() throws Exception {
+        String newDocId = testUtil.uploadPdfDocumentAndReturnUrl();
+
+        RedactionRequest redactionRequest = new RedactionRequest();
+        redactionRequest.setCaseId("invalid_id");
+        redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
+        redactionRequest.setMarkups(Arrays.asList(createMarkUp()));
+
+        JSONObject jsonObject = new JSONObject(redactionRequest);
+
+        testUtil.authRequest()
+                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                .body(jsonObject)
+                .request("POST", testUrl + "/api/redaction")
+                .then()
+                .statusCode(400);
     }
 }

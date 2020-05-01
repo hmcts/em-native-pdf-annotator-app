@@ -1,8 +1,12 @@
 package uk.gov.hmcts.reform.em.npa.testutil;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -10,17 +14,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.Event;
+import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.MarkUpDTO;
+import uk.gov.hmcts.reform.em.test.ccddefinition.CcdDefinitionHelper;
 import uk.gov.hmcts.reform.em.test.dm.DmHelper;
 import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
 import uk.gov.hmcts.reform.em.test.s2s.S2sHelper;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -33,6 +44,12 @@ public class TestUtil {
     private String idamAuth;
     private String s2sAuth;
 
+    @Value("${test.url}")
+    private String testUrl;
+
+    @Autowired
+    private CcdDefinitionHelper ccdDefinitionHelper;
+
     @Autowired
     private IdamHelper idamHelper;
 
@@ -42,19 +59,64 @@ public class TestUtil {
     @Autowired
     private DmHelper dmHelper;
 
+    @Autowired
+    private CoreCaseDataApi coreCaseDataApi;
+
     @Value("${annotation.api.url}")
     private String emAnnotationUrl;
     @Value("${document_management.url}")
     private String dmApiUrl;
     @Value("${document_management.docker_url}")
     private String dmDocumentApiUrl;
+    @Value("${ccd.data.api.url}")
+    private String ccdDataBaseUrl;
+
+    private String newDocId;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    public final String createAutomatedBundlingCaseTemplate = "{\n"
+            + "    \"caseTitle\": null,\n"
+            + "    \"caseOwner\": null,\n"
+            + "    \"caseCreationDate\": null,\n"
+            + "    \"caseDescription\": null,\n"
+            + "    \"caseComments\": null,\n"
+            + "    \"caseDocuments\": [%s]\n"
+            + "  }";
+    public final String documentTemplate = "{\n"
+            + "        \"value\": {\n"
+            + "          \"documentName\": \"%s\",\n"
+            + "          \"documentType\": \"Prosecution\","
+            + "          \"documentLink\": {\n"
+            + "            \"document_url\": \"%s\",\n"
+            + "            \"document_binary_url\": \"%s/binary\",\n"
+            + "            \"document_filename\": \"%s\"\n"
+            + "          }\n"
+            + "        }\n"
+            + "      }";
+    private String bundleTesterUser;
+    private List<String> bundleTesterUserRoles = Stream.of("caseworker", "caseworker-publiclaw", "ccd-import").collect(Collectors.toList());
 
     @PostConstruct
-    public void init() {
-        idamHelper.createUser("a@b.com", Stream.of("caseworker").collect(Collectors.toList()));
+    public void init() throws Exception {
+        initBundleTesterUser();
         RestAssured.useRelaxedHTTPSValidation();
-        idamAuth = idamHelper.authenticateUser("a@b.com");
+        idamAuth = idamHelper.authenticateUser(bundleTesterUser);
         s2sAuth = s2sHelper.getS2sToken();
+
+        importCcdDefinitionFile();
+    }
+
+    public MarkUpDTO populateMarkUpDTO(UUID id) {
+        MarkUpDTO markUpDTO = new MarkUpDTO();
+        markUpDTO.setDocumentId(id);
+        markUpDTO.setId(id);
+        markUpDTO.setPageNumber(1);
+        markUpDTO.setHeight(10);
+        markUpDTO.setWidth(10);
+        markUpDTO.setXcoordinate(20);
+        markUpDTO.setYcoordinate(30);
+        return markUpDTO;
     }
 
     public File getDocumentBinary(String documentId) throws Exception {
@@ -130,7 +192,7 @@ public class TestUtil {
         return uploadDocument("annotationTemplate.pdf");
     }
 
-    public String uploadDocumentAndReturnUrl(String fileName, String mimeType) {
+    public String uploadPdfDocumentAndReturnUrl(String fileName, String mimeType) {
         try {
             String url = dmHelper.getDocumentMetadata(
                     dmHelper.uploadAndGetId(
@@ -145,8 +207,16 @@ public class TestUtil {
         }
     }
 
-    public String uploadDocumentAndReturnUrl() {
-        return uploadDocumentAndReturnUrl("annotationTemplate.pdf", "application/pdf");
+    public String uploadPdfDocumentAndReturnUrl() {
+        return uploadPdfDocumentAndReturnUrl("annotationTemplate.pdf", "application/pdf");
+    }
+
+    public String uploadImageDocumentAndReturnUrl() {
+        return uploadPdfDocumentAndReturnUrl("fist.png", "image/png");
+    }
+
+    public String uploadRichTextDocumentAndReturnUrl() {
+        return uploadPdfDocumentAndReturnUrl("test.rtf", "application/rtf");
     }
 
     public String getDmApiUrl() {
@@ -210,4 +280,93 @@ public class TestUtil {
         return RestAssured.given().header("ServiceAuthorization", "invalidS2SAuthorization");
     }
 
+    public void importCcdDefinitionFile() throws Exception {
+
+        ccdDefinitionHelper.importDefinitionFile(
+                bundleTesterUser,
+                "caseworker-publiclaw",
+                getEnvSpecificDefinitionFile());
+
+    }
+
+    public CaseDetails createCase(String documents) throws Exception {
+        return createCase(bundleTesterUser, "PUBLICLAW", getEnvCcdCaseTypeId(), "createCase",
+                objectMapper.readTree(String.format(createAutomatedBundlingCaseTemplate, documents)));
+    }
+
+    public CaseDetails createCase(String username, String jurisdiction, String caseType, String eventId, Object data) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+
+        String startEventResponseString = authRequest()
+                .header("ServiceAuthorization", s2sAuth)
+                .header("experimental", "true")
+                .request("GET", ccdDataBaseUrl + String.format("/case-types/%s/event-triggers/%s", caseType, eventId))
+                .then()
+                .extract()
+                .body()
+                .asString();
+
+        StartEventResponse startEventResponse = mapper.readValue(startEventResponseString, StartEventResponse.class);
+
+        return authRequest()
+                .header("ServiceAuthorization", s2sAuth)
+                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                .body(CaseDataContent.builder()
+                        .event(Event.builder().id(startEventResponse.getEventId()).build())
+                        .eventToken(startEventResponse.getToken())
+                        .data(data).build())
+                .request("POST",ccdDataBaseUrl +
+                        String.format("/caseworkers/%s/jurisdictions/%s/case-types/%s/cases",
+                                idamHelper.getUserId(username),
+                                jurisdiction,
+                                caseType))
+                .then().log().all()
+                .extract()
+                .body()
+                .as(CaseDetails.class);
+    }
+
+    public String getEnvCcdCaseTypeId() {
+        return String.format("BUND_ASYNC_%d", testUrl.hashCode());
+    }
+
+    public InputStream getEnvSpecificDefinitionFile() throws Exception {
+        Workbook workbook = new XSSFWorkbook(ClassLoader.getSystemResourceAsStream("adv_bundling_functional_tests_ccd_def.xlsx"));
+        Sheet caseTypeSheet = workbook.getSheet("CaseType");
+
+        caseTypeSheet.getRow(3).getCell(3).setCellValue(getEnvCcdCaseTypeId());
+
+        for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+            Sheet sheet = workbook.getSheetAt(i);
+            for (Row row : sheet) {
+                for (Cell cell : row) {
+                    if (cell.getCellType().equals(CellType.STRING)
+                            && cell.getStringCellValue().trim().equals("CCD_BUNDLE_MVP_TYPE_ASYNC")) {
+                        cell.setCellValue(getEnvCcdCaseTypeId());
+                    }
+                    if (cell.getCellType().equals(CellType.STRING)
+                            && cell.getStringCellValue().trim().equals("bundle-tester@gmail.com")) {
+                        cell.setCellValue(bundleTesterUser);
+                    }
+                }
+            }
+        }
+
+        File outputFile = File.createTempFile("ccd", "ftest-def");
+
+        try (FileOutputStream fileOutputStream = new FileOutputStream(outputFile)) {
+            workbook.write(fileOutputStream);
+        }
+
+        return new FileInputStream(outputFile);
+    }
+
+    public void initBundleTesterUser() {
+        bundleTesterUser = String.format("bundle-tester-%d@gmail.com", testUrl.hashCode());
+        idamHelper.createUser(bundleTesterUser, bundleTesterUserRoles);
+    }
+
+    public String getCcdDocumentJson(String documentName, String dmUrl, String fileName) {
+        return String.format(documentTemplate, documentName, dmUrl, dmUrl, fileName);
+    }
 }

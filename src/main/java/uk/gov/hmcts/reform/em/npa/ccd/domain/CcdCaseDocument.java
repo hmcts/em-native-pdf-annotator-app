@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.em.npa.ccd.domain;
 
 import lombok.Builder;
+import lombok.ToString;
 import lombok.Value;
 
 import java.time.LocalDateTime;

@@ -93,7 +93,7 @@ public class RedactionServiceImpl implements RedactionService {
 
             JsonNode updatedDocRes = dmStoreUploader.uploadDocument(updatedFile);
 
-            updateCcdCaseDocuments(ccdCallbackDto, updatedDocRes, originalFile);
+            updateCcdCaseDocuments(ccdCallbackDto, updatedDocRes, documentId.toString());
 
             markUpRepository.deleteAllByDocumentIdAndCreatedBy(documentId, securityUtils.getCurrentUserLogin().orElse(Constants.ANONYMOUS_USER));
 
@@ -112,20 +112,20 @@ public class RedactionServiceImpl implements RedactionService {
 
     private void updateCcdCaseDocuments(CcdCallbackDto ccdCallbackDto,
                                         JsonNode documentStoreResponse,
-                                        File originalDocumentFile) throws JsonProcessingException {
+                                        String documentId) throws JsonProcessingException {
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode caseDocuments = ccdCallbackDto.getCaseData().findValue("caseDocuments");
         JsonNode originalCaseDocument = StreamSupport
                 .stream(Spliterators.spliteratorUnknownSize(caseDocuments.iterator(), Spliterator.ORDERED), false)
                 .parallel()
-                .filter(caseDocument -> caseDocument.get("value").get("documentLink").get("document_filename").asText().equals(originalDocumentFile.getName()))
+                .filter(caseDocument -> caseDocument.get("value").get("documentLink").get("document_url").asText().contains(documentId))
                 .findFirst()
                 .orElseThrow(CaseDocumentNotFoundException::new);
 
         CcdCaseDocument caseDocument =
                 CcdCaseDocument.builder()
-                        .documentName(FilenameUtils.getBaseName(originalDocumentFile.getName()) + REDACTION_SUFFIX)
+                        .documentName(FilenameUtils.getBaseName(originalCaseDocument.get("value").get("documentLink").get("document_filename").asText()) + REDACTION_SUFFIX)
                         .documentType(originalCaseDocument.get("value").get("documentType").asText() + REDACTION_SUFFIX)
                         .documentLink(
                                 CcdDocument.builder()

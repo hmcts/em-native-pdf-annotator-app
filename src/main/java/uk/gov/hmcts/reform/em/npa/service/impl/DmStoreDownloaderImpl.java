@@ -17,9 +17,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
-//import org.springframework.beans.factory.annotation.Value;
-//import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-//import uk.gov.hmcts.reform.em.npa.config.security.SecurityUtils;
 
 @Service
 @Transactional
@@ -49,13 +46,12 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
             Request request = new Request.Builder()
                     .addHeader("user-roles", "caseworker")
                     .addHeader("ServiceAuthorization", authTokenGenerator.generate())
-                    .url(dmStoreAppBaseUrl+String.format(dmStoreAppDocumentBinaryEndpointPattern, id))
+                    .url(dmStoreAppBaseUrl + String.format(dmStoreAppDocumentBinaryEndpointPattern, id))
                     .build();
 
             Response response = okHttpClient.newCall(request).execute();
 
             if (response.isSuccessful()) {
-
                 Path tempPath = Paths.get(System.getProperty("java.io.tmpdir") + "/" + id + ".pdf");
 
                 try {

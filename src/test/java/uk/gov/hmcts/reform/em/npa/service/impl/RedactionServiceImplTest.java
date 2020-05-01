@@ -71,7 +71,7 @@ public class RedactionServiceImplTest {
             "          \"documentName\": \"Prosecution doc 1\"," +
             "          \"documentType\": \"Prosecution\"," +
             "          \"documentLink\": {" +
-            "            \"document_url\":\"documentUrl\"," +
+            "            \"document_url\":\"" + docStoreUUID + "\"," +
             "            \"document_filename\":\"prosecution1.pdf\"," +
             "            \"document_binary_url\":\"documentUrl/binary\"" +
             "          }," +
@@ -118,6 +118,8 @@ public class RedactionServiceImplTest {
             "}" +
             "}";
 
+    private static final UUID docStoreUUID = UUID.randomUUID();
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -143,7 +145,6 @@ public class RedactionServiceImplTest {
 
     @Test
     public void redactPdfFileTest() throws DocumentTaskProcessingException, IOException {
-        UUID docStoreUUID = UUID.randomUUID();
         File mockFile = new File("prosecution1.pdf");
         Mockito.when(ccdDataApiEventCreator.executeTrigger(eq("caseId"), eq("redactionDocumentUpload"), eq("jwt")))
                 .thenReturn(ccdCallbackDto);
@@ -158,8 +159,6 @@ public class RedactionServiceImplTest {
 
     @Test
     public void redactImageFileTest() throws DocumentTaskProcessingException, IOException {
-
-        UUID docStoreUUID = UUID.randomUUID();
         File mockFile = new File("prosecution2.png");
         Mockito.when(ccdDataApiEventCreator.executeTrigger(eq("caseId"), eq("redactionDocumentUpload"), eq("jwt")))
                 .thenReturn(ccdCallbackDto);
