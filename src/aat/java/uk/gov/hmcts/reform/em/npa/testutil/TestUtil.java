@@ -297,7 +297,11 @@ public class TestUtil {
     public CaseDetails createCase(String username, String jurisdiction, String caseType, String eventId, Object data) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
 
-        String startEventResponseString = authRequest()
+        final String userAuthorization = idamHelper.authenticateUser(username);
+        String startEventResponseString =
+            RestAssured
+                .given()
+                .header("Authorization", userAuthorization)
                 .header("ServiceAuthorization", s2sAuth)
                 .header("experimental", "true")
                 .request("GET", ccdDataBaseUrl + String.format("/case-types/%s/event-triggers/%s", caseType, eventId))
@@ -308,7 +312,9 @@ public class TestUtil {
 
         StartEventResponse startEventResponse = mapper.readValue(startEventResponseString, StartEventResponse.class);
 
-        return authRequest()
+        return RestAssured
+                .given()
+                .header("Authorization", userAuthorization)
                 .header("ServiceAuthorization", s2sAuth)
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .body(CaseDataContent.builder()
