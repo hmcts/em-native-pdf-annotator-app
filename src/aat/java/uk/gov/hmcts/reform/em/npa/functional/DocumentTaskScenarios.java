@@ -27,6 +27,7 @@ import static org.hamcrest.CoreMatchers.startsWith;
 @SpringBootTest(classes = {TestUtil.class, EmTestConfig.class})
 @PropertySource(value = "classpath:application.yml")
 @RunWith(SpringRunner.class)
+@Ignore
 public class DocumentTaskScenarios {
 
     @Autowired

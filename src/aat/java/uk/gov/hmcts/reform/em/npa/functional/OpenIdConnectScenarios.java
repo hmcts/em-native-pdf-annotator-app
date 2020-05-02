@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.em.npa.functional;
 
 import io.restassured.response.Response;
 import java.io.IOException;
+
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -22,6 +24,7 @@ import static org.junit.Assert.assertThat;
 @SpringBootTest(classes = {TestUtil.class, EmTestConfig.class})
 @PropertySource(value = "classpath:application.yml")
 @RunWith(SpringRunner.class)
+@Ignore
 public class OpenIdConnectScenarios {
 
   @Autowired
