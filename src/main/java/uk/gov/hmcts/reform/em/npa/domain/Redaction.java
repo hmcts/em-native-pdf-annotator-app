@@ -19,7 +19,7 @@ import java.util.UUID;
 public class Redaction extends AbstractAuditingEntity implements Serializable {
 
     @Id
-    private UUID id;
+    private UUID redactionId;
 
     @Column(name = "document_id", nullable = false)
     private UUID documentId;

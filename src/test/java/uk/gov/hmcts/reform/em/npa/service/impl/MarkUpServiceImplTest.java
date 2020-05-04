@@ -124,7 +124,7 @@ public class MarkUpServiceImplTest {
     private Redaction createRedaction() {
         Redaction redaction = new Redaction();
         redaction.setDocumentId(UUID.randomUUID());
-        redaction.setId(UUID.randomUUID());
+        redaction.setRedactionId(UUID.randomUUID());
         Set<Rectangle> rectangles = new HashSet<>();
         rectangles.add(createRectangle());
         redaction.setRectangles(rectangles);

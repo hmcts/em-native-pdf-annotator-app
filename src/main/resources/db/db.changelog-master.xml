@@ -12,56 +12,16 @@
     <include file="changelog/20180918132136_added_entity_DocumentTask.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20180918132314_added_entity_EntityAuditEvent.xml" relativeToChangelogFile="true"/>
 
-    <changeSet author="yogeshhullatti (generated)" id="1588625536109-6">
-        <createTable tableName="rectangle">
-            <column name="id" type="UUID">
-                <constraints primaryKey="true" primaryKeyName="rectanglePK"/>
-            </column>
-            <column name="created_by" type="VARCHAR(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="created_date" type="TIMESTAMP WITHOUT TIME ZONE">
-                <constraints nullable="false"/>
-            </column>
-            <column name="last_modified_by" type="VARCHAR(50)"/>
-            <column name="last_modified_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
-            <column name="height" type="FLOAT8">
-                <constraints nullable="false"/>
-            </column>
-            <column name="width" type="FLOAT8">
-                <constraints nullable="false"/>
-            </column>
-            <column name="x_coordinate" type="FLOAT8">
-                <constraints nullable="false"/>
-            </column>
-            <column name="y_coordinate" type="FLOAT8">
-                <constraints nullable="false"/>
-            </column>
-            <column name="redaction_id" type="UUID"/>
-        </createTable>
+    <changeSet author="yogeshhullatti (generated)" id="1588630179347-2">
+        <addColumn tableName="rectangle">
+            <column name="redaction_redactionId" type="uuid"/>
+        </addColumn>
     </changeSet>
-    <changeSet author="yogeshhullatti (generated)" id="1588625536109-7">
-        <createTable tableName="redaction">
-            <column name="id" type="UUID">
-                <constraints primaryKey="true" primaryKeyName="redactionPK"/>
-            </column>
-            <column name="created_by" type="VARCHAR(50)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="created_date" type="TIMESTAMP WITHOUT TIME ZONE">
-                <constraints nullable="false"/>
-            </column>
-            <column name="last_modified_by" type="VARCHAR(50)"/>
-            <column name="last_modified_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
-            <column name="document_id" type="UUID">
-                <constraints nullable="false"/>
-            </column>
-            <column name="page_num" type="INTEGER">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
+    <changeSet author="yogeshhullatti (generated)" id="1588630179347-3">
+        <addForeignKeyConstraint baseColumnNames="redaction_redactionId" baseTableName="rectangle" constraintName="FKigiuw6vbyuiwr2cxy3d4rc090" deferrable="false" initiallyDeferred="false" referencedColumnNames="redactionId" referencedTableName="redaction"/>
     </changeSet>
-    <changeSet author="yogeshhullatti (generated)" id="1588625536109-9">
-        <addForeignKeyConstraint baseColumnNames="redaction_id" baseTableName="rectangle" constraintName="FK3cybgnhukgtj24bspembyx830" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="redaction"/>
+
+    <changeSet author="yogeshhullatti (generated)" id="1588630179347-16">
+        <dropColumn columnName="redaction_id" tableName="rectangle"/>
     </changeSet>
 </databaseChangeLog>
