@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.em.npa.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import uk.gov.hmcts.reform.em.npa.service.dto.redaction.MarkUpDTO;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 
 import java.util.UUID;
 
@@ -11,10 +11,10 @@ public interface MarkUpService {
     /**
      * Save a markUp.
      *
-     * @param MarkUpDTO the entity to save
+     * @param redactionDTO the entity to save
      * @return the persisted entity
      */
-    MarkUpDTO save(MarkUpDTO MarkUpDTO);
+    RedactionDTO save(RedactionDTO redactionDTO);
 
     /**
      *
@@ -22,12 +22,19 @@ public interface MarkUpService {
      * @param documentId
      * @return
      */
-    Page<MarkUpDTO> findAllByDocumentId(UUID documentId, Pageable pageable);
+    Page<RedactionDTO> findAllByDocumentId(UUID documentId, Pageable pageable);
 
     /**
-     * Delete the "id" markUp.
+     * Delete all the markUps of the document.
      *
-     * @param id the id of the entity
+     * @param documentId the id of the document
      */
-    void delete(UUID id);
+    void deleteAll(UUID documentId);
+
+    /**
+     * Delete A markUp for the document.
+     *
+     * @param redactionId the id of the redaction
+     */
+    void delete(UUID redactionId);
 }

@@ -12,12 +12,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import uk.gov.hmcts.reform.em.npa.service.dto.redaction.MarkUpDTO;
 import uk.gov.hmcts.reform.em.npa.rest.errors.EmptyResponseException;
 import uk.gov.hmcts.reform.em.npa.rest.errors.ValidationErrorException;
 import uk.gov.hmcts.reform.em.npa.rest.util.HeaderUtil;
 import uk.gov.hmcts.reform.em.npa.rest.util.PaginationUtil;
 import uk.gov.hmcts.reform.em.npa.service.MarkUpService;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -35,7 +35,7 @@ public class MarkUpResource {
 
     private final Logger log = LoggerFactory.getLogger(MarkUpResource.class);
 
-    private static final String ENTITY_NAME = "markup";
+    private static final String ENTITY_NAME = "redaction";
 
     private MarkUpService markUpService;
 
@@ -46,21 +46,21 @@ public class MarkUpResource {
     /**
      * POST  /markups : Create a new markup.
      *
-     * @param markUpDTO the MarkUpDTO to create
-     * @return the ResponseEntity with status 201 (Created) and with body the new MarkUpDTO
+     * @param redactionDTO the RedactionDTO to create
+     * @return the ResponseEntity with status 201 (Created) and with body the new RedactionDTO
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
-    @ApiOperation(value = "Create an MarkUpDTO", notes = "A POST request to create an MarkUpDTO")
+    @ApiOperation(value = "Create an RedactionDTO", notes = "A POST request to create an RedactionDTO")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Successfully created", response = MarkUpDTO.class),
+            @ApiResponse(code = 201, message = "Successfully created", response = RedactionDTO.class),
             @ApiResponse(code = 401, message = "Unauthorised"),
             @ApiResponse(code = 403, message = "Forbidden"),
     })
     @PostMapping("/markups")
-    public ResponseEntity<MarkUpDTO> createMarkUp(@Valid @RequestBody MarkUpDTO markUpDTO,
+    public ResponseEntity<RedactionDTO> createMarkUp(@Valid @RequestBody RedactionDTO redactionDTO,
                                                      BindingResult result) throws URISyntaxException {
 
-        log.debug("REST request to save MarkUp : {}", markUpDTO);
+        log.debug("REST request to save Redaction : {}", redactionDTO);
 
         if (result.hasErrors()) {
             throw new ValidationErrorException(result.getFieldErrors().stream()
@@ -68,9 +68,9 @@ public class MarkUpResource {
                     .collect(Collectors.joining(",")));
         }
 
-        MarkUpDTO response = markUpService.save(markUpDTO);
-        return ResponseEntity.created(new URI("/api/markups/" + response.getId()))
-                .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, response.getId().toString()))
+        RedactionDTO response = markUpService.save(redactionDTO);
+        return ResponseEntity.created(new URI("/api/markups/" + response.getRedactionId()))
+                .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, response.getRedactionId().toString()))
                 .body(response);
     }
 
@@ -78,22 +78,22 @@ public class MarkUpResource {
     /**
      * PUT  /markups : Updates an existing markup.
      *
-     * @param markUpDTO the MarkUpDTO to update
-     * @return the ResponseEntity with status 200 (OK) and with body the updated MarkUpDTO,
+     * @param redactionDTO the RedactionDTO to update
+     * @return the ResponseEntity with status 200 (OK) and with body the updated RedactionDTO,
      * or with status 500 (Internal Server Error) if the markup couldn't be updated
      */
-    @ApiOperation(value = "Update an existing MarkUpDTO", notes = "A PUT request to update an MarkUpDTO")
+    @ApiOperation(value = "Update an existing RedactionDTO", notes = "A PUT request to update an RedactionDTO")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = MarkUpDTO.class),
-            @ApiResponse(code = 500, message = "MarkUpDTO couldn't be updated"),
+            @ApiResponse(code = 200, message = "Success", response = RedactionDTO.class),
+            @ApiResponse(code = 500, message = "RedactionDTO couldn't be updated"),
             @ApiResponse(code = 401, message = "Unauthorised"),
             @ApiResponse(code = 403, message = "Forbidden"),
             @ApiResponse(code = 404, message = "Not Found"),
     })
     @PutMapping("/markups")
-    public ResponseEntity<MarkUpDTO> updateMarkUp(@Valid @RequestBody MarkUpDTO markUpDTO,
+    public ResponseEntity<RedactionDTO> updateMarkUp(@Valid @RequestBody RedactionDTO redactionDTO,
                                                      BindingResult result) {
-        log.debug("REST request to update MarkUp : {}", markUpDTO);
+        log.debug("REST request to update Redaction : {}", redactionDTO);
 
         if (result.hasErrors()) {
             throw new ValidationErrorException(result.getFieldErrors().stream()
@@ -101,9 +101,9 @@ public class MarkUpResource {
                     .collect(Collectors.joining(",")));
         }
 
-        MarkUpDTO response = markUpService.save(markUpDTO);
+        RedactionDTO response = markUpService.save(redactionDTO);
         return ResponseEntity.ok()
-                .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, markUpDTO.getId().toString()))
+                .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, response.getRedactionId().toString()))
                 .body(response);
     }
 
@@ -115,15 +115,15 @@ public class MarkUpResource {
      */
     @ApiOperation(value = "Get all markups for Document ID")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success", response = MarkUpDTO.class, responseContainer = "List"),
+            @ApiResponse(code = 200, message = "Success", response = RedactionDTO.class, responseContainer = "List"),
             @ApiResponse(code = 401, message = "Unauthorised"),
             @ApiResponse(code = 403, message = "Forbidden"),
             @ApiResponse(code = 404, message = "Not Found"),
     })
     @GetMapping("/markups/{documentId}")
-    public ResponseEntity<List<MarkUpDTO>> getAllDocumentMarkUps(@PathVariable UUID documentId, Pageable pageable) {
+    public ResponseEntity<List<RedactionDTO>> getAllDocumentMarkUps(@PathVariable UUID documentId, Pageable pageable) {
         log.debug("REST request to get a page of markups");
-        Page<MarkUpDTO> page = markUpService.findAllByDocumentId(documentId, pageable);
+        Page<RedactionDTO> page = markUpService.findAllByDocumentId(documentId, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/markups");
         if (page.hasContent()) {
             return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
@@ -133,23 +133,44 @@ public class MarkUpResource {
     }
 
     /**
-     * DELETE  /markups/:id : delete the "id" markup.
+     * DELETE  /markups/:documentId : delete all the markups of the document.
      *
-     * @param id the id of the MarkUpDTO to delete
+     * @param documentId the id of the Document
      * @return the ResponseEntity with status 200 (OK)
      */
-    @ApiOperation(value = "Delete a MarkUpDTO", notes = "A DELETE request to delete a MarkUpDTO")
+    @ApiOperation(value = "Delete all RedactionDTOs", notes = "A DELETE request to delete all the markups of the document")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 401, message = "Unauthorised"),
             @ApiResponse(code = 403, message = "Forbidden"),
             @ApiResponse(code = 404, message = "Not Found"),
     })
-    @DeleteMapping("/markups/{id}")
-    public ResponseEntity<Void> deleteMarkUp(@PathVariable UUID id) {
-        log.debug("REST request to delete MarkUp : {}", id);
-        markUpService.delete(id);
-        return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
+    @DeleteMapping("/markups/{documentId}")
+    public ResponseEntity<Void> deleteMarkUps(@PathVariable UUID documentId) {
+        log.debug("REST request to delete all Redactions for entire document : {}", documentId);
+        markUpService.deleteAll(documentId);
+        return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, documentId.toString())).build();
     }
 
+    /**
+     * DELETE  /markups/:documentId/:redactionId : delete the markup of the document.
+     *
+     * @param documentId the id of the Document
+     *
+     * @param redactionId the id of the RedactionDTO
+     * @return the ResponseEntity with status 200 (OK)
+     */
+    @ApiOperation(value = "Delete a RedactionDTO", notes = "A DELETE request to delete the markup of the document")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Success"),
+        @ApiResponse(code = 401, message = "Unauthorised"),
+        @ApiResponse(code = 403, message = "Forbidden"),
+        @ApiResponse(code = 404, message = "Not Found"),
+    })
+    @DeleteMapping("/markups/{documentId}/{redactionId}")
+    public ResponseEntity<Void> deleteMarkUp(@PathVariable UUID documentId, @PathVariable UUID redactionId) {
+        log.debug("REST request to delete a Redaction of the document : {}", documentId);
+        markUpService.delete(redactionId);
+        return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, redactionId.toString())).build();
+    }
 }

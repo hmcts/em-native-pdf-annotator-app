@@ -12,15 +12,14 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import uk.gov.hmcts.reform.em.npa.config.security.SecurityUtils;
-import uk.gov.hmcts.reform.em.npa.domain.MarkUp;
-import uk.gov.hmcts.reform.em.npa.service.dto.redaction.MarkUpDTO;
+import uk.gov.hmcts.reform.em.npa.domain.Rectangle;
+import uk.gov.hmcts.reform.em.npa.domain.Redaction;
 import uk.gov.hmcts.reform.em.npa.repository.MarkUpRepository;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 import uk.gov.hmcts.reform.em.npa.service.mapper.MarkUpMapper;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 public class MarkUpServiceImplTest {
 
@@ -47,50 +46,46 @@ public class MarkUpServiceImplTest {
     @Test
     public void testSaveSuccess() {
 
-        MarkUpDTO markUpDTO = createMarkUpDTO();
-        MarkUp markUp = createMarkUp();
+        RedactionDTO redactionDTO = createRedactionDTO();
+        Redaction redaction = createRedaction();
         Mockito.when(securityUtils.getCurrentUserLogin()).thenReturn(Optional.of("testuser"));
-        Mockito.when(markUpMapper.toEntity(markUpDTO)).thenReturn(markUp);
-        Mockito.when(markUpMapper.toDto(markUp)).thenReturn(markUpDTO);
-        Mockito.when(markUpRepository.save(markUp)).thenReturn(markUp);
+        Mockito.when(markUpMapper.toEntity(redactionDTO)).thenReturn(redaction);
+        Mockito.when(markUpMapper.toDto(redaction)).thenReturn(redactionDTO);
+        Mockito.when(markUpRepository.save(redaction)).thenReturn(redaction);
 
-        MarkUpDTO updatedDto = markUpService.save(markUpDTO);
+        RedactionDTO updatedDto = markUpService.save(redactionDTO);
 
-        Mockito.verify(markUpRepository, Mockito.atLeast(1)).save(markUp);
-        Mockito.verify(markUpMapper, Mockito.atLeast(1)).toEntity(markUpDTO);
-        Mockito.verify(markUpMapper, Mockito.atLeast(1)).toDto(markUp);
+        Mockito.verify(markUpRepository, Mockito.atLeast(1)).save(redaction);
+        Mockito.verify(markUpMapper, Mockito.atLeast(1)).toEntity(redactionDTO);
+        Mockito.verify(markUpMapper, Mockito.atLeast(1)).toDto(redaction);
 
-        Assert.assertEquals(markUpDTO.getDocumentId(), updatedDto.getDocumentId());
-        Assert.assertEquals(markUpDTO.getId(), updatedDto.getId());
-        Assert.assertEquals(markUpDTO.getHeight(), updatedDto.getHeight());
-        Assert.assertEquals(markUpDTO.getWidth(), updatedDto.getWidth());
-        Assert.assertEquals(markUpDTO.getXcoordinate(), updatedDto.getXcoordinate());
-        Assert.assertEquals(markUpDTO.getYcoordinate(), updatedDto.getYcoordinate());
+        Assert.assertEquals(redactionDTO.getDocumentId(), updatedDto.getDocumentId());
+        Assert.assertEquals(redactionDTO.getRedactionId(), updatedDto.getRedactionId());
+        Assert.assertEquals(redactionDTO.getRectangles().size(), updatedDto.getRectangles().size());
 
     }
 
     @Test(expected = UsernameNotFoundException.class)
     public void testSaveFailure() {
 
-        MarkUpDTO markUpDTO = createMarkUpDTO();
-        MarkUp markUp = createMarkUp();
+        RedactionDTO redactionDTO = createRedactionDTO();
 
-        MarkUpDTO updatedDto = markUpService.save(markUpDTO);
+        RedactionDTO updatedDto = markUpService.save(redactionDTO);
     }
 
     @Test
     public void testFindAllByDocumentIdSuccess() {
 
-        MarkUpDTO markUpDTO = createMarkUpDTO();
-        MarkUp markUp = createMarkUp();
-        List<MarkUp> markUps = Arrays.asList(markUp);
-        Page<MarkUp> pagedResponse = new PageImpl<>(markUps);
+        RedactionDTO redactionDTO = createRedactionDTO();
+        Redaction redaction = createRedaction();
+        List<Redaction> markUps = Arrays.asList(redaction);
+        Page<Redaction> pagedResponse = new PageImpl<>(markUps);
         UUID id =  UUID.randomUUID();
 
         Mockito.when(securityUtils.getCurrentUserLogin()).thenReturn(Optional.of("testuser"));
         Mockito.when(markUpRepository.findByDocumentIdAndCreatedBy(id, "testuser", pageable))
             .thenReturn(pagedResponse);
-        Mockito.when(markUpMapper.toDto(markUp)).thenReturn(markUpDTO);
+        Mockito.when(markUpMapper.toDto(redaction)).thenReturn(redactionDTO);
 
         markUpService.findAllByDocumentId(id, pageable);
 
@@ -115,25 +110,54 @@ public class MarkUpServiceImplTest {
         Mockito.verify(markUpRepository, Mockito.atLeast(1)).deleteById(id);
     }
 
-    private MarkUp createMarkUp() {
-        MarkUp markUp = new MarkUp();
-        markUp.setDocumentId(UUID.randomUUID());
-        markUp.setId(UUID.randomUUID());
-        markUp.setHeight(10);
-        markUp.setWidth(10);
-        markUp.setXcoordinate(20);
-        markUp.setYcoordinate(30);
-        return markUp;
+    @Test
+    public void testDeleteAllSuccess() {
+        UUID documentId =  UUID.randomUUID();
+        Mockito.when(securityUtils.getCurrentUserLogin()).thenReturn(Optional.of("testuser"));
+
+        markUpService.deleteAll(documentId);
+
+        Mockito.doNothing().when(markUpRepository).deleteAllByDocumentIdAndCreatedBy(documentId, "testuser");
+        Mockito.verify(markUpRepository, Mockito.atLeast(1)).deleteAllByDocumentIdAndCreatedBy(documentId, "testuser");
     }
 
-    private MarkUpDTO createMarkUpDTO() {
-        MarkUpDTO markUpDTO = new MarkUpDTO();
-        markUpDTO.setDocumentId(UUID.randomUUID());
-        markUpDTO.setId(UUID.randomUUID());
-        markUpDTO.setHeight(10);
-        markUpDTO.setWidth(10);
-        markUpDTO.setXcoordinate(20);
-        markUpDTO.setYcoordinate(30);
-        return markUpDTO;
+    private Redaction createRedaction() {
+        Redaction redaction = new Redaction();
+        redaction.setDocumentId(UUID.randomUUID());
+        redaction.setId(UUID.randomUUID());
+        Set<Rectangle> rectangles = new HashSet<>();
+        rectangles.add(createRectangle());
+        redaction.setRectangles(rectangles);
+        return redaction;
+    }
+
+    private Rectangle createRectangle() {
+        Rectangle rectangle = new Rectangle();
+        rectangle.setId(UUID.randomUUID());
+        rectangle.setHeight(10.0);
+        rectangle.setWidth(10.0);
+        rectangle.setX(20.0);
+        rectangle.setY(30.0);
+        return rectangle;
+    }
+
+    private RedactionDTO createRedactionDTO() {
+        RedactionDTO redactionDTO = new RedactionDTO();
+        redactionDTO.setDocumentId(UUID.randomUUID());
+        redactionDTO.setRedactionId(UUID.randomUUID());
+        Set<RectangleDTO> rectangles = new HashSet<>();
+        rectangles.add(createRectangleDTO());
+        redactionDTO.setRectangles(rectangles);
+        return redactionDTO;
+    }
+
+    private RectangleDTO createRectangleDTO() {
+        RectangleDTO rectangleDTO = new RectangleDTO();
+        rectangleDTO.setId(UUID.randomUUID());
+        rectangleDTO.setHeight(10.0);
+        rectangleDTO.setWidth(10.0);
+        rectangleDTO.setX(20.0);
+        rectangleDTO.setY(30.0);
+        return rectangleDTO;
     }
 }

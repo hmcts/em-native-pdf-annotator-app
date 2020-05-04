@@ -8,17 +8,17 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.hmcts.reform.em.npa.domain.MarkUp;
+import uk.gov.hmcts.reform.em.npa.domain.Redaction;
 
 import java.util.UUID;
 
 /**
- * Spring Data repository for the MarkUp entity.
+ * Spring Data repository for the Redaction entity.
  */
 @Repository
-public interface MarkUpRepository extends JpaRepository<MarkUp, UUID> {
+public interface MarkUpRepository extends JpaRepository<Redaction, UUID> {
 
-    Page<MarkUp> findByDocumentIdAndCreatedBy(UUID documentId, String createdBy, Pageable pageable);
+    Page<Redaction> findByDocumentIdAndCreatedBy(UUID documentId, String createdBy, Pageable pageable);
 
     @Transactional
     @Modifying
