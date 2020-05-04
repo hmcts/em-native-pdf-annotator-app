@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.npa.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedBy;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -15,10 +16,14 @@ import java.util.UUID;
 @Table(name = "rectangle")
 @Getter
 @Setter
-public class Rectangle extends AbstractAuditingEntity implements Serializable {
+public class Rectangle implements Serializable {
 
     @Id
     private UUID id;
+
+    @CreatedBy
+    @Column(name = "created_by", nullable = false, length = 50, updatable = false)
+    private String createdBy;
 
     @Column(name = "x_coordinate", nullable = false)
     private Double x;

@@ -82,8 +82,8 @@ public class MarkUpScenarios {
         RectangleDTO resRectangleDTO = response.getRectangles().stream().findFirst().get();
         Assert.assertEquals(redactionDTO.getDocumentId(), response.getDocumentId());
         Assert.assertEquals(redactionDTO.getRedactionId(), response.getRedactionId());
-        Assert.assertEquals(Integer.valueOf(100), resRectangleDTO.getHeight());
-        Assert.assertEquals(Integer.valueOf(60), resRectangleDTO.getWidth());
+        Assert.assertEquals(Double.valueOf(100.0), resRectangleDTO.getHeight());
+        Assert.assertEquals(Double.valueOf(60.0), resRectangleDTO.getWidth());
 
     }
 

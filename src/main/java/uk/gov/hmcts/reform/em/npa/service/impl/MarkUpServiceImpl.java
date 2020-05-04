@@ -44,10 +44,10 @@ public class MarkUpServiceImpl implements MarkUpService {
         log.debug("Request to save Rectangle : {}", redactionDTO);
 
         Redaction redaction = markUpMapper.toEntity(redactionDTO);
-        redaction.setCreatedBy(
-                    securityUtils.getCurrentUserLogin()
-                            .orElseThrow(() -> new UsernameNotFoundException("User not found."))
-            );
+        String createdBy = securityUtils.getCurrentUserLogin()
+            .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+        redaction.setCreatedBy(createdBy);
+        redaction.getRectangles().stream().forEach(rectangle -> rectangle.setCreatedBy(createdBy));
         redaction = markUpRepository.save(redaction);
 
         return markUpMapper.toDto(redaction);

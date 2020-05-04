@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.em.npa.domain;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedBy;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -16,10 +17,15 @@ import java.util.UUID;
 @Table(name = "redaction")
 @Getter
 @Setter
-public class Redaction extends AbstractAuditingEntity implements Serializable {
+public class Redaction implements Serializable {
 
     @Id
+    @Column(name = "redaction_id")
     private UUID redactionId;
+
+    @CreatedBy
+    @Column(name = "created_by", nullable = false, length = 50, updatable = false)
+    private String createdBy;
 
     @Column(name = "document_id", nullable = false)
     private UUID documentId;

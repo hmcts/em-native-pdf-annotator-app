@@ -12,16 +12,55 @@
     <include file="changelog/20180918132136_added_entity_DocumentTask.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20180918132314_added_entity_EntityAuditEvent.xml" relativeToChangelogFile="true"/>
 
-    <changeSet author="yogeshhullatti (generated)" id="1588630179347-2">
-        <addColumn tableName="rectangle">
-            <column name="redaction_redactionId" type="uuid"/>
-        </addColumn>
+    <changeSet author="yogeshhullatti (generated)" id="1588625536109-6">
+        <createTable tableName="rectangle">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" primaryKeyName="rectanglePK"/>
+            </column>
+            <column name="created_by" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="height" type="FLOAT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="width" type="FLOAT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="x_coordinate" type="FLOAT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="y_coordinate" type="FLOAT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="redaction_redaction_id" type="uuid"/>
+        </createTable>
     </changeSet>
-    <changeSet author="yogeshhullatti (generated)" id="1588630179347-3">
-        <addForeignKeyConstraint baseColumnNames="redaction_redactionId" baseTableName="rectangle" constraintName="FKigiuw6vbyuiwr2cxy3d4rc090" deferrable="false" initiallyDeferred="false" referencedColumnNames="redactionId" referencedTableName="redaction"/>
+    <changeSet author="yogeshhullatti (generated)" id="1588625536109-7">
+        <createTable tableName="redaction">
+            <column name="redaction_id" type="uuid">
+                <constraints primaryKey="true" primaryKeyName="redactionPK"/>
+            </column>
+            <column name="created_by" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="document_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="page_num" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
     </changeSet>
 
-    <changeSet author="yogeshhullatti (generated)" id="1588630179347-16">
-        <dropColumn columnName="redaction_id" tableName="rectangle"/>
+
+    <changeSet author="yogeshhullatti (generated)" id="1588629692555-5">
+        <createIndex indexName="IX_redactionPK" tableName="redaction" unique="true">
+            <column name="redaction_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="yogeshhullatti (generated)" id="1588629692555-6">
+        <addForeignKeyConstraint baseColumnNames="redaction_redaction_id" baseTableName="rectangle" constraintName="FKigiuw6vbyuiwr2cxy3d4rc090"
+                                 deferrable="false" initiallyDeferred="false" referencedColumnNames="redaction_id" referencedTableName="redaction"/>
     </changeSet>
 </databaseChangeLog>
