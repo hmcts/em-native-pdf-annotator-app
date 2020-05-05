@@ -48,7 +48,7 @@ public class PdfRedaction {
                 File pageImage = transformToImage(pdfRenderer, redactionDTO.getPage() - 1);
                 pageImage = imageRedaction.redaction(pageImage, redactionDTO.getRectangles());
                 PDPage newPage = transformToPdf(pageImage, newDocument);
-                replacePage(document, redactionDTO.getPage() - 1, document.importPage(newPage));
+                replacePage(document, redactionDTO.getPage() - 1, newPage);
             }
 
             document.save(newFile);

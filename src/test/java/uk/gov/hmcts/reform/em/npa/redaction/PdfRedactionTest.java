@@ -21,7 +21,7 @@ import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 @SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
 public class PdfRedactionTest {
     private static final File TEST_PDF_FILE = new File(
-            ClassLoader.getSystemResource("dummy.pdf").getPath()
+            ClassLoader.getSystemResource("layered.pdf").getPath()
     );
 
     @Autowired
