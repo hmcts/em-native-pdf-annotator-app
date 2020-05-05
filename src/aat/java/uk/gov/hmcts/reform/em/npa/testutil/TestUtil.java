@@ -20,6 +20,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.MarkUpDTO;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 import uk.gov.hmcts.reform.em.test.ccddefinition.CcdDefinitionHelper;
 import uk.gov.hmcts.reform.em.test.dm.DmHelper;
 import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
@@ -31,8 +33,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -107,16 +108,21 @@ public class TestUtil {
         importCcdDefinitionFile();
     }
 
-    public MarkUpDTO populateMarkUpDTO(UUID id) {
-        MarkUpDTO markUpDTO = new MarkUpDTO();
-        markUpDTO.setDocumentId(id);
-        markUpDTO.setId(id);
-        markUpDTO.setPageNumber(1);
-        markUpDTO.setHeight(10);
-        markUpDTO.setWidth(10);
-        markUpDTO.setXcoordinate(20);
-        markUpDTO.setYcoordinate(30);
-        return markUpDTO;
+    public RedactionDTO populateRedactionDTO(UUID id) {
+        RedactionDTO redactionDTO = new RedactionDTO();
+        redactionDTO.setRedactionId(id);
+        redactionDTO.setPage(1);
+        redactionDTO.setDocumentId(id);
+
+        RectangleDTO rectangle = new RectangleDTO();
+        rectangle.setId(id);
+        rectangle.setX(10.00);
+        rectangle.setY(10.00);
+        rectangle.setHeight(20.00);
+        rectangle.setWidth(30.00);
+
+        redactionDTO.setRectangles(new HashSet<>(Collections.singletonList(rectangle)));
+        return redactionDTO;
     }
 
     public File getDocumentBinary(String documentId) throws Exception {

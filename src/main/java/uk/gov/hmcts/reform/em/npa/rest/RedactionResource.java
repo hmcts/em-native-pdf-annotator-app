@@ -39,7 +39,7 @@ public class RedactionResource {
                     jwt,
                     redactionRequest.getCaseId(),
                     redactionRequest.getDocumentId(),
-                    redactionRequest.getMarkups());
+                    redactionRequest.getRedactions());
             return ResponseEntity.ok(newDocumentId);
         } catch (Exception e) {
             return ResponseEntity

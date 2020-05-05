@@ -14,5 +14,5 @@ import java.util.UUID;
 public class RedactionRequest {
     private String caseId;
     private UUID documentId;
-    private List<MarkUpDTO> markups;
+    private List<RedactionDTO> redactions;
 }

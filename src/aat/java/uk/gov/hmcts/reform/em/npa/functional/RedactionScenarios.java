@@ -11,11 +11,12 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.em.EmTestConfig;
-import uk.gov.hmcts.reform.em.npa.service.dto.redaction.MarkUpDTO;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionRequest;
 import uk.gov.hmcts.reform.em.npa.testutil.TestUtil;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.UUID;
 
 @SpringBootTest(classes = {TestUtil.class, EmTestConfig.class})
@@ -32,12 +33,12 @@ public class RedactionScenarios {
 
     private static final UUID id = UUID.randomUUID();
 
-    private MarkUpDTO createMarkUp() {
-        MarkUpDTO markUpDTO = testUtil.populateMarkUpDTO(id);
+    private RedactionDTO createRedaction(UUID id) {
+        RedactionDTO redactionDTO = testUtil.populateRedactionDTO(id);
 
-        JSONObject jsonObject = new JSONObject(markUpDTO);
+        JSONObject jsonObject = new JSONObject(redactionDTO);
 
-        MarkUpDTO response = testUtil.authRequest()
+        RedactionDTO response = testUtil.authRequest()
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .body(jsonObject)
                 .request("POST", testUrl + "/api/markups")
@@ -45,7 +46,7 @@ public class RedactionScenarios {
                 .statusCode(201)
                 .extract()
                 .body()
-                .as(MarkUpDTO.class);
+                .as(RedactionDTO.class);
 
         return response;
     }
@@ -59,7 +60,7 @@ public class RedactionScenarios {
         RedactionRequest redactionRequest = new RedactionRequest();
         redactionRequest.setCaseId(caseId);
         redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
-        redactionRequest.setMarkups(Arrays.asList(createMarkUp()));
+        redactionRequest.setRedactions(Arrays.asList(createRedaction(id), createRedaction(UUID.randomUUID())));
 
         JSONObject jsonObject = new JSONObject(redactionRequest);
 
@@ -80,7 +81,7 @@ public class RedactionScenarios {
         RedactionRequest redactionRequest = new RedactionRequest();
         redactionRequest.setCaseId(caseId);
         redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
-        redactionRequest.setMarkups(Arrays.asList(createMarkUp()));
+        redactionRequest.setRedactions(Collections.singletonList(createRedaction(id)));
 
         JSONObject jsonObject = new JSONObject(redactionRequest);
 
@@ -101,7 +102,7 @@ public class RedactionScenarios {
         RedactionRequest redactionRequest = new RedactionRequest();
         redactionRequest.setCaseId(caseId);
         redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
-        redactionRequest.setMarkups(Arrays.asList(createMarkUp()));
+        redactionRequest.setRedactions(Arrays.asList(createRedaction(id), createRedaction(UUID.randomUUID())));
 
         JSONObject jsonObject = new JSONObject(redactionRequest);
 
@@ -114,13 +115,13 @@ public class RedactionScenarios {
     }
 
     @Test
-    public void testSaveRedactedDocumentInvalidCCDCaseId() throws Exception {
+    public void testSaveRedactedDocumentInvalidCCDCaseId() {
         String newDocId = testUtil.uploadPdfDocumentAndReturnUrl();
 
         RedactionRequest redactionRequest = new RedactionRequest();
         redactionRequest.setCaseId("invalid_id");
         redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
-        redactionRequest.setMarkups(Arrays.asList(createMarkUp()));
+        redactionRequest.setRedactions(Collections.singletonList(createRedaction(id)));
 
         JSONObject jsonObject = new JSONObject(redactionRequest);
 

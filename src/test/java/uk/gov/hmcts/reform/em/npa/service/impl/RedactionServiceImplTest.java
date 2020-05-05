@@ -18,15 +18,14 @@ import uk.gov.hmcts.reform.em.npa.redaction.PdfRedaction;
 import uk.gov.hmcts.reform.em.npa.repository.MarkUpRepository;
 import uk.gov.hmcts.reform.em.npa.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.npa.service.DmStoreUploader;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 import uk.gov.hmcts.reform.em.npa.service.exception.DocumentTaskProcessingException;
 import uk.gov.hmcts.reform.em.npa.service.exception.FileTypeException;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static org.mockito.ArgumentMatchers.eq;
 
@@ -59,7 +58,7 @@ public class RedactionServiceImplTest {
     @Mock
     private SecurityUtils securityUtils;
 
-    private List<MarkUpDTO> markUpDTOList = new ArrayList<>();
+    private List<RedactionDTO> redactions = new ArrayList<>();
 
     private CcdCallbackDto ccdCallbackDto;
 
@@ -131,15 +130,21 @@ public class RedactionServiceImplTest {
 
     public void initRedactionDTOList() {
         for (int i = 0; i < 5 ; i++) {
-            MarkUpDTO markUpDTO = new MarkUpDTO();
+            RedactionDTO redaction = new RedactionDTO();
+            redaction.setRedactionId(UUID.randomUUID());
+            redaction.setDocumentId(UUID.randomUUID());
+            redaction.setPage(i);
 
-            markUpDTO.setPageNumber(i + 1);
-            markUpDTO.setXcoordinate(100 * (i + 1));
-            markUpDTO.setYcoordinate(100 * (i + 1));
-            markUpDTO.setHeight(100 * (i + 1));
-            markUpDTO.setWidth(100 * (i + 1));
+            RectangleDTO rectangle = new RectangleDTO();
+            rectangle.setId(UUID.randomUUID());
+            rectangle.setX(100.00);
+            rectangle.setY(100.00);
+            rectangle.setHeight(100.00);
+            rectangle.setWidth(100.00);
 
-            markUpDTOList.add(markUpDTO);
+            redaction.setRectangles(new HashSet<>(Collections.singletonList(rectangle)));
+
+            redactions.add(redaction);
         }
     }
 
@@ -150,10 +155,10 @@ public class RedactionServiceImplTest {
                 .thenReturn(ccdCallbackDto);
         Mockito.when(ccdCallbackDto.getCaseData()).thenReturn(mapper.readTree(caseDataJson));
         Mockito.when(dmStoreDownloader.downloadFile(docStoreUUID.toString())).thenReturn(mockFile);
-        Mockito.when(pdfRedaction.redaction(mockFile, markUpDTOList)).thenReturn(mockFile);
+        Mockito.when(pdfRedaction.redaction(mockFile, redactions)).thenReturn(mockFile);
         Mockito.when(dmStoreUploader.uploadDocument(mockFile)).thenReturn(mapper.readTree(documentStoreResponse));
 
-        String result = redactionService.redactFile("jwt", "caseId", docStoreUUID, markUpDTOList);
+        String result = redactionService.redactFile("jwt", "caseId", docStoreUUID, redactions);
         Assert.assertEquals(result, docStoreUUID.toString());
     }
 
@@ -164,10 +169,10 @@ public class RedactionServiceImplTest {
                 .thenReturn(ccdCallbackDto);
         Mockito.when(ccdCallbackDto.getCaseData()).thenReturn(mapper.readTree(caseDataJson));
         Mockito.when(dmStoreDownloader.downloadFile(docStoreUUID.toString())).thenReturn(mockFile);
-        Mockito.when(imageRedaction.redaction(mockFile, markUpDTOList)).thenReturn(mockFile);
+        Mockito.when(imageRedaction.redaction(mockFile, redactions.get(0).getRectangles())).thenReturn(mockFile);
         Mockito.when(dmStoreUploader.uploadDocument(mockFile)).thenReturn(mapper.readTree(documentStoreResponse));
 
-        String result = redactionService.redactFile("jwt", "caseId", docStoreUUID, markUpDTOList);
+        String result = redactionService.redactFile("jwt", "caseId", docStoreUUID, redactions);
         Assert.assertEquals(result, docStoreUUID.toString());
     }
 
@@ -180,7 +185,7 @@ public class RedactionServiceImplTest {
                 .thenReturn(ccdCallbackDto);
         Mockito.when(dmStoreDownloader.downloadFile(docStoreUUID.toString())).thenReturn(mockFile);
 
-        redactionService.redactFile("jwt", "caseId", docStoreUUID, markUpDTOList);
+        redactionService.redactFile("jwt", "caseId", docStoreUUID, redactions);
     }
 
     @Test
@@ -191,7 +196,7 @@ public class RedactionServiceImplTest {
                 .thenReturn(ccdCallbackDto);
         Mockito.when(dmStoreDownloader.downloadFile(docStoreUUID.toString())).thenThrow(DocumentTaskProcessingException.class);
 
-        String result = redactionService.redactFile("jwt", "caseId", docStoreUUID, markUpDTOList);
+        String result = redactionService.redactFile("jwt", "caseId", docStoreUUID, redactions);
         Assert.assertEquals(result, docStoreUUID.toString());
     }
 }
