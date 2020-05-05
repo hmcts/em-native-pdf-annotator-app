@@ -47,7 +47,6 @@ import static uk.gov.hmcts.reform.em.npa.rest.TestUtil.createFormattingConversio
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
-@Ignore
 public class DocumentTaskResourceIntTest {
 
     private static final String DEFAULT_INPUT_DOCUMENT_ID = "AAAAAAAAAA";
