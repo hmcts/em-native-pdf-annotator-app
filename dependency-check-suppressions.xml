@@ -168,6 +168,7 @@
        <vulnerabilityName>CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')</vulnerabilityName>
     </suppress>
 
+
     <suppress>
         <notes><![CDATA[
         false positive, fixed in greater than 5.0.5.RELEASE
