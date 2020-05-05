@@ -2,6 +2,7 @@
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
 
     <suppress>
+        <cve>CVE-2020-9488</cve>
         <cve>CVE-2020-5398</cve>
         <cve>CVE-2019-12418</cve>
         <cve>CVE-2019-17563</cve>
@@ -161,6 +162,12 @@
         <cve>CVE-2020-11505</cve>
     </suppress>
 
+    <suppress>
+       <notes><![CDATA[file name: scala-library-2.12.5.jar]]></notes>
+       <packageUrl regex="true">^pkg:maven/org\.scala\-lang/scala\-library@.*$</packageUrl>
+       <vulnerabilityName>CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')</vulnerabilityName>
+    </suppress>
+
 
     <suppress>
         <notes><![CDATA[
@@ -169,7 +176,12 @@
         <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring-security-.*@.*$</packageUrl>
         <cve>CVE-2018-1258</cve>
     </suppress>
-
+    <suppress>
+        <notes><![CDATA[file name: scala-library-2.12.5.jar]]></notes>
+           <packageUrl regex="true">^pkg:maven/org\.scala\-lang/scala\-library@.*$</packageUrl>
+           <cpe>cpe:/a:scala-lang:scala</cpe>
+    </suppress>
+    
     <suppress>
         <notes><![CDATA[
    kotlin is included as a test dep, suppressing as not used in prod deps
