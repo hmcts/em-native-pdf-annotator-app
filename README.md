@@ -39,9 +39,9 @@ az acr login --name hmctsprivate --subscription 1c4f0704-a29e-403d-b719-b90c34ef
 docker-compose -f docker-compose-dependencies.yml pull
 docker-compose -f docker-compose-dependencies.yml up --build
 
-./gradlew migratePostgresDatabase
-
 ./bin/start-local-environment.sh
+
+./gradlew migratePostgresDatabase
 
 
 ```
