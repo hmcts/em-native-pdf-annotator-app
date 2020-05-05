@@ -88,7 +88,7 @@ public class DocumentTaskResourceIntTest {
     @Autowired
     private EntityManager em;
 
-    @Value("${dm-store-app.base-url}")
+    @Value("${document_management.base-url}")
     private String dmBaseUrl;
 
     @Value("${em-annotation-app.base-url}")
