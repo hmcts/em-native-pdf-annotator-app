@@ -1,4 +1,4 @@
-# Evidence Management Annotation App
+# Evidence Management Native PDF Annotator App
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Build Status](https://travis-ci.org/hmcts/rpa-native-pdf-annotator-app.svg?branch=master)](https://travis-ci.org/hmcts/rpa-native-pdf-annotator-app)
 [![codecov](https://codecov.io/gh/hmcts/rpa-native-pdf-annotator-app/branch/master/graph/badge.svg)](https://codecov.io/gh/hmcts/rpa-native-pdf-annotator-app)
@@ -32,21 +32,19 @@ az login
 az acr login --name hmctsprivate --subscription DCD-CNP-Prod
 az acr login --name hmctspublic --subscription 1c4f0704-a29e-403d-b719-b90c34ef14c9
 az acr login --name hmctsprivate --subscription 1c4f0704-a29e-403d-b719-b90c34ef14c9
+
 ./gradlew assemble
+
+
 docker-compose -f docker-compose-dependencies.yml pull
 docker-compose -f docker-compose-dependencies.yml up --build
+
+./bin/start-local-environment.sh
+
+./gradlew migratePostgresDatabase
+
+
 ```
-
-To set up IDAM data run: `./idam-client-setup.sh`. 
-To check the data you can log into IDAM-web-admin `http://localhost:8082` with:
-Username `idamOwner@hmcts.net`
-Password `Ref0rmIsFun`
-
-`bash
-#Run this script to aquire IDAM credentials required for DM API.
-./idam.sh
-```
-
 ### Integration
 There is currently a Java Client available here:
 https://github.com/hmcts/document-management-client
@@ -58,20 +56,6 @@ To view our REST API go to {HOST}:{PORT}/swagger-ui.html
 ### API Endpoints
 A list of our endpoints can be found here
 > https://hmcts.github.io/reform-api-docs/swagger.html?url=https://hmcts.github.io/reform-api-docs/specs/rpa-native-pdf-annotator-app.json
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 # Spring Boot application template
 
