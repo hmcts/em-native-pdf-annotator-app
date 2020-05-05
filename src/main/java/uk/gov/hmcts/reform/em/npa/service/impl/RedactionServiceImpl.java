@@ -17,13 +17,13 @@ import uk.gov.hmcts.reform.em.npa.ccd.dto.CcdCallbackDto;
 import uk.gov.hmcts.reform.em.npa.ccd.exception.CaseDocumentNotFoundException;
 import uk.gov.hmcts.reform.em.npa.config.Constants;
 import uk.gov.hmcts.reform.em.npa.config.security.SecurityUtils;
-import uk.gov.hmcts.reform.em.npa.service.dto.redaction.MarkUpDTO;
 import uk.gov.hmcts.reform.em.npa.redaction.ImageRedaction;
 import uk.gov.hmcts.reform.em.npa.redaction.PdfRedaction;
 import uk.gov.hmcts.reform.em.npa.repository.MarkUpRepository;
 import uk.gov.hmcts.reform.em.npa.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.npa.service.DmStoreUploader;
 import uk.gov.hmcts.reform.em.npa.service.RedactionService;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 import uk.gov.hmcts.reform.em.npa.service.exception.DocumentTaskProcessingException;
 import uk.gov.hmcts.reform.em.npa.service.exception.FileTypeException;
 
@@ -71,7 +71,7 @@ public class RedactionServiceImpl implements RedactionService {
     }
 
     @Override
-    public String redactFile(String jwt, String caseId, UUID documentId, List<MarkUpDTO> markUpDTOList) {
+    public String redactFile(String jwt, String caseId, UUID documentId, List<RedactionDTO> redactionDTOList) {
         CcdCallbackDto ccdCallbackDto = null;
 
         try {
@@ -83,10 +83,10 @@ public class RedactionServiceImpl implements RedactionService {
             File updatedFile;
             if (fileType.equals("pdf")) {
                 log.info("Applying redaction to PDF file");
-                updatedFile = pdfRedaction.redaction(originalFile, markUpDTOList);
+                updatedFile = pdfRedaction.redaction(originalFile, redactionDTOList);
             } else if (imageExtensionsList.contains(fileType)) {
                 log.info("Applying redaction to Image Document");
-                updatedFile = imageRedaction.redaction(originalFile, markUpDTOList);
+                updatedFile = imageRedaction.redaction(originalFile, redactionDTOList.get(0).getRectangles());
             } else {
                 throw new FileTypeException("Redaction cannot be applied to the file type provided");
             }

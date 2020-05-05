@@ -17,11 +17,12 @@ import uk.gov.hmcts.reform.em.npa.ccd.exception.CaseDocumentNotFoundException;
 
 import uk.gov.hmcts.reform.em.npa.service.RedactionService;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.MarkUpDTO;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionRequest;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -46,19 +47,29 @@ public class RedactionResourceTest {
     public static RedactionRequest createRequest() {
         RedactionRequest redactionRequest = new RedactionRequest();
         UUID docId = UUID.randomUUID();
+        List<RedactionDTO> redactions = new ArrayList<>();
+
+        for (int i = 0; i < 5 ; i++) {
+            RedactionDTO redaction = new RedactionDTO();
+            redaction.setRedactionId(UUID.randomUUID());
+            redaction.setDocumentId(docId);
+            redaction.setPage(i);
+
+            RectangleDTO rectangle = new RectangleDTO();
+            rectangle.setId(UUID.randomUUID());
+            rectangle.setX(100.00);
+            rectangle.setY(100.00);
+            rectangle.setHeight(100.00);
+            rectangle.setWidth(100.00);
+
+            redaction.setRectangles(new HashSet<>(Collections.singletonList(rectangle)));
+
+            redactions.add(redaction);
+        }
+
         redactionRequest.setCaseId("caseId");
         redactionRequest.setDocumentId(docId);
-
-        MarkUpDTO markUpDTO = new MarkUpDTO();
-        markUpDTO.setId(UUID.randomUUID());
-        markUpDTO.setDocumentId(docId);
-        markUpDTO.setPageNumber(1);
-        markUpDTO.setHeight(100);
-        markUpDTO.setWidth(100);
-        markUpDTO.setXcoordinate(100);
-        markUpDTO.setYcoordinate(100);
-
-        redactionRequest.setMarkups(Arrays.asList(markUpDTO));
+        redactionRequest.setRedactions(redactions);
 
         return redactionRequest;
     }
@@ -69,7 +80,7 @@ public class RedactionResourceTest {
         HttpServletRequest request = mock(HttpServletRequest.class);
 
         when(request.getHeader("Authorization")).thenReturn("jwt");
-        when(redactionService.redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getMarkups()))
+        when(redactionService.redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getRedactions()))
                 .thenReturn("newDocId");
 
         ResponseEntity<String> response = redactionResource.save(request, redactionRequest);
@@ -77,7 +88,7 @@ public class RedactionResourceTest {
         assertEquals("newDocId", response.getBody());
 
         verify(redactionService, Mockito.atMost(1))
-                .redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getMarkups());
+                .redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getRedactions());
     }
 
     @Test
@@ -86,13 +97,13 @@ public class RedactionResourceTest {
         HttpServletRequest request = mock(HttpServletRequest.class);
 
         when(request.getHeader("Authorization")).thenReturn("jwt");
-        when(redactionService.redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getMarkups()))
+        when(redactionService.redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getRedactions()))
                 .thenThrow(CaseDocumentNotFoundException.class);
 
         ResponseEntity<String> response = redactionResource.save(request, redactionRequest);
         assertEquals(400, response.getStatusCodeValue());
 
         verify(redactionService, Mockito.atMost(1))
-                .redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getMarkups());
+                .redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getRedactions());
     }
 }

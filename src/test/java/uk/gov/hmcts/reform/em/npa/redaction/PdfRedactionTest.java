@@ -2,8 +2,7 @@ package uk.gov.hmcts.reform.em.npa.redaction;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -15,6 +14,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.em.npa.Application;
 import uk.gov.hmcts.reform.em.npa.TestSecurityConfiguration;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.MarkUpDTO;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
@@ -26,7 +27,7 @@ public class PdfRedactionTest {
     @Autowired
     private PdfRedaction pdfRedaction;
 
-    private List<MarkUpDTO> markUpDTOList = new ArrayList<>();
+    private List<RedactionDTO> redactions = new ArrayList<>();
 
     @Before
     public void setup() {
@@ -34,38 +35,34 @@ public class PdfRedactionTest {
     }
 
     public void initRedactionDTOList() {
-        MarkUpDTO dto = new MarkUpDTO();
-
-        dto.setPageNumber(1);
-        dto.setXcoordinate(100);
-        dto.setYcoordinate(100);
-        dto.setHeight(100);
-        dto.setWidth(100);
-
-        markUpDTOList.add(dto);
-
         for (int i = 0; i < 5 ; i++) {
-            MarkUpDTO markUpDTO = new MarkUpDTO();
+            RedactionDTO redaction = new RedactionDTO();
+            redaction.setRedactionId(UUID.randomUUID());
+            redaction.setDocumentId(UUID.randomUUID());
+            redaction.setPage(i + 1);
 
-            markUpDTO.setPageNumber(i + 1);
-            markUpDTO.setXcoordinate(100 * (i + 1));
-            markUpDTO.setYcoordinate(100 * (i + 1));
-            markUpDTO.setHeight(100 * (i + 1));
-            markUpDTO.setWidth(100 * (i + 1));
+            RectangleDTO rectangle = new RectangleDTO();
+            rectangle.setId(UUID.randomUUID());
+            rectangle.setX(100.00);
+            rectangle.setY(100.00);
+            rectangle.setHeight(100.00);
+            rectangle.setWidth(100.00);
 
-            markUpDTOList.add(markUpDTO);
+            redaction.setRectangles(new HashSet<>(Collections.singletonList(rectangle)));
+
+            redactions.add(redaction);
         }
     }
 
     @Test
     public void pdfRedactionTest() throws IOException {
-        File result = pdfRedaction.redaction(TEST_PDF_FILE, markUpDTOList);
+        File result = pdfRedaction.redaction(TEST_PDF_FILE, redactions);
         Assert.assertTrue(result.getName().contains("altered"));
         Assert.assertTrue(result.getName().contains(".pdf"));
     }
 
     @Test(expected = IOException.class)
     public void pdfRedactionFailureTest() throws IOException {
-        File result = pdfRedaction.redaction(new File("invalid_file"), markUpDTOList);
+        pdfRedaction.redaction(new File("invalid_file"), redactions);
     }
 }
