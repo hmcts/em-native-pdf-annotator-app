@@ -22,7 +22,6 @@ import java.util.UUID;
 @SpringBootTest(classes = {TestUtil.class, EmTestConfig.class})
 @PropertySource(value = "classpath:application.yml")
 @RunWith(SpringRunner.class)
-@Ignore
 public class RedactionScenarios {
 
     @Value("${test.url}")
