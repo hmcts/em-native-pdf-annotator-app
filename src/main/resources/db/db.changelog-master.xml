@@ -20,6 +20,11 @@
             <column name="created_by" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
+            <column name="created_date" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="VARCHAR(50)"/>
+            <column name="last_modified_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="height" type="FLOAT8">
                 <constraints nullable="false"/>
             </column>
@@ -32,17 +37,22 @@
             <column name="y_coordinate" type="FLOAT8">
                 <constraints nullable="false"/>
             </column>
-            <column name="redaction_redaction_id" type="uuid"/>
+            <column name="redaction_id" type="uuid"/>
         </createTable>
     </changeSet>
     <changeSet author="yogeshhullatti (generated)" id="1588625536109-7">
         <createTable tableName="redaction">
-            <column name="redaction_id" type="uuid">
+            <column name="id" type="uuid">
                 <constraints primaryKey="true" primaryKeyName="redactionPK"/>
             </column>
             <column name="created_by" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
+            <column name="created_date" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="VARCHAR(50)"/>
+            <column name="last_modified_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="document_id" type="uuid">
                 <constraints nullable="false"/>
             </column>
@@ -55,12 +65,12 @@
 
     <changeSet author="yogeshhullatti (generated)" id="1588629692555-5">
         <createIndex indexName="IX_redactionPK" tableName="redaction" unique="true">
-            <column name="redaction_id"/>
+            <column name="id"/>
         </createIndex>
     </changeSet>
 
     <changeSet author="yogeshhullatti (generated)" id="1588629692555-6">
-        <addForeignKeyConstraint baseColumnNames="redaction_redaction_id" baseTableName="rectangle" constraintName="FKigiuw6vbyuiwr2cxy3d4rc090"
-                                 deferrable="false" initiallyDeferred="false" referencedColumnNames="redaction_id" referencedTableName="redaction"/>
+        <addForeignKeyConstraint baseColumnNames="redaction_id" baseTableName="rectangle" constraintName="FKigiuw6vbyuiwr2cxy3d4rc090"
+                                 deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="redaction"/>
     </changeSet>
 </databaseChangeLog>

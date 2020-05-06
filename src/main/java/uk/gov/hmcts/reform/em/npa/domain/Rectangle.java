@@ -16,14 +16,10 @@ import java.util.UUID;
 @Table(name = "rectangle")
 @Getter
 @Setter
-public class Rectangle implements Serializable {
+public class Rectangle extends AbstractAuditingEntity implements Serializable {
 
     @Id
     private UUID id;
-
-    @CreatedBy
-    @Column(name = "created_by", nullable = false, length = 50, updatable = false)
-    private String createdBy;
 
     @Column(name = "x_coordinate", nullable = false)
     private Double x;

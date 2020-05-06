@@ -17,15 +17,10 @@ import java.util.UUID;
 @Table(name = "redaction")
 @Getter
 @Setter
-public class Redaction implements Serializable {
+public class Redaction extends AbstractAuditingEntity implements Serializable {
 
     @Id
-    @Column(name = "redaction_id")
-    private UUID redactionId;
-
-    @CreatedBy
-    @Column(name = "created_by", nullable = false, length = 50, updatable = false)
-    private String createdBy;
+    private UUID id;
 
     @Column(name = "document_id", nullable = false)
     private UUID documentId;
