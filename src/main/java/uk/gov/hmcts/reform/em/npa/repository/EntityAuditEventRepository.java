@@ -8,16 +8,17 @@ import org.springframework.data.repository.query.Param;
 import uk.gov.hmcts.reform.em.npa.domain.EntityAuditEvent;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Spring Data JPA repository for the EntityAuditEvent entity.
  */
-public interface EntityAuditEventRepository extends JpaRepository<EntityAuditEvent, Long> {
+public interface EntityAuditEventRepository extends JpaRepository<EntityAuditEvent, UUID> {
 
-    List<EntityAuditEvent> findAllByEntityTypeAndEntityId(String entityType, Long entityId);
+    List<EntityAuditEvent> findAllByEntityTypeAndEntityId(String entityType, UUID entityId);
 
     @Query("SELECT max(a.commitVersion) FROM EntityAuditEvent a where a.entityType = :type and a.entityId = :entityId")
-    Integer findMaxCommitVersion(@Param("type") String type, @Param("entityId") Long entityId);
+    Integer findMaxCommitVersion(@Param("type") String type, @Param("entityId") UUID entityId);
 
     @Query("SELECT DISTINCT (a.entityType) from EntityAuditEvent a")
     List<String> findAllEntityTypes();
@@ -28,5 +29,5 @@ public interface EntityAuditEventRepository extends JpaRepository<EntityAuditEve
         "ae.commitVersion =(SELECT max(a.commitVersion) FROM EntityAuditEvent a where a.entityType = :type and " +
         "a.entityId = :entityId and a.commitVersion < :commitVersion)")
     EntityAuditEvent findOneByEntityTypeAndEntityIdAndCommitVersion(@Param("type") String type, @Param("entityId")
-            Long entityId, @Param("commitVersion") Integer commitVersion);
+        UUID entityId, @Param("commitVersion") Integer commitVersion);
 }
