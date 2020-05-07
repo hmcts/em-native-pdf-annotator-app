@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.em.npa.TestSecurityConfiguration;
 import uk.gov.hmcts.reform.em.npa.ccd.exception.CaseDocumentNotFoundException;
 
 import uk.gov.hmcts.reform.em.npa.service.RedactionService;
-import uk.gov.hmcts.reform.em.npa.service.dto.redaction.MarkUpDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionRequest;
@@ -69,6 +68,7 @@ public class RedactionResourceTest {
 
         redactionRequest.setCaseId("caseId");
         redactionRequest.setDocumentId(docId);
+        redactionRequest.setRedactedFileName(null);
         redactionRequest.setRedactions(redactions);
 
         return redactionRequest;
@@ -77,10 +77,11 @@ public class RedactionResourceTest {
     @Test
     public void shouldSaveRedactedDocument() {
         RedactionRequest redactionRequest = createRequest();
+        redactionRequest.setRedactedFileName("bespoke");
         HttpServletRequest request = mock(HttpServletRequest.class);
 
         when(request.getHeader("Authorization")).thenReturn("jwt");
-        when(redactionService.redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getRedactions()))
+        when(redactionService.redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getRedactedFileName(), redactionRequest.getRedactions()))
                 .thenReturn("newDocId");
 
         ResponseEntity<String> response = redactionResource.save(request, redactionRequest);
@@ -88,7 +89,24 @@ public class RedactionResourceTest {
         assertEquals("newDocId", response.getBody());
 
         verify(redactionService, Mockito.atMost(1))
-                .redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getRedactions());
+                .redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getRedactedFileName(), redactionRequest.getRedactions());
+    }
+
+    @Test
+    public void shouldSaveRedactedNoChosenNameDocument() {
+        RedactionRequest redactionRequest = createRequest();
+        HttpServletRequest request = mock(HttpServletRequest.class);
+
+        when(request.getHeader("Authorization")).thenReturn("jwt");
+        when(redactionService.redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getRedactedFileName(), redactionRequest.getRedactions()))
+                .thenReturn("newDocId");
+
+        ResponseEntity<String> response = redactionResource.save(request, redactionRequest);
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals("newDocId", response.getBody());
+
+        verify(redactionService, Mockito.atMost(1))
+                .redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getRedactedFileName(), redactionRequest.getRedactions());
     }
 
     @Test
@@ -97,13 +115,13 @@ public class RedactionResourceTest {
         HttpServletRequest request = mock(HttpServletRequest.class);
 
         when(request.getHeader("Authorization")).thenReturn("jwt");
-        when(redactionService.redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getRedactions()))
+        when(redactionService.redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getRedactedFileName(), redactionRequest.getRedactions()))
                 .thenThrow(CaseDocumentNotFoundException.class);
 
         ResponseEntity<String> response = redactionResource.save(request, redactionRequest);
         assertEquals(400, response.getStatusCodeValue());
 
         verify(redactionService, Mockito.atMost(1))
-                .redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getRedactions());
+                .redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getRedactedFileName(), redactionRequest.getRedactions());
     }
 }

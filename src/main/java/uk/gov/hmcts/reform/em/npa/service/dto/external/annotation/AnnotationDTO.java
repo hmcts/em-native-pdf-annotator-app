@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.em.npa.service.dto.external.annotation;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Objects;

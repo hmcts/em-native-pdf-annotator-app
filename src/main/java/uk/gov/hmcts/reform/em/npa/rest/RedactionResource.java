@@ -39,6 +39,7 @@ public class RedactionResource {
                     jwt,
                     redactionRequest.getCaseId(),
                     redactionRequest.getDocumentId(),
+                    redactionRequest.getRedactedFileName(),
                     redactionRequest.getRedactions());
             return ResponseEntity.ok(newDocumentId);
         } catch (Exception e) {

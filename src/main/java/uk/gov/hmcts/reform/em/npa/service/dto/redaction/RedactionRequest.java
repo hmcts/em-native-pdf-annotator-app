@@ -14,5 +14,6 @@ import java.util.UUID;
 public class RedactionRequest {
     private String caseId;
     private UUID documentId;
+    private String redactedFileName;
     private List<RedactionDTO> redactions;
 }

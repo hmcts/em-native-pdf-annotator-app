@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.em.npa.functional;
 
 import org.json.JSONObject;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +58,7 @@ public class RedactionScenarios {
         RedactionRequest redactionRequest = new RedactionRequest();
         redactionRequest.setCaseId(caseId);
         redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
+        redactionRequest.setRedactedFileName("bespoke");
         redactionRequest.setRedactions(Arrays.asList(createRedaction(id), createRedaction(UUID.randomUUID())));
 
         JSONObject jsonObject = new JSONObject(redactionRequest);
@@ -80,6 +80,7 @@ public class RedactionScenarios {
         RedactionRequest redactionRequest = new RedactionRequest();
         redactionRequest.setCaseId(caseId);
         redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
+        redactionRequest.setRedactedFileName("bespoke");
         redactionRequest.setRedactions(Collections.singletonList(createRedaction(id)));
 
         JSONObject jsonObject = new JSONObject(redactionRequest);
@@ -101,6 +102,7 @@ public class RedactionScenarios {
         RedactionRequest redactionRequest = new RedactionRequest();
         redactionRequest.setCaseId(caseId);
         redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
+        redactionRequest.setRedactedFileName("bespoke");
         redactionRequest.setRedactions(Arrays.asList(createRedaction(id), createRedaction(UUID.randomUUID())));
 
         JSONObject jsonObject = new JSONObject(redactionRequest);
@@ -120,6 +122,7 @@ public class RedactionScenarios {
         RedactionRequest redactionRequest = new RedactionRequest();
         redactionRequest.setCaseId("invalid_id");
         redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
+        redactionRequest.setRedactedFileName("bespoke");
         redactionRequest.setRedactions(Collections.singletonList(createRedaction(id)));
 
         JSONObject jsonObject = new JSONObject(redactionRequest);
