@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.npa.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
+import org.apache.tika.Tika;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -57,12 +58,14 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
 
         // DRY ?
         try {
+            Tika tika = new Tika();
+            String mimeType = tika.detect(file);
 
             MultipartBody requestBody = new MultipartBody
                 .Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("classification", "PUBLIC")
-                .addFormDataPart("files", file.getName(), RequestBody.create(MediaType.get("application/pdf"), file))
+                .addFormDataPart("files", file.getName(), RequestBody.create(MediaType.get(mimeType), file))
                 .build();
 
             Request request = new Request.Builder()
@@ -93,11 +96,14 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
 
         try {
 
+            Tika tika = new Tika();
+            String mimeType = tika.detect(file);
+
             MultipartBody requestBody = new MultipartBody
                     .Builder()
                     .setType(MultipartBody.FORM)
                     .addFormDataPart("classification", "PUBLIC")
-                    .addFormDataPart("files", file.getName(), RequestBody.create(MediaType.get("application/pdf"), file))
+                    .addFormDataPart("files", file.getName(), RequestBody.create(MediaType.get(mimeType), file))
                     .build();
 
             Request request = new Request.Builder()
@@ -138,10 +144,13 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
 
         try {
 
+            Tika tika = new Tika();
+            String mimeType = tika.detect(file);
+
             MultipartBody requestBody = new MultipartBody
                     .Builder()
                     .setType(MultipartBody.FORM)
-                    .addFormDataPart("file", file.getName(), RequestBody.create(MediaType.get("application/pdf"), file))
+                    .addFormDataPart("file", file.getName(), RequestBody.create(MediaType.get(mimeType), file))
                     .build();
 
             Request request = new Request.Builder()

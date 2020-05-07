@@ -153,7 +153,8 @@ public class DmStoreUploaderImplTest {
 
         DocumentTask task = new DocumentTask();
         task.setJwt("xxx");
-        dmStoreUploader.uploadFile(new File("xyz.abc"), task);
+        ClassLoader classLoader = getClass().getClassLoader();
+        dmStoreUploader.uploadFile(new File(classLoader.getResource(PDF_FILENAME).getFile()), task);
         Assert.assertEquals("0e38e3ad-171f-4d27-bf54-e41f2ed744eb", task.getOutputDocumentId());
     }
 
@@ -175,7 +176,8 @@ public class DmStoreUploaderImplTest {
         DocumentTask task = new DocumentTask();
         task.setJwt("xxx");
         task.setOutputDocumentId("http://localhost/v1");
-        dmStoreUploader.uploadFile(new File("xyz.abc"), task);
+        ClassLoader classLoader = getClass().getClassLoader();
+        dmStoreUploader.uploadFile(new File(classLoader.getResource(PDF_FILENAME).getFile()), task);
         Assert.assertEquals("http://localhost/v1", task.getOutputDocumentId());
     }
 
@@ -187,15 +189,16 @@ public class DmStoreUploaderImplTest {
         DocumentTask task = new DocumentTask();
         task.setJwt("xxx");
         task.setOutputDocumentId("http://localhost/v1");
-        dmStoreUploader.uploadFile(new File("xyz.abc"), task);
+        ClassLoader classLoader = getClass().getClassLoader();
+        dmStoreUploader.uploadFile(new File(classLoader.getResource(PDF_FILENAME).getFile()), task);
     }
 
     @Test
     public void  testUploadDocumentSuccess() throws Exception {
 
         setUpSuccess();
-
-        JsonNode response = dmStoreUploader.uploadDocument(new File("xyz.abc"));
+        ClassLoader classLoader = getClass().getClassLoader();
+        JsonNode response = dmStoreUploader.uploadDocument(new File(classLoader.getResource(PDF_FILENAME).getFile()));
 
         Assert.assertNotNull(response);
         String docUrl = response.at("/_embedded/documents").get(0).at("/_links/self/href").asText();
