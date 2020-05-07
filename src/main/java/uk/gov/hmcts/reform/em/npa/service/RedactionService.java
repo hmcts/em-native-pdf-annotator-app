@@ -8,5 +8,5 @@ import java.util.UUID;
 
 public interface RedactionService {
 
-    String redactFile(String jwt, String caseId, UUID documentId, List<RedactionDTO> redactionDTOList);
+    String redactFile(String jwt, String caseId, UUID documentId, String redactedFileName, List<RedactionDTO> redactionDTOList);
 }

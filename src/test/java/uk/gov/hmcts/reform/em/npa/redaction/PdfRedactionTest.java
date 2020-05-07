@@ -13,7 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.em.npa.Application;
 import uk.gov.hmcts.reform.em.npa.TestSecurityConfiguration;
-import uk.gov.hmcts.reform.em.npa.service.dto.redaction.MarkUpDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 
@@ -56,13 +55,20 @@ public class PdfRedactionTest {
 
     @Test
     public void pdfRedactionTest() throws IOException {
-        File result = pdfRedaction.redaction(TEST_PDF_FILE, redactions);
-        Assert.assertTrue(result.getName().contains("altered"));
+        File result = pdfRedaction.redaction(TEST_PDF_FILE, redactions, "bespoke");
+        Assert.assertTrue(result.getName().contains("bespoke"));
+        Assert.assertTrue(result.getName().contains(".pdf"));
+    }
+
+    @Test
+    public void pdfRedactionNoChosenNameTest() throws IOException {
+        File result = pdfRedaction.redaction(TEST_PDF_FILE, redactions, null);
+        Assert.assertTrue(result.getName().contains("layered"));
         Assert.assertTrue(result.getName().contains(".pdf"));
     }
 
     @Test(expected = IOException.class)
     public void pdfRedactionFailureTest() throws IOException {
-        pdfRedaction.redaction(new File("invalid_file"), redactions);
+        pdfRedaction.redaction(new File("invalid_file"), redactions, null);
     }
 }

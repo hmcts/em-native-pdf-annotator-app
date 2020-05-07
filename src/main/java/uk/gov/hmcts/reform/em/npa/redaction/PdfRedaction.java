@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.npa.redaction;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.pdfbox.pdmodel.*;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
@@ -17,10 +18,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class PdfRedaction {
@@ -36,17 +34,21 @@ public class PdfRedaction {
      * @return the redacted file
      * @throws IOException
      */
-    public File redaction(File documentFile, List<RedactionDTO> redactionDTOList) throws IOException {
+    public File redaction(File documentFile, List<RedactionDTO> redactionDTOList, String redactedFileName) throws IOException {
         PDDocument document = PDDocument.load(documentFile);
         PDFRenderer pdfRenderer = new PDFRenderer(document);
-        final File newFile = File.createTempFile("altered", ".pdf");
+
+        String fileName = Objects.nonNull(redactedFileName)
+                ? redactedFileName
+                : String.format("Redacted-%s", FilenameUtils.getBaseName(documentFile.getName()));
+        final File newFile = File.createTempFile(fileName, ".pdf");
 
         document.setDocumentInformation(new PDDocumentInformation());
         try (PDDocument newDocument = new PDDocument()) {
 
             for (RedactionDTO redactionDTO : redactionDTOList) {
                 File pageImage = transformToImage(pdfRenderer, redactionDTO.getPage() - 1);
-                pageImage = imageRedaction.redaction(pageImage, redactionDTO.getRectangles());
+                pageImage = imageRedaction.redaction(pageImage, redactionDTO.getRectangles(), redactedFileName);
                 PDPage newPage = transformToPdf(pageImage, newDocument);
                 replacePage(document, redactionDTO.getPage() - 1, newPage);
             }

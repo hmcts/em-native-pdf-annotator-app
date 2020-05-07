@@ -10,9 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.em.npa.Application;
 import uk.gov.hmcts.reform.em.npa.TestSecurityConfiguration;
-import uk.gov.hmcts.reform.em.npa.service.dto.redaction.MarkUpDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
-import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,13 +49,20 @@ public class ImageRedactionTest {
 
     @Test
     public void pdfRedactionTest() throws IOException {
-        File result = imageRedaction.redaction(TEST_IMAGE_FILE, rectangles);
-        Assert.assertTrue(result.getName().contains("altered"));
+        File result = imageRedaction.redaction(TEST_IMAGE_FILE, rectangles, "bespoke");
+        Assert.assertTrue(result.getName().contains("bespoke"));
+        Assert.assertTrue(result.getName().contains(FilenameUtils.getExtension(TEST_IMAGE_FILE.getName())));
+    }
+
+    @Test
+    public void pdfRedactionNoChosenNameTest() throws IOException {
+        File result = imageRedaction.redaction(TEST_IMAGE_FILE, rectangles, null);
+        Assert.assertTrue(result.getName().contains("fist"));
         Assert.assertTrue(result.getName().contains(FilenameUtils.getExtension(TEST_IMAGE_FILE.getName())));
     }
 
     @Test(expected = IOException.class)
     public void pdfRedactionFailureTest() throws IOException {
-        imageRedaction.redaction(new File("invalid_file"), rectangles);
+        imageRedaction.redaction(new File("invalid_file"), rectangles, null);
     }
 }

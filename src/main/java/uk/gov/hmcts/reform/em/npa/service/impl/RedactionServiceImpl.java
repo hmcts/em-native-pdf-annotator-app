@@ -71,7 +71,7 @@ public class RedactionServiceImpl implements RedactionService {
     }
 
     @Override
-    public String redactFile(String jwt, String caseId, UUID documentId, List<RedactionDTO> redactionDTOList) {
+    public String redactFile(String jwt, String caseId, UUID documentId, String redactedFileName, List<RedactionDTO> redactionDTOList) {
         CcdCallbackDto ccdCallbackDto = null;
 
         try {
@@ -83,10 +83,10 @@ public class RedactionServiceImpl implements RedactionService {
             File updatedFile;
             if (fileType.equals("pdf")) {
                 log.info("Applying redaction to PDF file");
-                updatedFile = pdfRedaction.redaction(originalFile, redactionDTOList);
+                updatedFile = pdfRedaction.redaction(originalFile, redactionDTOList, redactedFileName);
             } else if (imageExtensionsList.contains(fileType)) {
                 log.info("Applying redaction to Image Document");
-                updatedFile = imageRedaction.redaction(originalFile, redactionDTOList.get(0).getRectangles());
+                updatedFile = imageRedaction.redaction(originalFile, redactionDTOList.get(0).getRectangles(), redactedFileName);
             } else {
                 throw new FileTypeException("Redaction cannot be applied to the file type provided");
             }
