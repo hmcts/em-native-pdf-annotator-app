@@ -58,8 +58,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
 
         // DRY ?
         try {
-            Tika tika = new Tika();
-            String mimeType = tika.detect(file);
+            String mimeType = getMimeType(file);
 
             MultipartBody requestBody = new MultipartBody
                 .Builder()
@@ -96,8 +95,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
 
         try {
 
-            Tika tika = new Tika();
-            String mimeType = tika.detect(file);
+            String mimeType = getMimeType(file);
 
             MultipartBody requestBody = new MultipartBody
                     .Builder()
@@ -144,8 +142,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
 
         try {
 
-            Tika tika = new Tika();
-            String mimeType = tika.detect(file);
+            String mimeType = getMimeType(file);
 
             MultipartBody requestBody = new MultipartBody
                     .Builder()
@@ -172,4 +169,9 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
         }
     }
 
+
+    private String getMimeType(File file) throws IOException {
+        Tika tika = new Tika();
+        return tika.detect(file);
+    }
 }
