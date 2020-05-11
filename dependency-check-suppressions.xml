@@ -160,6 +160,10 @@
         <cve>CVE-2016-3674</cve>
         <cve>CVE-2016-2427</cve>
         <cve>CVE-2020-11505</cve>
+        <cve>CVE-2020-11505</cve>
+        <cve>CVE-2020-11505</cve>
+        <cve>CVE-2020-10683</cve>
+        <cve>CVE-2020-1745</cve>
     </suppress>
     
     <suppress>
