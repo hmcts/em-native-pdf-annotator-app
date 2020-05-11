@@ -45,12 +45,6 @@ public class TestUtil {
     private String idamAuth;
     private String s2sAuth;
 
-    @Value("${test.url}")
-    private String testUrl;
-
-    @Autowired
-    private CcdDefinitionHelper ccdDefinitionHelper;
-
     @Autowired
     private IdamHelper idamHelper;
 
@@ -60,19 +54,12 @@ public class TestUtil {
     @Autowired
     private DmHelper dmHelper;
 
-    @Autowired
-    private CoreCaseDataApi coreCaseDataApi;
-
     @Value("${annotation.api.url}")
     private String emAnnotationUrl;
     @Value("${document_management.url}")
     private String dmApiUrl;
     @Value("${document_management.docker_url}")
     private String dmDocumentApiUrl;
-    @Value("${ccd.data.api.url}")
-    private String ccdDataBaseUrl;
-
-    private String newDocId;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -100,12 +87,9 @@ public class TestUtil {
 
     @PostConstruct
     public void init() throws Exception {
-//        initBundleTesterUser();
         RestAssured.useRelaxedHTTPSValidation();
         idamAuth = idamHelper.authenticateUser(bundleTesterUser);
         s2sAuth = s2sHelper.getS2sToken();
-
-//        importCcdDefinitionFile();
     }
 
     public RedactionDTO createRedactionDTO(UUID docId, UUID redactionId) {
@@ -288,101 +272,5 @@ public class TestUtil {
     private RequestSpecification invalidS2sAuthRequest() {
 
         return RestAssured.given().header("ServiceAuthorization", "invalidS2SAuthorization");
-    }
-
-    public void importCcdDefinitionFile() throws Exception {
-
-        ccdDefinitionHelper.importDefinitionFile(
-                bundleTesterUser,
-                "caseworker-publiclaw",
-                getEnvSpecificDefinitionFile());
-
-    }
-
-    public CaseDetails createCase(String documents) throws Exception {
-        return createCase(bundleTesterUser, "PUBLICLAW", getEnvCcdCaseTypeId(), "createCase",
-                objectMapper.readTree(String.format(createAutomatedBundlingCaseTemplate, documents)));
-    }
-
-    public CaseDetails createCase(String username, String jurisdiction, String caseType, String eventId, Object data) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-
-        final String userAuthorization = idamHelper.authenticateUser(username);
-        String startEventResponseString =
-            RestAssured
-                .given()
-                .header("Authorization", userAuthorization)
-                .header("ServiceAuthorization", s2sAuth)
-                .header("experimental", "true")
-                .request("GET", ccdDataBaseUrl + String.format("/case-types/%s/event-triggers/%s", caseType, eventId))
-                .then()
-                .extract()
-                .body()
-                .asString();
-
-        StartEventResponse startEventResponse = mapper.readValue(startEventResponseString, StartEventResponse.class);
-
-        return RestAssured
-                .given()
-                .header("Authorization", userAuthorization)
-                .header("ServiceAuthorization", s2sAuth)
-                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                .body(CaseDataContent.builder()
-                        .event(Event.builder().id(startEventResponse.getEventId()).build())
-                        .eventToken(startEventResponse.getToken())
-                        .data(data).build())
-                .request("POST",ccdDataBaseUrl +
-                        String.format("/caseworkers/%s/jurisdictions/%s/case-types/%s/cases",
-                                idamHelper.getUserId(username),
-                                jurisdiction,
-                                caseType))
-                .then().log().all()
-                .extract()
-                .body()
-                .as(CaseDetails.class);
-    }
-
-    public String getEnvCcdCaseTypeId() {
-        return String.format("BUND_ASYNC_%d", testUrl.hashCode());
-    }
-
-    public InputStream getEnvSpecificDefinitionFile() throws Exception {
-        Workbook workbook = new XSSFWorkbook(ClassLoader.getSystemResourceAsStream("adv_bundling_functional_tests_ccd_def.xlsx"));
-        Sheet caseTypeSheet = workbook.getSheet("CaseType");
-
-        caseTypeSheet.getRow(3).getCell(3).setCellValue(getEnvCcdCaseTypeId());
-
-        for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
-            Sheet sheet = workbook.getSheetAt(i);
-            for (Row row : sheet) {
-                for (Cell cell : row) {
-                    if (cell.getCellType().equals(CellType.STRING)
-                            && cell.getStringCellValue().trim().equals("CCD_BUNDLE_MVP_TYPE_ASYNC")) {
-                        cell.setCellValue(getEnvCcdCaseTypeId());
-                    }
-                    if (cell.getCellType().equals(CellType.STRING)
-                            && cell.getStringCellValue().trim().equals("bundle-tester@gmail.com")) {
-                        cell.setCellValue(bundleTesterUser);
-                    }
-                }
-            }
-        }
-
-        File outputFile = File.createTempFile("ccd", "ftest-def");
-
-        try (FileOutputStream fileOutputStream = new FileOutputStream(outputFile)) {
-            workbook.write(fileOutputStream);
-        }
-
-        return new FileInputStream(outputFile);
-    }
-
-    public void initBundleTesterUser() {
-        bundleTesterUser = String.format("bundle-tester-%d@gmail.com", testUrl.hashCode());
-        idamHelper.createUser(bundleTesterUser, bundleTesterUserRoles);
-    }
-
-    public String getCcdDocumentJson(String documentName, String dmUrl, String fileName) {
-        return String.format(documentTemplate, documentName, dmUrl, dmUrl, fileName);
     }
 }
