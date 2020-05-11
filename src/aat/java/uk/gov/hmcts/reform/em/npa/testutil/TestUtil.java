@@ -1,12 +1,8 @@
 package uk.gov.hmcts.reform.em.npa.testutil;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -14,15 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.ccd.client.model.Event;
-import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
-import uk.gov.hmcts.reform.em.npa.service.dto.redaction.MarkUpDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
-import uk.gov.hmcts.reform.em.test.ccddefinition.CcdDefinitionHelper;
 import uk.gov.hmcts.reform.em.test.dm.DmHelper;
 import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
 import uk.gov.hmcts.reform.em.test.s2s.S2sHelper;
@@ -61,34 +50,11 @@ public class TestUtil {
     @Value("${document_management.docker_url}")
     private String dmDocumentApiUrl;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
-    public final String createAutomatedBundlingCaseTemplate = "{\n"
-            + "    \"caseTitle\": null,\n"
-            + "    \"caseOwner\": null,\n"
-            + "    \"caseCreationDate\": null,\n"
-            + "    \"caseDescription\": null,\n"
-            + "    \"caseComments\": null,\n"
-            + "    \"caseDocuments\": [%s]\n"
-            + "  }";
-    public final String documentTemplate = "{\n"
-            + "        \"value\": {\n"
-            + "          \"documentName\": \"%s\",\n"
-            + "          \"documentType\": \"Prosecution\","
-            + "          \"documentLink\": {\n"
-            + "            \"document_url\": \"%s\",\n"
-            + "            \"document_binary_url\": \"%s/binary\",\n"
-            + "            \"document_filename\": \"%s\"\n"
-            + "          }\n"
-            + "        }\n"
-            + "      }";
-    private String bundleTesterUser;
-    private List<String> bundleTesterUserRoles = Stream.of("caseworker", "caseworker-publiclaw", "ccd-import").collect(Collectors.toList());
-
     @PostConstruct
     public void init() throws Exception {
+        idamHelper.createUser("a@b.com", Stream.of("caseworker").collect(Collectors.toList()));
         RestAssured.useRelaxedHTTPSValidation();
-        idamAuth = idamHelper.authenticateUser(bundleTesterUser);
+        idamAuth = idamHelper.authenticateUser("a@b.com");
         s2sAuth = s2sHelper.getS2sToken();
     }
 
