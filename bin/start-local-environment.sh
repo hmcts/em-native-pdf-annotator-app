@@ -39,10 +39,6 @@ done
 # Set up IDAM client with services and roles
 echo "Setting up IDAM client..."
 (./bin/idam-client-setup.sh ${IDAM_URI} services ${token} '{"description": "em", "label": "em", "oauth2ClientId": "webshow", "oauth2ClientSecret": "AAAAAAAAAAAAAAAA", "oauth2RedirectUris": ["http://localhost:8080/oauth2redirect"], "selfRegistrationAllowed": true}')
-(./bin/idam-client-setup.sh ${IDAM_URI} services ${token} '{"description": "ccd gateway", "label": "ccd gateway", "oauth2ClientId": "ccd_gateway", "oauth2ClientSecret": "AAAAAAAAAAAAAAAA", "oauth2RedirectUris": ["http://localhost:3451/oauth2redirect"], "selfRegistrationAllowed": true}')
-(./bin/idam-client-setup-roles.sh ${IDAM_URI} ${token} caseworker)
-(./bin/idam-client-setup-roles.sh ${IDAM_URI} ${token} caseworker-publiclaw)
-(./bin/idam-client-setup-roles.sh ${IDAM_URI} ${token} ccd-import)
 
 # Start all other images
 echo "Starting dependencies..."
@@ -52,11 +48,6 @@ docker-compose ${COMPOSE_FILE} up -d shared-database\
                                      smtp-server \
                                      dm-store \
                                      rpa-native-pdf-annotator-db \
-                                     ccd-user-profile-api \
-                                     ccd-definition-store-api \
-                                     ccd-data-store-api \
-                                     ccd-api-gateway \
-                                     ccd-case-management-web \
                                      annotation-api \
                                      azure-storage-emulator-azurite \
                                      make-container-call
