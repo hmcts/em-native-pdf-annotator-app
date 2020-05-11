@@ -3,12 +3,18 @@ package uk.gov.hmcts.reform.em.npa.rest;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.apache.tika.Tika;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionRequest;
 import uk.gov.hmcts.reform.em.npa.service.RedactionService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.FileInputStream;
 
 /**
  * REST controller for managing Redaction Requests.
@@ -31,17 +37,26 @@ public class RedactionResource {
             @ApiResponse(code = 403, message = "Forbidden"),
     })
     @PostMapping("/redaction")
-    public ResponseEntity<String> save(HttpServletRequest request,
+    public ResponseEntity save(HttpServletRequest request,
                                        @RequestBody RedactionRequest redactionRequest) {
-        String jwt = request.getHeader("Authorization");
         try {
-            String newDocumentId = redactionService.redactFile(
+            String jwt = request.getHeader("Authorization");
+
+            File newlyRedactedFile = redactionService.redactFile(
                     jwt,
                     redactionRequest.getCaseId(),
                     redactionRequest.getDocumentId(),
-                    redactionRequest.getRedactedFileName(),
                     redactionRequest.getRedactions());
-            return ResponseEntity.ok(newDocumentId);
+
+            InputStreamResource resource = new InputStreamResource(new FileInputStream(newlyRedactedFile));
+            HttpHeaders headers = new HttpHeaders();
+            Tika tika = new Tika();
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .contentLength(newlyRedactedFile.length())
+                    .contentType(MediaType.parseMediaType(tika.detect(newlyRedactedFile)))
+                    .body(resource);
         } catch (Exception e) {
             return ResponseEntity
                     .badRequest()

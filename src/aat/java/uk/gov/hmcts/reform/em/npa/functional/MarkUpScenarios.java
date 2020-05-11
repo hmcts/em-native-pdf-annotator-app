@@ -37,7 +37,7 @@ public class MarkUpScenarios {
     @Test
     public void testCreateMarkUp() throws JsonProcessingException {
 
-        RedactionDTO redactionDTO = createRedactionDTO(docId, redactionId);
+        RedactionDTO redactionDTO = testUtil.createRedactionDTO(docId, redactionId);
 
         JSONObject jsonObject = new JSONObject(redactionDTO);
 
@@ -61,7 +61,7 @@ public class MarkUpScenarios {
     @Test
     public void testUpdateMarkUp() {
 
-        RedactionDTO redactionDTO = createRedactionDTO(docId, redactionId);
+        RedactionDTO redactionDTO = testUtil.createRedactionDTO(docId, redactionId);
         RectangleDTO rectangleDTO = redactionDTO.getRectangles().stream().findFirst().get();
         rectangleDTO.setHeight(100.0);
         rectangleDTO.setWidth(60.0);
@@ -94,26 +94,5 @@ public class MarkUpScenarios {
             .request("DELETE", testUrl + "/api/markups/" + docId)
             .then()
             .statusCode(200);
-    }
-
-    private RedactionDTO createRedactionDTO(UUID docId, UUID redactionId) {
-        RedactionDTO redactionDTO = new RedactionDTO();
-        redactionDTO.setDocumentId(docId);
-        redactionDTO.setRedactionId(redactionId);
-        redactionDTO.setPage(6);
-        Set<RectangleDTO> rectangles = new HashSet<>();
-        rectangles.add(createRectangleDTO());
-        redactionDTO.setRectangles(rectangles);
-        return redactionDTO;
-    }
-
-    private RectangleDTO createRectangleDTO() {
-        RectangleDTO rectangleDTO = new RectangleDTO();
-        rectangleDTO.setId(UUID.randomUUID());
-        rectangleDTO.setHeight(10.0);
-        rectangleDTO.setWidth(10.0);
-        rectangleDTO.setX(20.0);
-        rectangleDTO.setY(30.0);
-        return rectangleDTO;
     }
 }

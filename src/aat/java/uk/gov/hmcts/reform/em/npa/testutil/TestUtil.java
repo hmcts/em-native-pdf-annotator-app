@@ -100,29 +100,33 @@ public class TestUtil {
 
     @PostConstruct
     public void init() throws Exception {
-        initBundleTesterUser();
+//        initBundleTesterUser();
         RestAssured.useRelaxedHTTPSValidation();
         idamAuth = idamHelper.authenticateUser(bundleTesterUser);
         s2sAuth = s2sHelper.getS2sToken();
 
-        importCcdDefinitionFile();
+//        importCcdDefinitionFile();
     }
 
-    public RedactionDTO populateRedactionDTO(UUID id) {
+    public RedactionDTO createRedactionDTO(UUID docId, UUID redactionId) {
         RedactionDTO redactionDTO = new RedactionDTO();
-        redactionDTO.setRedactionId(id);
-        redactionDTO.setPage(1);
-        redactionDTO.setDocumentId(id);
-
-        RectangleDTO rectangle = new RectangleDTO();
-        rectangle.setId(id);
-        rectangle.setX(10.00);
-        rectangle.setY(10.00);
-        rectangle.setHeight(20.00);
-        rectangle.setWidth(30.00);
-
-        redactionDTO.setRectangles(new HashSet<>(Collections.singletonList(rectangle)));
+        redactionDTO.setDocumentId(docId);
+        redactionDTO.setRedactionId(redactionId);
+        redactionDTO.setPage(6);
+        Set<RectangleDTO> rectangles = new HashSet<>();
+        rectangles.add(createRectangleDTO());
+        redactionDTO.setRectangles(rectangles);
         return redactionDTO;
+    }
+
+    private RectangleDTO createRectangleDTO() {
+        RectangleDTO rectangleDTO = new RectangleDTO();
+        rectangleDTO.setId(UUID.randomUUID());
+        rectangleDTO.setHeight(10.0);
+        rectangleDTO.setWidth(10.0);
+        rectangleDTO.setX(20.0);
+        rectangleDTO.setY(30.0);
+        return rectangleDTO;
     }
 
     public File getDocumentBinary(String documentId) throws Exception {

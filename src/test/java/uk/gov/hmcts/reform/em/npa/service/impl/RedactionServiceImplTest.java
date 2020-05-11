@@ -8,25 +8,20 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import uk.gov.hmcts.reform.em.npa.ccd.client.CcdDataApiCaseUpdater;
-import uk.gov.hmcts.reform.em.npa.ccd.client.CcdDataApiEventCreator;
-import uk.gov.hmcts.reform.em.npa.ccd.dto.CcdCallbackDto;
 import uk.gov.hmcts.reform.em.npa.config.security.SecurityUtils;
 import uk.gov.hmcts.reform.em.npa.redaction.ImageRedaction;
 import uk.gov.hmcts.reform.em.npa.redaction.PdfRedaction;
 import uk.gov.hmcts.reform.em.npa.repository.MarkUpRepository;
 import uk.gov.hmcts.reform.em.npa.service.DmStoreDownloader;
-import uk.gov.hmcts.reform.em.npa.service.DmStoreUploader;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 import uk.gov.hmcts.reform.em.npa.service.exception.DocumentTaskProcessingException;
 import uk.gov.hmcts.reform.em.npa.service.exception.FileTypeException;
+import uk.gov.hmcts.reform.em.npa.service.exception.RedactionProcessingException;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-
-import static org.mockito.ArgumentMatchers.eq;
 
 public class RedactionServiceImplTest {
 
@@ -34,16 +29,7 @@ public class RedactionServiceImplTest {
     private RedactionServiceImpl redactionService;
 
     @Mock
-    private CcdDataApiEventCreator ccdDataApiEventCreator;
-
-    @Mock
-    private CcdDataApiCaseUpdater ccdDataApiCaseUpdater;
-
-    @Mock
     private DmStoreDownloader dmStoreDownloader;
-
-    @Mock
-    private DmStoreUploader dmStoreUploader;
 
     @Mock
     private PdfRedaction pdfRedaction;
@@ -59,36 +45,7 @@ public class RedactionServiceImplTest {
 
     private List<RedactionDTO> redactions = new ArrayList<>();
 
-    private CcdCallbackDto ccdCallbackDto;
-
     private ObjectMapper mapper = new ObjectMapper();
-
-    private String caseDataJson = "{" +
-            "  \"caseDocuments\":[{" +
-            "        \"value\": {" +
-            "          \"documentName\": \"Prosecution doc 1\"," +
-            "          \"documentType\": \"Prosecution\"," +
-            "          \"documentLink\": {" +
-            "            \"document_url\":\"" + docStoreUUID + "\"," +
-            "            \"document_filename\":\"prosecution1.pdf\"," +
-            "            \"document_binary_url\":\"documentUrl/binary\"" +
-            "          }," +
-            "          \"customDatetimeField\":\"2019-02-07T11:05:20.000\"," +
-            "          \"createdBy\":\"Jeroen\"" +
-            "        }}, {" +
-            "        \"value\": {" +
-            "          \"documentName\": \"Prosecution doc 2\"," +
-            "          \"documentType\": \"Prosecution\"," +
-            "          \"documentLink\": {" +
-            "            \"document_url\":\"documentUrl\"," +
-            "            \"document_filename\":\"prosecution2.png\"," +
-            "            \"document_binary_url\":\"documentUrl/binary\"" +
-            "          }," +
-            "          \"customDatetimeField\":\"2019-02-07T12:05:20.000\"," +
-            "          \"createdBy\":\"Jeroen\"" +
-            "        }}" +
-            "    ]" +
-            "}";
 
     private String documentStoreResponse = "{" +
             "\"_embedded\": {" +
@@ -122,9 +79,7 @@ public class RedactionServiceImplTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         redactionService.imageExtensionsList = Arrays.asList("png","jpeg");
-        redactionService.ccdEventTrigger = "redactionDocumentUpload";
         initRedactionDTOList();
-        ccdCallbackDto = Mockito.mock(CcdCallbackDto.class);
     }
 
     public void initRedactionDTOList() {
@@ -150,57 +105,21 @@ public class RedactionServiceImplTest {
     @Test
     public void redactPdfFileTest() throws DocumentTaskProcessingException, IOException {
         File mockFile = new File("prosecution1.pdf");
-        Mockito.when(ccdDataApiEventCreator.executeTrigger(eq("caseId"), eq("redactionDocumentUpload"), eq("jwt")))
-                .thenReturn(ccdCallbackDto);
-        Mockito.when(ccdCallbackDto.getCaseData()).thenReturn(mapper.readTree(caseDataJson));
         Mockito.when(dmStoreDownloader.downloadFile(docStoreUUID.toString())).thenReturn(mockFile);
-        Mockito.when(pdfRedaction.redaction(mockFile, redactions, "bespoke")).thenReturn(mockFile);
-        Mockito.when(dmStoreUploader.uploadDocument(mockFile)).thenReturn(mapper.readTree(documentStoreResponse));
+        Mockito.when(pdfRedaction.redaction(mockFile, redactions)).thenReturn(mockFile);
 
-        String result = redactionService.redactFile("jwt", "caseId", docStoreUUID, "bespoke", redactions);
-        Assert.assertEquals(result, docStoreUUID.toString());
-    }
-
-    @Test
-    public void redactPdfFileNoChosenNameTest() throws DocumentTaskProcessingException, IOException {
-        File mockFile = new File("prosecution1.pdf");
-        Mockito.when(ccdDataApiEventCreator.executeTrigger(eq("caseId"), eq("redactionDocumentUpload"), eq("jwt")))
-                .thenReturn(ccdCallbackDto);
-        Mockito.when(ccdCallbackDto.getCaseData()).thenReturn(mapper.readTree(caseDataJson));
-        Mockito.when(dmStoreDownloader.downloadFile(docStoreUUID.toString())).thenReturn(mockFile);
-        Mockito.when(pdfRedaction.redaction(mockFile, redactions, null)).thenReturn(mockFile);
-        Mockito.when(dmStoreUploader.uploadDocument(mockFile)).thenReturn(mapper.readTree(documentStoreResponse));
-
-        String result = redactionService.redactFile("jwt", "caseId", docStoreUUID, null, redactions);
-        Assert.assertEquals(result, docStoreUUID.toString());
+        File result = redactionService.redactFile("jwt", "caseId", docStoreUUID, redactions);
+        Assert.assertEquals(result.getName(), mockFile.getName());
     }
 
     @Test
     public void redactImageFileTest() throws DocumentTaskProcessingException, IOException {
         File mockFile = new File("prosecution2.png");
-        Mockito.when(ccdDataApiEventCreator.executeTrigger(eq("caseId"), eq("redactionDocumentUpload"), eq("jwt")))
-                .thenReturn(ccdCallbackDto);
-        Mockito.when(ccdCallbackDto.getCaseData()).thenReturn(mapper.readTree(caseDataJson));
         Mockito.when(dmStoreDownloader.downloadFile(docStoreUUID.toString())).thenReturn(mockFile);
-        Mockito.when(imageRedaction.redaction(mockFile, redactions.get(0).getRectangles(), "bespoke")).thenReturn(mockFile);
-        Mockito.when(dmStoreUploader.uploadDocument(mockFile)).thenReturn(mapper.readTree(documentStoreResponse));
+        Mockito.when(imageRedaction.redaction(mockFile, redactions.get(0).getRectangles())).thenReturn(mockFile);
 
-        String result = redactionService.redactFile("jwt", "caseId", docStoreUUID, "bespoke", redactions);
-        Assert.assertEquals(result, docStoreUUID.toString());
-    }
-
-    @Test
-    public void redactImageFileNoChosenNameTest() throws DocumentTaskProcessingException, IOException {
-        File mockFile = new File("prosecution2.png");
-        Mockito.when(ccdDataApiEventCreator.executeTrigger(eq("caseId"), eq("redactionDocumentUpload"), eq("jwt")))
-                .thenReturn(ccdCallbackDto);
-        Mockito.when(ccdCallbackDto.getCaseData()).thenReturn(mapper.readTree(caseDataJson));
-        Mockito.when(dmStoreDownloader.downloadFile(docStoreUUID.toString())).thenReturn(mockFile);
-        Mockito.when(imageRedaction.redaction(mockFile, redactions.get(0).getRectangles(), null)).thenReturn(mockFile);
-        Mockito.when(dmStoreUploader.uploadDocument(mockFile)).thenReturn(mapper.readTree(documentStoreResponse));
-
-        String result = redactionService.redactFile("jwt", "caseId", docStoreUUID, null, redactions);
-        Assert.assertEquals(result, docStoreUUID.toString());
+        File result = redactionService.redactFile("jwt", "caseId", docStoreUUID, redactions);
+        Assert.assertEquals(result.getName(), mockFile.getName());
     }
 
     @Test(expected = FileTypeException.class)
@@ -208,22 +127,17 @@ public class RedactionServiceImplTest {
 
         UUID docStoreUUID = UUID.randomUUID();
         File mockFile = new File("test.txt");
-        Mockito.when(ccdDataApiEventCreator.executeTrigger(eq("caseId"), eq("redactionDocumentUpload"), eq("jwt")))
-                .thenReturn(ccdCallbackDto);
         Mockito.when(dmStoreDownloader.downloadFile(docStoreUUID.toString())).thenReturn(mockFile);
 
-        redactionService.redactFile("jwt", "caseId", docStoreUUID, null, redactions);
+        redactionService.redactFile("jwt", "caseId", docStoreUUID, redactions);
     }
 
-    @Test
+    @Test(expected = RedactionProcessingException.class)
     public void redactDocumentTaskProcessingErrorTest() throws DocumentTaskProcessingException {
 
         UUID docStoreUUID = UUID.randomUUID();
-        Mockito.when(ccdDataApiEventCreator.executeTrigger(eq("caseId"), eq("redactionDocumentUpload"), eq("jwt")))
-                .thenReturn(ccdCallbackDto);
         Mockito.when(dmStoreDownloader.downloadFile(docStoreUUID.toString())).thenThrow(DocumentTaskProcessingException.class);
 
-        String result = redactionService.redactFile("jwt", "caseId", docStoreUUID, null, redactions);
-        Assert.assertEquals(result, docStoreUUID.toString());
+        redactionService.redactFile("jwt", "caseId", docStoreUUID, redactions);
     }
 }

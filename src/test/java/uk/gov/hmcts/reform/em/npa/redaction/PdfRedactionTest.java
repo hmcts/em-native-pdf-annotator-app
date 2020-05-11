@@ -55,20 +55,13 @@ public class PdfRedactionTest {
 
     @Test
     public void pdfRedactionTest() throws IOException {
-        File result = pdfRedaction.redaction(TEST_PDF_FILE, redactions, "bespoke");
-        Assert.assertTrue(result.getName().contains("bespoke"));
-        Assert.assertTrue(result.getName().contains(".pdf"));
-    }
-
-    @Test
-    public void pdfRedactionNoChosenNameTest() throws IOException {
-        File result = pdfRedaction.redaction(TEST_PDF_FILE, redactions, null);
+        File result = pdfRedaction.redaction(TEST_PDF_FILE, redactions);
         Assert.assertTrue(result.getName().contains("Redacted-layered"));
         Assert.assertTrue(result.getName().contains(".pdf"));
     }
 
     @Test(expected = IOException.class)
     public void pdfRedactionFailureTest() throws IOException {
-        pdfRedaction.redaction(new File("invalid_file"), redactions, null);
+        pdfRedaction.redaction(new File("invalid_file"), redactions);
     }
 }

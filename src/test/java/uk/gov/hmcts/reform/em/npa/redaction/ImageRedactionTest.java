@@ -48,21 +48,14 @@ public class ImageRedactionTest {
     }
 
     @Test
-    public void pdfRedactionTest() throws IOException {
-        File result = imageRedaction.redaction(TEST_IMAGE_FILE, rectangles, "bespoke");
-        Assert.assertTrue(result.getName().contains("bespoke"));
-        Assert.assertTrue(result.getName().contains(FilenameUtils.getExtension(TEST_IMAGE_FILE.getName())));
-    }
-
-    @Test
-    public void pdfRedactionNoChosenNameTest() throws IOException {
-        File result = imageRedaction.redaction(TEST_IMAGE_FILE, rectangles, null);
+    public void imageRedactionTest() throws IOException {
+        File result = imageRedaction.redaction(TEST_IMAGE_FILE, rectangles);
         Assert.assertTrue(result.getName().contains("Redacted-fist"));
         Assert.assertTrue(result.getName().contains(FilenameUtils.getExtension(TEST_IMAGE_FILE.getName())));
     }
 
     @Test(expected = IOException.class)
-    public void pdfRedactionFailureTest() throws IOException {
-        imageRedaction.redaction(new File("invalid_file"), rectangles, null);
+    public void imageRedactionFailureTest() throws IOException {
+        imageRedaction.redaction(new File("invalid_file"), rectangles);
     }
 }

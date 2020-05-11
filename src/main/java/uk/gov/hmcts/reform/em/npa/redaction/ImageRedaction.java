@@ -27,7 +27,7 @@ public class ImageRedaction {
      * @return the redacted image
      * @throws IOException
      */
-    public File redaction(File imageFile, Set<RectangleDTO> rectangles, String redactedFileName) throws IOException {
+    public File redaction(File imageFile, Set<RectangleDTO> rectangles) throws IOException {
         BufferedImage img = ImageIO.read(imageFile);
         Graphics2D graph = img.createGraphics();
 
@@ -41,11 +41,9 @@ public class ImageRedaction {
         });
         graph.dispose();
 
-        String fileName = Objects.nonNull(redactedFileName)
-                ? redactedFileName
-                : String.format("Redacted-%s", FilenameUtils.getBaseName(imageFile.getName()));
         String fileType = FilenameUtils.getExtension(imageFile.getName());
-        final File alteredImage = File.createTempFile(fileName, "." + fileType);
+        final File alteredImage = File.createTempFile(
+                String.format("Redacted-%s", FilenameUtils.getBaseName(imageFile.getName())), "." + fileType);
         ImageIO.write(img, fileType, alteredImage);
         return alteredImage;
     }

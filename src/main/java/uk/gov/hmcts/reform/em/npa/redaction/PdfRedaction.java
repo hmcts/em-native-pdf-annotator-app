@@ -34,21 +34,18 @@ public class PdfRedaction {
      * @return the redacted file
      * @throws IOException
      */
-    public File redaction(File documentFile, List<RedactionDTO> redactionDTOList, String redactedFileName) throws IOException {
+    public File redaction(File documentFile, List<RedactionDTO> redactionDTOList) throws IOException {
         PDDocument document = PDDocument.load(documentFile);
         PDFRenderer pdfRenderer = new PDFRenderer(document);
 
-        String fileName = Objects.nonNull(redactedFileName)
-                ? redactedFileName
-                : String.format("Redacted-%s", FilenameUtils.getBaseName(documentFile.getName()));
-        final File newFile = File.createTempFile(fileName, ".pdf");
+        final File newFile = File.createTempFile(String.format("Redacted-%s", FilenameUtils.getBaseName(documentFile.getName())), ".pdf");
 
         document.setDocumentInformation(new PDDocumentInformation());
         try (PDDocument newDocument = new PDDocument()) {
 
             for (RedactionDTO redactionDTO : redactionDTOList) {
                 File pageImage = transformToImage(pdfRenderer, redactionDTO.getPage() - 1);
-                pageImage = imageRedaction.redaction(pageImage, redactionDTO.getRectangles(), redactedFileName);
+                pageImage = imageRedaction.redaction(pageImage, redactionDTO.getRectangles());
                 PDPage newPage = transformToPdf(pageImage, newDocument);
                 replacePage(document, redactionDTO.getPage() - 1, newPage);
             }

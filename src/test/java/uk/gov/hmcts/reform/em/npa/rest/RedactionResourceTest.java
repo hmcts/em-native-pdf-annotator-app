@@ -13,14 +13,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.em.npa.Application;
 import uk.gov.hmcts.reform.em.npa.TestSecurityConfiguration;
-import uk.gov.hmcts.reform.em.npa.ccd.exception.CaseDocumentNotFoundException;
 
 import uk.gov.hmcts.reform.em.npa.service.RedactionService;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionRequest;
+import uk.gov.hmcts.reform.em.npa.service.exception.FileTypeException;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
@@ -37,6 +38,10 @@ public class RedactionResourceTest {
 
     @Mock
     private RedactionService redactionService;
+
+    private static final File TEST_PDF_FILE = new File(
+            ClassLoader.getSystemResource("layered.pdf").getPath()
+    );
 
     @Before
     public void setUp() {
@@ -81,32 +86,14 @@ public class RedactionResourceTest {
         HttpServletRequest request = mock(HttpServletRequest.class);
 
         when(request.getHeader("Authorization")).thenReturn("jwt");
-        when(redactionService.redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getRedactedFileName(), redactionRequest.getRedactions()))
-                .thenReturn("newDocId");
+        when(redactionService.redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getRedactions()))
+                .thenReturn(TEST_PDF_FILE);
 
-        ResponseEntity<String> response = redactionResource.save(request, redactionRequest);
+        ResponseEntity response = redactionResource.save(request, redactionRequest);
         assertEquals(200, response.getStatusCodeValue());
-        assertEquals("newDocId", response.getBody());
 
         verify(redactionService, Mockito.atMost(1))
-                .redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getRedactedFileName(), redactionRequest.getRedactions());
-    }
-
-    @Test
-    public void shouldSaveRedactedNoChosenNameDocument() {
-        RedactionRequest redactionRequest = createRequest();
-        HttpServletRequest request = mock(HttpServletRequest.class);
-
-        when(request.getHeader("Authorization")).thenReturn("jwt");
-        when(redactionService.redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getRedactedFileName(), redactionRequest.getRedactions()))
-                .thenReturn("newDocId");
-
-        ResponseEntity<String> response = redactionResource.save(request, redactionRequest);
-        assertEquals(200, response.getStatusCodeValue());
-        assertEquals("newDocId", response.getBody());
-
-        verify(redactionService, Mockito.atMost(1))
-                .redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getRedactedFileName(), redactionRequest.getRedactions());
+                .redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getRedactions());
     }
 
     @Test
@@ -115,13 +102,13 @@ public class RedactionResourceTest {
         HttpServletRequest request = mock(HttpServletRequest.class);
 
         when(request.getHeader("Authorization")).thenReturn("jwt");
-        when(redactionService.redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getRedactedFileName(), redactionRequest.getRedactions()))
-                .thenThrow(CaseDocumentNotFoundException.class);
+        when(redactionService.redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getRedactions()))
+                .thenThrow(FileTypeException.class);
 
-        ResponseEntity<String> response = redactionResource.save(request, redactionRequest);
+        ResponseEntity response = redactionResource.save(request, redactionRequest);
         assertEquals(400, response.getStatusCodeValue());
 
         verify(redactionService, Mockito.atMost(1))
-                .redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getRedactedFileName(), redactionRequest.getRedactions());
+                .redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getRedactions());
     }
 }

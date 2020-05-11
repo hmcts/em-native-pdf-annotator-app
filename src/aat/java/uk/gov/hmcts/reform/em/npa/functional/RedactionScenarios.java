@@ -29,10 +29,12 @@ public class RedactionScenarios {
     @Autowired
     protected TestUtil testUtil;
 
-    private static final UUID id = UUID.randomUUID();
+    private static final UUID docId = UUID.randomUUID();
+    private static final UUID redactionId = UUID.randomUUID();
 
-    private RedactionDTO createRedaction(UUID id) {
-        RedactionDTO redactionDTO = testUtil.populateRedactionDTO(id);
+    private RedactionDTO createRedaction() {
+        RedactionDTO redactionDTO = testUtil.createRedactionDTO(docId, redactionId);
+        redactionDTO.setPage(1);
 
         JSONObject jsonObject = new JSONObject(redactionDTO);
 
@@ -50,16 +52,12 @@ public class RedactionScenarios {
     }
 
     @Test
-    public void testSaveRedactedPdfDocument() throws Exception {
+    public void testSaveRedactedPdfDocument() {
         String newDocId = testUtil.uploadPdfDocumentAndReturnUrl();
-        String documentString = testUtil.getCcdDocumentJson("my doc", newDocId, "annotationTemplate.pdf");
-        String caseId = testUtil.createCase(documentString).getId().toString();
 
         RedactionRequest redactionRequest = new RedactionRequest();
-        redactionRequest.setCaseId(caseId);
         redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
-        redactionRequest.setRedactedFileName("bespoke");
-        redactionRequest.setRedactions(Arrays.asList(createRedaction(id), createRedaction(UUID.randomUUID())));
+        redactionRequest.setRedactions(Arrays.asList(createRedaction(), createRedaction()));
 
         JSONObject jsonObject = new JSONObject(redactionRequest);
 
@@ -72,16 +70,12 @@ public class RedactionScenarios {
     }
 
     @Test
-    public void testSaveRedactedImageDocument() throws Exception {
+    public void testSaveRedactedImageDocument() {
         String newDocId = testUtil.uploadImageDocumentAndReturnUrl();
-        String documentString = testUtil.getCcdDocumentJson("my doc", newDocId, "fist.png");
-        String caseId = testUtil.createCase(documentString).getId().toString();
 
         RedactionRequest redactionRequest = new RedactionRequest();
-        redactionRequest.setCaseId(caseId);
         redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
-        redactionRequest.setRedactedFileName("bespoke");
-        redactionRequest.setRedactions(Collections.singletonList(createRedaction(id)));
+        redactionRequest.setRedactions(Collections.singletonList(createRedaction()));
 
         JSONObject jsonObject = new JSONObject(redactionRequest);
 
@@ -94,36 +88,12 @@ public class RedactionScenarios {
     }
 
     @Test
-    public void testFailedSaveRedactedRichTextDocument() throws Exception {
+    public void testFailedSaveRedactedRichTextDocument() {
         String newDocId = testUtil.uploadRichTextDocumentAndReturnUrl();
-        String documentString = testUtil.getCcdDocumentJson("my doc", newDocId, "annotationTemplate.pdf");
-        String caseId = testUtil.createCase(documentString).getId().toString();
 
         RedactionRequest redactionRequest = new RedactionRequest();
-        redactionRequest.setCaseId(caseId);
         redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
-        redactionRequest.setRedactedFileName("bespoke");
-        redactionRequest.setRedactions(Arrays.asList(createRedaction(id), createRedaction(UUID.randomUUID())));
-
-        JSONObject jsonObject = new JSONObject(redactionRequest);
-
-        testUtil.authRequest()
-                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                .body(jsonObject)
-                .request("POST", testUrl + "/api/redaction")
-                .then()
-                .statusCode(400);
-    }
-
-    @Test
-    public void testSaveRedactedDocumentInvalidCCDCaseId() {
-        String newDocId = testUtil.uploadPdfDocumentAndReturnUrl();
-
-        RedactionRequest redactionRequest = new RedactionRequest();
-        redactionRequest.setCaseId("invalid_id");
-        redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
-        redactionRequest.setRedactedFileName("bespoke");
-        redactionRequest.setRedactions(Collections.singletonList(createRedaction(id)));
+        redactionRequest.setRedactions(Arrays.asList(createRedaction(), createRedaction()));
 
         JSONObject jsonObject = new JSONObject(redactionRequest);
 
