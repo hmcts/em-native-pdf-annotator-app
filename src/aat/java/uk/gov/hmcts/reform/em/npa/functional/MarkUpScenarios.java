@@ -16,8 +16,9 @@ import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 import uk.gov.hmcts.reform.em.npa.testutil.TestUtil;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @SpringBootTest(classes = {TestUtil.class, EmTestConfig.class})
@@ -57,6 +58,46 @@ public class MarkUpScenarios {
         Assert.assertEquals(redactionDTO.getRectangles().size(), response.getRectangles().size());
     }
 
+    @Test
+    public void testGetAllDocumentMarkUps() {
+
+        // First create Test data
+        RedactionDTO redactionDTO = testUtil.createRedactionDTO(docId, redactionId);
+
+        JSONObject jsonObject = new JSONObject(redactionDTO);
+
+        testUtil.authRequest()
+            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .body(jsonObject)
+            .request("POST", testUrl + "/api/markups")
+            .then()
+            .statusCode(201);
+
+        //Now test the GET using the above created Data
+        Map<String, Integer> params = new HashMap<>();
+        params.put("page", 0);
+        params.put("size", 10);
+
+        List<RedactionDTO> response =  testUtil.authRequest()
+            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .params(params)
+            .request("GET", testUrl + "/api/markups/"+docId)
+            .then()
+            .statusCode(200)
+            .extract()
+            .response()
+            .jsonPath()
+            .getList(".", RedactionDTO.class);
+
+        Assert.assertNotNull(response);
+        Assert.assertEquals(1, response.size());
+        RedactionDTO responseDto = response.get(0);
+
+        Assert.assertEquals(redactionDTO.getDocumentId(), responseDto.getDocumentId());
+        Assert.assertEquals(redactionDTO.getRedactionId(), responseDto.getRedactionId());
+        Assert.assertEquals(redactionDTO.getRectangles().size(), responseDto.getRectangles().size());
+
+    }
 
     @Test
     public void testUpdateMarkUp() {

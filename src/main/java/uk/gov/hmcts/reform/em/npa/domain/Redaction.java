@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.em.npa.domain;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -17,7 +16,6 @@ import java.util.UUID;
 @Table(name = "redaction")
 @Getter
 @Setter
-@ToString
 public class Redaction extends AbstractAuditingEntity implements Serializable {
 
     @Id

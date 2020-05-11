@@ -37,7 +37,9 @@
             <column name="y_coordinate" type="FLOAT8">
                 <constraints nullable="false"/>
             </column>
-            <column name="redaction_id" type="uuid"/>
+            <column name="redaction_id" type="uuid">
+                <constraints nullable="true" />
+            </column>
         </createTable>
     </changeSet>
     <changeSet author="yogeshhullatti (generated)" id="1588625536109-7">
@@ -70,7 +72,7 @@
     </changeSet>
 
     <changeSet author="yogeshhullatti (generated)" id="1588629692555-6">
-        <addForeignKeyConstraint baseColumnNames="redaction_id" baseTableName="rectangle" constraintName="FKigiuw6vbyuiwr2cxy3d4rc090"
-                                 deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="redaction"/>
+        <addForeignKeyConstraint onDelete="CASCADE" baseColumnNames="redaction_id" baseTableName="rectangle" constraintName="fk_rectangle_redaction_id"
+                                 referencedColumnNames="id" referencedTableName="redaction"/>
     </changeSet>
 </databaseChangeLog>

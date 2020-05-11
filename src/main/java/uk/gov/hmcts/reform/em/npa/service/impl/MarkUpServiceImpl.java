@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.npa.service.impl;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -43,14 +44,21 @@ public class MarkUpServiceImpl implements MarkUpService {
     public RedactionDTO save(RedactionDTO redactionDTO) {
         log.debug("Request to save Rectangle : {}", redactionDTO);
 
-        Redaction redaction = markUpMapper.toEntity(redactionDTO);
+        final Redaction redaction = markUpMapper.toEntity(redactionDTO);
         String createdBy = securityUtils.getCurrentUserLogin()
             .orElseThrow(() -> new UsernameNotFoundException("User not found."));
         redaction.setCreatedBy(createdBy);
         redaction.getRectangles().stream().forEach(rectangle -> rectangle.setCreatedBy(createdBy));
-        redaction = markUpRepository.save(redaction);
 
-        return markUpMapper.toDto(redaction);
+        if(CollectionUtils.isNotEmpty(redaction.getRectangles())) {
+            redaction.getRectangles()
+                .stream()
+                .forEach(rectangle -> rectangle.setRedaction(redaction));
+        }
+
+        Redaction response = markUpRepository.save(redaction);
+
+        return markUpMapper.toDto(response);
     }
 
     @Override
