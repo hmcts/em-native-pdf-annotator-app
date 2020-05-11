@@ -63,7 +63,7 @@ public class PdfRedactionTest {
     @Test
     public void pdfRedactionNoChosenNameTest() throws IOException {
         File result = pdfRedaction.redaction(TEST_PDF_FILE, redactions, null);
-        Assert.assertTrue(result.getName().contains("layered"));
+        Assert.assertTrue(result.getName().contains("Redacted-layered"));
         Assert.assertTrue(result.getName().contains(".pdf"));
     }
 

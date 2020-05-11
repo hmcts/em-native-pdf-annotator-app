@@ -57,7 +57,7 @@ public class ImageRedactionTest {
     @Test
     public void pdfRedactionNoChosenNameTest() throws IOException {
         File result = imageRedaction.redaction(TEST_IMAGE_FILE, rectangles, null);
-        Assert.assertTrue(result.getName().contains("fist"));
+        Assert.assertTrue(result.getName().contains("Redacted-fist"));
         Assert.assertTrue(result.getName().contains(FilenameUtils.getExtension(TEST_IMAGE_FILE.getName())));
     }
 
