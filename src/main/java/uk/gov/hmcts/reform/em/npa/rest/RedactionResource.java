@@ -16,6 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileInputStream;
 
+import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
+
 /**
  * REST controller for managing Redaction Requests.
  */
@@ -50,6 +52,7 @@ public class RedactionResource {
 
             InputStreamResource resource = new InputStreamResource(new FileInputStream(newlyRedactedFile));
             HttpHeaders headers = new HttpHeaders();
+            headers.add(CONTENT_DISPOSITION, String.format("attachment; filename=\"%s\"", newlyRedactedFile.getName()));
             Tika tika = new Tika();
 
             return ResponseEntity.ok()
