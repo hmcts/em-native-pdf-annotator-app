@@ -12,7 +12,7 @@
     <changeSet id="00000000000001" author="pawel">
 
         <createTable tableName="jhi_persistent_audit_event">
-            <column name="event_id" type="uuid">
+            <column name="event_id" type="bigint" autoIncrement="${autoIncrement}">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="principal" type="varchar(50)">
@@ -23,7 +23,7 @@
         </createTable>
 
         <createTable tableName="jhi_persistent_audit_evt_data">
-            <column name="event_id" type="uuid">
+            <column name="event_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
             <column name="name" type="varchar(150)">
@@ -43,7 +43,7 @@
         <createIndex indexName="idx_persistent_audit_evt_data"
                      tableName="jhi_persistent_audit_evt_data"
                      unique="false">
-            <column name="event_id" type="uuid"/>
+            <column name="event_id" type="bigint"/>
         </createIndex>
 
         <addForeignKeyConstraint baseColumnNames="event_id"

@@ -18,7 +18,11 @@ import java.util.UUID;
 public class Rectangle extends AbstractAuditingEntity implements Serializable {
 
     @Id
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Long id;
+
+    @Column(name = "rectangle_id", nullable = false)
+    private UUID rectangleId;
 
     @Column(name = "x_coordinate", nullable = false)
     private Double x;

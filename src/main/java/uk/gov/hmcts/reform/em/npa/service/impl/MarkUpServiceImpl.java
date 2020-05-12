@@ -85,6 +85,6 @@ public class MarkUpServiceImpl implements MarkUpService {
     public void delete(UUID redactionId) {
 
         log.debug("Request to delete Redaction : {}", redactionId);
-        markUpRepository.deleteById(redactionId);
+        markUpRepository.deleteByRedactionId(redactionId);
     }
 }

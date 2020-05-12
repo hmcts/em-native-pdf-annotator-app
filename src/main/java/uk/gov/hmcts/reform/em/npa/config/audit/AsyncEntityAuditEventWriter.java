@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.em.npa.repository.EntityAuditEventRepository;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.UUID;
 
 /**
  * Async Entity Audit Event writer
@@ -59,13 +58,13 @@ public class AsyncEntityAuditEventWriter {
         Class<?> entityClass = entity.getClass(); // Retrieve entity class with reflection
         auditedEntity.setAction(action.value());
         auditedEntity.setEntityType(entityClass.getName());
-        UUID entityId;
+        Long entityId;
         String entityData;
         log.trace("Getting Entity Id and Content");
         try {
             Field privateLongField = entityClass.getDeclaredField("id");
             privateLongField.setAccessible(true);
-            entityId = (UUID) privateLongField.get(entity);
+            entityId = (Long) privateLongField.get(entity);
             privateLongField.setAccessible(false);
             entityData = objectMapper.writeValueAsString(entity);
         } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException |

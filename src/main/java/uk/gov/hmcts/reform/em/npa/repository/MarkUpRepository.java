@@ -16,7 +16,7 @@ import java.util.UUID;
  * Spring Data repository for the Redaction entity.
  */
 @Repository
-public interface MarkUpRepository extends JpaRepository<Redaction, UUID> {
+public interface MarkUpRepository extends JpaRepository<Redaction, Long> {
 
     Page<Redaction> findByDocumentIdAndCreatedBy(UUID documentId, String createdBy, Pageable pageable);
 
@@ -25,4 +25,5 @@ public interface MarkUpRepository extends JpaRepository<Redaction, UUID> {
     @Query(value = "DELETE FROM Redaction m WHERE m.document_id = :documentId AND m.created_by = :createdBy", nativeQuery = true)
     void deleteAllByDocumentIdAndCreatedBy(@Param("documentId") UUID documentId, @Param("createdBy") String createdBy);
 
+    void deleteByRedactionId(UUID redactionId);
 }

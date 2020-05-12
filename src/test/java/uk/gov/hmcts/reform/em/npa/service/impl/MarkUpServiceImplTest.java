@@ -106,8 +106,8 @@ public class MarkUpServiceImplTest {
 
         markUpService.delete(id);
 
-        Mockito.doNothing().when(markUpRepository).deleteById(id);
-        Mockito.verify(markUpRepository, Mockito.atLeast(1)).deleteById(id);
+        Mockito.doNothing().when(markUpRepository).deleteByRedactionId(id);
+        Mockito.verify(markUpRepository, Mockito.atLeast(1)).deleteByRedactionId(id);
     }
 
     @Test
@@ -124,7 +124,7 @@ public class MarkUpServiceImplTest {
     private Redaction createRedaction() {
         Redaction redaction = new Redaction();
         redaction.setDocumentId(UUID.randomUUID());
-        redaction.setId(UUID.randomUUID());
+        redaction.setRedactionId(UUID.randomUUID());
         Set<Rectangle> rectangles = new HashSet<>();
         rectangles.add(createRectangle());
         redaction.setRectangles(rectangles);
@@ -133,7 +133,7 @@ public class MarkUpServiceImplTest {
 
     private Rectangle createRectangle() {
         Rectangle rectangle = new Rectangle();
-        rectangle.setId(UUID.randomUUID());
+        rectangle.setRectangleId(UUID.randomUUID());
         rectangle.setHeight(10.0);
         rectangle.setWidth(10.0);
         rectangle.setX(20.0);
