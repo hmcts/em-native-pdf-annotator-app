@@ -306,11 +306,11 @@ task functional(type: Test) {
     setClasspath(sourceSets.aat.runtimeClasspath)
     include "uk/gov/hmcts/reform/em/npa/functional/**"
 
+    // Serenity Single page Reports
+    functional.finalizedBy(aggregate)
+
     environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }
-
-// Serenity Single page Reports
-functional.finalizedBy(aggregate)
 
 task smoke(type: Test) {
     group = 'Delivery pipeline'
@@ -352,6 +352,10 @@ project.ext {
 
 def getCheckedOutGitCommitHash() {
     'git rev-parse --verify --short HEAD'.execute().text.trim()
+}
+
+serenity {
+    reports = ["single-page-html"]
 }
 
 pact {
