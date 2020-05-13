@@ -7,16 +7,22 @@ import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import org.apache.pdfbox.util.Matrix;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 import uk.gov.hmcts.reform.em.npa.service.exception.RedactionProcessingException;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class PdfRedaction {
@@ -42,8 +48,9 @@ public class PdfRedaction {
         try (PDDocument newDocument = new PDDocument()) {
 
             for (RedactionDTO redactionDTO : redactionDTOList) {
+                draw(document, redactionDTO.getPage() -1, redactionDTO.getRectangles());
                 File pageImage = transformToImage(pdfRenderer, redactionDTO.getPage() - 1);
-                pageImage = imageRedaction.redaction(pageImage, redactionDTO.getRectangles());
+//                pageImage = imageRedaction.redaction(pageImage, redactionDTO.getRectangles());
                 PDPage newPage = transformToPdf(pageImage, newDocument);
                 replacePage(document, redactionDTO.getPage() - 1, newPage);
             }
@@ -53,6 +60,28 @@ public class PdfRedaction {
 
         document.close();
         return newFile;
+    }
+
+    private void draw(PDDocument document, int pageNumber, Set<RectangleDTO> rectangles) throws IOException {
+        PDPage page = document.getPage(pageNumber);
+        PDRectangle pageSize = page.getMediaBox();
+
+        PDPageContentStream contentStream = new PDPageContentStream(document, page, PDPageContentStream.AppendMode.APPEND, true, true);
+        contentStream.setNonStrokingColor(Color.BLACK);
+
+        rectangles.stream().forEach(rectangle -> {
+            try {
+                contentStream.addRect(
+                    rectangle.getX().floatValue(),
+                    (pageSize.getHeight() - Math.abs(rectangle.getY().floatValue() - rectangle.getHeight().floatValue())),
+                    rectangle.getWidth().floatValue(),
+                    rectangle.getHeight().floatValue());
+                contentStream.fill();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        contentStream.close();
     }
 
     /**
