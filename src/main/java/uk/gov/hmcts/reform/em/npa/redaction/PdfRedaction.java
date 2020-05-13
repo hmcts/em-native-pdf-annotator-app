@@ -78,7 +78,7 @@ public class PdfRedaction {
                     rectangle.getHeight().floatValue());
                 contentStream.fill();
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new RedactionProcessingException(e.getMessage());
             }
         });
         contentStream.close();
