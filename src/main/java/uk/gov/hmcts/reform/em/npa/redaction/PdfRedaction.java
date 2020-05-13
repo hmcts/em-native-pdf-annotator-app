@@ -66,7 +66,7 @@ public class PdfRedaction {
         PDPage page = document.getPage(pageNumber);
         PDRectangle pageSize = page.getMediaBox();
 
-        PDPageContentStream contentStream = new PDPageContentStream(document, page, PDPageContentStream.AppendMode.APPEND, trueq, true);
+        PDPageContentStream contentStream = new PDPageContentStream(document, page, PDPageContentStream.AppendMode.APPEND, true, true);
         contentStream.setNonStrokingColor(Color.BLACK);
 
         rectangles.stream().forEach(rectangle -> {
