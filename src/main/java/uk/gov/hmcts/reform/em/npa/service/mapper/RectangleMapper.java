@@ -14,9 +14,13 @@ public interface RectangleMapper extends EntityMapper<RectangleDTO, Rectangle> {
     @Mapping(target="id", source="entity.rectangleId")
     RectangleDTO toDto(Rectangle entity);
 
-
-    @Mapping(target="id", ignore = true)
     @Mapping(target="rectangleId", source="dto.id")
+    @Mapping(target="id", ignore = true)
+    @Mapping(target="redaction", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "createdDate", ignore = true)
+    @Mapping(target = "lastModifiedBy", ignore = true)
+    @Mapping(target = "lastModifiedDate", ignore = true)
     Rectangle toEntity(RectangleDTO dto);
 
 }

@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 public interface MarkUpMapper extends EntityMapper<RedactionDTO, Redaction> {
 
     @Mapping(target = "rectangles")
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "createdDate", ignore = true)
     @Mapping(target = "lastModifiedBy", ignore = true)
