@@ -47,7 +47,6 @@ docker-compose ${COMPOSE_FILE} up -d shared-database\
                                      service-auth-provider-api \
                                      smtp-server \
                                      dm-store \
-                                     rpa-native-pdf-annotator-db \
                                      annotation-api \
                                      azure-storage-emulator-azurite \
                                      make-container-call

@@ -3,16 +3,6 @@ version: '2.1'
 
 services:
 
-  rpa-native-pdf-annotator-db:
-    image: postgres
-    container_name: npa-db
-    environment:
-      - POSTGRES_USER=emnpa
-      - POSTGRES_PASSWORD=emnpa
-      - POSTGRES_DB=emnpa
-    ports:
-      - 5433:5432
-
   service-auth-provider-api:
     image: hmctspublic.azurecr.io/rpe/service-auth-provider:latest
     container_name: npa-service-auth
