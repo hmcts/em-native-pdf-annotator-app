@@ -106,7 +106,7 @@ public class RedactionServiceImplTest {
     public void redactPdfFileTest() throws DocumentTaskProcessingException, IOException {
         File mockFile = new File("prosecution1.pdf");
         Mockito.when(dmStoreDownloader.downloadFile(docStoreUUID.toString())).thenReturn(mockFile);
-        Mockito.when(pdfRedaction.redaction(mockFile, redactions)).thenReturn(mockFile);
+        Mockito.when(pdfRedaction.redactPdf(mockFile, redactions)).thenReturn(mockFile);
 
         File result = redactionService.redactFile("jwt", "caseId", docStoreUUID, redactions);
         Assert.assertEquals(result.getName(), mockFile.getName());
@@ -116,7 +116,7 @@ public class RedactionServiceImplTest {
     public void redactImageFileTest() throws DocumentTaskProcessingException, IOException {
         File mockFile = new File("prosecution2.png");
         Mockito.when(dmStoreDownloader.downloadFile(docStoreUUID.toString())).thenReturn(mockFile);
-        Mockito.when(imageRedaction.redaction(mockFile, redactions.get(0).getRectangles())).thenReturn(mockFile);
+        Mockito.when(imageRedaction.redactImage(mockFile, redactions.get(0).getRectangles())).thenReturn(mockFile);
 
         File result = redactionService.redactFile("jwt", "caseId", docStoreUUID, redactions);
         Assert.assertEquals(result.getName(), mockFile.getName());

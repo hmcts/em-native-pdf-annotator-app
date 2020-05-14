@@ -23,7 +23,7 @@ public class ImageRedaction {
      * @return the redacted image
      * @throws IOException
      */
-    public File redaction(File imageFile, Set<RectangleDTO> rectangles) throws IOException {
+    public File redactImage(File imageFile, Set<RectangleDTO> rectangles) throws IOException {
         BufferedImage img = ImageIO.read(imageFile);
         Graphics2D graph = img.createGraphics();
 

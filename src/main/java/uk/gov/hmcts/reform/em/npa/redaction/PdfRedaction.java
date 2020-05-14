@@ -7,8 +7,6 @@ import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
-import org.apache.pdfbox.util.Matrix;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
@@ -16,8 +14,6 @@ import uk.gov.hmcts.reform.em.npa.service.exception.RedactionProcessingException
 
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -27,9 +23,6 @@ import java.util.Set;
 @Service
 public class PdfRedaction {
 
-    @Autowired
-    private ImageRedaction imageRedaction;
-
     /**
      * Applying Redaction to pdf file
      *
@@ -38,31 +31,34 @@ public class PdfRedaction {
      * @return the redacted file
      * @throws IOException
      */
-    public File redaction(File documentFile, List<RedactionDTO> redactionDTOList) throws IOException {
+    public File redactPdf(File documentFile, List<RedactionDTO> redactionDTOList) throws IOException {
         PDDocument document = PDDocument.load(documentFile);
         PDFRenderer pdfRenderer = new PDFRenderer(document);
-
         final File newFile = File.createTempFile(String.format("Redacted-%s", FilenameUtils.getBaseName(documentFile.getName())), ".pdf");
-
         document.setDocumentInformation(new PDDocumentInformation());
-        try (PDDocument newDocument = new PDDocument()) {
 
+        try (PDDocument newDocument = new PDDocument()) {
             for (RedactionDTO redactionDTO : redactionDTOList) {
-                draw(document, redactionDTO.getPage() -1, redactionDTO.getRectangles());
+                redactPageContent(document, redactionDTO.getPage() -1, redactionDTO.getRectangles());
                 File pageImage = transformToImage(pdfRenderer, redactionDTO.getPage() - 1);
-//                pageImage = imageRedaction.redaction(pageImage, redactionDTO.getRectangles());
                 PDPage newPage = transformToPdf(pageImage, newDocument);
                 replacePage(document, redactionDTO.getPage() - 1, newPage);
             }
-
             document.save(newFile);
         }
-
         document.close();
         return newFile;
     }
 
-    private void draw(PDDocument document, int pageNumber, Set<RectangleDTO> rectangles) throws IOException {
+    /**
+     * Draw rectangles on pdf document to redact marked up content on page
+     *
+     * @param document The pdf to be redacted
+     * @param pageNumber The page number in the PDF (zero indexed)
+     * @param rectangles Rectangles to be drawn onto the pdf document
+     * @throws IOException
+     */
+    private void redactPageContent(PDDocument document, int pageNumber, Set<RectangleDTO> rectangles) throws IOException {
         PDPage page = document.getPage(pageNumber);
         PDRectangle pageSize = page.getMediaBox();
 
@@ -72,16 +68,26 @@ public class PdfRedaction {
         rectangles.stream().forEach(rectangle -> {
             try {
                 contentStream.addRect(
-                        (float) (0.75 * (pageSize.getLowerLeftX() + rectangle.getX().floatValue())),
-                        (float) ((pageSize.getHeight() - (0.75 * rectangle.getY().floatValue())) - (0.75 * rectangle.getHeight().floatValue())),
-                        (float) (0.75 * rectangle.getWidth().floatValue()),
-                        (float) (0.75 * rectangle.getHeight().floatValue()));
+                    pixelToPointConversion(pageSize.getLowerLeftX() + rectangle.getX().floatValue()),
+                    (pageSize.getHeight() - pixelToPointConversion(rectangle.getY().floatValue())) - pixelToPointConversion(rectangle.getHeight().floatValue()),
+                    pixelToPointConversion(rectangle.getWidth().floatValue()),
+                    pixelToPointConversion(rectangle.getHeight().floatValue()));
                 contentStream.fill();
             } catch (IOException e) {
                 throw new RedactionProcessingException(e.getMessage());
             }
         });
         contentStream.close();
+    }
+
+    /**
+     * Convert pixel values passed by media viewer into pdf friendly point values
+     *
+     * @param value Pixel value to be converted into Point value
+     * @return Converted Point value
+     */
+    private float pixelToPointConversion(double value) {
+        return (float) (0.75 * value);
     }
 
     /**
@@ -94,10 +100,8 @@ public class PdfRedaction {
      */
     private File transformToImage(PDFRenderer pdfRenderer, int pageNumber) throws IOException {
         BufferedImage img = pdfRenderer.renderImage(pageNumber, 1, ImageType.RGB);
-
         final File alteredImage = File.createTempFile("altered", ".png");
         ImageIO.write(img, "png", alteredImage);
-
         return alteredImage;
     }
 

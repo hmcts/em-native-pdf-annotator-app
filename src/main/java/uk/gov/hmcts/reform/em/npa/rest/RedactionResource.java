@@ -31,19 +31,19 @@ public class RedactionResource {
         this.redactionService = redactionService;
     }
 
-    @ApiOperation(value = "Burn markups onto Document", notes = "A POST request to burn markups onto Document")
+    @ApiOperation(value = "Burn markups onto Document", notes = "A POST request to burn markups onto Document and return the newly redacted document")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully redacted", response = String.class),
+            @ApiResponse(code = 200, message = "Successfully redacted"),
             @ApiResponse(code = 400, message = "Invalid request"),
             @ApiResponse(code = 401, message = "Unauthorised"),
             @ApiResponse(code = 403, message = "Forbidden"),
+            @ApiResponse(code = 500, message = "Server Error"),
     })
     @PostMapping("/redaction")
     public ResponseEntity save(HttpServletRequest request,
                                        @RequestBody RedactionRequest redactionRequest) {
         try {
             String jwt = request.getHeader("Authorization");
-
             File newlyRedactedFile = redactionService.redactFile(
                     jwt,
                     redactionRequest.getCaseId(),

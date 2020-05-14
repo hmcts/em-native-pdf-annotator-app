@@ -53,10 +53,10 @@ public class RedactionServiceImpl implements RedactionService {
             File updatedFile;
             if (fileType.equals("pdf")) {
                 log.info("Applying redaction to PDF file");
-                updatedFile = pdfRedaction.redaction(originalFile, redactionDTOList);
+                updatedFile = pdfRedaction.redactPdf(originalFile, redactionDTOList);
             } else if (imageExtensionsList.contains(fileType)) {
                 log.info("Applying redaction to Image Document");
-                updatedFile = imageRedaction.redaction(originalFile, redactionDTOList.get(0).getRectangles());
+                updatedFile = imageRedaction.redactImage(originalFile, redactionDTOList.get(0).getRectangles());
             } else {
                 throw new FileTypeException("Redaction cannot be applied to the file type provided");
             }
@@ -67,7 +67,7 @@ public class RedactionServiceImpl implements RedactionService {
             throw new RedactionProcessingException("Error processing Redaction Task");
         } catch (IOException e) {
             log.error(e.getMessage(), e);
-            throw new FileTypeException("File processing error");
+            throw new FileTypeException("File processing error encountered");
         }
     }
 }

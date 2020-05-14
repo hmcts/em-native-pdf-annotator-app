@@ -7,6 +7,5 @@ import java.util.List;
 import java.util.UUID;
 
 public interface RedactionService {
-
     File redactFile(String jwt, String caseId, UUID documentId, List<RedactionDTO> redactionDTOList);
 }

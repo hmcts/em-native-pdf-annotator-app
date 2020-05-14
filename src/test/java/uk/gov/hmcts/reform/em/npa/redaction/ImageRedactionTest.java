@@ -49,13 +49,13 @@ public class ImageRedactionTest {
 
     @Test
     public void imageRedactionTest() throws IOException {
-        File result = imageRedaction.redaction(TEST_IMAGE_FILE, rectangles);
+        File result = imageRedaction.redactImage(TEST_IMAGE_FILE, rectangles);
         Assert.assertTrue(result.getName().contains("Redacted-fist"));
         Assert.assertTrue(result.getName().contains(FilenameUtils.getExtension(TEST_IMAGE_FILE.getName())));
     }
 
     @Test(expected = IOException.class)
     public void imageRedactionFailureTest() throws IOException {
-        imageRedaction.redaction(new File("invalid_file"), rectangles);
+        imageRedaction.redactImage(new File("invalid_file"), rectangles);
     }
 }
