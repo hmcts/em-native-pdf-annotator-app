@@ -1,28 +1,31 @@
 package uk.gov.hmcts.reform.em.npa.service.impl;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.em.npa.service.DmStoreDownloader;
+import uk.gov.hmcts.reform.em.npa.service.exception.DocumentTaskProcessingException;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
-//import org.springframework.beans.factory.annotation.Value;
-//import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-//import uk.gov.hmcts.reform.em.npa.config.security.SecurityUtils;
 
 @Service
 @Transactional
 public class DmStoreDownloaderImpl implements DmStoreDownloader {
+
+    private final Logger log = LoggerFactory.getLogger(DmStoreDownloaderImpl.class);
 
     private final OkHttpClient okHttpClient;
 
@@ -30,13 +33,17 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
 
     private String dmStoreAppBaseUrl;
 
-    private final String dmStoreAppDocumentBinaryEndpointPattern = "/documents/%s/binary";
+    private final String dmStoreDownloadEndpoint = "/documents/";
+
+    private final ObjectMapper objectMapper;
 
     public DmStoreDownloaderImpl(OkHttpClient okHttpClient, AuthTokenGenerator authTokenGenerator,
-                                 @Value("${dm-store-app.base-url}") String dmStoreAppBaseUrl) {
+                                 @Value("${document_management.base-url}") String dmStoreAppBaseUrl,
+                                 ObjectMapper objectMapper) {
         this.okHttpClient = okHttpClient;
         this.authTokenGenerator = authTokenGenerator;
         this.dmStoreAppBaseUrl = dmStoreAppBaseUrl;
+        this.objectMapper = objectMapper;
     }
 
 
@@ -45,25 +52,28 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
 
         try {
 
-            Request request = new Request.Builder()
-                    .addHeader("user-roles", "caseworker")
-                    .addHeader("ServiceAuthorization", authTokenGenerator.generate())
-                    .url(dmStoreAppBaseUrl+String.format(dmStoreAppDocumentBinaryEndpointPattern, id))
-                    .build();
-
-            Response response = okHttpClient.newCall(request).execute();
+            Response response = getDocumentStoreResponse(dmStoreAppBaseUrl + dmStoreDownloadEndpoint + id);
 
             if (response.isSuccessful()) {
+                JsonNode documentMetaData = objectMapper.readTree(response.body().byteStream());
 
-                Path tempPath = Paths.get(System.getProperty("java.io.tmpdir") + "/" + id + ".pdf");
+                log.info("Accessing binary of the DM document: {}",
+                    objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(documentMetaData));
 
-                try {
-                    Files.copy(response.body().byteStream(), tempPath, StandardCopyOption.REPLACE_EXISTING);
-                } catch (IOException e) {
-                    throw new DocumentTaskProcessingException("Could not copy the file to a temp location", e);
-                }
+                String documentBinaryUrl = new StringBuffer()
+                                                .append(dmStoreAppBaseUrl)
+                                                    .append(dmStoreDownloadEndpoint)
+                                                    .append(id)
+                                                    .append("/binary").toString();
 
-                return tempPath.toFile();
+                String originalDocumentName = documentMetaData.get("originalDocumentName").asText();
+                String fileType = FilenameUtils.getExtension(originalDocumentName);
+
+                log.info("Accessing documentBinaryUrl: {}", documentBinaryUrl);
+
+                Response binaryResponse = getDocumentStoreResponse(documentBinaryUrl);
+
+                return copyResponseToFile(binaryResponse, fileType);
 
             } else {
                 throw new DocumentTaskProcessingException("Could not access the binary. HTTP response: " + response.code());
@@ -73,6 +83,29 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
             throw new DocumentTaskProcessingException(String.format("Could not access the binary: %s", e.getMessage()), e);
         }
 
+    }
+
+    private Response getDocumentStoreResponse(String documentUri) throws IOException {
+
+        log.info("getDocumentStoreResponse - URL: {}", documentUri);
+
+        return okHttpClient.newCall(new Request.Builder()
+            .addHeader("user-roles", "caseworker")
+            .addHeader("ServiceAuthorization", authTokenGenerator.generate())
+            .url(documentUri)
+            .build()).execute();
+    }
+
+    private File copyResponseToFile(Response response, String fileType) throws DocumentTaskProcessingException {
+        try {
+
+            File tempFile = File.createTempFile("dm-store", "."+fileType);
+            Files.copy(response.body().byteStream(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+            return tempFile;
+        } catch (IOException e) {
+            throw new DocumentTaskProcessingException("Could not copy the file to a temp location", e);
+        }
     }
 
 }

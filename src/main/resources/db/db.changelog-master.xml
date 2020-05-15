@@ -4,9 +4,81 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
 
+    <changeSet author="yogesh" id="20200428104614-1">
+        <createSequence sequenceName="hibernate_sequence"/>
+    </changeSet>
+
     <include file="changelog/00000000000000_initial_schema.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20180918132136_added_entity_DocumentTask.xml" relativeToChangelogFile="true"/>
     <include file="changelog/20180918132314_added_entity_EntityAuditEvent.xml" relativeToChangelogFile="true"/>
 
+    <changeSet author="yogeshhullatti (generated)" id="1588625536109-6">
+        <createTable tableName="rectangle">
+            <column name="id" type="bigint" autoIncrement="${autoIncrement}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="rectangle_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="VARCHAR(50)"/>
+            <column name="last_modified_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="height" type="FLOAT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="width" type="FLOAT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="x_coordinate" type="FLOAT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="y_coordinate" type="FLOAT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="redaction_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="yogeshhullatti (generated)" id="1588625536109-7">
+        <createTable tableName="redaction">
+            <column name="id" type="bigint" autoIncrement="${autoIncrement}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="redaction_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_by" type="VARCHAR(50)"/>
+            <column name="last_modified_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="document_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="page_num" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
 
+
+    <changeSet author="yogeshhullatti (generated)" id="1588629692555-5">
+        <createIndex indexName="IX_redactionPK" tableName="redaction" unique="true">
+            <column name="id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="yogeshhullatti (generated)" id="1588629692555-6">
+        <addForeignKeyConstraint onDelete="CASCADE" baseColumnNames="redaction_id" baseTableName="rectangle" constraintName="fk_rectangle_redaction_id"
+                                 referencedColumnNames="id" referencedTableName="redaction"/>
+    </changeSet>
 </databaseChangeLog>

@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.em.npa.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.npa.service.DmStoreUploader;
 import uk.gov.hmcts.reform.em.npa.service.PdfAnnotator;
 import uk.gov.hmcts.reform.em.npa.service.dto.external.annotation.AnnotationSetDTO;
-import uk.gov.hmcts.reform.em.npa.service.impl.DocumentTaskProcessingException;
+import uk.gov.hmcts.reform.em.npa.service.exception.DocumentTaskProcessingException;
 
 import java.io.File;
 
