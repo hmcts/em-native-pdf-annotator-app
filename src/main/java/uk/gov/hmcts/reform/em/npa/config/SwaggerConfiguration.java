@@ -34,7 +34,7 @@ public class SwaggerConfiguration {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("EM Native PDF Annotator App")
-                .description("API to burn annotations onto a PDF")
+                .description("API to burn annotations onto a PDF and facilitate Document Redaction")
                 .version(apiVersion)
                 .build();
     }
