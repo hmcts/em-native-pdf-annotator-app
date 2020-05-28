@@ -288,5 +288,6 @@
         <cve>CVE-2020-11050</cve>
         <cve>CVE-2020-5408</cve>
         <cve>CVE-2020-1945</cve>
+        <cve>CVE-2020-9484</cve>
     </suppress>
 </suppressions>
