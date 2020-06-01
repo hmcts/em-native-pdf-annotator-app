@@ -21,10 +21,7 @@ import java.util.Arrays;
 @ComponentScan("uk.gov.hmcts.reform.em.npa.rest")
 public class SwaggerConfiguration {
 
-    private final static String apiVersion = "0.0.1";
-
-    private static final String MODEL_REF_TYPE = "string";
-    private static final String PARAMETER_TYPE = "header";
+    private final static String apiVersion = "1.0.1";
 
     @Bean
     public Docket api() {
