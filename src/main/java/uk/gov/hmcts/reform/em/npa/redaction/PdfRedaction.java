@@ -41,7 +41,7 @@ public class PdfRedaction {
             for (RedactionDTO redactionDTO : redactionDTOList) {
                 redactPageContent(document, redactionDTO.getPage() -1, redactionDTO.getRectangles());
                 File pageImage = transformToImage(pdfRenderer, redactionDTO.getPage() - 1);
-                PDPage newPage = transformToPdf(pageImage, newDocument);
+                PDPage newPage = transformToPdf(pageImage, newDocument, document.getPage(redactionDTO.getPage() - 1));
                 replacePage(document, redactionDTO.getPage() - 1, newPage);
             }
             document.save(newFile);
@@ -112,8 +112,8 @@ public class PdfRedaction {
      * @return The newly redacted page in PDF format
      * @throws IOException
      */
-    private PDPage transformToPdf(File pageImage, PDDocument newDocument) throws IOException {
-        PDPage newPage = new PDPage();
+    private PDPage transformToPdf(File pageImage, PDDocument newDocument, PDPage originalPage) throws IOException {
+        PDPage newPage = new PDPage(originalPage.getMediaBox());
         try (PDPageContentStream contentStream = new PDPageContentStream(newDocument, newPage, PDPageContentStream.AppendMode.APPEND, false)) {
             PDRectangle mediaBox = newPage.getMediaBox();
             newDocument.addPage(newPage);
