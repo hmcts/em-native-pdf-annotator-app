@@ -222,7 +222,7 @@ dependencies {
     compile "org.mapstruct:mapstruct-jdk8:${mapstruct_version}"
     compile "org.springframework.boot:spring-boot-starter-oauth2-client"
     compile "org.springframework.security:spring-security-oauth2-resource-server"
-    compile "org.springframework.security:spring-security-oauth2-jose:5.2.2.RELEASE"
+    compile "org.springframework.security:spring-security-oauth2-jose:5.3.3.RELEASE"
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstruct_version}"
     annotationProcessor "org.hibernate:hibernate-jpamodelgen"
     annotationProcessor ("org.springframework.boot:spring-boot-configuration-processor") {
