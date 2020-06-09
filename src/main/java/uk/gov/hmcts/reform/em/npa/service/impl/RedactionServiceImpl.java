@@ -51,7 +51,7 @@ public class RedactionServiceImpl implements RedactionService {
             String fileType = FilenameUtils.getExtension(originalFile.getName());
 
             File updatedFile;
-            if (fileType.toLowerCase().equals("pdf")) {
+            if (fileType.equalsIgnoreCase("pdf")) {
                 log.info("Applying redaction to PDF file");
                 updatedFile = pdfRedaction.redactPdf(originalFile, redactionDTOList);
             } else if (imageExtensionsList.contains(fileType.toLowerCase())) {
