@@ -1,5 +1,5 @@
 #!groovy
-
+import uk.gov.hmcts.contino.AppPipelineDsl
 properties([
         [
                 $class: 'GithubProjectProperty',
@@ -43,6 +43,7 @@ env.S2S_BASE_URI = 'http://rpe-service-auth-provider-aat.service.core-compute-aa
 env.IDAM_WEBSHOW_WHITELIST = 'https://em-show-aat.service.core-compute-aat.internal/oauth2/callback'
 env.DM_STORE_APP_URL = 'http://dm-store-aat.service.core-compute-aat.internal'
 env.EM_ANNO_APP_URL = 'http://em-anno-aat.service.core-compute-aat.internal'
+env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
 
 def vaultOverrides = [
         'preview' : 'aat',
@@ -53,13 +54,27 @@ withPipeline(type , product, component) {
     enableDbMigration('em-npa')
     overrideVaultEnvironments(vaultOverrides)
     loadVaultSecrets(secrets)
-    installCharts()
     enableAksStagingDeployment()
     disableLegacyDeployment()
-    after('test') {
-        sh '''
+    onMaster {
+        after('test') {
+            sh '''
         curl https://raw.githubusercontent.com/hmcts/reform-api-docs/master/bin/publish-swagger-docs.sh > publish-swagger-docs.sh
         sh ./publish-swagger-docs.sh
          '''
+        }
     }
+
+    after('functionalTest:preview') {
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+    }
+
+    after('functionalTest:aat') {
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+    }
+
+    enablePactAs([
+            AppPipelineDsl.PactRoles.CONSUMER
+    ])
+
 }

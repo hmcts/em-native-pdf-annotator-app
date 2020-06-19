@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.em.npa.functional;
 
 import io.restassured.response.Response;
+import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.json.JSONObject;
@@ -25,7 +26,8 @@ import static org.hamcrest.CoreMatchers.startsWith;
 
 @SpringBootTest(classes = {TestUtil.class, EmTestConfig.class})
 @PropertySource(value = "classpath:application.yml")
-@RunWith(SpringRunner.class)
+@RunWith(SpringIntegrationSerenityRunner.class)
+
 public class DocumentTaskScenarios {
 
     @Autowired

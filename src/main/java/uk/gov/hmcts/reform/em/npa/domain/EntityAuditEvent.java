@@ -50,8 +50,8 @@ public class EntityAuditEvent implements Serializable{
     @NotNull
     @Column(name = "modified_date", nullable = false)
     private Instant modifiedDate;
-    
-    
+
+
     public Long getId() {
         return id;
     }
@@ -147,6 +147,6 @@ public class EntityAuditEvent implements Serializable{
             '}';
     }
 
-    
+
 
 }

@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.npa.Application;
 import uk.gov.hmcts.reform.em.npa.TestSecurityConfiguration;
 import uk.gov.hmcts.reform.em.npa.service.AnnotationSetFetcher;
+import uk.gov.hmcts.reform.em.npa.service.exception.DocumentTaskProcessingException;
 
 
 @RunWith(SpringRunner.class)

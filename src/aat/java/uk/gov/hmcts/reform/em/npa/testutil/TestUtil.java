@@ -8,22 +8,21 @@ import org.json.JSONObject;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.em.test.ccddata.CcdDataHelper;
-import uk.gov.hmcts.reform.em.test.ccddefinition.CcdDefinitionHelper;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 import uk.gov.hmcts.reform.em.test.dm.DmHelper;
 import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
 import uk.gov.hmcts.reform.em.test.s2s.S2sHelper;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -44,21 +43,40 @@ public class TestUtil {
     @Autowired
     private DmHelper dmHelper;
 
-    @MockBean
-    protected CcdDataHelper ccdDataHelper;
-
-    @MockBean
-    protected CcdDefinitionHelper ccdDefinitionHelper;
-
     @Value("${annotation.api.url}")
     private String emAnnotationUrl;
+    @Value("${document_management.url}")
+    private String dmApiUrl;
+    @Value("${document_management.docker_url}")
+    private String dmDocumentApiUrl;
 
     @PostConstruct
-    public void init() {
+    public void init() throws Exception {
         idamHelper.createUser("a@b.com", Stream.of("caseworker").collect(Collectors.toList()));
         RestAssured.useRelaxedHTTPSValidation();
         idamAuth = idamHelper.authenticateUser("a@b.com");
         s2sAuth = s2sHelper.getS2sToken();
+    }
+
+    public RedactionDTO createRedactionDTO(UUID docId, UUID redactionId) {
+        RedactionDTO redactionDTO = new RedactionDTO();
+        redactionDTO.setDocumentId(docId);
+        redactionDTO.setRedactionId(redactionId);
+        redactionDTO.setPage(6);
+        Set<RectangleDTO> rectangles = new HashSet<>();
+        rectangles.add(createRectangleDTO());
+        redactionDTO.setRectangles(rectangles);
+        return redactionDTO;
+    }
+
+    private RectangleDTO createRectangleDTO() {
+        RectangleDTO rectangleDTO = new RectangleDTO();
+        rectangleDTO.setId(UUID.randomUUID());
+        rectangleDTO.setHeight(10.0);
+        rectangleDTO.setWidth(10.0);
+        rectangleDTO.setX(20.0);
+        rectangleDTO.setY(30.0);
+        return rectangleDTO;
     }
 
     public File getDocumentBinary(String documentId) throws Exception {
@@ -134,6 +152,41 @@ public class TestUtil {
         return uploadDocument("annotationTemplate.pdf");
     }
 
+    public String uploadDocumentAndReturnUrl(String fileName, String mimeType) {
+        try {
+            String url = dmHelper.getDocumentMetadata(
+                    dmHelper.uploadAndGetId(
+                            ClassLoader.getSystemResourceAsStream(fileName), mimeType, fileName))
+                    .links.self.href;
+
+            return getDmApiUrl().equals("http://localhost:4603")
+                    ? url.replaceAll(getDmApiUrl(), getDmDocumentApiUrl())
+                    : url;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String uploadPdfDocumentAndReturnUrl() {
+        return uploadDocumentAndReturnUrl("annotationTemplate.pdf", "application/pdf");
+    }
+
+    public String uploadImageDocumentAndReturnUrl() {
+        return uploadDocumentAndReturnUrl("fist.png", "image/png");
+    }
+
+    public String uploadRichTextDocumentAndReturnUrl() {
+        return uploadDocumentAndReturnUrl("test.rtf", "application/rtf");
+    }
+
+    public String getDmApiUrl() {
+        return dmApiUrl;
+    }
+
+    public String getDmDocumentApiUrl() {
+        return dmDocumentApiUrl;
+    }
+
     public RequestSpecification authRequest() {
         return s2sAuthRequest()
                 .header("Authorization", idamAuth);
@@ -186,5 +239,4 @@ public class TestUtil {
 
         return RestAssured.given().header("ServiceAuthorization", "invalidS2SAuthorization");
     }
-
 }

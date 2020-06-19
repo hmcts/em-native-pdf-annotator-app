@@ -18,9 +18,9 @@ spring:
     enabled: ${ENABLE_LIQUIBASE:false}
     change-log: classpath:/db/db.changelog-master.xml
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/emnpa}
-    username: ${SPRING_DATASOURCE_USERNAME:emnpa}
-    password: ${SPRING_DATASOURCE_PASSWORD:emnpa}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5434/emnpa}
+    username: ${SPRING_DATASOURCE_USERNAME:shared}
+    password: ${SPRING_DATASOURCE_PASSWORD:shared}
     tomcat:
       max-active: ${MAX_ACTIVE_DB_CONNECTIONS:50} # Maximum number of active connections that can be allocated from this pool at the same time.
       max-idle: ${MAX_IDLE_DB_CONNECTIONS:25}
@@ -103,7 +103,7 @@ idam:
     totp_secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
     microservice: em_npa_app
   s2s-authorised:
-    services: ${S2S_NAMES_WHITELIST:sscs,divorce,ccd,em_gw,jui_webapp,pui_webapp}
+    services: ${S2S_NAMES_WHITELIST:sscs,divorce,ccd,em_gw,jui_webapp,pui_webapp,xui_webapp}
 
 azure:
   app_insights_key: ${APPINSIGHTS_INSTRUMENTATIONKEY:true}
@@ -118,9 +118,15 @@ app-insights:
 em-annotation-app:
   base-url: ${EM_ANNO_APP_URL:http://localhost:4623}
 
-dm-store-app:
+document_management:
   base-url: ${DM_STORE_APP_URL:http://localhost:4603}
+  docker_url: http://dm-store:8080
 
 # Delete when issueOverride variable is no longer used in SecurityConfiguration.class
 oidc:
   issuer: ${OIDC_ISSUER_BASE_URI:http://localhost:8080/openam/oauth2/hmcts}
+
+redaction:
+  multipart:
+    image-ext: ${REDACTION_MULTIPART_WHITELIST_EXT:jpg,jpeg,bmp,tif,tiff,png,apng,gif,ico,cur,jfif,pjpeg,pjp,svg,webp}
+

@@ -56,7 +56,7 @@ public class DocumentTaskResource {
     })
     @PostMapping("/document-tasks")
     ////@Timed
-    public ResponseEntity<DocumentTaskDTO> createDocumentTask(@RequestBody DocumentTaskDTO documentTaskDTO, @RequestHeader(value="Authorization", required=false) String authorisationHeader) throws URISyntaxException {
+    public ResponseEntity<DocumentTaskDTO> createDocumentTask(@RequestBody DocumentTaskDTO documentTaskDTO, @RequestHeader(value="Authorization") String authorisationHeader) throws URISyntaxException {
         log.debug("REST request to save DocumentTask : {}", documentTaskDTO);
         if (documentTaskDTO.getId() != null) {
             throw new BadRequestAlertException("A new documentTask cannot already have an ID", ENTITY_NAME, "idexists");
@@ -90,7 +90,7 @@ public class DocumentTaskResource {
     })
     @PutMapping("/document-tasks")
     //@Timed
-    public ResponseEntity<DocumentTaskDTO> updateDocumentTask(@RequestBody DocumentTaskDTO documentTaskDTO, @RequestHeader(value="Authorization", required=false) String authorisationHeader) throws URISyntaxException {
+    public ResponseEntity<DocumentTaskDTO> updateDocumentTask(@RequestBody DocumentTaskDTO documentTaskDTO, @RequestHeader(value="Authorization") String authorisationHeader) throws URISyntaxException {
         log.debug("REST request to update DocumentTask : {}", documentTaskDTO);
         if (documentTaskDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");

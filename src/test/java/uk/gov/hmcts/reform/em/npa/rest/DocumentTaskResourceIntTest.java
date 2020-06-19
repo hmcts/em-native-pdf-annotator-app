@@ -88,7 +88,7 @@ public class DocumentTaskResourceIntTest {
     @Autowired
     private EntityManager em;
 
-    @Value("${dm-store-app.base-url}")
+    @Value("${document_management.base-url}")
     private String dmBaseUrl;
 
     @Value("${em-annotation-app.base-url}")
@@ -142,6 +142,9 @@ public class DocumentTaskResourceIntTest {
 
         ClassLoader classLoader = Application.class.getClassLoader();
 
+        mockInterceptor.addRule(new Rule.Builder().get().url(dmBaseUrl + "/documents/AAAAAAAAAA")
+            .respond(getResponseBody()));
+
         mockInterceptor.addRule(new Rule.Builder().get().url(dmBaseUrl + "/documents/AAAAAAAAAA/binary")
                 .respond(classLoader.getResourceAsStream("annotationTemplate.pdf")));
 
@@ -181,6 +184,9 @@ public class DocumentTaskResourceIntTest {
         MockInterceptor mockInterceptor = (MockInterceptor) okHttpClient.interceptors().get(0);
 
         ClassLoader classLoader = Application.class.getClassLoader();
+
+        mockInterceptor.addRule(new Rule.Builder().get().url(dmBaseUrl + "/documents/AAAAAAAAAA")
+            .respond(getResponseBody()));
 
         mockInterceptor.addRule(new Rule.Builder().get().url(dmBaseUrl + "/documents/AAAAAAAAAA/binary")
                 .respond(classLoader.getResourceAsStream("annotationTemplate.pdf")));
@@ -385,5 +391,51 @@ public class DocumentTaskResourceIntTest {
     public void testEntityFromId() {
         assertThat(documentTaskMapper.fromId(42L).getId()).isEqualTo(42);
         assertThat(documentTaskMapper.fromId(null)).isNull();
+    }
+
+    private String getResponseBody() {
+        return "{\n" +
+            "  \"originalDocumentName\": \"fist.png\",\n" +
+            "  \"_links\": {\n" +
+            "    \"self\": {\n" +
+            "      \"href\": \"http://localhost:4603/documents/AAAAAAAAAA\"\n" +
+            "    },\n" +
+            "    \"binary\": {\n" +
+            "      \"href\": \"http://localhost:4603/documents/AAAAAAAAAA/binary\"\n" +
+            "    },\n" +
+            "    \"thumbnail\": {\n" +
+            "      \"href\": \"http://localhost:4603/documents/AAAAAAAAAA/thumbnail\"\n" +
+            "    }\n" +
+            "  },\n" +
+            "  \"_embedded\": {\n" +
+            "    \"allDocumentVersions\": {\n" +
+            "      \"_embedded\": {\n" +
+            "        \"documentVersions\": [\n" +
+            "          {\n" +
+            "            \"size\": 320467,\n" +
+            "            \"mimeType\": \"image/png\",\n" +
+            "            \"originalDocumentName\": \"fist.png\",\n" +
+            "            \"createdBy\": \"\",\n" +
+            "            \"createdOn\": \"2020-05-01T10:54:39+0000\",\n" +
+            "            \"_links\": {\n" +
+            "              \"document\": {\n" +
+            "                \"href\": \"http://localhost:4603/documents/AAAAAAAAAA\"\n" +
+            "              },\n" +
+            "              \"self\": {\n" +
+            "                \"href\": \"http://localhost:4603/documents/6bfbf266-d106-43af-a0f0-746bf5875beb/versions/6d7096bd-8c94-43ce-bf6c-c1349ddf69d1\"\n" +
+            "              },\n" +
+            "              \"binary\": {\n" +
+            "                \"href\": \"http://localhost:4603/documents/6bfbf266-d106-43af-a0f0-746bf5875beb/versions/6d7096bd-8c94-43ce-bf6c-c1349ddf69d1/binary\"\n" +
+            "              },\n" +
+            "              \"thumbnail\": {\n" +
+            "                \"href\": \"http://localhost:4603/documents/6bfbf266-d106-43af-a0f0-746bf5875beb/versions/6d7096bd-8c94-43ce-bf6c-c1349ddf69d1/thumbnail\"\n" +
+            "              }\n" +
+            "            }\n" +
+            "          }\n" +
+            "        ]\n" +
+            "      }\n" +
+            "    }\n" +
+            "  }\n" +
+            "}";
     }
 }
