@@ -165,6 +165,10 @@
         <cve>CVE-2020-1745</cve>
         <cve>CVE-2020-11050</cve>
         <cve>CVE-2011-4969</cve>
+        <cve>CVE-2020-5411</cve>
+        <cve>CVE-2020-13692</cve>
+        <cve>CVE-2020-13271</cve>
+        <cve>CVE-2020-13276</cve>
     </suppress>
     
     <suppress>
