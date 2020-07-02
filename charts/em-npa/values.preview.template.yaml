@@ -1,6 +1,6 @@
 java:
-  # Don't modify below here
   image: ${IMAGE_NAME}
+  devmemoryLimits: '2048Mi'
   ingressHost: ${SERVICE_FQDN}
   keyVaults:
     em-npa:
