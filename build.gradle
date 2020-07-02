@@ -130,8 +130,8 @@ def versions = [
         springfoxSwagger   : '2.9.2',
         h2                 : '1.4.199',
         liquibase          : '3.8.0',
-        serenity           : '2.0.23',
-        serenityreporter   : '2.1.4',
+        serenity           : '2.2.10',
+        serenityreporter   : '2.2.10',
         pact_version       : '3.5.24'
 ]
 
