@@ -302,4 +302,8 @@
         <notes><![CDATA[Dependency for serenity BDD - still present in latest 2.10]]></notes>
         <cve>CVE-2020-13276</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[Dependency for serenity BDD - still present in latest 2.10]]></notes>
+        <cve>CVE-2020-13274</cve>
+    </suppress>
 </suppressions>
