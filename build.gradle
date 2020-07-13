@@ -125,7 +125,7 @@ repositories {
 }
 
 def versions = [
-        postgresql         : '42.2.8',
+        postgresql         : '42.2.13',
         springBoot         : '2.0.5.RELEASE',
         springfoxSwagger   : '2.9.2',
         h2                 : '1.4.199',
@@ -165,6 +165,16 @@ dependencyCheck {
     analyzers {
         // Disable scanning of .NET related binaries
         assemblyEnabled = false
+    }
+}
+
+configurations.all {
+    resolutionStrategy {
+        eachDependency { DependencyResolveDetails details ->
+            if (details.requested.group in ['org.apache.tomcat.embed']) {
+                details.useVersion '9.0.36'
+            }
+        }
     }
 }
 
