@@ -289,5 +289,7 @@
         <cve>CVE-2020-5408</cve>
         <cve>CVE-2020-1945</cve>
         <cve>CVE-2020-9484</cve>
+        <!-- Need to remove below after upgrading to Spring 2.3.0-->
+        <cve>CVE-2020-5411</cve>
     </suppress>
 </suppressions>
