@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.em.npa;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Map;
 import java.util.TreeMap;
 
 import au.com.dius.pact.consumer.MockServer;
+import au.com.dius.pact.consumer.dsl.PactDslJsonArray;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit5.PactConsumerTestExt;
@@ -16,12 +16,15 @@ import com.google.common.collect.Maps;
 import io.restassured.http.ContentType;
 import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.rest.SerenityRest;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @Slf4j
@@ -29,7 +32,64 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 public class IdamConsumerTest {
 
+    private static final String IDAM_DETAILS_URL = "/details";
     private static final String IDAM_OPENID_TOKEN_URL = "/o/token";
+    private static final String ACCESS_TOKEN = "111";
+
+    @Pact(provider = "Idam_api", consumer = "npa_api")
+    public RequestResponsePact executeGetUserDetailsAndGet200(PactDslWithProvider builder) {
+
+        Map<String, String> headers = Maps.newHashMap();
+        headers.put(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN);
+
+        return builder
+            .given("Idam successfully returns user details")
+            .uponReceiving("Provider receives a GET /details request from Native PDF Annotator API")
+            .path(IDAM_DETAILS_URL)
+            .method(HttpMethod.GET.toString())
+            .headers(headers)
+            .willRespondWith()
+            .status(HttpStatus.OK.value())
+            .body(createUserDetailsResponse())
+            .toPact();
+    }
+
+    @Test
+    @PactTestFor(pactMethod = "executeGetUserDetailsAndGet200")
+    public void should_get_user_details_with_access_token(MockServer mockServer) throws JSONException {
+
+        Map<String, String> headers = Maps.newHashMap();
+        headers.put(HttpHeaders.AUTHORIZATION, ACCESS_TOKEN);
+
+        String actualResponseBody =
+                SerenityRest
+                .given()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .when()
+                .get(mockServer.getUrl() + IDAM_DETAILS_URL)
+                .then()
+                .statusCode(200)
+                .and()
+                .extract()
+                .body()
+                .asString();
+
+        JSONObject response = new JSONObject(actualResponseBody);
+
+        assertThat(actualResponseBody).isNotNull();
+        assertThat(response).hasNoNullFieldsOrProperties();
+        assertThat(response.getString("id")).isNotBlank();
+        assertThat(response.getString("forename")).isNotBlank();
+        assertThat(response.getString("surname")).isNotBlank();
+
+        JSONArray rolesArr = new JSONArray(response.getString("roles"));
+
+        assertThat(rolesArr).isNotNull();
+        assertThat(rolesArr.length()).isNotZero();
+        assertThat(rolesArr.get(0).toString()).isNotBlank();
+
+    }
 
     @Pact(provider = "Idam_api", consumer = "npa_api")
     public RequestResponsePact executeGetIdamAccessTokenAndGet200(PactDslWithProvider builder) throws JSONException {
@@ -98,6 +158,30 @@ public class IdamConsumerTest {
                 .stringType("id_token", "eyJ0eXAiOiJKV1QiLCJraWQiOiJiL082T3ZWdjEre")
                 .stringType("token_type", "Bearer")
                 .stringType("expires_in","28798");
+    }
+
+    private PactDslJsonBody createUserDetailsResponse() {
+        PactDslJsonArray array = new PactDslJsonArray().stringValue("caseofficer-em");
+
+        return new PactDslJsonBody()
+            .stringType("id", "123")
+            .stringType("email", "em-caseofficer@fake.hmcts.net")
+            .stringType("forename", "Case")
+            .stringType("surname", "Officer")
+            .stringType("roles", array.toString());
+
+}
+
+    private static String createRequestBody() {
+
+        return "{\"grant_type\": \"password\","
+                + " \"client_id\": \"em\","
+                + " \"client_secret\": \"some_client_secret\","
+                + " \"redirect_uri\": \"/oauth2redirect\","
+                + " \"scope\": \"openid roles profile\","
+                + " \"username\": \"npausername\","
+                + " \"password\": \"npagpwd\"\n"
+                + " }";
     }
 
 }
