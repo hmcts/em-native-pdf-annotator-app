@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import au.com.dius.pact.consumer.MockServer;
-import au.com.dius.pact.consumer.dsl.DslPart;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit5.PactConsumerTestExt;
@@ -21,7 +20,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -31,20 +29,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 public class IdamConsumerTest {
 
-    private static final String IDAM_DETAILS_URL = "/o/userinfo";
     private static final String IDAM_OPENID_TOKEN_URL = "/o/token";
-    private static final String CLIENT_REDIRECT_URI = "/oauth2redirect";
-    private static String ACCESS_TOKEN = "111";
-
-
-    @Value("pact")
-    String client_id;
-
-    @Value("t")
-    String client_secret;
-
-    @Value("http://www.dummy-pact-service.com/callback")
-    String redirect_uri;
 
     @Pact(provider = "Idam_api", consumer = "npa_api")
     public RequestResponsePact executeGetIdamAccessTokenAndGet200(PactDslWithProvider builder) throws JSONException {
@@ -65,10 +50,12 @@ public class IdamConsumerTest {
 
         return builder
                 .given("a user exists", params)
-                .uponReceiving("Provider takes user/pwd and returns Access Token to Annotation API")
+                .uponReceiving("Provider takes user/pwd and returns Access Token to DocAssembly API")
                 .path(IDAM_OPENID_TOKEN_URL)
                 .method(HttpMethod.POST.toString())
-                .body("redirect_uri=http%3A%2F%2Fwww.dummy-pact-service.com%2Fcallback&client_id=pact&grant_type=password&username=emCaseOfficer%40email.net&password=Password123&client_secret=pactsecret&scope=openid profile roles","application/x-www-form-urlencoded")
+                .body("redirect_uri=http%3A%2F%2Fwww.dummy-pact-service.com%2Fcallback"
+                        + "&client_id=pact&grant_type=password&username=emCaseOfficer%40email.net&password=Password123"
+                        + "&client_secret=pactsecret&scope=openid profile roles","application/x-www-form-urlencoded")
                 .willRespondWith()
                 .status(HttpStatus.OK.value())
                 .headers(responseheaders)
@@ -97,7 +84,6 @@ public class IdamConsumerTest {
 
         JSONObject response = new JSONObject(actualResponseBody);
 
-        ACCESS_TOKEN = response.getString("access_token");
         assertThat(response).isNotNull();
         assertThat(response.getString("access_token")).isNotBlank();
 
@@ -167,18 +153,18 @@ public class IdamConsumerTest {
 //
 //    }
 
-    private DslPart createUserInfoResponse() {
-
-        return new PactDslJsonBody()
-                .stringType("uid", "1234-2345-3456-4567")
-                .stringType("given_name", "emCaseOfficer")
-                .stringType("family_name", "Jar")
-                .array("roles")
-                .stringType("citizen")
-                .closeArray();
-
-    }
-
+//    private DslPart createUserInfoResponse() {
+//
+//        return new PactDslJsonBody()
+//                .stringType("uid", "1234-2345-3456-4567")
+//                .stringType("given_name", "emCaseOfficer")
+//                .stringType("family_name", "Jar")
+//                .array("roles")
+//                .stringType("citizen")
+//                .closeArray();
+//
+//    }
+//
     private PactDslJsonBody createAuthResponse() {
 
         return new PactDslJsonBody()

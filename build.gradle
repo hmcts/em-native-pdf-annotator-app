@@ -132,7 +132,7 @@ def versions = [
         liquibase          : '3.8.0',
         serenity           : '2.2.10',
         serenityreporter   : '2.2.10',
-        pact_version       : '4.0.11',
+        pact_version       : '4.0.10',
         logging            : '5.1.5'
 ]
 
@@ -270,12 +270,10 @@ dependencies {
     testCompile group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
     testCompile group: 'net.serenity-bdd', name: 'serenity-single-page-report', version: versions.serenityreporter
 
-    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-junit', version: "4.0.10"
-    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-junit5', version: "4.0.10"
-    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-java8', version: "4.0.10"
-    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-provider-gradle_2.11', version: "3.2.6"
-
-    compile group: 'au.com.dius', name: 'pact-jvm-consumer', version: "4.0.10"
+    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-junit', version: versions.pact_version
+    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-junit5', version: versions.pact_version
+    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-java8', version: versions.pact_version
+    compile group: 'au.com.dius', name: 'pact-jvm-consumer', version: versions.pact_version
 
     contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.3.2")
     contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.3.2")
