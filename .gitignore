@@ -19,10 +19,6 @@ buildNumber.properties
 .DS_Store
 
 bin/idam-client-setup.sh
-bin/test/
-
-#pact publishing directory
-pacts/
 
 docker-compose-dependencies.yml
 
