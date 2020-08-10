@@ -91,6 +91,7 @@ public class IdamConsumerTest {
         assertThat(response.getString("access_token")).isNotBlank();
 
     }
+
     @Pact(provider = "Idam_api", consumer = "npa_api")
     public RequestResponsePact executeGetUserDetailsAndGet200(PactDslWithProvider builder) {
 
