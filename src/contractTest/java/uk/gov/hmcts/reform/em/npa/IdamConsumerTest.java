@@ -17,7 +17,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -36,17 +35,6 @@ public class IdamConsumerTest {
 
     private static final String IDAM_DETAILS_URL = "/o/userinfo";
     private static final String IDAM_OPENID_TOKEN_URL = "/o/token";
-    private static String ACCESS_TOKEN = "111";
-
-    @Value("pact")
-    String client_id;
-
-    @Value("pactsecret")
-    String client_secret;
-
-    @Value("http://www.dummy-pact-service.com/callback")
-    String redirect_uri;
-
 
     @Pact(provider = "Idam_api", consumer = "npa_api")
     public RequestResponsePact executeGetIdamAccessTokenAndGet200(PactDslWithProvider builder) throws JSONException {
@@ -67,7 +55,7 @@ public class IdamConsumerTest {
 
         return builder
             .given("a user exists", params)
-            .uponReceiving("Provider takes user/pwd and returns Access Token to Annotation API")
+            .uponReceiving("Provider takes user/pwd and returns Access Token to Native PDF Annotator API")
             .path(IDAM_OPENID_TOKEN_URL)
             .method(HttpMethod.POST.toString())
             .body("redirect_uri=http%3A%2F%2Fwww.dummy-pact-service.com%2Fcallback&client_id=pact&grant_type=password&username=emCaseOfficer%40email.net&password=Password123&client_secret=pactsecret&scope=openid profile roles","application/x-www-form-urlencoded")
@@ -99,7 +87,6 @@ public class IdamConsumerTest {
 
         JSONObject response = new JSONObject(actualResponseBody);
 
-        ACCESS_TOKEN = response.getString("access_token");
         assertThat(response).isNotNull();
         assertThat(response.getString("access_token")).isNotBlank();
 
@@ -123,7 +110,7 @@ public class IdamConsumerTest {
 
         return builder
             .given("I have obtained an access_token as a user",params)
-            .uponReceiving("Provider returns user info to Annotation API")
+            .uponReceiving("Provider returns user info to Native PDF Annotator API")
             .path(IDAM_DETAILS_URL)
             .headers("Authorization","Bearer eyJ0eXAiOiJKV1QiLCJraWQiOiJiL082T3ZWdjEre")
             .method(HttpMethod.GET.toString())
