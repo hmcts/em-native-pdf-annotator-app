@@ -40,17 +40,17 @@ dependencyManagement {
     }
 }
 
-def isNonStable = { String version ->
-  def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { it -> version.toUpperCase().contains(it) }
-  def regex = /^[0-9,.v-]+$/
-  return !stableKeyword && !(version ==~ regex)
-}
-
-dependencyUpdates {
-  rejectVersionIf {
-    isNonStable(it.candidate.version) && !isNonStable(it.currentVersion)
-  }
-}
+//def isNonStable = { String version ->
+//  def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { it -> version.toUpperCase().contains(it) }
+//  def regex = /^[0-9,.v-]+$/
+//  return !stableKeyword && !(version ==~ regex)
+//}
+//
+//dependencyUpdates {
+//  rejectVersionIf {
+//    isNonStable(it.candidate.version) && !isNonStable(it.currentVersion)
+//  }
+//}
 
 if (!project.hasProperty('runList')) {
     project.ext.runList = 'main'
