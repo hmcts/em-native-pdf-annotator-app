@@ -377,6 +377,10 @@ task smoke(type: Test) {
 
 task migratePostgresDatabase(dependsOn: 'liquibaseUpdate')
 
+test {
+    useJUnitPlatform()
+
+}
 
 task contract(type: Test) {
     group = 'Delivery pipeline'
