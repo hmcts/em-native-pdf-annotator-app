@@ -1,6 +1,5 @@
 buildscript {
     dependencies {
-        classpath "io.spring.gradle:dependency-management-plugin:1.0.9.RELEASE"
         classpath("net.serenity-bdd:serenity-gradle-plugin:2.0.83")
         classpath("net.serenity-bdd:serenity-single-page-report:2.1.4")
     }
@@ -36,7 +35,7 @@ apply plugin: 'net.serenity-bdd.aggregator'
 
 dependencyManagement {
     imports {
-        mavenBom 'org.springframework.cloud:spring-cloud-openfeign:2.1.3.RELEASE'
+        mavenBom 'org.springframework.cloud:spring-cloud-openfeign:2.1.4.RELEASE'
     }
 }
 
@@ -174,8 +173,8 @@ configurations.all {
             if (details.requested.group in ['org.apache.tomcat.embed']) {
                 details.useVersion '9.0.36'
             }
-            if (details.requested.group in ['org.junit.jupiter']) {
-                details.useVersion '5.6.2'
+            if (details.requested.name in ['spring-test']) {
+                details.useVersion '5.1.11.RELEASE'
             }
         }
     }
@@ -231,7 +230,6 @@ dependencies {
 
     compile group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '1.3.1'
 
-    compile 'org.springframework.cloud:spring-cloud-starter-openfeign'
     compile group: 'org.apache.tika', name: 'tika-core', version: '1.24'
 
     compile "org.hibernate.validator:hibernate-validator"
@@ -263,9 +261,9 @@ dependencies {
     annotationProcessor 'com.sun.xml.bind:jaxb-core:2.3.0.1'
     annotationProcessor 'com.sun.xml.bind:jaxb-impl:2.3.2'
 
-    testCompile "org.junit.jupiter:junit-jupiter-api:5.6.2"
-    testRuntime "org.junit.jupiter:junit-jupiter-engine:5.6.2"
-    testImplementation "org.junit.jupiter:junit-jupiter-api:5.6.2"
+    testCompile "org.junit.jupiter:junit-jupiter-api:5.3.2"
+    testRuntime "org.junit.jupiter:junit-jupiter-engine:5.3.2"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.5.2"
 
     testCompile (group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity) {
         exclude group: 'com.sun.xml.bind', module: 'jaxb-osgi'
@@ -282,9 +280,9 @@ dependencies {
     contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-java8', version: versions.pact_version
     compile group: 'au.com.dius', name: 'pact-jvm-consumer', version: versions.pact_version
 
-    contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.6.2")
-    contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.6.2")
-    contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.6.2')
+    contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.3.2")
+    contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.3.2")
+    contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.3.2')
 
     contractTestCompile sourceSets.main.runtimeClasspath
     contractTestCompile sourceSets.test.runtimeClasspath
