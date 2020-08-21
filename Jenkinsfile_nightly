@@ -47,7 +47,6 @@ withNightlyPipeline(type , product, component) {
     env.IDAM_WEBSHOW_WHITELIST = 'https://em-show-aat.service.core-compute-aat.internal/oauth2/callback'
     env.DM_STORE_APP_URL = 'http://dm-store-aat.service.core-compute-aat.internal'
     env.EM_ANNO_APP_URL = 'http://em-anno-aat.service.core-compute-aat.internal'
-    env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
 
     env.TEST_URL = "http://em-npa-aat.service.core-compute-aat.internal"
 
