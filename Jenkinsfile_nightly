@@ -6,7 +6,7 @@ properties([
                 displayName: 'Evidence Management Store App',
                 projectUrlStr: 'https://github.com/hmcts/rpa-native-pdf-annotator-app'
         ],
-        pipelineTriggers([cron('21 10 * * *')]), // scheduling to trigger jenkins job
+        pipelineTriggers([cron('21 2 * * *')]), // scheduling to trigger jenkins job
 ])
 
 @Library("Infrastructure")
