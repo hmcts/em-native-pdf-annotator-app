@@ -431,14 +431,14 @@ pitest {
 
     logger.lifecycle("Runs PIT  Tests")
 
-    targetClasses = ['uk.gov.hmcts.reform.em.npa.service.impl.*']
+    targetClasses = ['uk.gov.hmcts.reform.em.npa.*']
 
-    targetTests = ['uk.gov.hmcts.reform.em.npa.service.impl.*'//,
-//                   'uk.gov.hmcts.ccd.domain.model.*',
-//                   'uk.gov.hmcts.ccd.domain.service.*'
+    excludedClasses = [
+            'uk.gov.hmcts.reform.em.npa.appinsights.*' ,
+            'uk.gov.hmcts.reform.em.npa.domain.*' ,
+            'uk.gov.hmcts.reform.em.npa.info.*',
+            'uk.gov.hmcts.reform.em.npa.Application.java'
     ]
-
-//    excludedClasses = ['uk.gov.hmcts.reform.em.annotation.service.impl.IdamDetailsFilterServiceImplIntTest']
 
     enableDefaultIncrementalAnalysis = true
     historyInputLocation = 'build/reports/pitest/fastermutationtesting'
