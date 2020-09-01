@@ -45,5 +45,6 @@
  "100000_A Client Error response code was returned by the server_http://em-npa-aat.service.core-compute-aat.internal/api/document-tasks_PUT" : "ignore",
  "100000_A Client Error response code was returned by the server_http://em-npa-aat.service.core-compute-aat.internal/api/document-tasks?offset=10\u0026pageNumber=10\u0026pageSize=10\u0026paged=true\u0026sort.sorted=true\u0026sort.unsorted=true\u0026unpaged=true_GET": "ignore",
  "100000_A Client Error response code was returned by the server_http://em-npa-aat.service.core-compute-aat.internal/api/markups_PUT": "ignore",
- "10021_X-Content-Type-Options Header Missing_http://em-npa-aat.service.core-compute-aat.internal/v2/api-docs_GET": "ignore"
+ "10021_X-Content-Type-Options Header Missing_http://em-npa-aat.service.core-compute-aat.internal/v2/api-docs_GET": "ignore",
+ "10010_Cookie No HttpOnly Flag_http://em-npa-aat.service.core-compute-aat.internal/v2/api-docs_GET": "ignore"
 }
