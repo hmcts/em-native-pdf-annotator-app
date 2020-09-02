@@ -22,6 +22,7 @@ import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -46,8 +47,14 @@ public class ExceptionTranslator implements ProblemHandling {
         ProblemBuilder builder = Problem.builder()
             .withType(Problem.DEFAULT_TYPE.equals(problem.getType()) ? ErrorConstants.DEFAULT_TYPE : problem.getType())
             .withStatus(problem.getStatus())
-            .withTitle(problem.getTitle())
-            .with("path", request.getNativeRequest(HttpServletRequest.class).getRequestURI());
+            .withTitle(problem.getTitle());
+
+        if (Objects.nonNull(request)) {
+            HttpServletRequest httpServletRequest = request.getNativeRequest(HttpServletRequest.class);
+            if (Objects.nonNull(httpServletRequest)) {
+                builder.with("path", httpServletRequest.getRequestURI());
+            }
+        }
 
         if (problem instanceof ConstraintViolationProblem) {
             builder
