@@ -8,6 +8,7 @@ properties([
         ],
         pipelineTriggers([cron('H 21 * * *')]), // scheduling to trigger jenkins job.
 
+
         parameters([
                 string(name: 'SecurityRules',
                         defaultValue: 'http://raw.githubusercontent.com/hmcts/security-test-rules/master/conf/security-rules.conf',
