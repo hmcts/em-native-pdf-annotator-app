@@ -72,9 +72,9 @@ withPipeline(type , product, component) {
     after('functionalTest:aat') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
     }
-
-    enablePactAs([
-            AppPipelineDsl.PactRoles.CONSUMER
-    ])
+    onMaster()
+    {
+        enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
+    }
 
 }

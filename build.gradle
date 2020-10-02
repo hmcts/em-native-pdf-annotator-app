@@ -1,6 +1,5 @@
 buildscript {
     dependencies {
-        classpath "io.spring.gradle:dependency-management-plugin:1.0.8.RELEASE"
         classpath("net.serenity-bdd:serenity-gradle-plugin:2.0.83")
         classpath("net.serenity-bdd:serenity-single-page-report:2.1.4")
     }
@@ -8,7 +7,7 @@ buildscript {
 
 plugins {
     id 'application'
-    id 'io.spring.dependency-management' version '1.0.4.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
     id 'org.springframework.boot' version '2.2.5.RELEASE'
     id 'org.owasp.dependencycheck' version '5.2.4'
     id 'com.github.ben-manes.versions' version '0.27.0'
@@ -19,8 +18,9 @@ plugins {
     id 'jacoco'
     id 'org.liquibase.gradle' version '2.0.2'
    // id "com.github.spacialcircumstances.gradle-cucumber-reporting" version "0.0.11"
-    id 'au.com.dius.pact' version '4.0.4'
+    id 'au.com.dius.pact' version '4.1.2'
     id 'io.franzbecker.gradle-lombok' version '3.3.0'
+    id "info.solidsoft.pitest" version '1.5.1'
 }
 
 apply plugin: 'java'
@@ -36,7 +36,7 @@ apply plugin: 'net.serenity-bdd.aggregator'
 
 dependencyManagement {
     imports {
-        mavenBom 'org.springframework.cloud:spring-cloud-openfeign:2.1.3.RELEASE'
+        mavenBom 'org.springframework.cloud:spring-cloud-openfeign:2.1.4.RELEASE'
     }
 }
 
@@ -105,7 +105,8 @@ liquibaseDiffChangeLog.dependsOn compileJava
 
 group 'uk.gov.hmcts.reform.em.npa'
 version '0.0.1'
-sourceCompatibility = 1.8
+sourceCompatibility = 11
+targetCompatibility = 11
 mainClassName = 'uk.gov.hmcts.reform.em.npa.Application'
 
 configurations {
@@ -125,14 +126,17 @@ repositories {
 }
 
 def versions = [
-        postgresql         : '42.2.8',
+        postgresql         : '42.2.13',
         springBoot         : '2.0.5.RELEASE',
         springfoxSwagger   : '2.9.2',
         h2                 : '1.4.199',
         liquibase          : '3.8.0',
         serenity           : '2.0.23',
         serenityreporter   : '2.1.4',
-        pact_version       : '3.5.24'
+        pact_version       : '4.0.10',
+        logging            : '5.1.5',
+        gradlePitest       : '1.3.0',
+        sonarPitest        : '0.5'
 ]
 
 sourceSets {
@@ -166,6 +170,21 @@ dependencyCheck {
         assemblyEnabled = false
     }
 }
+
+configurations.all {
+    resolutionStrategy {
+        eachDependency { DependencyResolveDetails details ->
+            if (details.requested.group in ['org.apache.tomcat.embed']) {
+                details.useVersion '9.0.36'
+            }
+            if (details.requested.name in ['spring-test']) {
+                details.useVersion '5.1.11.RELEASE'
+            }
+        }
+    }
+}
+
+ext['kotlin.version'] = '1.3.50'
 
 dependencies {
     compile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.19'
@@ -214,8 +233,7 @@ dependencies {
     compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
 
     compile group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '1.3.1'
-    
-    compile 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
     compile group: 'org.apache.tika', name: 'tika-core', version: '1.24'
 
     compile "org.hibernate.validator:hibernate-validator"
@@ -229,34 +247,53 @@ dependencies {
         exclude group: 'com.vaadin.external.google', module: 'android-json'
     }
 
-    testCompile("org.springframework.boot:spring-boot-starter-test")
+    testCompile("org.springframework.boot:spring-boot-starter-test") {
+        exclude group: 'com.vaadin.external.google', module: 'android-json'
+    }
     testCompile group: 'junit', name: 'junit', version: '4.13'
     testCompile group: 'com.h2database', name: 'h2', version: '1.4.200'
     testCompile 'com.github.gmazzo:okhttp-mock:1.3.2'
     testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
-    compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: '5.1.1'
-    compile group: 'uk.gov.hmcts.reform', name: 'logging', version: '5.1.1'
+    compile group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.logging
+    compile group: 'uk.gov.hmcts.reform', name: 'logging-spring', version: versions.logging
+    compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.logging
     compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.5'
     compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version:'0.0.4'
     compile group: 'org.springframework.security', name: 'spring-security-oauth2-core', version: '5.3.0.RELEASE'
 
-    testCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
-    testCompile group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity
+    annotationProcessor 'javax.xml.bind:jaxb-api:2.3.1'
+    annotationProcessor 'com.sun.xml.bind:jaxb-core:2.3.0.1'
+    annotationProcessor 'com.sun.xml.bind:jaxb-impl:2.3.2'
+
+    testCompile "org.junit.jupiter:junit-jupiter-api:5.3.2"
+    testRuntime "org.junit.jupiter:junit-jupiter-engine:5.3.2"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.5.2"
+
+    testCompile (group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity) {
+        exclude group: 'com.sun.xml.bind', module: 'jaxb-osgi'
+    }
+    testCompile (group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity) {
+        exclude group: 'com.sun.xml.bind', module: 'jaxb-osgi'
+    }
     testCompile group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
     testCompile group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
     testCompile group: 'net.serenity-bdd', name: 'serenity-single-page-report', version: versions.serenityreporter
 
-    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-junit5_2.12', version: versions.pact_version
-    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-java8_2.12', version: versions.pact_version
+    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-junit', version: versions.pact_version
+    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-junit5', version: versions.pact_version
+    contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-java8', version: versions.pact_version
+    compile group: 'au.com.dius', name: 'pact-jvm-consumer', version: versions.pact_version
 
     contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.3.2")
     contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.3.2")
     contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.3.2')
-    
+
     contractTestCompile sourceSets.main.runtimeClasspath
     contractTestCompile sourceSets.test.runtimeClasspath
-    
-    aatCompile "uk.gov.hmcts.reform:em-test-helper:1.17.5"
+
+    aatCompile ("uk.gov.hmcts.reform:em-test-helper:1.17.6") {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-test'
+    }
     aatCompile group: 'org.apache.poi', name: 'poi', version: '4.1.2'
     aatCompile group: 'org.apache.poi', name: 'poi-ooxml', version: '4.1.2'
 
@@ -305,6 +342,8 @@ sonarqube {
         property "sonar.projectName", "${rootProject.name}"
         property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.destination.path}"
         property "sonar.exclusions", coverageExclusionList.join(", ")
+        property "sonar.pitest.mode", "reuseReport"
+        property "sonar.pitest.reportsDirectory", "build/reports/pitest"
     }
 }
 
@@ -342,9 +381,6 @@ task smoke(type: Test) {
 
 task migratePostgresDatabase(dependsOn: 'liquibaseUpdate')
 
-dependencyCheck {
-    suppressionFile = 'dependency-check-suppressions.xml'
-}
 
 task contract(type: Test) {
     group = 'Delivery pipeline'
@@ -353,7 +389,7 @@ task contract(type: Test) {
     testClassesDirs = sourceSets.contractTest.output.classesDirs
     classpath = sourceSets.contractTest.runtimeClasspath
     include "uk/gov/hmcts/reform/em/npa/**"
-    systemProperty 'pact.rootDir', "${rootDir}/pacts"
+    systemProperty 'pact.rootDir', "pacts"
     environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }
 
@@ -363,6 +399,11 @@ task runAndPublishConsumerPactTests(type: Test){
     classpath = sourceSets.contractTest.runtimeClasspath
 
 }
+
+runAndPublishConsumerPactTests.dependsOn contract
+
+runAndPublishConsumerPactTests.finalizedBy pactPublish
+
 
 project.ext {
     pactVersion = getCheckedOutGitCommitHash()
@@ -380,9 +421,41 @@ pact {
     publish {
         pactDirectory = 'pacts'
         pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'https://localhost:80'
-        tags = [System.getenv("PACT_BRANCH_NAME") ?: 'Dev']
         version = project.pactVersion
     }
 }
 
 compileJava.dependsOn processResources
+
+pitest {
+
+    logger.lifecycle("Runs PIT  Tests")
+
+    targetClasses = ['uk.gov.hmcts.reform.em.npa.*']
+
+    excludedClasses = [
+            'uk.gov.hmcts.reform.em.npa.appinsights.*' ,
+            'uk.gov.hmcts.reform.em.npa.domain.*' ,
+            'uk.gov.hmcts.reform.em.npa.info.*',
+            'uk.gov.hmcts.reform.em.npa.Application.java'
+    ]
+
+    enableDefaultIncrementalAnalysis = true
+    historyInputLocation = 'build/reports/pitest/fastermutationtesting'
+    historyOutputLocation = 'build/reports/pitest/fastermutationtestingoutput'
+    threads = 15
+    testSourceSets = [sourceSets.test]
+    mainSourceSets = [sourceSets.main]
+    fileExtensionsToFilter.addAll('xml','json')
+    outputFormats = ['XML', 'HTML','CSV']
+    mutationThreshold = 5
+    coverageThreshold = 0
+    maxMutationsPerClass = 15
+    jvmArgs = ['-Xms1G','-Xmx3G']
+    timestampedReports = false
+    failWhenNoMutations = false
+    detectInlinedCode = true
+
+}
+
+project.tasks['pitest'].group = "Verification"
