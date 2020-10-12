@@ -16,7 +16,7 @@ plugins {
     id "net.ltgt.apt-idea" version "0.21"
     id "net.ltgt.apt" version "0.21"
     id 'jacoco'
-    id 'org.liquibase.gradle' version '2.0.2'
+    id 'org.liquibase.gradle' version '2.0.4'
    // id "com.github.spacialcircumstances.gradle-cucumber-reporting" version "0.0.11"
     id 'au.com.dius.pact' version '4.1.2'
     id 'io.franzbecker.gradle-lombok' version '3.3.0'
