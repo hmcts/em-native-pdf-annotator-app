@@ -218,7 +218,7 @@ dependencies {
     compile("org.postgresql:postgresql:${versions.postgresql}")
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
     compile group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
-    compile group: 'commons-validator', name: 'commons-validator', version: '1.6'
+    compile group: 'commons-validator', name: 'commons-validator', version: '1.7'
     compile "javax.transaction:javax.transaction-api"
     compile group: 'org.ehcache', name: 'ehcache', version: '3.7.1'
     compile "org.hibernate:hibernate-core"
