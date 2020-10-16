@@ -250,7 +250,7 @@ public class DocumentTaskResourceIntTest {
         // Get all the documentTaskList
         restDocumentTaskMockMvc.perform(get("/api/document-tasks?sort=id,desc"))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.[*].id").value(hasItem(documentTask.getId().intValue())))
             .andExpect(jsonPath("$.[*].inputDocumentId").value(hasItem(DEFAULT_INPUT_DOCUMENT_ID.toString())))
             .andExpect(jsonPath("$.[*].outputDocumentId").value(hasItem(DEFAULT_OUTPUT_DOCUMENT_ID.toString())))
@@ -267,7 +267,7 @@ public class DocumentTaskResourceIntTest {
         // Get the documentTask
         restDocumentTaskMockMvc.perform(get("/api/document-tasks/{id}", documentTask.getId()))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.id").value(documentTask.getId().intValue()))
             .andExpect(jsonPath("$.inputDocumentId").value(DEFAULT_INPUT_DOCUMENT_ID.toString()))
             .andExpect(jsonPath("$.outputDocumentId").value(DEFAULT_OUTPUT_DOCUMENT_ID.toString()))
