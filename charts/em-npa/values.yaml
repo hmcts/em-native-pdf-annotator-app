@@ -7,6 +7,7 @@ java:
   applicationPort: 8080
   readinessPath: '/health/readiness'
   aadIdentityName: em
+  ingressHost: em-npa-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
   keyVaults:
     em-npa:
       secrets:
