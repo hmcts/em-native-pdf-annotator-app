@@ -10,7 +10,7 @@ In addition the Native PDF Annotator handles requests from the Media Viewer to m
 
 It uses:
 
-* Java8
+* Java11
 * Spring boot
 * Junit, Mockito and SpringBootTest
 * Gradle
@@ -23,8 +23,8 @@ It uses:
 ```bash
 #Cloning repo and running dependencies through docker
 
-git clone https://github.com/hmcts/rpa-native-pdf-annotator-app.git
-cd rpa-native-pdf-annotator-app/
+git clone https://github.com/hmcts/em-native-pdf-annotator-app.git
+cd em-native-pdf-annotator-app/
 
 az login
 az acr login --name hmctspublic && az acr login --name hmctsprivate
