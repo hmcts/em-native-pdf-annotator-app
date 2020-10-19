@@ -9,13 +9,13 @@ plugins {
     id 'application'
     id 'io.spring.dependency-management' version '1.0.10.RELEASE'
     id 'org.springframework.boot' version '2.3.4.RELEASE'
-    id 'uk.gov.hmcts.java' version '0.12.0'
+    id 'uk.gov.hmcts.java' version '0.12.1'
     id 'com.github.ben-manes.versions' version '0.33.0'
     id 'org.sonarqube' version '3.0'
     id 'jacoco'
     id 'org.liquibase.gradle' version '2.0.4'
     id 'au.com.dius.pact' version '4.1.7'
-    id 'io.franzbecker.gradle-lombok' version '3.3.0'
+    id 'io.franzbecker.gradle-lombok' version '4.0.0'
     id "info.solidsoft.pitest" version '1.5.2'
 }
 
@@ -190,8 +190,8 @@ dependencies {
         exclude group: 'io.netty', module: 'netty-transport-native-epoll'
     }
 
-    compile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.19'
-    compile group: 'org.apache.pdfbox', name: 'jbig2-imageio', version: '3.0.0'
+    compile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.21'
+    compile group: 'org.apache.pdfbox', name: 'jbig2-imageio', version: '3.0.3'
     compile 'com.squareup.okhttp3:okhttp:4.9.0'
     compile("org.springframework.boot:spring-boot-starter-batch:2.3.4.RELEASE")
     compile("org.springframework.boot:spring-boot-autoconfigure:2.3.4.RELEASE")
@@ -224,8 +224,8 @@ dependencies {
     compile group: 'org.springframework.security', name: 'spring-security-core', version: versions.springSecurity
 
     compile( 'org.apache.httpcomponents:httpclient:4.5.10')
-    compile "org.liquibase:liquibase-core:4.0.0"
-    liquibaseRuntime "org.liquibase:liquibase-core:4.0.0"
+    compile "org.liquibase:liquibase-core:4.1.1"
+    liquibaseRuntime "org.liquibase:liquibase-core:4.1.1"
     liquibaseRuntime "org.liquibase.ext:liquibase-hibernate5::4.0.0"
     liquibaseRuntime sourceSets.main.compileClasspath
     liquibaseRuntime sourceSets.main.output
@@ -233,11 +233,11 @@ dependencies {
     liquibaseRuntime group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
     liquibaseRuntime "com.h2database:h2"
     compile group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
-    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.11'
     compile group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
-    compile group: 'commons-validator', name: 'commons-validator', version: '1.6'
+    compile group: 'commons-validator', name: 'commons-validator', version: '1.7'
     compile "javax.transaction:javax.transaction-api"
-    compile group: 'org.ehcache', name: 'ehcache', version: '3.7.1'
+    compile group: 'org.ehcache', name: 'ehcache', version: '3.9.0'
 
     compile "com.zaxxer:HikariCP"
 
@@ -250,7 +250,7 @@ dependencies {
     compile group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4'
     compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.2'
 
-    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.16'
 
     compile group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '1.5.5'
 
@@ -271,7 +271,7 @@ dependencies {
     compile group: 'uk.gov.hmcts.reform', name: 'logging-spring', version: versions.logging
     compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.logging
 
-    compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version:'0.0.4'
+    compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version:'0.1.0'
 
     annotationProcessor 'javax.xml.bind:jaxb-api:2.3.1'
     annotationProcessor 'com.sun.xml.bind:jaxb-core:2.3.0.1'
