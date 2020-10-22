@@ -5,7 +5,14 @@ java:
     nameOverride: rpa-npa-db
   image: 'hmctspublic.azurecr.io/em/npa:latest'
   applicationPort: 8080
-  readinessPath: '/health/readiness'
+  readinessDelay: 40
+  readinessTimeout: 5
+  readinessPeriod: 15
+  readinessFailureThreshold: 10
+  livenessDelay: 40
+  livenessTimeout: 5
+  livenessPeriod: 15
+  livenessFailureThreshold: 10
   aadIdentityName: em
   keyVaults:
     em-npa:
