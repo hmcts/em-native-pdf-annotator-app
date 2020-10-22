@@ -49,6 +49,9 @@ management:
   endpoint:
     health:
       show-details: "always"
+      show-components: "always"
+      probes:
+        enabled: true
   endpoints:
     web:
       base-path: '/'
@@ -57,17 +60,14 @@ management:
          - health
          - info
   health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
     db:
-      enabled: true
+      enabled: false
     disk:
-      enabled: true
-      threshold: ${HEALTH_DISK_THRESHOLD:262144000}
-    status:
-     order:
-       - FATAL
-       - DOWN
-       - UNKNOWN
-       - UP
+      enabled: false
   info:
      build:
        enabled: true # Whether to enable build info.
