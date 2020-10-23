@@ -5,7 +5,6 @@ java:
     nameOverride: rpa-npa-db
   image: 'hmctspublic.azurecr.io/em/npa:latest'
   applicationPort: 8080
-  readinessPath: '/health/readiness'
   aadIdentityName: em
   ingressHost: em-npa-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
   keyVaults:
