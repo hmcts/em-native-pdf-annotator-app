@@ -36,7 +36,7 @@ apply plugin: 'net.serenity-bdd.aggregator'
 
 dependencyManagement {
     imports {
-        mavenBom 'org.springframework.cloud:spring-cloud-openfeign:2.1.4.RELEASE'
+        mavenBom 'org.springframework.cloud:spring-cloud-openfeign:2.2.5.RELEASE'
     }
 }
 
