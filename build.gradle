@@ -18,7 +18,7 @@ plugins {
     id 'jacoco'
     id 'org.liquibase.gradle' version '2.0.2'
    // id "com.github.spacialcircumstances.gradle-cucumber-reporting" version "0.0.11"
-    id 'au.com.dius.pact' version '4.1.2'
+    id 'au.com.dius.pact' version '4.1.9'
     id 'io.franzbecker.gradle-lombok' version '3.3.0'
     id "info.solidsoft.pitest" version '1.5.1'
 }
