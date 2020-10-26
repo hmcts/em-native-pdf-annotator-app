@@ -259,7 +259,7 @@ dependencies {
     compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.logging
     compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.5'
     compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version:'0.0.4'
-    compile group: 'org.springframework.security', name: 'spring-security-oauth2-core', version: '5.3.0.RELEASE'
+    compile group: 'org.springframework.security', name: 'spring-security-oauth2-core', version: '5.4.1'
 
     annotationProcessor 'javax.xml.bind:jaxb-api:2.3.1'
     annotationProcessor 'com.sun.xml.bind:jaxb-core:2.3.0.1'
