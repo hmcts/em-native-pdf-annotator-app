@@ -216,7 +216,7 @@ dependencies {
     liquibaseRuntime "org.postgresql:postgresql"
     liquibaseRuntime "com.h2database:h2"
     compile("org.postgresql:postgresql:${versions.postgresql}")
-    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.11'
     compile group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
     compile group: 'commons-validator', name: 'commons-validator', version: '1.6'
     compile "javax.transaction:javax.transaction-api"
