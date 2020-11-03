@@ -1,14 +1,13 @@
 package uk.gov.hmcts.reform.em.npa.testutil;
 
-import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import net.serenitybdd.rest.SerenityRest;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
@@ -17,14 +16,19 @@ import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
 import uk.gov.hmcts.reform.em.test.s2s.S2sHelper;
 
 import javax.annotation.PostConstruct;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Service
 public class TestUtil {
@@ -53,7 +57,7 @@ public class TestUtil {
     @PostConstruct
     public void init() throws Exception {
         idamHelper.createUser("a@b.com", Stream.of("caseworker").collect(Collectors.toList()));
-        RestAssured.useRelaxedHTTPSValidation();
+        SerenityRest.useRelaxedHTTPSValidation();
         idamAuth = idamHelper.authenticateUser("a@b.com");
         s2sAuth = s2sHelper.getS2sToken();
     }
@@ -114,29 +118,31 @@ public class TestUtil {
         createAnnotations.put("rectangles", rectangles);
 
         Response response = authRequest()
-                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                .baseUri(emAnnotationUrl)
+                .contentType(APPLICATION_JSON_VALUE)
                 .body(createAnnotations)
-                .request("POST", emAnnotationUrl + "/api/annotations");
+                .post("/api/annotations");
 
         Assert.assertEquals(201, response.getStatusCode());
 
         return annotationId.toString();
     }
 
-    public String saveAnnotation(String annotationSetId) throws Exception {
+    public String saveAnnotation(String annotationSetId) {
         return saveAnnotation(annotationSetId, 1);
     }
 
-    public String createAnnotationSetForDocumentId(String documentId) throws Exception {
+    public String createAnnotationSetForDocumentId(String documentId) {
         UUID annotationSetId = UUID.randomUUID();
         JSONObject createAnnotationSet = new JSONObject();
         createAnnotationSet.put("documentId", documentId);
         createAnnotationSet.put("id", annotationSetId);
 
         Response response = authRequest()
-                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                .baseUri(emAnnotationUrl)
+                .contentType(APPLICATION_JSON_VALUE)
                 .body(createAnnotationSet)
-                .request("POST", emAnnotationUrl + "/api/annotation-sets");
+                .post("/api/annotation-sets");
 
         Assert.assertEquals(201, response.getStatusCode());
 
@@ -193,7 +199,7 @@ public class TestUtil {
     }
 
     public RequestSpecification s2sAuthRequest() {
-        return RestAssured
+        return SerenityRest
                 .given()
                 .log().all()
                 .header("ServiceAuthorization", s2sAuth);
@@ -205,7 +211,7 @@ public class TestUtil {
     }
 
     public RequestSpecification emptyIdamAuthAndEmptyS2SAuth() {
-        return RestAssured
+        return SerenityRest
                 .given()
                 .header("ServiceAuthorization", null)
                 .header("Authorization", null);
@@ -222,7 +228,7 @@ public class TestUtil {
 
     private RequestSpecification emptyS2sAuthRequest() {
 
-        return RestAssured.given().header("ServiceAuthorization", null);
+        return SerenityRest.given().header("ServiceAuthorization", null);
     }
 
     public RequestSpecification invalidIdamAuthrequest() {
@@ -237,6 +243,6 @@ public class TestUtil {
 
     private RequestSpecification invalidS2sAuthRequest() {
 
-        return RestAssured.given().header("ServiceAuthorization", "invalidS2SAuthorization");
+        return SerenityRest.given().header("ServiceAuthorization", "invalidS2SAuthorization");
     }
 }

@@ -1,14 +1,17 @@
 package uk.gov.hmcts.reform.em.npa.functional;
 
+import io.restassured.specification.RequestSpecification;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
+import net.thucydides.core.annotations.WithTag;
+import net.thucydides.core.annotations.WithTags;
 import org.json.JSONObject;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.http.MediaType;
 import uk.gov.hmcts.reform.em.EmTestConfig;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionRequest;
@@ -18,19 +21,32 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
 @SpringBootTest(classes = {TestUtil.class, EmTestConfig.class})
 @PropertySource(value = "classpath:application.yml")
 @RunWith(SpringIntegrationSerenityRunner.class)
+@WithTags({@WithTag("testType:Functional")})
 public class RedactionScenarios {
 
     @Value("${test.url}")
-    String testUrl;
+    private String testUrl;
 
     @Autowired
-    protected TestUtil testUtil;
+    private TestUtil testUtil;
 
     private static final UUID docId = UUID.randomUUID();
     private static final UUID redactionId = UUID.randomUUID();
+
+    private RequestSpecification request;
+
+    @Before
+    public void setupRequestSpecification() {
+        request = testUtil
+                .authRequest()
+                .baseUri(testUrl)
+                .contentType(APPLICATION_JSON_VALUE);
+    }
 
     private RedactionDTO createRedaction() {
         RedactionDTO redactionDTO = testUtil.createRedactionDTO(docId, redactionId);
@@ -38,17 +54,14 @@ public class RedactionScenarios {
 
         JSONObject jsonObject = new JSONObject(redactionDTO);
 
-        RedactionDTO response = testUtil.authRequest()
-                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+        return request
                 .body(jsonObject)
-                .request("POST", testUrl + "/api/markups")
+                .post("/api/markups")
                 .then()
                 .statusCode(201)
                 .extract()
                 .body()
                 .as(RedactionDTO.class);
-
-        return response;
     }
 
     @Test
@@ -61,10 +74,9 @@ public class RedactionScenarios {
 
         JSONObject jsonObject = new JSONObject(redactionRequest);
 
-        testUtil.authRequest()
-                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+        request
                 .body(jsonObject)
-                .request("POST", testUrl + "/api/redaction")
+                .post("/api/redaction")
                 .then()
                 .statusCode(200);
     }
@@ -79,10 +91,9 @@ public class RedactionScenarios {
 
         JSONObject jsonObject = new JSONObject(redactionRequest);
 
-        testUtil.authRequest()
-                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+        request
                 .body(jsonObject)
-                .request("POST", testUrl + "/api/redaction")
+                .post("/api/redaction")
                 .then()
                 .statusCode(200);
     }
@@ -97,10 +108,9 @@ public class RedactionScenarios {
 
         JSONObject jsonObject = new JSONObject(redactionRequest);
 
-        testUtil.authRequest()
-                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+        request
                 .body(jsonObject)
-                .request("POST", testUrl + "/api/redaction")
+                .post("/api/redaction")
                 .then()
                 .statusCode(400);
     }
