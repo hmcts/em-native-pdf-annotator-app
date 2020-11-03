@@ -1,16 +1,18 @@
 package uk.gov.hmcts.reform.em.npa.functional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import io.restassured.specification.RequestSpecification;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
+import net.thucydides.core.annotations.WithTag;
+import net.thucydides.core.annotations.WithTags;
 import org.json.JSONObject;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.http.MediaType;
 import uk.gov.hmcts.reform.em.EmTestConfig;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
@@ -21,36 +23,49 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
 @SpringBootTest(classes = {TestUtil.class, EmTestConfig.class})
 @PropertySource(value = "classpath:application.yml")
 @RunWith(SpringIntegrationSerenityRunner.class)
+@WithTags({@WithTag("testType:Functional")})
 public class MarkUpScenarios {
 
     @Autowired
-    TestUtil testUtil;
+    private TestUtil testUtil;
 
     @Value("${test.url}")
-    String testUrl;
+    private String testUrl;
 
     private static final UUID docId = UUID.randomUUID();
     private static final UUID redactionId = UUID.randomUUID();
 
+    private RequestSpecification request;
+
+    @Before
+    public void setupRequestSpecification() {
+        request = testUtil
+                .authRequest()
+                .baseUri(testUrl)
+                .contentType(APPLICATION_JSON_VALUE);
+    }
+
     @Test
-    public void testCreateMarkUp() throws JsonProcessingException {
+    public void testCreateMarkUp() {
 
         RedactionDTO redactionDTO = testUtil.createRedactionDTO(docId, redactionId);
 
         JSONObject jsonObject = new JSONObject(redactionDTO);
 
-        RedactionDTO response = testUtil.authRequest()
-            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-            .body(jsonObject)
-            .request("POST", testUrl + "/api/markups")
-            .then()
-            .statusCode(201)
-            .extract()
-        .body()
-        .as(RedactionDTO.class);
+        RedactionDTO response =
+                request
+                        .body(jsonObject)
+                        .post("/api/markups")
+                        .then()
+                        .statusCode(201)
+                        .extract()
+                        .body()
+                        .as(RedactionDTO.class);
 
 
         Assert.assertEquals(redactionDTO.getDocumentId(), response.getDocumentId());
@@ -66,28 +81,27 @@ public class MarkUpScenarios {
 
         JSONObject jsonObject = new JSONObject(redactionDTO);
 
-        testUtil.authRequest()
-            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-            .body(jsonObject)
-            .request("POST", testUrl + "/api/markups")
-            .then()
-            .statusCode(201);
+        request
+                .body(jsonObject)
+                .post("/api/markups")
+                .then()
+                .statusCode(201);
 
         //Now test the GET using the above created Data
         Map<String, Integer> params = new HashMap<>();
         params.put("page", 0);
         params.put("size", 10);
 
-        List<RedactionDTO> response =  testUtil.authRequest()
-            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-            .params(params)
-            .request("GET", testUrl + "/api/markups/"+docId)
-            .then()
-            .statusCode(200)
-            .extract()
-            .response()
-            .jsonPath()
-            .getList(".", RedactionDTO.class);
+        List<RedactionDTO> response =
+                request
+                        .params(params)
+                        .get("/api/markups/" + docId)
+                        .then()
+                        .statusCode(200)
+                        .extract()
+                        .response()
+                        .jsonPath()
+                        .getList(".", RedactionDTO.class);
 
         Assert.assertNotNull(response);
         Assert.assertEquals(1, response.size());
@@ -109,15 +123,15 @@ public class MarkUpScenarios {
 
         JSONObject jsonObject = new JSONObject(redactionDTO);
 
-        RedactionDTO response = testUtil.authRequest()
-            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-            .body(jsonObject)
-            .request("PUT", testUrl + "/api/markups")
-            .then()
-            .statusCode(200)
-            .extract()
-            .body()
-            .as(RedactionDTO.class);
+        RedactionDTO response =
+                request
+                        .body(jsonObject)
+                        .put("/api/markups")
+                        .then()
+                        .statusCode(200)
+                        .extract()
+                        .body()
+                        .as(RedactionDTO.class);
 
         RectangleDTO resRectangleDTO = response.getRectangles().stream().findFirst().get();
         Assert.assertEquals(redactionDTO.getDocumentId(), response.getDocumentId());
@@ -129,11 +143,9 @@ public class MarkUpScenarios {
 
     @Test
     public void testDeleteMarkUp() {
-
-        testUtil.authRequest()
-            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-            .request("DELETE", testUrl + "/api/markups/" + docId)
-            .then()
-            .statusCode(200);
+        request
+                .delete("/api/markups/" + docId)
+                .then()
+                .statusCode(200);
     }
 }

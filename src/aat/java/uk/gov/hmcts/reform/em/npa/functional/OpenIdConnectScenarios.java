@@ -3,9 +3,9 @@ package uk.gov.hmcts.reform.em.npa.functional;
 
 import io.restassured.response.Response;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
-import org.junit.Rule;
+import net.thucydides.core.annotations.WithTag;
+import net.thucydides.core.annotations.WithTags;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,98 +15,90 @@ import org.springframework.http.MediaType;
 import uk.gov.hmcts.reform.em.EmTestConfig;
 import uk.gov.hmcts.reform.em.npa.testutil.TestUtil;
 
-import java.io.IOException;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest(classes = {TestUtil.class, EmTestConfig.class})
 @PropertySource(value = "classpath:application.yml")
 @RunWith(SpringIntegrationSerenityRunner.class)
-
+@WithTags({@WithTag("testType:Functional")})
 public class OpenIdConnectScenarios {
 
-  @Autowired
-  private TestUtil testUtil;
+    @Autowired
+    private TestUtil testUtil;
 
-  @Value("${test.url}")
-  private String testUrl;
-
-  private String idamAuth;
-  private String s2sAuth;
-
-  @Rule
-  public ExpectedException exceptionThrown = ExpectedException.none();
+    @Value("${test.url}")
+    private String testUrl;
 
     @Test
-    public void testValidAuthenticationAndAuthorisation() throws IOException, InterruptedException {
+    public void testValidAuthenticationAndAuthorisation() {
         testUtil.authRequest()
-            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-            .request("GET", testUrl + "/api/document-tasks")
-            .then()
-            .statusCode(200) ;
+                .baseUri(testUrl)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .get("/api/document-tasks")
+                .then()
+                .statusCode(200);
     }
 
     // Invalid S2SAuth
     @Test
-    public void testInvalidS2SAuth() throws IOException, InterruptedException {
+    public void testInvalidS2SAuth() {
 
-        Response response = testUtil.invalidS2SAuth()
-            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-            .request("GET", testUrl + "/api/document-tasks");
+        Response response =
+                testUtil.invalidS2SAuth()
+                        .baseUri(testUrl)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .get("/api/document-tasks");
 
-        assertThat(response.getStatusCode(), is(401));
-
+        assertEquals(401, response.getStatusCode());
     }
 
     //Invalid  IdamAuth
     @Test
-    public void testWithInvalidIdamAuth() throws IOException, InterruptedException {
+    public void testWithInvalidIdamAuth() {
 
-        Response response = testUtil.invalidIdamAuthrequest()
-            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-            .request("GET", testUrl  + "/api/document-tasks");
+        Response response =
+                testUtil.invalidIdamAuthrequest()
+                        .baseUri(testUrl)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .get("/api/document-tasks");
 
-        assertThat(response.getStatusCode(), is(401));
-
+        assertEquals(401, response.getStatusCode());
     }
 
-  //Empty S2SAuth
-  @Test
-  public void testWithEmptyS2SAuth() throws IOException, InterruptedException {
+    //Empty S2SAuth
+    @Test
+    public void testWithEmptyS2SAuth() {
 
-        exceptionThrown.expect(IllegalArgumentException.class);
+        assertThrows(NullPointerException.class, () -> testUtil
+                .validAuthRequestWithEmptyS2SAuth()
+                .baseUri(testUrl)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .get("/api/document-tasks"));
+    }
 
-        Response response = testUtil.validAuthRequestWithEmptyS2SAuth()
-           .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-           .request("GET", testUrl + "/api/document-tasks");
+    // Empty IdamAuth and Valid S2S Auth
+    @Test
+    public void testWithEmptyIdamAuthAndValidS2SAuth() {
 
-  }
+        Throwable exceptionThrown =
+                assertThrows(NullPointerException.class, () -> testUtil
+                        .validS2SAuthWithEmptyIdamAuth()
+                        .baseUri(testUrl)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .get("/api/document-tasks"));
 
-  // Empty IdamAuth and Valid S2S Auth
-  @Test
-  public void testWithEmptyIdamAuthAndValidS2SAuth() throws IOException, InterruptedException {
+        assertEquals("Header value", exceptionThrown.getMessage());
+    }
 
-        exceptionThrown.expect(IllegalArgumentException.class);
+    // Empty IdamAuth and Empty S2SAuth
+    @Test
+    public void testIdamAuthAndS2SAuthAreEmpty() {
 
-        final Response createTaskResponse = testUtil.validS2SAuthWithEmptyIdamAuth()
-            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-            .request("GET", testUtil + "/api/document-tasks");
-
-        exceptionThrown.expectMessage("Header value cannot be null");
-
-  }
-
-  // Empty IdamAuth and Empty S2SAuth
-  @Test
-  public void testIdamAuthAndS2SAuthAreEmpty() throws IOException, InterruptedException {
-
-        exceptionThrown.expect(IllegalArgumentException.class);
-
-        final Response createTaskResponse = testUtil.emptyIdamAuthAndEmptyS2SAuth()
-            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-            .request("GET", testUtil + "/api/document-tasks");
-
-  }
-
+        assertThrows(NullPointerException.class, () -> testUtil
+                .emptyIdamAuthAndEmptyS2SAuth()
+                .baseUri(testUrl)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .get("/api/document-tasks"));
+    }
 }
