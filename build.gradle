@@ -110,6 +110,7 @@ def versions = [
         liquibase          : '3.8.0',
         serenity           : '2.3.5',
         serenityreporter   : '2.3.5',
+        serenityRestAssured: '2.3.4',
         pact_version       : '4.0.10',
         logging            : '5.1.7',
         gradlePitest       : '1.3.0',
@@ -188,7 +189,7 @@ dependencies {
     compile ('org.springframework.cloud:spring-cloud-openfeign:2.2.2.RELEASE') {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-actuator'
     }
-    
+
     compile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.21'
     compile group: 'org.apache.pdfbox', name: 'jbig2-imageio', version: '3.0.3'
     compile 'com.squareup.okhttp3:okhttp:4.9.0'
@@ -269,7 +270,7 @@ dependencies {
     compile group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.logging
     compile group: 'uk.gov.hmcts.reform', name: 'logging-spring', version: versions.logging
     compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.logging
-    
+
     compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version:'0.1.0'
 
     annotationProcessor 'javax.xml.bind:jaxb-api:2.3.1'
@@ -280,7 +281,7 @@ dependencies {
     testRuntime "org.junit.jupiter:junit-jupiter-engine:5.3.2"
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.3.2"
 
-    testCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity, withoutStuff
+    testCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenityRestAssured, withoutStuff
     testCompile group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity, withoutStuff
     testCompile group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
     testCompile group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
