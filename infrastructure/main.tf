@@ -52,7 +52,7 @@ resource "azurerm_key_vault_secret" "local_s2s_key" {
 
 # Copy s2s key from shared to local vault
 module "key_vault" {
-  source = "git@github.com:hmcts/cnp-module-key-vault?ref=azurermv2"
+  source = "git@github.com:hmcts/cnp-module-key-vault?ref=master"
   product = local.app_full_name
   env = var.env
   tenant_id = var.tenant_id
