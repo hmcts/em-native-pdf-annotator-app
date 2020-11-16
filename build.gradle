@@ -105,7 +105,7 @@ repositories {
 
 def versions = [
         postgresql         : '42.2.14',
-        springfoxSwagger   : '3.0.0',
+        springfoxSwagger   : '2.9.2',
         h2                 : '1.4.199',
         liquibase          : '3.8.0',
         serenity           : '2.3.5',
