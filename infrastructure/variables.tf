@@ -128,8 +128,7 @@ variable "application_type" {
   default     = "web"
   description = "Type of Application Insights (Web/Other)"
 }
-variable "managed_identity_object_id" {
-}
+
 ////////////////////////////////////////////////
 // Toggle Features
 ////////////////////////////////////////////////
