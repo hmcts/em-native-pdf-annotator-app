@@ -186,7 +186,7 @@ dependencies {
         exclude group: 'io.netty', module: 'netty-transport-native-epoll'
     }
 
-    compile ('org.springframework.cloud:spring-cloud-openfeign:2.2.2.RELEASE') {
+    compile ('org.springframework.cloud:spring-cloud-openfeign:2.2.6.RELEASE') {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-actuator'
     }
 
