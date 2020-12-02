@@ -6,6 +6,7 @@ import net.thucydides.core.annotations.WithTag;
 import net.thucydides.core.annotations.WithTags;
 import org.json.JSONObject;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.reform.em.EmTestConfig;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionRequest;
 import uk.gov.hmcts.reform.em.npa.testutil.TestUtil;
+import uk.gov.hmcts.reform.em.test.retry.RetryRule;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,6 +36,9 @@ public class RedactionScenarios {
 
     @Autowired
     private TestUtil testUtil;
+
+    @Rule
+    public RetryRule retryRule = new RetryRule(3);
 
     private static final UUID docId = UUID.randomUUID();
     private static final UUID redactionId = UUID.randomUUID();

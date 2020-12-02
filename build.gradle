@@ -190,6 +190,8 @@ dependencies {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-actuator'
     }
 
+    aatCompileOnly 'org.projectlombok:lombok:1.18.16'
+    aatAnnotationProcessor 'org.projectlombok:lombok:1.18.16'
     compile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.21'
     compile group: 'org.apache.pdfbox', name: 'jbig2-imageio', version: '3.0.3'
     compile 'com.squareup.okhttp3:okhttp:4.9.0'
@@ -299,7 +301,7 @@ dependencies {
     contractTestCompile sourceSets.main.runtimeClasspath
     contractTestCompile sourceSets.test.runtimeClasspath
 
-    aatCompile ("uk.gov.hmcts.reform:em-test-helper:1.18.0") {
+    aatCompile ("uk.gov.hmcts.reform:em-test-helper:1.18.1") {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-test'
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-actuator'
     }
