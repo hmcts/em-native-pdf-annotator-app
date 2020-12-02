@@ -7,6 +7,7 @@ import net.thucydides.core.annotations.WithTags;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.reform.em.EmTestConfig;
+import uk.gov.hmcts.reform.em.npa.retry.RetryRule;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 import uk.gov.hmcts.reform.em.npa.testutil.TestUtil;
@@ -36,6 +38,9 @@ public class MarkUpScenarios {
 
     @Value("${test.url}")
     private String testUrl;
+
+    @Rule
+    public RetryRule retryRule = new RetryRule(3);
 
     private static final UUID docId = UUID.randomUUID();
     private static final UUID redactionId = UUID.randomUUID();
