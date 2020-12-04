@@ -10,6 +10,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.reform.em.EmTestConfig;
 import uk.gov.hmcts.reform.em.npa.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.npa.testutil.TestUtil;
+import uk.gov.hmcts.reform.em.test.retry.RetryRule;
 
 import java.io.File;
 import java.util.UUID;
@@ -38,6 +40,9 @@ public class DocumentTaskScenarios {
 
     @Value("${test.url}")
     private String testUrl;
+
+    @Rule
+    public RetryRule retryRule = new RetryRule(3);
 
     private RequestSpecification request;
 
