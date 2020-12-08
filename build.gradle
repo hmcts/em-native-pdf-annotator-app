@@ -149,7 +149,7 @@ configurations.all {
     resolutionStrategy {
         eachDependency { DependencyResolveDetails details ->
             if (details.requested.group in ['org.apache.tomcat.embed']) {
-                details.useVersion '10.0.0-M10'
+                details.useVersion '9.0.37'
             }
             if (details.requested.group in ['org.springframework']) {
                 details.useVersion '5.2.9.RELEASE'
@@ -201,8 +201,6 @@ dependencies {
     compile("org.springframework.boot:spring-boot:2.3.4.RELEASE")
 
     compile group:'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.0'
-
-    compile group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '10.0.0-M10'
 
     compile group:'com.fasterxml.jackson.datatype', name: 'jackson-datatype-json-org', version: versions.fasterXmlJackson
     compile group:'com.fasterxml.jackson.datatype', name: 'jackson-datatype-hppc', version: versions.fasterXmlJackson
