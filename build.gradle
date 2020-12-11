@@ -276,7 +276,7 @@ dependencies {
     compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version:'0.1.0'
 
     annotationProcessor 'javax.xml.bind:jaxb-api:2.3.1'
-    annotationProcessor 'com.sun.xml.bind:jaxb-core:2.3.0.1'
+    annotationProcessor 'com.sun.xml.bind:jaxb-core:3.0.0'
     annotationProcessor 'com.sun.xml.bind:jaxb-impl:3.0.0'
 
     testCompile "org.junit.jupiter:junit-jupiter-api:5.3.2"
