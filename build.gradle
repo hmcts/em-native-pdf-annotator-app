@@ -149,7 +149,7 @@ configurations.all {
     resolutionStrategy {
         eachDependency { DependencyResolveDetails details ->
             if (details.requested.group in ['org.apache.tomcat.embed']) {
-                details.useVersion '9.0.37'
+                details.useVersion '9.0.40'
             }
             if (details.requested.group in ['org.springframework']) {
                 details.useVersion '5.2.9.RELEASE'
@@ -186,6 +186,8 @@ dependencies {
         exclude group: 'io.netty', module: 'netty-transport-native-epoll'
     }
 
+    compile group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.40'
+    
     compile ('org.springframework.cloud:spring-cloud-openfeign:2.2.6.RELEASE') {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-actuator'
     }
