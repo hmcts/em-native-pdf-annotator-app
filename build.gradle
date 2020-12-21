@@ -200,7 +200,7 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:4.9.0'
     compile("org.springframework.boot:spring-boot-starter-batch:2.3.4.RELEASE")
     compile "org.springframework.boot:spring-boot-actuator:2.3.4.RELEASE"
-    compile("org.springframework.boot:spring-boot-autoconfigure:2.3.4.RELEASE")
+    compile("org.springframework.boot:spring-boot-autoconfigure:2.4.1")
     compile("org.springframework.boot:spring-boot:2.3.4.RELEASE")
 
     compile group:'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.0'
