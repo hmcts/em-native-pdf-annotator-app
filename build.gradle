@@ -309,7 +309,7 @@ dependencies {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-actuator'
     }
     aatCompile group: 'org.apache.poi', name: 'poi', version: '4.1.2'
-    aatCompile group: 'org.apache.poi', name: 'poi-ooxml', version: '4.1.2'
+    aatCompile group: 'org.apache.poi', name: 'poi-ooxml', version: '5.0.0'
 
 }
 
