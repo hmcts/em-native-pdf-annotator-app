@@ -190,7 +190,7 @@ dependencies {
     compile group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '10.0.0'
     compile group: 'com.google.guava', name: 'guava', version: '30.1-jre'
     
-    compile ('org.springframework.cloud:spring-cloud-openfeign:3.0.0') {
+    compile ('org.springframework.cloud:spring-cloud-openfeign:3.0.1') {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-actuator'
     }
 
