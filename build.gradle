@@ -194,7 +194,7 @@ dependencies {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-actuator'
     }
 
-    aatCompileOnly 'org.projectlombok:lombok:1.18.16'
+    aatCompileOnly 'org.projectlombok:lombok:1.18.18'
     aatAnnotationProcessor 'org.projectlombok:lombok:1.18.16'
     compile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.22'
     compile group: 'org.apache.pdfbox', name: 'jbig2-imageio', version: '3.0.3'
