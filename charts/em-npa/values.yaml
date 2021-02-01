@@ -13,6 +13,7 @@ java:
         - AppInsightsInstrumentationKey
         - microservicekey-em-npa-app
         - npa-POSTGRES-PASS
+        - npa-POSTGRES-PASS-v11
   environment:
     RUN_DB_MIGRATION_ON_STARTUP: 'false'
     IDAM_API_BASE_URI: https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net
@@ -22,8 +23,11 @@ java:
     DM_STORE_APP_URL: http://dm-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     EM_ANNO_APP_URL: http://em-anno-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
 
-    SPRING_DATASOURCE_USERNAME: annotation@em-npa-postgres-db-{{ .Values.global.environment }}  
+    SPRING_DATASOURCE_USERNAME: annotation@em-npa-postgres-db-{{ .Values.global.environment }}
     SPRING_DATASOURCE_URL: jdbc:postgresql://em-npa-postgres-db-{{ .Values.global.environment }}.postgres.database.azure.com:5432/annotation?sslmode=require
+    SPRING_DATASOURCE_PASSWORD: npa-POSTGRES-PASS
+    TEST_VAR_1: test1
+    TEST_VAR_2: test2
 
     ENABLE_DB_MIGRATE: false
     JSON_CONSOLE_PRETTY_PRINT: false
