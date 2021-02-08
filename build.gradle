@@ -322,6 +322,20 @@ dependencies {
 
 }
 
+dependencyManagement {
+    dependencies {
+
+        dependencySet(group: 'org.jetbrains.kotlin', version: '1.4.30') {
+            entry 'kotlin'
+            entry 'kotlin-stdlib'
+            entry 'kotlin-reflect'
+            entry 'kotlin-stdlib-common'
+            entry 'kotlin-stdlib-jdk7'
+            entry 'kotlin-stdlib-jdk8'
+        }
+    }
+}
+
 bootJar {
     baseName 'rpa-native-pdf-annotator-app'
     archiveName = "$baseName"+".jar"
