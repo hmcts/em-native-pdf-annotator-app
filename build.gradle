@@ -202,6 +202,7 @@ dependencies {
     compile "org.springframework.boot:spring-boot-actuator:2.3.4.RELEASE"
     compile("org.springframework.boot:spring-boot-autoconfigure:2.3.4.RELEASE")
     compile("org.springframework.boot:spring-boot:2.3.4.RELEASE")
+    compile 'org.springframework.boot:spring-boot-starter-validation:2.3.4.RELEASE'
 
     compile group:'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.0'
 
@@ -250,8 +251,7 @@ dependencies {
     compile group:'org.hibernate', name: 'hibernate-jcache', version: versions.hibernate
     compile group:'org.hibernate', name: 'hibernate-entitymanager', version: versions.hibernate
     compile group:'org.hibernate', name: 'hibernate-envers', version: versions.hibernate
-    compile "org.hibernate.validator:hibernate-validator:7.0.1.Final"
-
+    
     compile group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4'
     compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.4'
     
