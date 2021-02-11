@@ -77,6 +77,14 @@ variable "postgresql_user" {
 variable "database_name" {
   default = "annotation"
 }
+
+variable "postgresql_user_v11" {
+  default = "npa"
+}
+
+variable "database_name_v11" {
+  default = "npa"
+}
 ////////////////////////////////////////////////
 // Logging
 ////////////////////////////////////////////////
