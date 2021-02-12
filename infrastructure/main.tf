@@ -2,6 +2,12 @@ provider "azurerm" {
   features {}
 }
 
+provider "azurerm" {
+  features {}
+  alias           = "private_dns"
+  subscription_id = var.private_dns_subscription_id
+}
+
 locals {
   app_full_name = "${var.product}-${var.component}"
   ase_name = "core-compute-${var.env}"
@@ -116,18 +122,29 @@ resource "azurerm_key_vault_secret" "local_app_insights_key" {
   key_vault_id = module.key_vault.key_vault_id
 }
 
+data "azurerm_subnet" "postgres" {
+  name                 = "aks"
+  resource_group_name  = "core-infra-${var.env}"
+  virtual_network_name = "core-infra-vnet-${var.env}"
+}
+
 module "db-v11" {
-  source = "git@github.com:hmcts/cnp-module-postgres?ref=postgresql_tf"
-  product = "${local.app_full_name}-postgres-db-v11"
-  location = var.location
-  env = var.env
-  postgresql_user = var.postgresql_user_v11
-  database_name = var.database_name_v11
+  providers = {
+    azurerm             = azurerm
+    azurerm.private_dns = azurerm.private_dns
+  }
+  source             = "git@github.com:hmcts/cnp-module-postgres?ref=postgresql_tf"
+  product            = "${local.app_full_name}-postgres-db-v11"
+  location           = var.location
+  env                = var.env
+  postgresql_user    = var.postgresql_user_v11
+  database_name      = var.database_name_v11
   postgresql_version = "11"
-  sku_name = "GP_Gen5_2"
-  sku_tier = "GeneralPurpose"
-  common_tags  = var.common_tags
-  subscription = var.subscription
+  subnet_id          = data.azurerm_subnet.postgres.id
+  sku_name           = "GP_Gen5_2"
+  sku_tier           = "GeneralPurpose"
+  common_tags        = var.common_tags
+  subscription       = var.subscription
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-USER-V11" {
