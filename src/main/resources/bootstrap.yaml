@@ -10,3 +10,4 @@ spring:
         microservicekey-em-npa-app: idam.s2s-auth.totp_secret
         AppInsightsInstrumentationKey: azure.application-insights.instrumentation-key
         npa-POSTGRES-PASS: spring.datasource.password
+        npa-POSTGRES-PASS-V11: spring.datasource.password

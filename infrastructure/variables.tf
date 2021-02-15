@@ -77,6 +77,14 @@ variable "postgresql_user" {
 variable "database_name" {
   default = "annotation"
 }
+
+variable "postgresql_user_v11" {
+  default = "npa"
+}
+
+variable "database_name_v11" {
+  default = "npa"
+}
 ////////////////////////////////////////////////
 // Logging
 ////////////////////////////////////////////////
@@ -143,3 +151,6 @@ variable "enable_s2s_healthcheck" {
 ////////////////////////////////////////////////
 // Addtional
 ////////////////////////////////////////////////
+variable "private_dns_subscription_id" {
+  default = "1baf5470-1c3e-40d3-a6f7-74bfbce4b348"
+}
