@@ -2,12 +2,6 @@ provider "azurerm" {
   features {}
 }
 
-provider "azurerm" {
-  features {}
-  alias           = "private_dns"
-  subscription_id = var.private_dns_subscription_id
-}
-
 locals {
   app_full_name = "${var.product}-${var.component}"
   ase_name = "core-compute-${var.env}"
@@ -123,16 +117,12 @@ resource "azurerm_key_vault_secret" "local_app_insights_key" {
 }
 
 data "azurerm_subnet" "postgres" {
-  name                 = "aks"
+  name                 = "core-infra-subnet-0-${var.env}"
   resource_group_name  = "core-infra-${var.env}"
   virtual_network_name = "core-infra-vnet-${var.env}"
 }
 
 module "db-v11" {
-  providers = {
-    azurerm             = azurerm
-    azurerm.private_dns = azurerm.private_dns
-  }
   source             = "git@github.com:hmcts/cnp-module-postgres?ref=postgresql_tf"
   product            = "${local.app_full_name}-postgres-db-v11"
   location           = var.location
