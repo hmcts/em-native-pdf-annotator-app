@@ -20,10 +20,6 @@ plugins {
 }
 
 apply plugin: 'java'
-apply plugin: 'application'
-apply plugin: 'io.spring.dependency-management'
-apply plugin: 'org.springframework.boot'
-apply plugin: 'com.github.ben-manes.versions'
 apply plugin: 'idea'
 apply plugin: 'net.serenity-bdd.aggregator'
 
@@ -117,7 +113,7 @@ def versions = [
         sonarPitest        : '0.5',
         fasterXmlJackson   : '2.11.3',
         hibernate          : '5.4.25.Final',
-        springSecurity     : '5.3.4.RELEASE'
+        springSecurity     : '5.3.8.RELEASE'
 ]
 
 sourceSets {
@@ -331,6 +327,11 @@ dependencyManagement {
             entry 'kotlin-stdlib-common'
             entry 'kotlin-stdlib-jdk7'
             entry 'kotlin-stdlib-jdk8'
+        }
+
+        //CVE-2021-22112
+        dependencySet(group: 'org.springframework.security', version: versions.springSecurity) {
+            entry 'spring-security-crypto'
         }
     }
 }
