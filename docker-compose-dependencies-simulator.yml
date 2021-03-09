@@ -32,8 +32,8 @@ services:
       - SPRING_DATASOURCE_USERNAME=shared
       - SPRING_DATASOURCE_PASSWORD=shared
       - S2S_BASE_URI=http://service-auth-provider-api:8489
-      - IDAM_API_BASE_URI=http://idam-api:5000
-      - OPEN_ID_API_BASE_URI=http://idam-api:5000/o
+      - IDAM_API_BASE_URI=http://localhost:5000
+      - OPEN_ID_API_BASE_URI=http://localhost:5000/o
       - ENABLE_LIQUIBASE=true
     depends_on:
       - shared-database
