@@ -198,7 +198,7 @@ dependencies {
     compile "org.springframework.boot:spring-boot-actuator:2.3.4.RELEASE"
     compile("org.springframework.boot:spring-boot-autoconfigure:2.3.4.RELEASE")
     compile("org.springframework.boot:spring-boot:2.3.4.RELEASE")
-    compile 'org.springframework.boot:spring-boot-starter-validation:2.3.4.RELEASE'
+    compile 'org.springframework.boot:spring-boot-starter-validation:2.4.4'
 
     compile group:'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.1'
 
