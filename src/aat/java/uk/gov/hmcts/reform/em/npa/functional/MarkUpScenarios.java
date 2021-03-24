@@ -1,11 +1,14 @@
 package uk.gov.hmcts.reform.em.npa.functional;
 
+import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import net.thucydides.core.annotations.WithTag;
 import net.thucydides.core.annotations.WithTags;
+import org.hamcrest.Matchers;
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -15,16 +18,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.reform.em.EmTestConfig;
-import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
-import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 import uk.gov.hmcts.reform.em.npa.testutil.TestUtil;
 import uk.gov.hmcts.reform.em.test.retry.RetryRule;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @SpringBootTest(classes = {TestUtil.class, EmTestConfig.class})
@@ -42,10 +42,8 @@ public class MarkUpScenarios {
     @Rule
     public RetryRule retryRule = new RetryRule(3);
 
-    private static final UUID docId = UUID.randomUUID();
-    private static final UUID redactionId = UUID.randomUUID();
-
     private RequestSpecification request;
+    private RequestSpecification unAuthenticatedRequest;
 
     @Before
     public void setupRequestSpecification() {
@@ -53,104 +51,344 @@ public class MarkUpScenarios {
                 .authRequest()
                 .baseUri(testUrl)
                 .contentType(APPLICATION_JSON_VALUE);
+
+        unAuthenticatedRequest = testUtil
+                .unauthenticatedRequest()
+                .baseUri(testUrl)
+                .contentType(APPLICATION_JSON_VALUE);
     }
 
     @Test
-    public void testCreateMarkUp() {
+    public void shouldReturn201WhenCreateNewMarkUp() {
+        final String redactionId = UUID.randomUUID().toString();
+        final String documentId = UUID.randomUUID().toString();
+        final String rectangleId = UUID.randomUUID().toString();
+        final ValidatableResponse response = createMarkUp(redactionId, documentId, rectangleId);
 
-        RedactionDTO redactionDTO = testUtil.createRedactionDTO(docId, redactionId);
-
-        JSONObject jsonObject = new JSONObject(redactionDTO);
-
-        RedactionDTO response =
-                request
-                        .body(jsonObject)
-                        .post("/api/markups")
-                        .then()
-                        .statusCode(201)
-                        .extract()
-                        .body()
-                        .as(RedactionDTO.class);
-
-
-        Assert.assertEquals(redactionDTO.getDocumentId(), response.getDocumentId());
-        Assert.assertEquals(redactionDTO.getRedactionId(), response.getRedactionId());
-        Assert.assertEquals(redactionDTO.getRectangles().size(), response.getRectangles().size());
+        response
+                .assertThat()
+                .statusCode(201)
+                .body("redactionId", equalTo(redactionId))
+                .body("documentId", equalTo(documentId))
+                .body("page", equalTo(1))
+                .body("rectangles", Matchers.hasSize(1))
+                .body("rectangles[0].x", equalTo(1f))
+                .body("rectangles[0].y", equalTo(2f))
+                .body("rectangles[0].width", equalTo(10f))
+                .body("rectangles[0].height", equalTo(11f))
+                .header("Location", equalTo("/api/markups/" + redactionId))
+                .log().all();
     }
 
     @Test
-    public void testGetAllDocumentMarkUps() {
+    public void shouldReturn422WhenCreateNewMarkUpWithoutMandatoryFields() {
+        final String redactionId = UUID.randomUUID().toString();
+        final String documentId = UUID.randomUUID().toString();
+        final String rectangleId = UUID.randomUUID().toString();
+        final JSONObject jsonObject = createMarkUpPayload(redactionId, documentId, rectangleId);
 
-        // First create Test data
-        RedactionDTO redactionDTO = testUtil.createRedactionDTO(docId, redactionId);
-
-        JSONObject jsonObject = new JSONObject(redactionDTO);
+        jsonObject.remove("redactionId");
+        jsonObject.remove("documentId");
+        jsonObject.remove("page");
 
         request
-                .body(jsonObject)
+                .body(jsonObject.toString())
                 .post("/api/markups")
                 .then()
-                .statusCode(201);
-
-        //Now test the GET using the above created Data
-        Map<String, Integer> params = new HashMap<>();
-        params.put("page", 0);
-        params.put("size", 10);
-
-        List<RedactionDTO> response =
-                request
-                        .params(params)
-                        .get("/api/markups/" + docId)
-                        .then()
-                        .statusCode(200)
-                        .extract()
-                        .response()
-                        .jsonPath()
-                        .getList(".", RedactionDTO.class);
-
-        Assert.assertNotNull(response);
-        Assert.assertEquals(1, response.size());
-        RedactionDTO responseDto = response.get(0);
-
-        Assert.assertEquals(redactionDTO.getDocumentId(), responseDto.getDocumentId());
-        Assert.assertEquals(redactionDTO.getRedactionId(), responseDto.getRedactionId());
-        Assert.assertEquals(redactionDTO.getRectangles().size(), responseDto.getRectangles().size());
-
+                .assertThat()
+                .statusCode(422)
+                .body("type", equalTo("https://npa/problem/problem-with-message"))
+                .body("title", equalTo("Unprocessable Entity"))
+                .body("detail", notNullValue())
+                .body("path", equalTo("/api/markups"))
+                .body("message", equalTo("error.http.422"))
+                .log().all();
     }
 
     @Test
-    public void testUpdateMarkUp() {
+    public void shouldReturn401WhenUnAuthenticatedUserCreateNewMarkUp() {
+        final String redactionId = UUID.randomUUID().toString();
+        final String documentId = UUID.randomUUID().toString();
+        final String rectangleId = UUID.randomUUID().toString();
+        final JSONObject jsonObject = createMarkUpPayload(redactionId, documentId, rectangleId);
 
-        RedactionDTO redactionDTO = testUtil.createRedactionDTO(docId, redactionId);
-        RectangleDTO rectangleDTO = redactionDTO.getRectangles().stream().findFirst().get();
-        rectangleDTO.setHeight(100.0);
-        rectangleDTO.setWidth(60.0);
-
-        JSONObject jsonObject = new JSONObject(redactionDTO);
-
-        RedactionDTO response =
-                request
-                        .body(jsonObject)
-                        .put("/api/markups")
-                        .then()
-                        .statusCode(200)
-                        .extract()
-                        .body()
-                        .as(RedactionDTO.class);
-
-        RectangleDTO resRectangleDTO = response.getRectangles().stream().findFirst().get();
-        Assert.assertEquals(redactionDTO.getDocumentId(), response.getDocumentId());
-        Assert.assertEquals(redactionDTO.getRedactionId(), response.getRedactionId());
-        Assert.assertEquals(Double.valueOf(100.0), resRectangleDTO.getHeight());
-        Assert.assertEquals(Double.valueOf(60.0), resRectangleDTO.getWidth());
-
+        unAuthenticatedRequest
+                .body(jsonObject.toString())
+                .post("/api/markups")
+                .then()
+                .assertThat()
+                .statusCode(401);
     }
 
     @Test
-    public void testDeleteMarkUp() {
+    public void shouldReturn200WhenGetMarkUpByDocumentId() {
+        final String redactionId = UUID.randomUUID().toString();
+        final String documentId = UUID.randomUUID().toString();
+        final String rectangleId = UUID.randomUUID().toString();
+        final ValidatableResponse response = createMarkUp(redactionId, documentId, rectangleId);
+        final String docId = extractJSONObjectFromResponse(response).getString("documentId");
+
         request
+                .get("/api/markups/" + docId)
+                .then()
+                .assertThat()
+                .statusCode(200)
+                .body("size()", Matchers.greaterThanOrEqualTo(1))
+                .body("[0].redactionId", equalTo(redactionId))
+                .body("[0].documentId", equalTo(documentId))
+                .body("[0].page", equalTo(1))
+                .body("[0].rectangles", Matchers.hasSize(1))
+                .body("[0].rectangles[0].id", equalTo(rectangleId))
+                .body("[0].rectangles[0].x", equalTo(1f))
+                .body("[0].rectangles[0].y", equalTo(2f))
+                .body("[0].rectangles[0].width", equalTo(10f))
+                .body("[0].rectangles[0].height", equalTo(11f))
+                .log().all();
+    }
+
+    @Test
+    public void shouldReturn404WhenGetMarkUpByNonExistentDocumentId() {
+        final String documentId = UUID.randomUUID().toString();
+        request
+                .get("/api/markups/" + documentId)
+                .then()
+                .assertThat()
+                .statusCode(204) //FIXME: it should be 404
+                .log().all();
+    }
+
+    @Test
+    public void shouldReturn401WhenUnAuthenticatedUserGetMarkUpByDocumentId() {
+        final String documentId = UUID.randomUUID().toString();
+
+        unAuthenticatedRequest
+                .get("/api/markups/" + documentId)
+                .then()
+                .assertThat()
+                .statusCode(401)
+                .log().all();
+    }
+
+    @Test
+    public void shouldReturn200WhenUpdateMarkUp() {
+        final String redactionId = UUID.randomUUID().toString();
+        final String documentId = UUID.randomUUID().toString();
+        final String rectangleId = UUID.randomUUID().toString();
+        final ValidatableResponse response = createMarkUp(redactionId, documentId, rectangleId);
+
+        final JSONObject jsonObject = extractJSONObjectFromResponse(response);
+        final String newRedactionId = UUID.randomUUID().toString();
+        final String newDocumentId = UUID.randomUUID().toString();
+
+        jsonObject.put("redactionId", newRedactionId);
+        jsonObject.put("documentId", newDocumentId);
+        jsonObject.put("page", 2);
+
+        request
+                .body(jsonObject.toString())
+                .put("/api/markups")
+                .then()
+                .assertThat()
+                .statusCode(200)
+                .body("redactionId", equalTo(newRedactionId))
+                .body("documentId", equalTo(newDocumentId))
+                .body("page", equalTo(2))
+                .body("rectangles", Matchers.hasSize(1))
+                .body("rectangles[0].x", equalTo(1f))
+                .body("rectangles[0].y", equalTo(2f))
+                .body("rectangles[0].width", equalTo(10f))
+                .body("rectangles[0].height", equalTo(11f))
+                .log().all();
+    }
+
+    @Test
+    public void shouldReturn422WhenUpdateMarkUpWithoutMandatoryFields() {
+        final String redactionId = UUID.randomUUID().toString();
+        final String documentId = UUID.randomUUID().toString();
+        final String rectangleId = UUID.randomUUID().toString();
+        final ValidatableResponse response = createMarkUp(redactionId, documentId, rectangleId);
+        final JSONObject jsonObject = extractJSONObjectFromResponse(response);
+
+        jsonObject.remove("redactionId");
+        jsonObject.remove("documentId");
+        jsonObject.remove("page");
+
+        request
+                .body(jsonObject.toString())
+                .put("/api/markups")
+                .then()
+                .assertThat()
+                .statusCode(422)
+                .body("type", equalTo("https://npa/problem/problem-with-message"))
+                .body("title", equalTo("Unprocessable Entity"))
+                .body("detail", notNullValue())
+                .body("path", equalTo("/api/markups"))
+                .body("message", equalTo("error.http.422"))
+                .log().all();
+    }
+
+    @Test
+    public void shouldReturn401WhenUnAuthenticatedUserUpdateMarkUp() {
+        final String redactionId = UUID.randomUUID().toString();
+        final String documentId = UUID.randomUUID().toString();
+        final String rectangleId = UUID.randomUUID().toString();
+        final ValidatableResponse response = createMarkUp(redactionId, documentId, rectangleId);
+
+        final JSONObject jsonObject = extractJSONObjectFromResponse(response);
+        final String newRedactionId = UUID.randomUUID().toString();
+        final String newDocumentId = UUID.randomUUID().toString();
+
+        jsonObject.put("redactionId", newRedactionId);
+        jsonObject.put("documentId", newDocumentId);
+        jsonObject.put("page", 2);
+
+        unAuthenticatedRequest
+                .body(jsonObject.toString())
+                .put("/api/markups")
+                .then()
+                .assertThat()
+                .statusCode(401)
+                .log().all();
+    }
+
+    @Test
+    public void shouldReturn204WhenDeleteMarkUpByDocumentId() {
+        final String redactionId = UUID.randomUUID().toString();
+        final String documentId = UUID.randomUUID().toString();
+        final String rectangleId = UUID.randomUUID().toString();
+        final ValidatableResponse response = createMarkUp(redactionId, documentId, rectangleId);
+        final String docId = extractJSONObjectFromResponse(response).getString("documentId");
+        final ValidatableResponse deletedResponse = deleteMarkUpByDocumentId(docId);
+
+        deletedResponse
+                .assertThat()
+                .statusCode(200) //FIXME: it should be 204
+                .log().all();
+    }
+
+    @Test
+    public void shouldReturn404WhenDeleteMarkUpByNonExistentDocumentId() {
+        final String nonExistentDocumentId = UUID.randomUUID().toString();
+        final ValidatableResponse deletedResponse = deleteMarkUpByDocumentId(nonExistentDocumentId);
+
+        deletedResponse
+                .assertThat()
+                .statusCode(200) //FIXME: it should be 404
+                .log().all();
+    }
+
+    @Test
+    public void shouldReturn401WhenUnAuthenticatedUserDeleteMarkUpByDocumentId() {
+        final String redactionId = UUID.randomUUID().toString();
+        final String documentId = UUID.randomUUID().toString();
+        final String rectangleId = UUID.randomUUID().toString();
+        final ValidatableResponse response = createMarkUp(redactionId, documentId, rectangleId);
+        final String docId = extractJSONObjectFromResponse(response).getString("documentId");
+
+        unAuthenticatedRequest
                 .delete("/api/markups/" + docId)
                 .then()
-                .statusCode(200);
+                .assertThat()
+                .statusCode(401)
+                .log().all();
+    }
+
+    @Test
+    public void shouldReturn204WhenDeleteMarkUpByDocumentIdAndRedactionId() {
+        final String redactionId = UUID.randomUUID().toString();
+        final String documentId = UUID.randomUUID().toString();
+        final String rectangleId = UUID.randomUUID().toString();
+        final ValidatableResponse response = createMarkUp(redactionId, documentId, rectangleId);
+        final JSONObject jsonObject = extractJSONObjectFromResponse(response);
+        final String docId = jsonObject.getString("documentId");
+        final String redactId = jsonObject.getString("redactionId");
+        final ValidatableResponse deletedResponse = deleteMarkUpByDocumentIdAndRedactionId(docId, redactId);
+
+        deletedResponse
+                .assertThat()
+                .statusCode(200) //FIXME: it should be 204
+                .log().all();
+    }
+
+    @Test
+    public void shouldReturn404WhenDeleteMarkUpByNonExistentRedactionId() {
+        final String nonExistentRedactionId = UUID.randomUUID().toString();
+        final String documentId = UUID.randomUUID().toString();
+        final ValidatableResponse deletedResponse = deleteMarkUpByDocumentIdAndRedactionId(documentId, nonExistentRedactionId);
+
+        deletedResponse
+                .statusCode(200) //FIXME: it should be 404
+                .log().all();
+    }
+
+    @Test
+    public void shouldReturn401WhenUnAuthenticatedUserDeleteMarkUpByDocumentIdAndRedactionId() {
+        final String redactionId = UUID.randomUUID().toString();
+        final String documentId = UUID.randomUUID().toString();
+        final String rectangleId = UUID.randomUUID().toString();
+        final ValidatableResponse response = createMarkUp(redactionId, documentId, rectangleId);
+        final JSONObject jsonObject = extractJSONObjectFromResponse(response);
+        final String docId = jsonObject.getString("documentId");
+        final String redactId = jsonObject.getString("redactionId");
+
+        unAuthenticatedRequest
+                .delete(String.format("/api/markups/%s/%s", docId, redactId))
+                .then()
+                .assertThat()
+                .statusCode(401)
+                .log().all();
+    }
+
+    @NotNull
+    private ValidatableResponse createMarkUp(final String redactionId, final String documentId, final String rectangleId) {
+        final JSONObject jsonObject = createMarkUpPayload(redactionId, documentId, rectangleId);
+
+        return request
+                .body(jsonObject.toString())
+                .post("/api/markups")
+                .then()
+                .assertThat()
+                .statusCode(201);
+    }
+
+    @NotNull
+    private JSONObject createMarkUpPayload(final String redactionId, final String documentId, final String rectangleId) {
+        final JSONObject markup = new JSONObject();
+        markup.put("redactionId", redactionId);
+        markup.put("documentId", documentId);
+        markup.put("page", 1);
+
+        final JSONArray rectangles = new JSONArray();
+        final JSONObject rectangle = new JSONObject();
+        rectangle.put("id", rectangleId);
+        rectangle.put("x", 1f);
+        rectangle.put("y", 2f);
+        rectangle.put("width", 10f);
+        rectangle.put("height", 11f);
+        rectangles.put(0, rectangle);
+        markup.put("rectangles", rectangles);
+
+        return markup;
+    }
+
+    @NotNull
+    private ValidatableResponse deleteMarkUpByDocumentId(final String documentId) {
+        return request
+                .delete("/api/markups/" + documentId)
+                .then()
+                .log().all();
+    }
+
+    @NotNull
+    private ValidatableResponse deleteMarkUpByDocumentIdAndRedactionId(final String documentId, final String redactionId) {
+        return request
+                .delete(String.format("/api/markups/%s/%s", documentId, redactionId))
+                .then()
+                .log().all();
+    }
+
+    @NotNull
+    private JSONObject extractJSONObjectFromResponse(final ValidatableResponse response) {
+        return response.extract().response().as(JSONObject.class);
     }
 }
