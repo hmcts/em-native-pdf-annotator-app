@@ -190,7 +190,7 @@ dependencies {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-actuator'
     }
 
-    compile 'org.projectlombok:lombok:1.18.18'
+    compile 'org.projectlombok:lombok:1.18.20'
     compile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.23'
     compile group: 'org.apache.pdfbox', name: 'jbig2-imageio', version: '3.0.3'
     compile 'com.squareup.okhttp3:okhttp:4.9.1'
