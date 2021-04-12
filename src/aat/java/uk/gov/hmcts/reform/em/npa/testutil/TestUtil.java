@@ -98,15 +98,14 @@ public class TestUtil {
         createAnnotations.put("page", pageNum);
         createAnnotations.put("color", "d1d1d1");
 
-        JSONArray comments = new JSONArray();
         JSONObject comment = new JSONObject();
         comment.put("content", "text");
         comment.put("annotationId", annotationId);
         comment.put("id", UUID.randomUUID().toString());
+        JSONArray comments = new JSONArray();
         comments.put(0, comment);
         createAnnotations.put("comments", comments);
 
-        JSONArray rectangles = new JSONArray();
         JSONObject rectangle = new JSONObject();
         rectangle.put("id", UUID.randomUUID().toString());
         rectangle.put("annotationId", annotationId);
@@ -114,6 +113,7 @@ public class TestUtil {
         rectangle.put("y", 0f);
         rectangle.put("width", 10f);
         rectangle.put("height", 10f);
+        JSONArray rectangles = new JSONArray();
         rectangles.put(0, rectangle);
         createAnnotations.put("rectangles", rectangles);
 
