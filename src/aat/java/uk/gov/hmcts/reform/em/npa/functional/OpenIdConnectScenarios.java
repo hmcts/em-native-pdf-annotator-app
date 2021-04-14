@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.npa.functional;
 
-
 import io.restassured.response.Response;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import net.thucydides.core.annotations.WithTag;

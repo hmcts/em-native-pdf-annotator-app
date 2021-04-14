@@ -126,7 +126,7 @@ public class MarkUpScenarios {
         final String documentId = UUID.randomUUID().toString();
         final String rectangleId = UUID.randomUUID().toString();
         final ValidatableResponse response = createMarkUp(redactionId, documentId, rectangleId);
-        final String docId = extractJSONObjectFromResponse(response).getString("documentId");
+        final String docId = extractJsonObjectFromResponse(response).getString("documentId");
 
         request
                 .get("/api/markups/" + docId)
@@ -176,7 +176,7 @@ public class MarkUpScenarios {
         final String rectangleId = UUID.randomUUID().toString();
         final ValidatableResponse response = createMarkUp(redactionId, documentId, rectangleId);
 
-        final JSONObject jsonObject = extractJSONObjectFromResponse(response);
+        final JSONObject jsonObject = extractJsonObjectFromResponse(response);
         final String newRedactionId = UUID.randomUUID().toString();
         final String newDocumentId = UUID.randomUUID().toString();
 
@@ -207,7 +207,7 @@ public class MarkUpScenarios {
         final String documentId = UUID.randomUUID().toString();
         final String rectangleId = UUID.randomUUID().toString();
         final ValidatableResponse response = createMarkUp(redactionId, documentId, rectangleId);
-        final JSONObject jsonObject = extractJSONObjectFromResponse(response);
+        final JSONObject jsonObject = extractJsonObjectFromResponse(response);
 
         jsonObject.remove("redactionId");
         jsonObject.remove("documentId");
@@ -234,7 +234,7 @@ public class MarkUpScenarios {
         final String rectangleId = UUID.randomUUID().toString();
         final ValidatableResponse response = createMarkUp(redactionId, documentId, rectangleId);
 
-        final JSONObject jsonObject = extractJSONObjectFromResponse(response);
+        final JSONObject jsonObject = extractJsonObjectFromResponse(response);
         final String newRedactionId = UUID.randomUUID().toString();
         final String newDocumentId = UUID.randomUUID().toString();
 
@@ -257,7 +257,7 @@ public class MarkUpScenarios {
         final String documentId = UUID.randomUUID().toString();
         final String rectangleId = UUID.randomUUID().toString();
         final ValidatableResponse response = createMarkUp(redactionId, documentId, rectangleId);
-        final String docId = extractJSONObjectFromResponse(response).getString("documentId");
+        final String docId = extractJsonObjectFromResponse(response).getString("documentId");
         final ValidatableResponse deletedResponse = deleteMarkUpByDocumentId(docId);
 
         deletedResponse
@@ -283,7 +283,7 @@ public class MarkUpScenarios {
         final String documentId = UUID.randomUUID().toString();
         final String rectangleId = UUID.randomUUID().toString();
         final ValidatableResponse response = createMarkUp(redactionId, documentId, rectangleId);
-        final String docId = extractJSONObjectFromResponse(response).getString("documentId");
+        final String docId = extractJsonObjectFromResponse(response).getString("documentId");
 
         unAuthenticatedRequest
                 .delete("/api/markups/" + docId)
@@ -299,7 +299,7 @@ public class MarkUpScenarios {
         final String documentId = UUID.randomUUID().toString();
         final String rectangleId = UUID.randomUUID().toString();
         final ValidatableResponse response = createMarkUp(redactionId, documentId, rectangleId);
-        final JSONObject jsonObject = extractJSONObjectFromResponse(response);
+        final JSONObject jsonObject = extractJsonObjectFromResponse(response);
         final String docId = jsonObject.getString("documentId");
         final String redactId = jsonObject.getString("redactionId");
         final ValidatableResponse deletedResponse = deleteMarkUpByDocumentIdAndRedactionId(docId, redactId);
@@ -327,7 +327,7 @@ public class MarkUpScenarios {
         final String documentId = UUID.randomUUID().toString();
         final String rectangleId = UUID.randomUUID().toString();
         final ValidatableResponse response = createMarkUp(redactionId, documentId, rectangleId);
-        final JSONObject jsonObject = extractJSONObjectFromResponse(response);
+        final JSONObject jsonObject = extractJsonObjectFromResponse(response);
         final String docId = jsonObject.getString("documentId");
         final String redactId = jsonObject.getString("redactionId");
 
@@ -388,7 +388,7 @@ public class MarkUpScenarios {
     }
 
     @NotNull
-    private JSONObject extractJSONObjectFromResponse(final ValidatableResponse response) {
+    private JSONObject extractJsonObjectFromResponse(final ValidatableResponse response) {
         return response.extract().response().as(JSONObject.class);
     }
 }
