@@ -270,7 +270,7 @@ dependencies {
     annotationProcessor group:'org.hibernate', name: 'hibernate-jpamodelgen', version: versions.hibernate
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor:2.3.4.RELEASE", withoutStuff
 
-    testCompile "org.springframework.boot:spring-boot-starter-test:2.3.4.RELEASE", withoutStuff
+    testCompile "org.springframework.boot:spring-boot-starter-test:2.4.5", withoutStuff
     testCompile group: 'com.h2database', name: 'h2', version: '1.4.200'
     testCompile 'com.github.gmazzo:okhttp-mock:1.3.2'
     testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
