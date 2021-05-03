@@ -254,13 +254,9 @@ dependencies {
     annotationProcessor 'com.sun.xml.bind:jaxb-core:3.0.0'
     annotationProcessor 'com.sun.xml.bind:jaxb-impl:3.0.0'
 
-    testCompile "org.junit.jupiter:junit-jupiter-api:5.6.3"
-    testRuntime "org.junit.jupiter:junit-jupiter-engine:5.6.3"
-    testImplementation "org.junit.jupiter:junit-jupiter-api:5.6.3"
-
-    testCompile "io.rest-assured:json-path:4.2.0"
-    testCompile "io.rest-assured:xml-path:4.2.0", withoutStuff
-    testCompile "io.rest-assured:rest-assured-common:4.2.0"
+    testCompile "org.junit.jupiter:junit-jupiter-api:5.7.1"
+    testRuntime "org.junit.jupiter:junit-jupiter-engine:5.7.1"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.1"
 
     testCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenityRestAssured, withoutStuff
     testCompile group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity, withoutStuff
@@ -273,9 +269,9 @@ dependencies {
     contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-java8', version: versions.pact_version, withoutNetty
     compile group: 'au.com.dius', name: 'pact-jvm-consumer', version: versions.pact_version, withoutNetty
 
-    contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.6.3")
-    contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.6.3")
-    contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.6.3')
+    contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.7.1")
+    contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.7.1")
+    contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.7.1')
 
     contractTestCompile sourceSets.main.runtimeClasspath
     contractTestCompile sourceSets.test.runtimeClasspath
