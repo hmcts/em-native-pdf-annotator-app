@@ -2,10 +2,6 @@ java:
   image: ${IMAGE_NAME}
   devmemoryLimits: '2048Mi'
   ingressHost: ${SERVICE_FQDN}
-  keyVaults:
-    em-npa:
-      secrets:
-        - microservicekey-em-npa-app
   environment:
     ENABLE_LIQUIBASE: true
     SPRING_DATASOURCE_URL: jdbc:postgresql://{{ .Release.Name }}-{{ .Values.postgresql.nameOverride}}:5432/postgres?ssl=disable
