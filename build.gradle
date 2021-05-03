@@ -1,7 +1,7 @@
 buildscript {
     dependencies {
-        classpath("net.serenity-bdd:serenity-gradle-plugin:2.4.24")
-        classpath("net.serenity-bdd:serenity-single-page-report:2.4.24")
+        classpath("net.serenity-bdd:serenity-gradle-plugin:2.3.13")
+        classpath("net.serenity-bdd:serenity-single-page-report:2.3.13")
     }
 }
 
@@ -16,9 +16,9 @@ plugins {
     id 'checkstyle'
     id 'pmd'
     id 'org.liquibase.gradle' version '2.0.4'
-    id 'au.com.dius.pact' version '4.2.4'
+    id 'au.com.dius.pact' version '4.1.8'
     id 'io.franzbecker.gradle-lombok' version '4.0.0'
-    id "info.solidsoft.pitest" version '1.5.0'
+    id "info.solidsoft.pitest" version '1.5.2'
 }
 
 apply plugin: 'java'
@@ -106,8 +106,8 @@ def versions = [
         springfoxSwagger   : '2.9.2',
         h2                 : '1.4.199',
         liquibase          : '3.8.0',
-        serenity           : '2.4.24',
-        serenityreporter   : '2.4.24',
+        serenity           : '2.3.13',
+        serenityreporter   : '2.3.13',
         serenityRestAssured: '2.3.4',
         pact_version       : '4.0.10',
         logging            : '5.1.7',
@@ -255,9 +255,9 @@ dependencies {
     annotationProcessor 'com.sun.xml.bind:jaxb-core:3.0.0'
     annotationProcessor 'com.sun.xml.bind:jaxb-impl:3.0.0'
 
-    testCompile "org.junit.jupiter:junit-jupiter-api:5.7.1"
-    testRuntime "org.junit.jupiter:junit-jupiter-engine:5.7.1"
-    testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.1"
+    testCompile "org.junit.jupiter:junit-jupiter-api:5.6.3"
+    testRuntime "org.junit.jupiter:junit-jupiter-engine:5.6.3"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.6.3"
 
     testCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenityRestAssured, withoutStuff
     testCompile group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity, withoutStuff
@@ -270,9 +270,9 @@ dependencies {
     contractTestCompile group: 'au.com.dius', name: 'pact-jvm-consumer-java8', version: versions.pact_version, withoutNetty
     compile group: 'au.com.dius', name: 'pact-jvm-consumer', version: versions.pact_version, withoutNetty
 
-    contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.7.1")
-    contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.7.1")
-    contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.7.1')
+    contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.6.3")
+    contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.6.3")
+    contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.6.3')
 
     contractTestCompile sourceSets.main.runtimeClasspath
     contractTestCompile sourceSets.test.runtimeClasspath
