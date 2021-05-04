@@ -483,6 +483,9 @@ pitest {
 
     logger.lifecycle("Runs PIT  Tests")
 
+    pitestVersion = "1.5.2"
+    testPlugin = "junit5"
+    
     targetClasses = ['uk.gov.hmcts.reform.em.npa.*']
 
     excludedClasses = [
