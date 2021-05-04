@@ -326,6 +326,10 @@ dependencyManagement {
             entry 'commons-io'
         }
 
+        dependencySet(group: 'junit', version: '4.13') {
+            entry 'junit'
+        }
+
         dependencySet(group: 'org.junit.jupiter', version: '5.6.3') {
             entry 'junit-jupiter'
             entry 'junit-jupiter-api'
