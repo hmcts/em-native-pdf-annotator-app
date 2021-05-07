@@ -4,17 +4,19 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.apache.tika.Tika;
-import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionRequest;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.em.npa.service.RedactionService;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
-import java.io.FileInputStream;
 
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 
@@ -50,19 +52,15 @@ public class RedactionResource {
                     redactionRequest.getDocumentId(),
                     redactionRequest.getRedactions());
 
-            FileInputStream fileInputStream = new FileInputStream(newlyRedactedFile);
-            InputStreamResource resource = new InputStreamResource(fileInputStream);
-            fileInputStream.close();
             HttpHeaders headers = new HttpHeaders();
             headers.add(CONTENT_DISPOSITION, String.format("attachment; filename=\"%s\"", newlyRedactedFile.getName()));
             Tika tika = new Tika();
-
 
             return ResponseEntity.ok()
                     .headers(headers)
                     .contentLength(newlyRedactedFile.length())
                     .contentType(MediaType.parseMediaType(tika.detect(newlyRedactedFile)))
-                    .body(resource);
+                    .body(new FileSystemResource(newlyRedactedFile));
         } catch (Exception e) {
             return ResponseEntity
                     .badRequest()
