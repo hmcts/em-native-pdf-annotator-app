@@ -50,10 +50,13 @@ public class RedactionResource {
                     redactionRequest.getDocumentId(),
                     redactionRequest.getRedactions());
 
-            InputStreamResource resource = new InputStreamResource(new FileInputStream(newlyRedactedFile));
+            FileInputStream fileInputStream = new FileInputStream(newlyRedactedFile);
+            InputStreamResource resource = new InputStreamResource(fileInputStream);
+            fileInputStream.close();
             HttpHeaders headers = new HttpHeaders();
             headers.add(CONTENT_DISPOSITION, String.format("attachment; filename=\"%s\"", newlyRedactedFile.getName()));
             Tika tika = new Tika();
+
 
             return ResponseEntity.ok()
                     .headers(headers)
