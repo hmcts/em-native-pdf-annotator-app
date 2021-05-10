@@ -284,7 +284,7 @@ dependencies {
     annotationProcessor 'com.sun.xml.bind:jaxb-core:3.0.0'
     annotationProcessor 'com.sun.xml.bind:jaxb-impl:3.0.0'
 
-    testCompile "org.junit.jupiter:junit-jupiter-api:5.6.3"
+    testCompile "org.junit.jupiter:junit-jupiter-api:5.7.0"
     testRuntime "org.junit.jupiter:junit-jupiter-engine:5.6.3"
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.6.3"
 
