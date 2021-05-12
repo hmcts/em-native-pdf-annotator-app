@@ -10,9 +10,12 @@ java:
   keyVaults:
     em-npa:
       secrets:
-        - AppInsightsInstrumentationKey
-        - microservicekey-em-npa-app
-        - npa-POSTGRES-PASS
+        - name: AppInsightsInstrumentationKey
+          alias: APPINSIGHTS_INSTRUMENTATIONKEY
+        - name: microservicekey-em-npa-app
+          alias: S2S_KEY
+        - name: npa-POSTGRES-PASS
+          alias: SPRING_DATASOURCE_PASSWORD
   environment:
     RUN_DB_MIGRATION_ON_STARTUP: 'false'
     IDAM_API_BASE_URI: https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net
