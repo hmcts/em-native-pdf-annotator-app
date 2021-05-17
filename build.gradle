@@ -249,7 +249,7 @@ dependencies {
     compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.logging
     
     annotationProcessor 'javax.xml.bind:jaxb-api:2.3.1'
-    annotationProcessor 'com.sun.xml.bind:jaxb-core:3.0.0'
+    annotationProcessor 'com.sun.xml.bind:jaxb-core:3.0.1'
     annotationProcessor 'com.sun.xml.bind:jaxb-impl:3.0.0'
 
     testRuntimeOnly 'org.junit.vintage:junit-vintage-engine:5.6.2'
