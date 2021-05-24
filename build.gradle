@@ -171,7 +171,7 @@ dependencies {
     compile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.23'
     compile group: 'org.apache.pdfbox', name: 'jbig2-imageio', version: '3.0.3'
     compile 'com.squareup.okhttp3:okhttp:4.9.1'
-    compile("org.springframework.boot:spring-boot-starter-batch:2.4.5")
+    compile("org.springframework.boot:spring-boot-starter-batch:2.5.0")
     compile "org.springframework.boot:spring-boot-actuator:2.4.5"
     compile("org.springframework.boot:spring-boot-autoconfigure:2.4.5")
     compile("org.springframework.boot:spring-boot:2.4.5")
