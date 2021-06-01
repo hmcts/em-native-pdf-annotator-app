@@ -8,6 +8,8 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +33,12 @@ public class RedactionResource {
 
     public RedactionResource(RedactionService redactionService) {
         this.redactionService = redactionService;
+    }
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder)
+    {
+        binder.setDisallowedFields("isAdmin");
     }
 
     @ApiOperation(value = "Burn markups onto Document", notes = "A POST request to burn markups onto Document and return the newly redacted document")
