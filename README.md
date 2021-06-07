@@ -10,7 +10,7 @@ In addition the Native PDF Annotator handles requests from the Media Viewer to m
 
 It uses:
 
-* Java8
+* Java11
 * Spring boot
 * Junit, Mockito and SpringBootTest
 * Gradle
@@ -23,15 +23,18 @@ It uses:
 ```bash
 #Cloning repo and running dependencies through docker
 
-git clone https://github.com/hmcts/rpa-native-pdf-annotator-app.git
-cd rpa-native-pdf-annotator-app/
+git clone git@github.com:hmcts/em-native-pdf-annotator-app.git
+cd em-native-pdf-annotator-app/
 
 az login
-az acr login --name hmctspublic && az acr login --name hmctsprivate
-docker-compose -f docker-compose-dependencies.yml pull
+az acr login --name hmctspublic
+docker-compose -f docker-compose-dependencies-simulator.yml pull
+docker-compose -f docker-compose-dependencies-simulator.yml up
 
-./gradlew assemble
-./bin/start-local-environment.sh
+wait for 2-3 minutes till all the dependencies in the docker are up and running.
+
+./gradlew clean
+./gradlew build
 
 ./gradlew migratePostgresDatabase
 ./gradlew bootRun

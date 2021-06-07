@@ -49,41 +49,44 @@ public class IdamConsumerTest {
         Map<String, Object> params = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         params.put("email", "emCaseOfficer@email.net");
         params.put("password", "Password123");
-        params.put("forename","emCaseOfficer");
+        params.put("forename", "emCaseOfficer");
         params.put("surname", "jar123");
         params.put("roles", rolesArray);
 
         return builder
-            .given("a user exists", params)
-            .uponReceiving("Provider takes user/pwd and returns Access Token to Native PDF Annotator API")
-            .path(IDAM_OPENID_TOKEN_URL)
-            .method(HttpMethod.POST.toString())
-            .body("redirect_uri=http%3A%2F%2Fwww.dummy-pact-service.com%2Fcallback&client_id=pact&grant_type=password&username=emCaseOfficer%40email.net&password=Password123&client_secret=pactsecret&scope=openid profile roles","application/x-www-form-urlencoded")
-            .willRespondWith()
-            .status(HttpStatus.OK.value())
-            .headers(responseheaders)
-            .body(createAuthResponse())
-            .toPact();
+                .given("a user exists", params)
+                .uponReceiving("Provider takes user/pwd and returns Access Token to Native PDF Annotator API")
+                .path(IDAM_OPENID_TOKEN_URL)
+                .method(HttpMethod.POST.toString())
+                .body("redirect_uri=http%3A%2F%2Fwww.dummy-pact-service.com%2Fcallback&client_id=pact"
+                                + "&grant_type=password&username=emCaseOfficer%40email.net&password=Password123"
+                                + "&client_secret=pactsecret&scope=openid profile roles",
+                        "application/x-www-form-urlencoded")
+                .willRespondWith()
+                .status(HttpStatus.OK.value())
+                .headers(responseheaders)
+                .body(createAuthResponse())
+                .toPact();
     }
 
     @Test
     @PactTestFor(pactMethod = "executeGetIdamAccessTokenAndGet200")
     public void should_post_to_token_endpoint_and_receive_access_token_with_200_response(MockServer mockServer)
-        throws JSONException {
+            throws JSONException {
         String actualResponseBody =
-            SerenityRest
-                .given()
-                .contentType(ContentType.URLENC)
-                .formParam("redirect_uri", "http://www.dummy-pact-service.com/callback")
-                .formParam("client_id", "pact")
-                .formParam("grant_type", "password")
-                .formParam("username", "emCaseOfficer@email.net")
-                .formParam("password", "Password123")
-                .formParam("client_secret", "pactsecret")
-                .formParam("scope", "openid profile roles")
-                .post(mockServer.getUrl() + IDAM_OPENID_TOKEN_URL)
-                .then()
-                .log().all().extract().asString();
+                SerenityRest
+                        .given()
+                        .contentType(ContentType.URLENC)
+                        .formParam("redirect_uri", "http://www.dummy-pact-service.com/callback")
+                        .formParam("client_id", "pact")
+                        .formParam("grant_type", "password")
+                        .formParam("username", "emCaseOfficer@email.net")
+                        .formParam("password", "Password123")
+                        .formParam("client_secret", "pactsecret")
+                        .formParam("scope", "openid profile roles")
+                        .post(mockServer.getUrl() + IDAM_OPENID_TOKEN_URL)
+                        .then()
+                        .log().all().extract().asString();
 
         JSONObject response = new JSONObject(actualResponseBody);
 
@@ -110,16 +113,16 @@ public class IdamConsumerTest {
         responseheaders.put("Content-Type", "application/json");
 
         return builder
-            .given("I have obtained an access_token as a user",params)
-            .uponReceiving("Provider returns user info to Native PDF Annotator API")
-            .path(IDAM_DETAILS_URL)
-            .headers("Authorization","Bearer eyJ0eXAiOiJKV1QiLCJraWQiOiJiL082T3ZWdjEre")
-            .method(HttpMethod.GET.toString())
-            .willRespondWith()
-            .status(HttpStatus.OK.value())
-            .headers(responseheaders)
-            .body(createUserInfoResponse())
-            .toPact();
+                .given("I have obtained an access_token as a user", params)
+                .uponReceiving("Provider returns user info to Native PDF Annotator API")
+                .path(IDAM_DETAILS_URL)
+                .headers("Authorization", "Bearer eyJ0eXAiOiJKV1QiLCJraWQiOiJiL082T3ZWdjEre")
+                .method(HttpMethod.GET.toString())
+                .willRespondWith()
+                .status(HttpStatus.OK.value())
+                .headers(responseheaders)
+                .body(createUserInfoResponse())
+                .toPact();
     }
 
     @Test
@@ -131,17 +134,17 @@ public class IdamConsumerTest {
         headers.put(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 
         String detailsResponseBody =
-            SerenityRest
-                .given()
-                .headers(headers)
-                .when()
-                .get(mockServer.getUrl() + IDAM_DETAILS_URL)
-                .then()
-                .statusCode(200)
-                .and()
-                .extract()
-                .body()
-                .asString();
+                SerenityRest
+                        .given()
+                        .headers(headers)
+                        .when()
+                        .get(mockServer.getUrl() + IDAM_DETAILS_URL)
+                        .then()
+                        .statusCode(200)
+                        .and()
+                        .extract()
+                        .body()
+                        .asString();
 
         JSONObject response = new JSONObject(detailsResponseBody);
 
@@ -160,24 +163,24 @@ public class IdamConsumerTest {
     private DslPart createUserInfoResponse() {
 
         return new PactDslJsonBody()
-            .stringType("uid", "1234-2345-3456-4567")
-            .stringType("given_name", "emCaseOfficer")
-            .stringType("family_name", "Jar")
-            .array("roles")
-            .stringType("citizen")
-            .closeArray();
+                .stringType("uid", "1234-2345-3456-4567")
+                .stringType("given_name", "emCaseOfficer")
+                .stringType("family_name", "Jar")
+                .array("roles")
+                .stringType("citizen")
+                .closeArray();
 
     }
 
     private PactDslJsonBody createAuthResponse() {
 
         return new PactDslJsonBody()
-            .stringType("access_token", "eyJ0eXAiOiJKV1QiLCJraWQiOiJiL082T3ZWdjEre")
-            .stringType("refresh_token", "eyJ0eXAiOiJKV1QiLCJ6aXAiOiJOT05FIiwia2lkIjoiYi9PNk92V")
-            .stringType("scope", "openid roles profile")
-            .stringType("id_token", "eyJ0eXAiOiJKV1QiLCJraWQiOiJiL082T3ZWdjEre")
-            .stringType("token_type", "Bearer")
-            .stringType("expires_in","28798");
+                .stringType("access_token", "eyJ0eXAiOiJKV1QiLCJraWQiOiJiL082T3ZWdjEre")
+                .stringType("refresh_token", "eyJ0eXAiOiJKV1QiLCJ6aXAiOiJOT05FIiwia2lkIjoiYi9PNk92V")
+                .stringType("scope", "openid roles profile")
+                .stringType("id_token", "eyJ0eXAiOiJKV1QiLCJraWQiOiJiL082T3ZWdjEre")
+                .stringType("token_type", "Bearer")
+                .stringType("expires_in", "28798");
     }
 
 }
