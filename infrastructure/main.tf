@@ -124,7 +124,9 @@ data "azurerm_subnet" "postgres" {
 
 module "db-v11" {
   source             = "git@github.com:hmcts/cnp-module-postgres?ref=postgresql_tf"
-  product            = "${local.app_full_name}-postgres-db-v11"
+  product            = var.product
+  component          = var.component
+  name               = "${local.app_full_name}-postgres-db-v11"
   location           = var.location
   env                = var.env
   postgresql_user    = var.postgresql_user_v11

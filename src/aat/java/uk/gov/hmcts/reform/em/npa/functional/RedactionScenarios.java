@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
 
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @SpringBootTest(classes = {TestUtil.class, EmTestConfig.class})
@@ -40,10 +41,10 @@ public class RedactionScenarios {
     @Rule
     public RetryRule retryRule = new RetryRule(3);
 
-    private static final UUID docId = UUID.randomUUID();
+    private static final UUID documentId = UUID.randomUUID();
     private static final UUID redactionId = UUID.randomUUID();
-
     private RequestSpecification request;
+    private RequestSpecification unAuthenticatedRequest;
 
     @Before
     public void setupRequestSpecification() {
@@ -51,13 +52,117 @@ public class RedactionScenarios {
                 .authRequest()
                 .baseUri(testUrl)
                 .contentType(APPLICATION_JSON_VALUE);
+
+        unAuthenticatedRequest = testUtil
+                .unauthenticatedRequest()
+                .baseUri(testUrl)
+                .contentType(APPLICATION_JSON_VALUE);
+    }
+
+    @Test
+    public void shouldReturn200WhenRedactedPdfDocument() {
+        final String newDocId = testUtil.uploadPdfDocumentAndReturnUrl();
+        final RedactionRequest redactionRequest = new RedactionRequest();
+        redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
+        redactionRequest.setRedactions(Arrays.asList(createRedaction(), createRedaction()));
+
+        final JSONObject jsonObject = new JSONObject(redactionRequest);
+
+        request
+                .body(jsonObject)
+                .post("/api/redaction")
+                .then()
+                .assertThat()
+                .statusCode(200)
+                .body(notNullValue());
+    }
+
+
+    @Test
+    public void shouldReturn200WhenRedactedImage() {
+        final String newDocId = testUtil.uploadImageDocumentAndReturnUrl();
+        final RedactionRequest redactionRequest = new RedactionRequest();
+        redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
+        redactionRequest.setRedactions(Collections.singletonList(createRedaction()));
+
+        final JSONObject jsonObject = new JSONObject(redactionRequest);
+
+        request
+                .body(jsonObject)
+                .post("/api/redaction")
+                .then()
+                .assertThat()
+                .statusCode(200)
+                .body(notNullValue());
+    }
+
+    @Test
+    public void shouldReturn400WhenRedactedRichTextDocument() {
+        final String newDocId = testUtil.uploadRichTextDocumentAndReturnUrl();
+        final RedactionRequest redactionRequest = new RedactionRequest();
+        redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
+        redactionRequest.setRedactions(Arrays.asList(createRedaction(), createRedaction()));
+        final JSONObject jsonObject = new JSONObject(redactionRequest);
+
+        request
+                .body(jsonObject)
+                .post("/api/redaction")
+                .then()
+                .statusCode(400);
+    }
+
+    @Test
+    public void shouldReturn400WhenRedactedFileNameIsMissing() {
+        final String newDocId = testUtil.uploadRichTextDocumentAndReturnUrl();
+        final RedactionRequest redactionRequest = new RedactionRequest();
+        redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
+        redactionRequest.setRedactions(Arrays.asList(createRedaction(), createRedaction()));
+        final JSONObject jsonObject = new JSONObject(redactionRequest);
+
+        request
+                .body(jsonObject)
+                .post("/api/redaction")
+                .then()
+                .statusCode(400);
+    }
+
+    @Test
+    public void shouldReturn400WhenRedactedPdfDocumentWIthNonExistentDocumentId() {
+        final UUID nonExistentDocId = UUID.randomUUID();
+        final RedactionRequest redactionRequest = new RedactionRequest();
+        redactionRequest.setDocumentId(nonExistentDocId);
+        redactionRequest.setRedactions(Arrays.asList(createRedaction(), createRedaction()));
+
+        final JSONObject jsonObject = new JSONObject(redactionRequest);
+
+        request
+                .body(jsonObject)
+                .post("/api/redaction")
+                .then()
+                .assertThat()
+                .statusCode(400)
+                .body(notNullValue());
+    }
+
+    @Test
+    public void shouldReturn401WhenRedactedPdfDocument() {
+        final String newDocId = testUtil.uploadRichTextDocumentAndReturnUrl();
+        final RedactionRequest redactionRequest = new RedactionRequest();
+        redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
+        redactionRequest.setRedactions(Arrays.asList(createRedaction(), createRedaction()));
+        final JSONObject jsonObject = new JSONObject(redactionRequest);
+
+        unAuthenticatedRequest
+                .body(jsonObject)
+                .post("/api/redaction")
+                .then()
+                .statusCode(401);
     }
 
     private RedactionDTO createRedaction() {
-        RedactionDTO redactionDTO = testUtil.createRedactionDTO(docId, redactionId);
+        final RedactionDTO redactionDTO = testUtil.createRedactionDTO(documentId, redactionId);
         redactionDTO.setPage(1);
-
-        JSONObject jsonObject = new JSONObject(redactionDTO);
+        final JSONObject jsonObject = new JSONObject(redactionDTO);
 
         return request
                 .body(jsonObject)
@@ -69,54 +174,4 @@ public class RedactionScenarios {
                 .as(RedactionDTO.class);
     }
 
-    @Test
-    public void testSaveRedactedPdfDocument() {
-        String newDocId = testUtil.uploadPdfDocumentAndReturnUrl();
-
-        RedactionRequest redactionRequest = new RedactionRequest();
-        redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
-        redactionRequest.setRedactions(Arrays.asList(createRedaction(), createRedaction()));
-
-        JSONObject jsonObject = new JSONObject(redactionRequest);
-
-        request
-                .body(jsonObject)
-                .post("/api/redaction")
-                .then()
-                .statusCode(200);
-    }
-
-    @Test
-    public void testSaveRedactedImageDocument() {
-        String newDocId = testUtil.uploadImageDocumentAndReturnUrl();
-
-        RedactionRequest redactionRequest = new RedactionRequest();
-        redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
-        redactionRequest.setRedactions(Collections.singletonList(createRedaction()));
-
-        JSONObject jsonObject = new JSONObject(redactionRequest);
-
-        request
-                .body(jsonObject)
-                .post("/api/redaction")
-                .then()
-                .statusCode(200);
-    }
-
-    @Test
-    public void testFailedSaveRedactedRichTextDocument() {
-        String newDocId = testUtil.uploadRichTextDocumentAndReturnUrl();
-
-        RedactionRequest redactionRequest = new RedactionRequest();
-        redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
-        redactionRequest.setRedactions(Arrays.asList(createRedaction(), createRedaction()));
-
-        JSONObject jsonObject = new JSONObject(redactionRequest);
-
-        request
-                .body(jsonObject)
-                .post("/api/redaction")
-                .then()
-                .statusCode(400);
-    }
 }

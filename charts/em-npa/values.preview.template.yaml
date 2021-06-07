@@ -5,7 +5,8 @@ java:
   keyVaults:
     em-npa:
       secrets:
-        - microservicekey-em-npa-app
+        - name: microservicekey-em-npa-app
+          alias: S2S_KEY
   environment:
     ENABLE_LIQUIBASE: true
     SPRING_DATASOURCE_URL: jdbc:postgresql://{{ .Release.Name }}-{{ .Values.postgresql.nameOverride}}:5432/postgres?ssl=disable
