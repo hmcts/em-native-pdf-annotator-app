@@ -326,6 +326,22 @@ dependencyManagement {
             entry 'byte-buddy-agent'
         }
         // Do not change - END
+
+        //CVE-2021-22118
+        dependencySet(group: 'org.springframework', version: '5.3.7') {
+            entry 'spring-aop'
+            entry 'spring-aspects'
+            entry 'spring-beans'
+            entry 'spring-context'
+            entry 'spring-core'
+            entry 'spring-expression'
+            entry 'spring-jcl'
+            entry 'spring-jdbc'
+            entry 'spring-orm'
+            entry 'spring-tx'
+            entry 'spring-web'
+            entry 'spring-webmvc'
+        }
     }
 }
 
