@@ -301,7 +301,7 @@ dependencyManagement {
         
         
         //CVE-2021-29425
-        dependencySet(group: 'commons-io', version: '2.8.0') {
+        dependencySet(group: 'commons-io', version: '2.10.0') {
             entry 'commons-io'
         }
 
@@ -321,7 +321,7 @@ dependencyManagement {
             entry 'junit-vintage-engine'
         }
 
-        dependencySet(group: 'net.bytebuddy', version: '1.10.14') {
+        dependencySet(group: 'net.bytebuddy', version: '1.11.2') {
             entry 'byte-buddy'
             entry 'byte-buddy-agent'
         }
