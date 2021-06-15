@@ -164,7 +164,7 @@ dependencies {
     
     compile group: 'com.google.guava', name: 'guava', version: '30.1.1-jre'
 
-    compile ('org.springframework.cloud:spring-cloud-openfeign:3.0.2') {
+    compile ('org.springframework.cloud:spring-cloud-openfeign:3.0.3') {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-actuator'
     }
         
