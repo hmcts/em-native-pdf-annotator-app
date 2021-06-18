@@ -98,6 +98,7 @@ repositories {
     maven {
         url 'https://repo.spring.io/libs-snapshot'
     }
+    maven { url 'https://jitpack.io' }
 }
 
 def versions = [
@@ -163,7 +164,7 @@ dependencies {
     
     compile group: 'com.google.guava', name: 'guava', version: '30.1.1-jre'
 
-    compile ('org.springframework.cloud:spring-cloud-openfeign:3.0.2') {
+    compile ('org.springframework.cloud:spring-cloud-openfeign:3.0.3') {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-actuator'
     }
         
@@ -208,7 +209,7 @@ dependencies {
     liquibaseRuntime "org.liquibase.ext:liquibase-hibernate5:4.3.5"
     liquibaseRuntime sourceSets.main.compileClasspath
     liquibaseRuntime sourceSets.main.output
-    liquibaseRuntime "org.liquibase:liquibase-groovy-dsl:3.0.1"
+    liquibaseRuntime "org.liquibase:liquibase-groovy-dsl:3.0.2"
     liquibaseRuntime group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
     liquibaseRuntime "com.h2database:h2"
     compile group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
@@ -279,10 +280,7 @@ dependencies {
     contractTestCompile group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.13'
     contractTestCompile group: 'org.apache.httpcomponents', name: 'fluent-hc', version: '4.5.13'
 
-    aatCompile ("uk.gov.hmcts.reform:em-test-helper:1.18.1") {
-        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-test'
-        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-actuator'
-    }
+    aatCompile 'com.github.hmcts:em-test-helper:1.18.2'
     aatCompile group: 'org.apache.poi', name: 'poi', version: '5.0.0'
     aatCompile group: 'org.apache.poi', name: 'poi-ooxml', version: '5.0.0'
 
@@ -323,11 +321,27 @@ dependencyManagement {
             entry 'junit-vintage-engine'
         }
 
-        dependencySet(group: 'net.bytebuddy', version: '1.10.14') {
+        dependencySet(group: 'net.bytebuddy', version: '1.11.2') {
             entry 'byte-buddy'
             entry 'byte-buddy-agent'
         }
         // Do not change - END
+
+        //CVE-2021-22118
+        dependencySet(group: 'org.springframework', version: '5.3.7') {
+            entry 'spring-aop'
+            entry 'spring-aspects'
+            entry 'spring-beans'
+            entry 'spring-context'
+            entry 'spring-core'
+            entry 'spring-expression'
+            entry 'spring-jcl'
+            entry 'spring-jdbc'
+            entry 'spring-orm'
+            entry 'spring-tx'
+            entry 'spring-web'
+            entry 'spring-webmvc'
+        }
     }
 }
 
