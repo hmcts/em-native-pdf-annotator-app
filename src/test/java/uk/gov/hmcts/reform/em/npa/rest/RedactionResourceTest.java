@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.npa.rest;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -117,5 +118,15 @@ public class RedactionResourceTest {
 
         verify(redactionService, Mockito.atMost(1))
                 .redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getRedactions());
+    }
+
+    @Test
+    public void testInitBinder() {
+
+        WebDataBinder webDataBinder = new WebDataBinder(null);
+
+        Assert.assertNull(webDataBinder.getDisallowedFields());
+        redactionResource.initBinder(webDataBinder);
+        Assert.assertTrue(Arrays.asList(webDataBinder.getDisallowedFields()).contains(Constants.IS_ADMIN));
     }
 }
