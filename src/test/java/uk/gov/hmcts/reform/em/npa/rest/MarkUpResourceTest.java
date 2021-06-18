@@ -12,8 +12,13 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.WebDataBinder;
+import uk.gov.hmcts.reform.em.npa.config.Constants;
 import uk.gov.hmcts.reform.em.npa.rest.errors.EmptyResponseException;
+import uk.gov.hmcts.reform.em.npa.rest.errors.ValidationErrorException;
 import uk.gov.hmcts.reform.em.npa.service.MarkUpService;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
@@ -35,9 +40,25 @@ public class MarkUpResourceTest {
     @Mock
     private Pageable pageable;
 
+    @Mock
+    private WebDataBinder binder;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+    }
+
+    @Test(expected = ValidationErrorException.class)
+    public void createMarkUpFailure() throws URISyntaxException {
+
+        RedactionDTO redactionDTO = createRedactionDTO();
+        String[] codes = {"1"};
+        FieldError fieldError = new FieldError("testField", "field", null, true, codes, null, null);
+        List<FieldError> errors = Arrays.asList(fieldError);
+        Mockito.when(result.hasErrors()).thenReturn(true);
+        Mockito.when(result.getFieldErrors()).thenReturn(errors);
+
+        ResponseEntity<RedactionDTO>  responseEntity = markUpResource.createMarkUp(redactionDTO, result);
     }
 
     @Test
@@ -55,6 +76,20 @@ public class MarkUpResourceTest {
         Assert.assertEquals(redactionDTO.getRectangles().size(), response.getRectangles().size());
 
         Mockito.verify(markUpService, Mockito.atLeast(1)).save(redactionDTO);
+    }
+
+    @Test(expected = ValidationErrorException.class)
+    public void updateMarkUpFailure() throws URISyntaxException {
+
+        RedactionDTO redactionDTO = createRedactionDTO();
+        String[] codes = {"1"};
+        FieldError fieldError = new FieldError("testField", "field", null, true, codes, null, null);
+        List<FieldError> errors = Arrays.asList(fieldError);
+        Mockito.when(result.hasErrors()).thenReturn(true);
+        Mockito.when(result.getFieldErrors()).thenReturn(errors);
+
+        ResponseEntity<RedactionDTO>  responseEntity = markUpResource.updateMarkUp(redactionDTO, result);
+
     }
 
     @Test
@@ -108,6 +143,29 @@ public class MarkUpResourceTest {
 
         Mockito.verify(markUpService, Mockito.atLeast(1)).deleteAll(documentId);
         Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    public void testDeleteMarkUpSuccess() {
+
+        UUID documentId =  UUID.randomUUID();
+        UUID redactionId =  UUID.randomUUID();
+        Mockito.doNothing().when(markUpService).delete(redactionId);
+
+        ResponseEntity<Void> response = markUpResource.deleteMarkUp(documentId, redactionId);
+
+        Mockito.verify(markUpService, Mockito.atLeast(1)).delete(redactionId);
+        Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    public void testInitBinder() {
+
+        WebDataBinder webDataBinder = new WebDataBinder(null);
+
+        Assert.assertNull(webDataBinder.getDisallowedFields());
+        markUpResource.initBinder(webDataBinder);
+        Assert.assertTrue(Arrays.asList(webDataBinder.getDisallowedFields()).contains(Constants.IS_ADMIN));
     }
 
     private RedactionDTO createRedactionDTO() {
