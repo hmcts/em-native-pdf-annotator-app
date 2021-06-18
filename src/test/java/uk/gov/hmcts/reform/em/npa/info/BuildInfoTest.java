@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.npa.info;
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.springframework.boot.actuate.info.Info;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 
+@SpringBootTest(classes = {BuildInfo.class})
 public class BuildInfoTest {
 
     @Test
