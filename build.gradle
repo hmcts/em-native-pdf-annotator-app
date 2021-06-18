@@ -366,7 +366,8 @@ def coverageExclusionList = [
     '**uk/gov/hmcts/reform/em/npa/ccd/dto/*',
     '**uk/gov/hmcts/reform/em/npa/ccd/exception/*',
     '**uk/gov/hmcts/reform/em/npa/service/exception/*',
-    '**uk/gov/hmcts/reform/em/npa/service/dto/redaction/*'
+    '**uk/gov/hmcts/reform/em/npa/service/dto/redaction/*',
+    '**uk/gov/hmcts/reform/em/npa/info/*'
 ]
 
 checkstyle {
