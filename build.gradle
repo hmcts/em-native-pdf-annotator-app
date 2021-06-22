@@ -204,7 +204,7 @@ dependencies {
     compile group: 'org.springframework.security', name: 'spring-security-core', version: versions.springSecurity
 
     compile( 'org.apache.httpcomponents:httpclient:4.5.10')
-    compile "org.liquibase:liquibase-core:4.3.4"
+    compile "org.liquibase:liquibase-core:4.4.0"
     liquibaseRuntime "org.liquibase:liquibase-core:4.3.4"
     liquibaseRuntime "org.liquibase.ext:liquibase-hibernate5:4.3.5"
     liquibaseRuntime sourceSets.main.compileClasspath
