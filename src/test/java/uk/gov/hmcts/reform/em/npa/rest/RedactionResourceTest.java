@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.npa.rest;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,9 +12,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.bind.WebDataBinder;
 import uk.gov.hmcts.reform.em.npa.Application;
 import uk.gov.hmcts.reform.em.npa.TestSecurityConfiguration;
 
+import uk.gov.hmcts.reform.em.npa.config.Constants;
 import uk.gov.hmcts.reform.em.npa.service.RedactionService;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
@@ -38,6 +41,9 @@ public class RedactionResourceTest {
 
     @Mock
     private RedactionService redactionService;
+
+    @Mock
+    private WebDataBinder binder;
 
     private static final File TEST_PDF_FILE = new File(
             ClassLoader.getSystemResource("layered.pdf").getPath()
@@ -94,6 +100,8 @@ public class RedactionResourceTest {
 
         verify(redactionService, Mockito.atMost(1))
                 .redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getRedactions());
+        verify(binder, Mockito.atMost(1))
+            .setDisallowedFields(Constants.IS_ADMIN);
     }
 
     @Test
@@ -110,5 +118,15 @@ public class RedactionResourceTest {
 
         verify(redactionService, Mockito.atMost(1))
                 .redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getRedactions());
+    }
+
+    @Test
+    public void testInitBinder() {
+
+        WebDataBinder webDataBinder = new WebDataBinder(null);
+
+        Assert.assertNull(webDataBinder.getDisallowedFields());
+        redactionResource.initBinder(webDataBinder);
+        Assert.assertTrue(Arrays.asList(webDataBinder.getDisallowedFields()).contains(Constants.IS_ADMIN));
     }
 }
