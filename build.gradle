@@ -9,9 +9,9 @@ plugins {
     id 'application'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'org.springframework.boot' version '2.4.5'
-    id 'uk.gov.hmcts.java' version '0.12.9'
-    id 'com.github.ben-manes.versions' version '0.36.0'
-    id 'org.sonarqube' version '3.2.0'
+    id 'uk.gov.hmcts.java' version '0.12.12'
+    id 'com.github.ben-manes.versions' version '0.39.0'
+    id 'org.sonarqube' version '3.3'
     id 'jacoco'
     id 'checkstyle'
     id 'org.liquibase.gradle' version '2.0.4'
@@ -98,6 +98,7 @@ repositories {
     maven {
         url 'https://repo.spring.io/libs-snapshot'
     }
+    maven { url 'https://jitpack.io' }
 }
 
 def versions = [
@@ -163,12 +164,12 @@ dependencies {
     
     compile group: 'com.google.guava', name: 'guava', version: '30.1.1-jre'
 
-    compile ('org.springframework.cloud:spring-cloud-openfeign:3.0.2') {
+    compile ('org.springframework.cloud:spring-cloud-openfeign:3.0.3') {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-actuator'
     }
         
     compile 'org.projectlombok:lombok:1.18.20'
-    compile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.23'
+    compile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.24'
     compile group: 'org.apache.pdfbox', name: 'jbig2-imageio', version: '3.0.3'
     compile 'com.squareup.okhttp3:okhttp:4.9.1'
     compile("org.springframework.boot:spring-boot-starter-batch:2.4.5")
@@ -203,12 +204,12 @@ dependencies {
     compile group: 'org.springframework.security', name: 'spring-security-core', version: versions.springSecurity
 
     compile( 'org.apache.httpcomponents:httpclient:4.5.10')
-    compile "org.liquibase:liquibase-core:4.3.4"
+    compile "org.liquibase:liquibase-core:4.4.0"
     liquibaseRuntime "org.liquibase:liquibase-core:4.3.4"
     liquibaseRuntime "org.liquibase.ext:liquibase-hibernate5:4.3.5"
     liquibaseRuntime sourceSets.main.compileClasspath
     liquibaseRuntime sourceSets.main.output
-    liquibaseRuntime "org.liquibase:liquibase-groovy-dsl:3.0.1"
+    liquibaseRuntime "org.liquibase:liquibase-groovy-dsl:3.0.2"
     liquibaseRuntime group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
     liquibaseRuntime "com.h2database:h2"
     compile group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
@@ -279,10 +280,7 @@ dependencies {
     contractTestCompile group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.13'
     contractTestCompile group: 'org.apache.httpcomponents', name: 'fluent-hc', version: '4.5.13'
 
-    aatCompile ("uk.gov.hmcts.reform:em-test-helper:1.18.1") {
-        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-test'
-        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-actuator'
-    }
+    aatCompile 'com.github.hmcts:em-test-helper:1.19'
     aatCompile group: 'org.apache.poi', name: 'poi', version: '5.0.0'
     aatCompile group: 'org.apache.poi', name: 'poi-ooxml', version: '5.0.0'
 
@@ -303,7 +301,7 @@ dependencyManagement {
         
         
         //CVE-2021-29425
-        dependencySet(group: 'commons-io', version: '2.8.0') {
+        dependencySet(group: 'commons-io', version: '2.10.0') {
             entry 'commons-io'
         }
 
@@ -323,11 +321,32 @@ dependencyManagement {
             entry 'junit-vintage-engine'
         }
 
-        dependencySet(group: 'net.bytebuddy', version: '1.10.14') {
+        dependencySet(group: 'net.bytebuddy', version: '1.11.2') {
             entry 'byte-buddy'
             entry 'byte-buddy-agent'
         }
         // Do not change - END
+
+        //CVE-2021-22118
+        dependencySet(group: 'org.springframework', version: '5.3.8') {
+            entry 'spring-aop'
+            entry 'spring-aspects'
+            entry 'spring-beans'
+            entry 'spring-context'
+            entry 'spring-core'
+            entry 'spring-expression'
+            entry 'spring-jcl'
+            entry 'spring-jdbc'
+            entry 'spring-orm'
+            entry 'spring-tx'
+            entry 'spring-web'
+            entry 'spring-webmvc'
+        }
+
+        //CVE-2021-27568
+        dependencySet(group: 'net.minidev', version: '2.4.7') {
+            entry 'json-smart'
+        }
     }
 }
 
@@ -352,7 +371,8 @@ def coverageExclusionList = [
     '**uk/gov/hmcts/reform/em/npa/ccd/dto/*',
     '**uk/gov/hmcts/reform/em/npa/ccd/exception/*',
     '**uk/gov/hmcts/reform/em/npa/service/exception/*',
-    '**uk/gov/hmcts/reform/em/npa/service/dto/redaction/*'
+    '**uk/gov/hmcts/reform/em/npa/service/dto/redaction/*',
+    '**uk/gov/hmcts/reform/em/npa/info/*'
 ]
 
 checkstyle {
