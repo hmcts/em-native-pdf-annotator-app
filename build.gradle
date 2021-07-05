@@ -280,7 +280,7 @@ dependencies {
     contractTestCompile group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.13'
     contractTestCompile group: 'org.apache.httpcomponents', name: 'fluent-hc', version: '4.5.13'
 
-    aatCompile 'com.github.hmcts:em-test-helper:1.19'
+    aatCompile 'com.github.hmcts:em-test-helper:1.19.1'
     aatCompile group: 'org.apache.poi', name: 'poi', version: '5.0.0'
     aatCompile group: 'org.apache.poi', name: 'poi-ooxml', version: '5.0.0'
 
