@@ -118,6 +118,16 @@ resource "azurerm_key_vault_secret" "local_app_insights_key" {
   key_vault_id = module.key_vault.key_vault_id
 }
 
+resource "azurerm_key_vault_secret" "FORTIFY_USER_NAME" {
+  name         = "fortify-on-demand-username"
+  key_vault_id = module.key_vault.key_vault_id
+}
+
+resource "azurerm_key_vault_secret" "FORTIFY_PASSWORD" {
+  name         = "fortify-on-demand-password"
+  key_vault_id = module.key_vault.key_vault_id
+}
+
 data "azurerm_subnet" "postgres" {
   name                 = "core-infra-subnet-0-${var.env}"
   resource_group_name  = "core-infra-${var.env}"
