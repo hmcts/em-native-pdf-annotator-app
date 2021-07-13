@@ -500,7 +500,7 @@ pitest {
 
     logger.lifecycle("Runs PIT  Tests")
 
-    pitestVersion = "1.6.0"
+    pitestVersion = "1.6.2"
     testPlugin = "junit5"
     junit5PluginVersion = "0.14"
     
