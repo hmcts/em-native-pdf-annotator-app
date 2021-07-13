@@ -499,10 +499,7 @@ compileJava.dependsOn processResources
 pitest {
 
     logger.lifecycle("Runs PIT  Tests")
-
-    pitestVersion = "1.5.2"
-    testPlugin = "junit5"
-    junit5PluginVersion = "0.12"
+    junit5PluginVersion = "0.14"
     
     targetClasses = ['uk.gov.hmcts.reform.em.npa.*']
 
@@ -521,7 +518,7 @@ pitest {
     mainSourceSets = [sourceSets.main]
     fileExtensionsToFilter.addAll('xml','json')
     outputFormats = ['XML', 'HTML','CSV']
-    mutationThreshold = 5
+    mutationThreshold = 80
     coverageThreshold = 0
     maxMutationsPerClass = 15
     jvmArgs = ['-Xms1G','-Xmx3G']
