@@ -257,6 +257,8 @@ dependencies {
     testCompile "org.junit.jupiter:junit-jupiter-api:5.6.3"
     testRuntime "org.junit.jupiter:junit-jupiter-engine:5.6.3"
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.6.3"
+    testImplementation group: 'org.pitest', name: 'pitest', version:'1.5.2'
+    testImplementation 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.5.2'
 
     testCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenityRestAssured, withoutStuff
     testCompile group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity, withoutStuff
@@ -499,20 +501,15 @@ compileJava.dependsOn processResources
 pitest {
 
     logger.lifecycle("Runs PIT  Tests")
-
-    pitestVersion = "1.5.2"
-    testPlugin = "junit5"
-    junit5PluginVersion = "0.12"
-    
     targetClasses = ['uk.gov.hmcts.reform.em.npa.*']
 
     excludedClasses = [
             'uk.gov.hmcts.reform.em.npa.appinsights.*' ,
             'uk.gov.hmcts.reform.em.npa.domain.*' ,
             'uk.gov.hmcts.reform.em.npa.info.*',
-            'uk.gov.hmcts.reform.em.npa.Application.java'
+            'uk.gov.hmcts.reform.em.npa.Application.java',
+            'uk.gov.hmcts.reform.em.npa.infrastructure.*'
     ]
-
     enableDefaultIncrementalAnalysis = true
     historyInputLocation = 'build/reports/pitest/fastermutationtesting'
     historyOutputLocation = 'build/reports/pitest/fastermutationtestingoutput'
@@ -521,14 +518,16 @@ pitest {
     mainSourceSets = [sourceSets.main]
     fileExtensionsToFilter.addAll('xml','json')
     outputFormats = ['XML', 'HTML','CSV']
-    mutationThreshold = 5
     coverageThreshold = 0
     maxMutationsPerClass = 15
     jvmArgs = ['-Xms1G','-Xmx3G']
     timestampedReports = false
     failWhenNoMutations = false
     detectInlinedCode = true
-
+    threads = 10
+    outputFormats = ['XML', 'HTML']
+    timestampedReports = false
+    failWhenNoMutations = false
 }
 
 project.tasks['pitest'].group = "Verification"
