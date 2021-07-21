@@ -8,6 +8,7 @@ import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 import uk.gov.hmcts.reform.em.npa.repository.IdamRepository;
 
 import java.util.Map;
@@ -24,6 +25,9 @@ public class SecurityUtils {
     public static final String TOKEN_NAME = "tokenName";
 
     private final IdamRepository idamRepository;
+
+    @Autowired
+    private AuthTokenValidator authTokenValidator;
 
     @Autowired
     public SecurityUtils(final IdamRepository idamRepository){
@@ -61,4 +65,7 @@ public class SecurityUtils {
             });
     }
 
+    public String getServiceName(final String token) {
+        return authTokenValidator.getServiceName(token);
+    }
 }
