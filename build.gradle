@@ -137,10 +137,13 @@ dependencyCheck {
     suppressionFile = 'config/owasp/dependency-check-suppressions.xml'
 }
 
+configurations.all {
+    exclude group: 'com.vaadin.external.google'
+}
+
 dependencies {
 
     def withoutStuff = {
-        exclude group: 'com.vaadin.external.google', module: 'android-json'
         exclude group: 'com.sun.xml.bind', module: 'jaxb-osgi'
         exclude group: 'uk.gov.hmcts.reform', module: 'java-logging-spring'
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-security'
