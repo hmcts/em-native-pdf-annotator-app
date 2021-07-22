@@ -285,7 +285,7 @@ public class DocumentTaskResourceIntTest {
 
     @Test
     @Transactional
-    @Ignore
+    @Ignore("need to find out why this test is ignored")
     public void updateDocumentTask() throws Exception {
         // Initialize the database
         documentTaskRepository.saveAndFlush(documentTask);

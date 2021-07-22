@@ -31,19 +31,18 @@ public class ServiceNameAspect {
             + " execution(* uk.gov.hmcts.reform.em.npa.rest.RedactionResource.*(..))")
     public void logServiceName() {
 
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-        if (Objects.nonNull(request)) {
-            String s2sToken = request.getHeader("serviceauthorization");
-            if (StringUtils.isNotBlank(s2sToken)) {
-                String serviceName;
-                if (s2sToken.startsWith(BEARER)) {
-                    serviceName = securityUtils.getServiceName(s2sToken);
-                } else {
-                    serviceName = securityUtils.getServiceName(BEARER + s2sToken);
-                }
-                log.info("em-npa : Endpoint : {}  for : {} method is accessed by {} ", request.getRequestURI(),
-                    request.getMethod(), serviceName);
+        HttpServletRequest request =
+                ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        String s2sToken = request.getHeader("serviceauthorization");
+        if (StringUtils.isNotBlank(s2sToken)) {
+            String serviceName;
+            if (s2sToken.startsWith(BEARER)) {
+                serviceName = securityUtils.getServiceName(s2sToken);
+            } else {
+                serviceName = securityUtils.getServiceName(BEARER + s2sToken);
             }
+            log.info("em-npa : Endpoint : {}  for : {} method is accessed by {} ", request.getRequestURI(),
+                request.getMethod(), serviceName);
         }
     }
 }
