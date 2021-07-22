@@ -45,51 +45,61 @@ public class AnnotationSetDTOToPDAnnotationMapperImpl implements AnnotationSetDT
         try {
             List<PDAnnotation> currentPageList = pdPage.getAnnotations();
 
-            String allComments = annotationDTO.getComments() != null ?
-                    annotationDTO.getComments().stream().sorted(Comparator.comparing(CommentDTO::getCreatedDate)).map(CommentDTO::getContent).collect(Collectors.joining("\n")) : null;
+            String allComments = annotationDTO.getComments() != null ? annotationDTO.getComments().stream()
+                            .sorted(Comparator.comparing(CommentDTO::getCreatedDate))
+                            .map(CommentDTO::getContent)
+                            .collect(Collectors.joining("\n")) : null;
 
             if (annotationDTO.getRectangles() != null) {
 
                 annotationDTO.getRectangles().forEach(rectangleDTO -> {
-
                     PDRectangle position = rectangleDTOToPDRectangle(pdPage, rectangleDTO);
-
-                    PDAnnotationTextMarkup markup = new PDAnnotationTextMarkup(PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT);
-                    markup.setContents(allComments);
-                    markup.setColor(getColor(annotationDTO));
-                    markup.setRectangle(position);
-                    markup.setQuadPoints(getQuadsWithRectangle(position));
-                    markup.setPrinted(true);
-
-                    if (annotationDTO.getCreatedDate() != null) {
-                        markup.setCreationDate(GregorianCalendar.from(ZonedDateTime.ofInstant(annotationDTO.getCreatedDate(), ZoneId.systemDefault())));
-                    }
-                    if (annotationDTO.getLastModifiedDate() != null) {
-                        markup.setModifiedDate(GregorianCalendar.from(ZonedDateTime.ofInstant(annotationDTO.getLastModifiedDate(), ZoneId.systemDefault())));
-                    }
-                    if (annotationDTO.getLastModifiedByDetails() != null ) {
-                        markup.getCOSObject().setItem(COSName.T, new COSString(extractUserDetails(annotationDTO.getLastModifiedByDetails())));
-                    } else if (annotationDTO.getCreatedByDetails() != null) {
-                        markup.getCOSObject().setItem(COSName.T, new COSString(extractUserDetails(annotationDTO.getCreatedByDetails())));
-                    }
-
-                    currentPageList.add(markup);
-
-                    PDAnnotationPopup pdAnnotationPopup = new PDAnnotationPopup();
-                    pdAnnotationPopup.setContents(allComments);
-                    pdAnnotationPopup.setRectangle(position);
-                    pdAnnotationPopup.setPrinted(true);
-
-                    if (annotationDTO.getLastModifiedDate() != null) {
-                        pdAnnotationPopup.setModifiedDate(GregorianCalendar.from(ZonedDateTime.ofInstant(annotationDTO.getLastModifiedDate(), ZoneId.systemDefault())));
-                    }
-                    currentPageList.add(pdAnnotationPopup);
-
+                    currentPageList.add(createMarkup(allComments, annotationDTO, position));
+                    currentPageList.add(createAnnotationPopup(allComments, position, annotationDTO));
                 });
             }
         } catch (IOException e) {
             throw new DocumentTaskProcessingException("Can't retrieve annotations from the document ", e);
         }
+    }
+
+    private PDAnnotationTextMarkup createMarkup(String allComments,
+                                                       AnnotationDTO annotationDTO,
+                                                       PDRectangle position) {
+        PDAnnotationTextMarkup markup = new PDAnnotationTextMarkup(PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT);
+        markup.setContents(allComments);
+        markup.setColor(getColor(annotationDTO));
+        markup.setRectangle(position);
+        markup.setQuadPoints(getQuadsWithRectangle(position));
+        markup.setPrinted(true);
+
+        if (annotationDTO.getCreatedDate() != null) {
+            markup.setCreationDate(GregorianCalendar.from(ZonedDateTime.ofInstant(annotationDTO.getCreatedDate(), ZoneId.systemDefault())));
+        }
+        if (annotationDTO.getLastModifiedDate() != null) {
+            markup.setModifiedDate(GregorianCalendar.from(ZonedDateTime.ofInstant(annotationDTO.getLastModifiedDate(), ZoneId.systemDefault())));
+        }
+        if (annotationDTO.getLastModifiedByDetails() != null ) {
+            markup.getCOSObject().setItem(COSName.T, new COSString(extractUserDetails(annotationDTO.getLastModifiedByDetails())));
+        } else if (annotationDTO.getCreatedByDetails() != null) {
+            markup.getCOSObject().setItem(COSName.T, new COSString(extractUserDetails(annotationDTO.getCreatedByDetails())));
+        }
+        return markup;
+    }
+
+    private PDAnnotationPopup createAnnotationPopup(String allComments,
+                                                    PDRectangle position,
+                                                    AnnotationDTO annotationDTO) {
+        PDAnnotationPopup pdAnnotationPopup = new PDAnnotationPopup();
+        pdAnnotationPopup.setContents(allComments);
+        pdAnnotationPopup.setRectangle(position);
+        pdAnnotationPopup.setPrinted(true);
+
+        if (annotationDTO.getLastModifiedDate() != null) {
+            pdAnnotationPopup.setModifiedDate(GregorianCalendar
+                    .from(ZonedDateTime.ofInstant(annotationDTO.getLastModifiedDate(), ZoneId.systemDefault())));
+        }
+        return pdAnnotationPopup;
     }
 
     private String extractUserDetails(IdamDetailsDTO idamDetailsDTO) {
