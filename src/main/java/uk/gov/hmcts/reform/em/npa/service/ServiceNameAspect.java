@@ -12,7 +12,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.hmcts.reform.em.npa.config.security.SecurityUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Objects;
 
 @Aspect
 @Component

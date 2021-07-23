@@ -123,14 +123,13 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
     }
 
     private Request createMultipartRequest(String url, MultipartBody requestBody) {
-        Request request = new Request.Builder()
+        return new Request.Builder()
                 .addHeader(USER_ID, securityUtils.getCurrentUserLogin().orElse(Constants.ANONYMOUS_USER))
                 .addHeader(USER_ROLES, CASEWORKER)
                 .addHeader(SERVICE_AUTHORIZATION, authTokenGenerator.generate())
                 .url(url)
                 .method("POST", requestBody)
                 .build();
-        return request;
     }
 
     private MediaType getMimeType(File file) throws IOException {
