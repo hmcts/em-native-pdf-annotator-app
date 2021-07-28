@@ -82,5 +82,4 @@ public class ExceptionTranslatorTestController {
     @SuppressWarnings("serial")
     public static class TestResponseStatusException extends RuntimeException {
     }
-
 }
