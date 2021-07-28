@@ -58,5 +58,4 @@ public class EntityAuditEventListener extends AuditingEntityListener {
     static void setBeanFactory(BeanFactory beanFactory) {
         EntityAuditEventListener.beanFactory = beanFactory;
     }
-
 }
