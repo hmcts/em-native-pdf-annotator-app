@@ -228,7 +228,7 @@ dependencies {
 
     compile group: 'uk.gov.hmcts.reform.auth', name: 'auth-checker-lib', version: '2.1.4'
     compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '4.0.0'
-
+    implementation 'com.github.hmcts:ccd-case-document-am-client:1.7.1'
     compile group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '2.0.0'
 
     compile group: 'org.apache.tika', name: 'tika-core', version: '2.0.0'
@@ -284,7 +284,7 @@ dependencies {
     contractTestCompile group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.13'
     contractTestCompile group: 'org.apache.httpcomponents', name: 'fluent-hc', version: '4.5.13'
 
-    aatCompile 'com.github.hmcts:em-test-helper:1.19.1'
+    aatCompile 'com.github.hmcts:em-test-helper:1.20.0'
     aatCompile group: 'org.apache.poi', name: 'poi', version: '5.0.0'
     aatCompile group: 'org.apache.poi', name: 'poi-ooxml', version: '5.0.0'
 

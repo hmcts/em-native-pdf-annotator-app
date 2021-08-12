@@ -15,4 +15,5 @@ public class RedactionRequest {
     private UUID documentId;
     private String redactedFileName;
     private List<RedactionDTO> redactions;
+    private boolean secureDocStoreEnabled;
 }

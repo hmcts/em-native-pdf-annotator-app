@@ -124,6 +124,9 @@ document_management:
   base-url: ${DM_STORE_APP_URL:http://localhost:4603}
   docker_url: http://dm-store:8080
 
+case_document_am:
+  url: http://localhost:4455
+
 # Delete when issueOverride variable is no longer used in SecurityConfiguration.class
 oidc:
   issuer: ${OIDC_ISSUER_BASE_URI:http://localhost:8080/openam/oauth2/hmcts}

@@ -49,6 +49,10 @@ docker-compose ${COMPOSE_FILE} up -d shared-database\
                                      dm-store \
                                      annotation-api \
                                      azure-storage-emulator-azurite \
+                                     ccd-user-profile-api \
+                                     ccd-definition-store-api \
+                                     ccd-data-store-api \
+                                     ccd-case-document-am-api \
                                      make-container-call
 
 echo "LOCAL ENVIRONMENT SUCCESSFULLY STARTED"

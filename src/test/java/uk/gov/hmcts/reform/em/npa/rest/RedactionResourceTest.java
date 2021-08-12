@@ -25,10 +25,17 @@ import uk.gov.hmcts.reform.em.npa.service.exception.FileTypeException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 
 @RunWith(SpringRunner.class)
@@ -92,14 +99,15 @@ public class RedactionResourceTest {
         HttpServletRequest request = mock(HttpServletRequest.class);
 
         when(request.getHeader("Authorization")).thenReturn("jwt");
-        when(redactionService.redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getRedactions()))
+        when(request.getHeader("ServiceAuthorization")).thenReturn("s2sToken");
+        when(redactionService.redactFile("jwt", "s2sToken",redactionRequest))
                 .thenReturn(TEST_PDF_FILE);
 
         ResponseEntity response = redactionResource.save(request, redactionRequest);
         assertEquals(200, response.getStatusCodeValue());
 
         verify(redactionService, Mockito.atMost(1))
-                .redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getRedactions());
+                .redactFile("jwt", "s2sToken",redactionRequest);
         verify(binder, Mockito.atMost(1))
             .setDisallowedFields(Constants.IS_ADMIN);
     }
@@ -110,14 +118,14 @@ public class RedactionResourceTest {
         HttpServletRequest request = mock(HttpServletRequest.class);
 
         when(request.getHeader("Authorization")).thenReturn("jwt");
-        when(redactionService.redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getRedactions()))
+        when(redactionService.redactFile("jwt", "s2sToken",redactionRequest))
                 .thenThrow(FileTypeException.class);
 
         ResponseEntity response = redactionResource.save(request, redactionRequest);
         assertEquals(400, response.getStatusCodeValue());
 
         verify(redactionService, Mockito.atMost(1))
-                .redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getRedactions());
+                .redactFile("jwt", "s2sToken",redactionRequest);
     }
 
     @Test

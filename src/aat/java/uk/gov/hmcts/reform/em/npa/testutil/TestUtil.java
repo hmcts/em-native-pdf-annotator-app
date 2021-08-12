@@ -9,6 +9,7 @@ import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClientApi;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 import uk.gov.hmcts.reform.em.test.dm.DmHelper;
@@ -46,6 +47,9 @@ public class TestUtil {
 
     @Autowired
     private DmHelper dmHelper;
+
+    @Autowired
+    private CaseDocumentClientApi caseDocumentClientApi;
 
     @Value("${annotation.api.url}")
     private String emAnnotationUrl;

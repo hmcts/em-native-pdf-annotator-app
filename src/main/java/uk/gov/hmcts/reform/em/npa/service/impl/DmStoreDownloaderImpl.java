@@ -8,10 +8,14 @@ import okhttp3.Response;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClientApi;
 import uk.gov.hmcts.reform.em.npa.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.npa.service.exception.DocumentTaskProcessingException;
 
@@ -19,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.UUID;
 
 
 @Service
@@ -36,6 +41,9 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
     private final String dmStoreDownloadEndpoint = "/documents/";
 
     private final ObjectMapper objectMapper;
+
+    @Autowired
+    private CaseDocumentClientApi caseDocumentClientApi;
 
     public DmStoreDownloaderImpl(OkHttpClient okHttpClient, AuthTokenGenerator authTokenGenerator,
                                  @Value("${document_management.base-url}") String dmStoreAppBaseUrl,
@@ -83,6 +91,19 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
             throw new DocumentTaskProcessingException(String.format("Could not access the binary: %s", e.getMessage()), e);
         }
 
+    }
+
+    @Override
+    public File downloadFile(String auth, String serviceAuth, UUID documentId) throws DocumentTaskProcessingException, IOException {
+
+        ResponseEntity<Resource> response;
+        try {
+            response =  caseDocumentClientApi.getDocumentBinary(auth, serviceAuth, documentId);
+        } catch (RuntimeException e) {
+            throw new DocumentTaskProcessingException(String.format("Could not access the binary: %s", e.getMessage()), e);
+        }
+
+        return response.getBody().getFile();
     }
 
     private Response getDocumentStoreResponse(String documentUri) throws IOException {

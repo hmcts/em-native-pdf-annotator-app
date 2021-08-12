@@ -12,14 +12,14 @@ import uk.gov.hmcts.reform.em.npa.redaction.PdfRedaction;
 import uk.gov.hmcts.reform.em.npa.repository.MarkUpRepository;
 import uk.gov.hmcts.reform.em.npa.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.npa.service.RedactionService;
-import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionRequest;
 import uk.gov.hmcts.reform.em.npa.service.exception.DocumentTaskProcessingException;
 import uk.gov.hmcts.reform.em.npa.service.exception.FileTypeException;
 import uk.gov.hmcts.reform.em.npa.service.exception.RedactionProcessingException;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.List;
 
 @Service
 public class RedactionServiceImpl implements RedactionService {
@@ -45,22 +45,29 @@ public class RedactionServiceImpl implements RedactionService {
     }
 
     @Override
-    public File redactFile(String jwt, String caseId, UUID documentId, List<RedactionDTO> redactionDTOList) {
+    public File redactFile(String auth, String serviceAuth, RedactionRequest redactionRequest) {
         try {
-            File originalFile = dmStoreDownloader.downloadFile(documentId.toString());
+            File originalFile;
+            if (redactionRequest.isSecureDocStoreEnabled()) {
+                originalFile = dmStoreDownloader.downloadFile(auth, serviceAuth, redactionRequest.getDocumentId());
+            } else {
+                originalFile = dmStoreDownloader.downloadFile(redactionRequest.getDocumentId().toString());
+            }
+
             String fileType = FilenameUtils.getExtension(originalFile.getName());
 
             File updatedFile;
             if (fileType.equalsIgnoreCase("pdf")) {
                 log.info("Applying redaction to PDF file");
-                updatedFile = pdfRedaction.redactPdf(originalFile, redactionDTOList);
+                updatedFile = pdfRedaction.redactPdf(originalFile, redactionRequest.getRedactions());
             } else if (imageExtensionsList.contains(fileType.toLowerCase())) {
                 log.info("Applying redaction to Image Document");
-                updatedFile = imageRedaction.redactImage(originalFile, redactionDTOList.get(0).getRectangles());
+                updatedFile = imageRedaction.redactImage(originalFile, redactionRequest.getRedactions().get(0).getRectangles());
             } else {
                 throw new FileTypeException("Redaction cannot be applied to the file type provided");
             }
-            markUpRepository.deleteAllByDocumentIdAndCreatedBy(documentId, securityUtils.getCurrentUserLogin().orElse(Constants.ANONYMOUS_USER));
+            markUpRepository.deleteAllByDocumentIdAndCreatedBy(redactionRequest.getDocumentId(),
+                securityUtils.getCurrentUserLogin().orElse(Constants.ANONYMOUS_USER));
             return updatedFile;
         } catch (DocumentTaskProcessingException e) {
             log.error(e.getMessage(), e);
