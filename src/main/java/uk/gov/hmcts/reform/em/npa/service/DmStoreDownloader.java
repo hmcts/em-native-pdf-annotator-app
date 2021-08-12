@@ -10,6 +10,6 @@ public interface DmStoreDownloader {
 
     File downloadFile(String id) throws DocumentTaskProcessingException;
 
-    File downloadFile(String auth, String serviceAuth, UUID documentId) throws DocumentTaskProcessingException, IOException;
+    File downloadFile(String auth, String serviceAuth, UUID documentId) throws IOException;
 
 }

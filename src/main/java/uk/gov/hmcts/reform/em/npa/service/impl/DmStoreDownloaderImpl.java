@@ -94,14 +94,9 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
     }
 
     @Override
-    public File downloadFile(String auth, String serviceAuth, UUID documentId) throws DocumentTaskProcessingException, IOException {
+    public File downloadFile(String auth, String serviceAuth, UUID documentId) throws IOException {
 
-        ResponseEntity<Resource> response;
-        try {
-            response =  caseDocumentClientApi.getDocumentBinary(auth, serviceAuth, documentId);
-        } catch (RuntimeException e) {
-            throw new DocumentTaskProcessingException(String.format("Could not access the binary: %s", e.getMessage()), e);
-        }
+        ResponseEntity<Resource> response =  caseDocumentClientApi.getDocumentBinary(auth, serviceAuth, documentId);
 
         return response.getBody().getFile();
     }

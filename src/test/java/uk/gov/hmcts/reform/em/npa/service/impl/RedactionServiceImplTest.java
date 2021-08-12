@@ -83,7 +83,7 @@ public class RedactionServiceImplTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         redactionService.imageExtensionsList = Arrays.asList("png","jpeg");
         initRedactionDTOList();
     }
@@ -116,6 +116,18 @@ public class RedactionServiceImplTest {
 
         File result = redactionService.redactFile("jwt", "s2sToken", createRedactionRequest("caseId", docStoreUUID,
             redactions));
+        Assert.assertEquals(result.getName(), mockFile.getName());
+    }
+
+    @Test
+    public void redactPdfFileCdamTest() throws DocumentTaskProcessingException, IOException {
+        File mockFile = new File("prosecution1.pdf");
+        Mockito.when(dmStoreDownloader.downloadFile("jwt", "s2sToken", docStoreUUID)).thenReturn(mockFile);
+        Mockito.when(pdfRedaction.redactPdf(mockFile, redactions)).thenReturn(mockFile);
+
+        RedactionRequest redactionRequest = createRedactionRequest("caseId", docStoreUUID, redactions);
+        redactionRequest.setSecureDocStoreEnabled(true);
+        File result = redactionService.redactFile("jwt", "s2sToken", redactionRequest);
         Assert.assertEquals(result.getName(), mockFile.getName());
     }
 
