@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.Objects;
 import java.util.UUID;
 
 
@@ -98,7 +99,7 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
 
         ResponseEntity<Resource> response =  caseDocumentClientApi.getDocumentBinary(auth, serviceAuth, documentId);
 
-        return response.getBody().getFile();
+        return Objects.nonNull(response.getBody()) ? response.getBody().getFile() : null;
     }
 
     private Response getDocumentStoreResponse(String documentUri) throws IOException {
