@@ -109,7 +109,7 @@ def versions = [
         sonarPitest        : '0.5',
         fasterXmlJackson   : '2.12.3',
         hibernate          : '5.4.25.Final',
-        springSecurity     : '5.4.6'
+        springSecurity     : '5.4.7'
 ]
 
 sourceSets {
@@ -139,6 +139,7 @@ dependencyCheck {
 
 configurations.all {
     exclude group: 'com.vaadin.external.google'
+    exclude group: 'org.glassfish', module: 'jakarta.el'
 }
 
 dependencies {
