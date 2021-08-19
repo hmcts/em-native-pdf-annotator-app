@@ -138,8 +138,9 @@ dependencyCheck {
 }
 
 configurations.all {
-    exclude group: 'com.vaadin.external.google'
+    exclude group: 'com.vaadin.external.google',module: 'android-json'
     exclude group: 'org.glassfish', module: 'jakarta.el'
+    exclude group: 'com.nimbusds', module: 'lang-tag'
 }
 
 dependencies {
