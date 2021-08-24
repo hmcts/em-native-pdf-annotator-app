@@ -106,7 +106,7 @@ public class AnnotationSetDTOToPDAnnotationMapperImpl implements AnnotationSetDT
         if (idamDetailsDTO != null && idamDetailsDTO.getForename() != null && idamDetailsDTO.getSurname() != null) {
             return idamDetailsDTO.getForename() + " " + idamDetailsDTO.getSurname();
         }
-        return null;
+        throw new RuntimeException("Name or surname was not provided ");
     }
 
     private PDColor getColor(AnnotationDTO annotationDTO) {

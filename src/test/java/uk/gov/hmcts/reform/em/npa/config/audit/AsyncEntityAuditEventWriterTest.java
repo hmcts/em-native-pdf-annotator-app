@@ -53,4 +53,15 @@ class AsyncEntityAuditEventWriterTest {
 
         verify(repository).save(new EntityAuditEvent());
     }
+
+    @Test
+    public void testWriteAuditEventUpdate() {
+        when(log.isTraceEnabled()).thenReturn(true);
+        Object target = new Redaction();
+
+        underTest.writeAuditEvent(target, EntityAuditAction.UPDATE);
+
+        verify(repository).save(new EntityAuditEvent());
+    }
+
 }
