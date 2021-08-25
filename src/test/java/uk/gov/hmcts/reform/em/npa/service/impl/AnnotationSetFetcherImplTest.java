@@ -21,7 +21,7 @@ public class AnnotationSetFetcherImplTest {
     @Autowired
     private AnnotationSetFetcher annotationSetFetcher;
 
-    @Ignore
+    @Ignore("This test is no more required. As the corresponding class is to be deleted.")
     @Test(expected = DocumentTaskProcessingException.class)
     public void fetchAnnotationSet() throws Exception {
         annotationSetFetcher.fetchAnnotationSet("whatever", "whatever");

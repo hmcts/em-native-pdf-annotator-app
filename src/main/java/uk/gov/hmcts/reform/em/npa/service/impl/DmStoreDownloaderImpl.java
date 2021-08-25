@@ -110,11 +110,12 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
 
             ByteArrayResource resource = (ByteArrayResource) response.getBody();
 
-            return copyResponseToFile(resource.getInputStream(), fileType);
-
-        } else {
-            throw new DocumentTaskProcessingException("Could not access the binary. HTTP response: " + response.getStatusCode());
+            if (Objects.nonNull(resource)) {
+                return copyResponseToFile(resource.getInputStream(), fileType);
+            }
         }
+
+        throw new DocumentTaskProcessingException("Could not access the binary. HTTP response: " + response.getStatusCode());
     }
 
     private Response getDocumentStoreResponse(String documentUri) throws IOException {
