@@ -125,7 +125,7 @@ document_management:
   docker_url: http://dm-store:8080
 
 case_document_am:
-  url: http://localhost:4455
+  url: ${CDAM_URL:http://localhost:4455}
 
 # Delete when issueOverride variable is no longer used in SecurityConfiguration.class
 oidc:
