@@ -48,6 +48,8 @@ public class RedactionServiceImpl implements RedactionService {
     public File redactFile(String auth, String serviceAuth, RedactionRequest redactionRequest) {
         try {
             File originalFile;
+            log.debug("isSecureDocStoreEnabled is : {} for documentId : {} ",
+                redactionRequest.isSecureDocStoreEnabled(), redactionRequest.getDocumentId());
             if (redactionRequest.isSecureDocStoreEnabled()) {
                 originalFile = dmStoreDownloader.downloadFile(auth, serviceAuth, redactionRequest.getDocumentId());
             } else {

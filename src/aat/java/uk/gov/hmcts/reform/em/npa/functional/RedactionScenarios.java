@@ -13,9 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
 import uk.gov.hmcts.reform.em.EmTestConfig;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionRequest;
+import uk.gov.hmcts.reform.em.npa.testutil.ExtendedCcdHelper;
 import uk.gov.hmcts.reform.em.npa.testutil.TestUtil;
 import uk.gov.hmcts.reform.em.test.retry.RetryRule;
 
@@ -26,7 +29,7 @@ import java.util.UUID;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-@SpringBootTest(classes = {TestUtil.class, EmTestConfig.class})
+@SpringBootTest(classes = {TestUtil.class, EmTestConfig.class, ExtendedCcdHelper.class})
 @TestPropertySource(value = "classpath:application.yml")
 @RunWith(SpringIntegrationSerenityRunner.class)
 @WithTags({@WithTag("testType:Functional")})
@@ -38,12 +41,16 @@ public class RedactionScenarios {
     @Autowired
     private TestUtil testUtil;
 
+    @Autowired
+    protected ExtendedCcdHelper extendedCcdHelper;
+
     @Rule
     public RetryRule retryRule = new RetryRule(3);
 
     private static final UUID documentId = UUID.randomUUID();
     private static final UUID redactionId = UUID.randomUUID();
     private RequestSpecification request;
+    private RequestSpecification cdamRequest;
     private RequestSpecification unAuthenticatedRequest;
 
     @Before
@@ -52,6 +59,11 @@ public class RedactionScenarios {
                 .authRequest()
                 .baseUri(testUrl)
                 .contentType(APPLICATION_JSON_VALUE);
+
+        cdamRequest = testUtil
+            .cdamAuthRequest()
+            .baseUri(testUrl)
+            .contentType(APPLICATION_JSON_VALUE);
 
         unAuthenticatedRequest = testUtil
                 .unauthenticatedRequest()
@@ -77,6 +89,41 @@ public class RedactionScenarios {
                 .body(notNullValue());
     }
 
+    @Test
+    public void shouldReturn200WhenRedactedPdfDocumentSecureDocEnabled() throws Exception {
+
+        UploadResponse uploadResponse = testUtil.uploadCdamDocument("a@b.com",
+            extendedCcdHelper.getEnvCcdCaseTypeId(), "PUBLICLAW");
+
+        String uploadedUrl = uploadResponse.getDocuments().get(0).links.self.href;
+        String docHash = uploadResponse.getDocuments().get(0).hashToken;
+
+        String documentString = extendedCcdHelper.getCcdDocumentJson("annotationTemplate", uploadedUrl,
+            "annotationTemplate.pdf", docHash);
+
+        CaseDetails caseDetails = extendedCcdHelper.createCase(documentString);
+
+        caseDetails = extendedCcdHelper.getCase(caseDetails.getId().toString());
+
+        String docId = uploadedUrl.substring(uploadResponse.getDocuments().get(0).links.self.href
+            .lastIndexOf('/') + 1);
+        final RedactionRequest redactionRequest = new RedactionRequest();
+        redactionRequest.setDocumentId(UUID.fromString(docId));
+
+        redactionRequest.setRedactions(Arrays.asList(createCdamRedaction(docId), createCdamRedaction(docId)));
+        redactionRequest.setSecureDocStoreEnabled(true);
+
+        final JSONObject jsonObject = new JSONObject(redactionRequest);
+
+        cdamRequest
+            .body(jsonObject)
+            .post("/api/redaction")
+            .then()
+            .assertThat()
+            .statusCode(200)
+            .body(notNullValue());
+
+    }
 
     @Test
     public void shouldReturn200WhenRedactedImage() {
@@ -172,6 +219,21 @@ public class RedactionScenarios {
                 .extract()
                 .body()
                 .as(RedactionDTO.class);
+    }
+
+    private RedactionDTO createCdamRedaction(String documentId) {
+        final RedactionDTO redactionDTO = testUtil.createRedactionDTO(UUID.fromString(documentId), redactionId);
+        redactionDTO.setPage(1);
+        final JSONObject jsonObject = new JSONObject(redactionDTO);
+
+        return request
+            .body(jsonObject)
+            .post("/api/markups")
+            .then()
+            .statusCode(201)
+            .extract()
+            .body()
+            .as(RedactionDTO.class);
     }
 
 }

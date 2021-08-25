@@ -44,14 +44,13 @@ public class ExtendedCcdHelper {
 
     private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
-    public final String createAutomatedBundlingCaseTemplate = "{\n"
+    public final String createCaseTemplate = "{\n"
             + "    \"caseTitle\": null,\n"
             + "    \"caseOwner\": null,\n"
             + "    \"caseCreationDate\": null,\n"
             + "    \"caseDescription\": null,\n"
             + "    \"caseComments\": null,\n"
-            + "    \"caseDocuments\": [%s],\n"
-            + "    \"bundleConfiguration\": \"f-tests-1-flat-docs.yaml\"\n"
+            + "    \"caseDocuments\": [%s]\n"
             + "  }";
     public final String documentTemplate = "{\n"
                     + "        \"value\": {\n"
@@ -59,59 +58,57 @@ public class ExtendedCcdHelper {
                     + "          \"documentLink\": {\n"
                     + "            \"document_url\": \"%s\",\n"
                     + "            \"document_binary_url\": \"%s/binary\",\n"
-                    + "            \"document_filename\": \"%s\"\n"
+                    + "            \"document_filename\": \"%s\",\n"
+                    + "            \"document_hash\": \"%s\"\n"
                     + "          }\n"
                     + "        }\n"
                     + "      }";
-    private String bundleTesterUser;
-    private List<String> bundleTesterUserRoles = Stream.of("caseworker", "caseworker-publiclaw", "ccd-import").collect(Collectors.toList());
+
+    private String redactionTestUser;
+    private List<String> redactionTestUserRoles = Stream.of("caseworker", "caseworker-publiclaw", "ccd-import").collect(Collectors.toList());
 
     @PostConstruct
     public void init() throws Exception {
-        initBundleTesterUser();
+        initRedactionTestUser();
         importCcdDefinitionFile();
     }
 
 
     public void importCcdDefinitionFile() throws Exception {
 
-        ccdDefinitionHelper.importDefinitionFile(
-                bundleTesterUser,
+        ccdDefinitionHelper.importDefinitionFile(redactionTestUser,
                 "caseworker-publiclaw",
                 getEnvSpecificDefinitionFile());
 
     }
 
     public CaseDetails createCase(String documents) throws Exception {
-        return ccdDataHelper.createCase(bundleTesterUser, "PUBLICLAW", getEnvCcdCaseTypeId(), "createCase",
-                objectMapper.readTree(String.format(createAutomatedBundlingCaseTemplate, documents)));
+        return ccdDataHelper.createCase(redactionTestUser, "PUBLICLAW", getEnvCcdCaseTypeId(), "createCase",
+            objectMapper.readTree(String.format(createCaseTemplate, documents)));
+    }
+
+    public CaseDetails getCase(String caseId) {
+        return ccdDataHelper.getCase(redactionTestUser, caseId);
     }
 
     public JsonNode triggerEvent(String caseId, String eventId) throws Exception {
-        return objectMapper.readTree(objectMapper.writeValueAsString(ccdDataHelper.triggerEvent(bundleTesterUser, caseId, eventId)));
+        return objectMapper.readTree(objectMapper.writeValueAsString(ccdDataHelper.triggerEvent(redactionTestUser,
+            caseId, eventId)));
     }
 
-    public JsonNode getCase(String caseId) throws Exception {
-        return objectMapper.readTree(objectMapper.writeValueAsString(ccdDataHelper.getCase(bundleTesterUser, caseId)));
+    public JsonNode getCaseJson(String caseId) throws Exception {
+        return objectMapper.readTree(objectMapper.writeValueAsString(ccdDataHelper.getCase(redactionTestUser, caseId)));
     }
 
     public String getEnvCcdCaseTypeId() {
-        return String.format("BUND_ASYNC_%d", testUrl.hashCode());
+        return String.format("REDACTION_%d", testUrl.hashCode());
     }
 
     public InputStream getEnvSpecificDefinitionFile() throws Exception {
-        Workbook workbook = new XSSFWorkbook(ClassLoader.getSystemResourceAsStream("adv_bundling_functional_tests_ccd_def.xlsx"));
+        Workbook workbook = new XSSFWorkbook(ClassLoader.getSystemResourceAsStream(
+            "adv_bundling_functional_tests_ccd_def.xlsx"));
         Sheet caseEventSheet = workbook.getSheet("CaseEvent");
 
-        caseEventSheet.getRow(5).getCell(11).setCellValue(
-                String.format("%s/api/new-bundle", getCallbackUrl())
-        );
-        caseEventSheet.getRow(7).getCell(11).setCellValue(
-                String.format("%s/api/async-stitch-ccd-bundles", getCallbackUrl())
-        );
-        caseEventSheet.getRow(8).getCell(11).setCellValue(
-                String.format("%s/api/clone-ccd-bundles", getCallbackUrl())
-        );
 
         Sheet caseTypeSheet = workbook.getSheet("CaseType");
 
@@ -127,7 +124,7 @@ public class ExtendedCcdHelper {
                     }
                     if (cell.getCellType().equals(CellType.STRING)
                             && cell.getStringCellValue().trim().equals("bundle-tester@gmail.com")) {
-                        cell.setCellValue(bundleTesterUser);
+                        cell.setCellValue(redactionTestUser);
                     }
                 }
             }
@@ -142,31 +139,18 @@ public class ExtendedCcdHelper {
         return new FileInputStream(outputFile);
     }
 
-    private String getCallbackUrl() {
-        if (testUrl.contains("localhost")) {
-            return "http://rpa-em-ccd-orchestrator:8080";
-        } else {
-            return testUrl.replaceAll("https", "http");
-        }
+    public void initRedactionTestUser() {
+        redactionTestUser = "a@b.com";
+        idamHelper.createUser(redactionTestUser, redactionTestUserRoles);
     }
 
-    public void initBundleTesterUser() {
-        bundleTesterUser = String.format("bundle-tester-%d@gmail.com", testUrl.hashCode());
-        idamHelper.createUser(bundleTesterUser, bundleTesterUserRoles);
-    }
-
-    public String getCcdDocumentJson(String documentName, String dmUrl, String fileName) {
-        return String.format(documentTemplate, documentName, dmUrl, dmUrl, fileName);
+    public String getCcdDocumentJson(String documentName, String dmUrl, String fileName, String dochash) {
+        return String.format(documentTemplate, documentName, dmUrl, dmUrl, fileName, dochash);
     }
 
     public JsonNode assignEnvCcdCaseTypeIdToCase(JsonNode ccdCase) {
         ((ObjectNode) ccdCase.get("case_details")).put("case_type_id", getEnvCcdCaseTypeId());
         return ccdCase;
-    }
-
-    public JsonNode loadCaseFromFile(String file) throws Exception {
-        return assignEnvCcdCaseTypeIdToCase(
-                objectMapper.readTree(ClassLoader.getSystemResource(file)));
     }
 
 }

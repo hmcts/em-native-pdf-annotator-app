@@ -7,11 +7,17 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClientApi;
+import org.springframework.web.multipart.MultipartFile;
+import uk.gov.hmcts.reform.ccd.document.am.model.Classification;
+import uk.gov.hmcts.reform.ccd.document.am.model.DocumentUploadRequest;
+import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
+import uk.gov.hmcts.reform.em.test.cdam.CdamHelper;
 import uk.gov.hmcts.reform.em.test.dm.DmHelper;
 import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
 import uk.gov.hmcts.reform.em.test.s2s.S2sHelper;
@@ -23,6 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -45,11 +52,16 @@ public class TestUtil {
     @Autowired
     private S2sHelper s2sHelper;
 
+
+    @Autowired
+    @Qualifier("ccdS2sHelper")
+    private S2sHelper cdamS2sHelper;
+
     @Autowired
     private DmHelper dmHelper;
 
     @Autowired
-    private CaseDocumentClientApi caseDocumentClientApi;
+    private CdamHelper cdamHelper;
 
     @Value("${annotation.api.url}")
     private String emAnnotationUrl;
@@ -60,7 +72,7 @@ public class TestUtil {
 
     @PostConstruct
     public void init() throws Exception {
-        idamHelper.createUser("a@b.com", Stream.of("caseworker").collect(Collectors.toList()));
+        idamHelper.createUser("a@b.com", Stream.of("caseworker", "caseworker-publiclaw", "ccd-import").collect(Collectors.toList()));
         SerenityRest.useRelaxedHTTPSValidation();
         idamAuth = idamHelper.authenticateUser("a@b.com");
         s2sAuth = s2sHelper.getS2sToken();
@@ -202,6 +214,11 @@ public class TestUtil {
                 .header("Authorization", idamAuth);
     }
 
+    public RequestSpecification cdamAuthRequest() {
+        return cdamS2sAuthRequest()
+            .header("Authorization", idamAuth);
+    }
+
     public RequestSpecification unauthenticatedRequest() {
         return SerenityRest.given();
     }
@@ -211,6 +228,13 @@ public class TestUtil {
                 .given()
                 .log().all()
                 .header("ServiceAuthorization", s2sAuth);
+    }
+
+    public RequestSpecification cdamS2sAuthRequest() {
+        return SerenityRest
+            .given()
+            .log().all()
+            .header("ServiceAuthorization", cdamS2sHelper.getS2sToken());
     }
 
     public RequestSpecification emptyIdamAuthRequest() {
@@ -252,5 +276,19 @@ public class TestUtil {
     private RequestSpecification invalidS2sAuthRequest() {
 
         return SerenityRest.given().header("ServiceAuthorization", "invalidS2SAuthorization");
+    }
+
+    public UploadResponse uploadCdamDocument(String username, String caseTypeId, String jurisdictionId) throws IOException {
+
+        final MultipartFile multipartFile = new MockMultipartFile(
+            "annotationTemplate.pdf",
+            "annotationTemplate.pdf",
+            "application/pdf",
+            ClassLoader.getSystemResourceAsStream("annotationTemplate.pdf"));
+
+        DocumentUploadRequest uploadRequest = new DocumentUploadRequest(Classification.PUBLIC.toString(), caseTypeId,
+            jurisdictionId, Arrays.asList(multipartFile));
+
+        return cdamHelper.uploadDocuments(username, uploadRequest);
     }
 }

@@ -31,8 +31,8 @@ s2s:
     url: ${S2S_BASE_URI:http://localhost:4502}
     secret: ${FUNCTIONAL_TEST_CLIENT_S2S_TOKEN:AAAAAAAAAAAAAAAA}
     serviceName: ${S2S_SERVICE_NAME:em_gw}
-    ccdGwSecret: ${FUNCTIONAL_TEST_CCD_GW_SERVICE_SECRET:AAAAAAAAAAAAAAAA}
-    ccdGwServiceName: ${CCD_GW_SERVICE_NAME:ccd_gw}
+    ccdGwSecret: ${FUNCTIONAL_TEST_XUI_WEBAPP_SERVICE_SECRET:AAAAAAAAAAAAAAAA}
+    ccdGwServiceName: ${XUI_WEBAPP_SERVICE_NAME:xui_webapp}
 
 
 ccd-def:
