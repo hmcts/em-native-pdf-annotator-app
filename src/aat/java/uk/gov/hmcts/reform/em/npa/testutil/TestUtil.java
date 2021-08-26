@@ -52,11 +52,6 @@ public class TestUtil {
     @Autowired
     private S2sHelper s2sHelper;
 
-
-    @Autowired
-    @Qualifier("ccdS2sHelper")
-    private S2sHelper ccdS2sHelper;
-
     @Autowired
     @Qualifier("xuiS2sHelper")
     private S2sHelper cdamS2sHelper;
