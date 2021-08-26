@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
 import uk.gov.hmcts.reform.em.EmTestConfig;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
@@ -101,9 +100,7 @@ public class RedactionScenarios {
         String documentString = extendedCcdHelper.getCcdDocumentJson("annotationTemplate", uploadedUrl,
             "annotationTemplate.pdf", docHash);
 
-        CaseDetails caseDetails = extendedCcdHelper.createCase(documentString);
-
-        caseDetails = extendedCcdHelper.getCase(caseDetails.getId().toString());
+        extendedCcdHelper.createCase(documentString);
 
         String docId = uploadedUrl.substring(uploadResponse.getDocuments().get(0).links.self.href
             .lastIndexOf('/') + 1);
