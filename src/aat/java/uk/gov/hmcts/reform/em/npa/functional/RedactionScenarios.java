@@ -123,6 +123,40 @@ public class RedactionScenarios {
     }
 
     @Test
+    public void shouldReturn400WhenRedactedPdfDocumentSecureDocEnabled() throws Exception {
+
+        UploadResponse uploadResponse = testUtil.uploadCdamDocument("a@b.com",
+            extendedCcdHelper.getEnvCcdCaseTypeId(), "PUBLICLAW");
+
+        String uploadedUrl = uploadResponse.getDocuments().get(0).links.self.href;
+        String docHash = uploadResponse.getDocuments().get(0).hashToken;
+
+        String documentString = extendedCcdHelper.getCcdDocumentJson("annotationTemplate", uploadedUrl,
+            "annotationTemplate.pdf", docHash);
+
+        extendedCcdHelper.createCase(documentString);
+
+        String docId = uploadedUrl.substring(uploadResponse.getDocuments().get(0).links.self.href
+            .lastIndexOf('/') + 1);
+        final RedactionRequest redactionRequest = new RedactionRequest();
+        redactionRequest.setDocumentId(UUID.fromString(docId));
+
+        redactionRequest.setRedactions(Arrays.asList(createCdamRedaction(docId), createCdamRedaction(docId)));
+        redactionRequest.setSecureDocStoreEnabled(true);
+
+        final JSONObject jsonObject = new JSONObject(redactionRequest);
+
+        request
+            .body(jsonObject)
+            .post("/api/redaction")
+            .then()
+            .assertThat()
+            .statusCode(400)
+            .body(notNullValue());
+
+    }
+
+    @Test
     public void shouldReturn200WhenRedactedImage() {
         final String newDocId = testUtil.uploadImageDocumentAndReturnUrl();
         final RedactionRequest redactionRequest = new RedactionRequest();
