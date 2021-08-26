@@ -58,6 +58,7 @@ withNightlyPipeline(type , product, component) {
     env.EM_ANNO_APP_URL = 'http://em-anno-aat.service.core-compute-aat.internal'
     env.CCD_DEF_API = 'http://ccd-definition-store-api-aat.service.core-compute-aat.internal'
     env.CCD_DATA_API = 'http://ccd-data-store-api-aat.service.core-compute-aat.internal'
+    env.CDAM_URL = 'http://ccd-case-document-am-api-aat.service.core-compute-aat.internal'
 
     env.TEST_URL = "http://em-npa-aat.service.core-compute-aat.internal"
 
