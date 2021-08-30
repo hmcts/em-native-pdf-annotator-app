@@ -218,7 +218,7 @@ dependencies {
     compile group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
     compile group: 'commons-validator', name: 'commons-validator', version: '1.7'
     compile "javax.transaction:javax.transaction-api"
-    compile group: 'org.ehcache', name: 'ehcache', version: '3.9.5'
+    compile group: 'org.ehcache', name: 'ehcache', version: '3.9.6'
 
     compile "com.zaxxer:HikariCP:5.0.0"
     compile group: 'javax.el', name: 'javax.el-api', version: '3.0.0'
