@@ -106,7 +106,7 @@ public class ExtendedCcdHelper {
 
     public InputStream getEnvSpecificDefinitionFile() throws Exception {
         Workbook workbook = new XSSFWorkbook(ClassLoader.getSystemResourceAsStream(
-            "adv_bundling_functional_tests_ccd_def.xlsx"));
+            "adv_redaction_functional_tests_ccd_def.xlsx"));
         Sheet caseEventSheet = workbook.getSheet("CaseEvent");
 
 
