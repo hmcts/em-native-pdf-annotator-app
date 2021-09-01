@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.em.npa.service.exception.DocumentTaskProcessingExcept
 @SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
 @Transactional
 @Ignore
+//TODO need to fix this test
 public class AnnotationSetFetcherImplTest {
 
     @Autowired

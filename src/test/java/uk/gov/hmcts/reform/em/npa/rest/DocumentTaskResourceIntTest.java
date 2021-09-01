@@ -286,6 +286,7 @@ public class DocumentTaskResourceIntTest {
     @Test
     @Transactional
     @Ignore
+    //TODO Need to fix this test
     public void updateDocumentTask() throws Exception {
         // Initialize the database
         documentTaskRepository.saveAndFlush(documentTask);

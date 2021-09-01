@@ -30,7 +30,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @TestPropertySource(value = "classpath:application.yml")
 @RunWith(SpringIntegrationSerenityRunner.class)
 @WithTags({@WithTag("testType:Functional")})
-@Ignore
 public class DocumentTaskScenarios extends BaseTest {
 
     @Autowired
@@ -46,6 +45,9 @@ public class DocumentTaskScenarios extends BaseTest {
 
     @Before
     public void setupRequestSpecification() {
+        // If the Document Task Endpoint Toggle is enabled, continue, if not skip and ignore
+        Assume.assumeTrue(toggleProperties.isEnableDocumentTaskEndpoint());
+
         request = testUtil
                 .authRequest()
                 .baseUri(testUrl)

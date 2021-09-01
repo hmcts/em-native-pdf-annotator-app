@@ -58,6 +58,7 @@ public class MarkUpScenarios extends BaseTest {
                 .baseUri(testUrl)
                 .contentType(APPLICATION_JSON_VALUE);
 
+        // If the Document Task Endpoint Toggle is enabled, continue, if not skip and ignore
         Assume.assumeTrue(toggleProperties.isEnableDocumentTaskEndpoint());
     }
 
