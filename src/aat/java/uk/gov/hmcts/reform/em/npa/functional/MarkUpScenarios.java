@@ -9,6 +9,7 @@ import org.hamcrest.Matchers;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,7 +32,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @TestPropertySource(value = "classpath:application.yml")
 @RunWith(SpringIntegrationSerenityRunner.class)
 @WithTags({@WithTag("testType:Functional")})
-public class MarkUpScenarios {
+public class MarkUpScenarios extends BaseTest {
 
     @Autowired
     private TestUtil testUtil;
@@ -56,6 +57,8 @@ public class MarkUpScenarios {
                 .unauthenticatedRequest()
                 .baseUri(testUrl)
                 .contentType(APPLICATION_JSON_VALUE);
+
+        Assume.assumeTrue(toggleProperties.isEnableDocumentTaskEndpoint());
     }
 
     @Test
@@ -127,6 +130,8 @@ public class MarkUpScenarios {
         final String rectangleId = UUID.randomUUID().toString();
         final ValidatableResponse response = createMarkUp(redactionId, documentId, rectangleId);
         final String docId = extractJsonObjectFromResponse(response).getString("documentId");
+
+//        Assume.assumeTrue(toggleProperties.isEnableDocumentTaskEndpoint());
 
         request
                 .get("/api/markups/" + docId)

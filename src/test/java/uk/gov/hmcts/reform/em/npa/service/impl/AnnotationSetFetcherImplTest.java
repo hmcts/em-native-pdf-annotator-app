@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.npa.service.impl;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.reform.em.npa.service.exception.DocumentTaskProcessingExcept
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
 @Transactional
+@Ignore
 public class AnnotationSetFetcherImplTest {
 
     @Autowired
