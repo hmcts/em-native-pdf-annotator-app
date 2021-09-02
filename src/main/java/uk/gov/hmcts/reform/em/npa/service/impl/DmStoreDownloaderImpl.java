@@ -8,26 +8,17 @@ import okhttp3.Response;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClientApi;
-import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.em.npa.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.npa.service.exception.DocumentTaskProcessingException;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.Objects;
-import java.util.UUID;
 
 
 @Service
@@ -45,9 +36,6 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
     private final String dmStoreDownloadEndpoint = "/documents/";
 
     private final ObjectMapper objectMapper;
-
-    @Autowired
-    private CaseDocumentClientApi caseDocumentClientApi;
 
     public DmStoreDownloaderImpl(OkHttpClient okHttpClient, AuthTokenGenerator authTokenGenerator,
                                  @Value("${document_management.base-url}") String dmStoreAppBaseUrl,
@@ -69,7 +57,7 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
             if (response.isSuccessful()) {
                 JsonNode documentMetaData = objectMapper.readTree(response.body().byteStream());
 
-                log.debug("Accessing binary of the DM document: {}",
+                log.info("Accessing binary of the DM document: {}",
                     objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(documentMetaData));
 
                 String documentBinaryUrl = new StringBuffer()
@@ -81,11 +69,11 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
                 String originalDocumentName = documentMetaData.get("originalDocumentName").asText();
                 String fileType = FilenameUtils.getExtension(originalDocumentName);
 
-                log.debug("Accessing documentBinaryUrl: {}", documentBinaryUrl);
+                log.info("Accessing documentBinaryUrl: {}", documentBinaryUrl);
 
                 Response binaryResponse = getDocumentStoreResponse(documentBinaryUrl);
 
-                return copyResponseToFile(binaryResponse.body().byteStream(), fileType);
+                return copyResponseToFile(binaryResponse, fileType);
 
             } else {
                 throw new DocumentTaskProcessingException("Could not access the binary. HTTP response: " + response.code());
@@ -95,27 +83,6 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
             throw new DocumentTaskProcessingException(String.format("Could not access the binary: %s", e.getMessage()), e);
         }
 
-    }
-
-    @Override
-    public File downloadFile(String auth, String serviceAuth, UUID documentId) throws IOException, DocumentTaskProcessingException {
-
-        ResponseEntity<Resource> response =  caseDocumentClientApi.getDocumentBinary(auth, serviceAuth, documentId);
-
-        if (Objects.nonNull(response.getBody())) {
-
-            Document document = caseDocumentClientApi.getMetadataForDocument(auth, serviceAuth, documentId);
-            String originalDocumentName = document.originalDocumentName;
-            String fileType = FilenameUtils.getExtension(originalDocumentName);
-
-            ByteArrayResource resource = (ByteArrayResource) response.getBody();
-
-            if (Objects.nonNull(resource)) {
-                return copyResponseToFile(resource.getInputStream(), fileType);
-            }
-        }
-
-        throw new DocumentTaskProcessingException("Could not access the binary. HTTP response: " + response.getStatusCode());
     }
 
     private Response getDocumentStoreResponse(String documentUri) throws IOException {
@@ -129,11 +96,11 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
             .build()).execute();
     }
 
-    private File copyResponseToFile(InputStream inputStream, String fileType) throws DocumentTaskProcessingException {
+    private File copyResponseToFile(Response response, String fileType) throws DocumentTaskProcessingException {
         try {
 
             File tempFile = File.createTempFile("dm-store", "."+fileType);
-            Files.copy(inputStream, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(response.body().byteStream(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
             return tempFile;
         } catch (IOException e) {

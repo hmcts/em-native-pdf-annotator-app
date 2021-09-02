@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.em.npa.config.security.SecurityUtils;
 import uk.gov.hmcts.reform.em.npa.redaction.ImageRedaction;
 import uk.gov.hmcts.reform.em.npa.redaction.PdfRedaction;
 import uk.gov.hmcts.reform.em.npa.repository.MarkUpRepository;
+import uk.gov.hmcts.reform.em.npa.service.CdamService;
 import uk.gov.hmcts.reform.em.npa.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.npa.service.RedactionService;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionRequest;
@@ -31,17 +32,19 @@ public class RedactionServiceImpl implements RedactionService {
     private ImageRedaction imageRedaction;
     private MarkUpRepository markUpRepository;
     private SecurityUtils securityUtils;
+    private CdamService cdamService;
 
     @Value("#{'${redaction.multipart.image-ext}'.split(',')}")
     List<String> imageExtensionsList;
 
     public RedactionServiceImpl (DmStoreDownloader dmStoreDownloader, PdfRedaction pdfRedaction, ImageRedaction imageRedaction,
-                                 MarkUpRepository markUpRepository, SecurityUtils securityUtils) {
+                                 MarkUpRepository markUpRepository, SecurityUtils securityUtils, CdamService cdamService) {
         this.dmStoreDownloader = dmStoreDownloader;
         this.pdfRedaction = pdfRedaction;
         this.imageRedaction = imageRedaction;
         this.markUpRepository = markUpRepository;
         this.securityUtils = securityUtils;
+        this.cdamService = cdamService;
     }
 
     @Override
@@ -51,7 +54,7 @@ public class RedactionServiceImpl implements RedactionService {
             log.debug("isSecureDocStoreEnabled is : {} for documentId : {} ",
                 redactionRequest.isSecureDocStoreEnabled(), redactionRequest.getDocumentId());
             if (redactionRequest.isSecureDocStoreEnabled()) {
-                originalFile = dmStoreDownloader.downloadFile(auth, serviceAuth, redactionRequest.getDocumentId());
+                originalFile = cdamService.downloadFile(auth, serviceAuth, redactionRequest.getDocumentId());
             } else {
                 originalFile = dmStoreDownloader.downloadFile(redactionRequest.getDocumentId().toString());
             }
@@ -60,10 +63,10 @@ public class RedactionServiceImpl implements RedactionService {
 
             File updatedFile;
             if (fileType.equalsIgnoreCase("pdf")) {
-                log.info("Applying redaction to PDF file");
+                log.debug("Applying redaction to PDF file");
                 updatedFile = pdfRedaction.redactPdf(originalFile, redactionRequest.getRedactions());
             } else if (imageExtensionsList.contains(fileType.toLowerCase())) {
-                log.info("Applying redaction to Image Document");
+                log.debug("Applying redaction to Image Document");
                 updatedFile = imageRedaction.redactImage(originalFile, redactionRequest.getRedactions().get(0).getRectangles());
             } else {
                 throw new FileTypeException("Redaction cannot be applied to the file type provided");

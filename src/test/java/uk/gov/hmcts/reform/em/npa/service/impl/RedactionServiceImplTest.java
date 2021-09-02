@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.em.npa.config.security.SecurityUtils;
 import uk.gov.hmcts.reform.em.npa.redaction.ImageRedaction;
 import uk.gov.hmcts.reform.em.npa.redaction.PdfRedaction;
 import uk.gov.hmcts.reform.em.npa.repository.MarkUpRepository;
+import uk.gov.hmcts.reform.em.npa.service.CdamService;
 import uk.gov.hmcts.reform.em.npa.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
@@ -48,6 +49,9 @@ public class RedactionServiceImplTest {
 
     @Mock
     private SecurityUtils securityUtils;
+
+    @Mock
+    private CdamService cdamService;
 
     private List<RedactionDTO> redactions = new ArrayList<>();
 
@@ -122,7 +126,7 @@ public class RedactionServiceImplTest {
     @Test
     public void redactPdfFileCdamTest() throws DocumentTaskProcessingException, IOException {
         File mockFile = new File("prosecution1.pdf");
-        Mockito.when(dmStoreDownloader.downloadFile("jwt", "s2sToken", docStoreUUID)).thenReturn(mockFile);
+        Mockito.when(cdamService.downloadFile("jwt", "s2sToken", docStoreUUID)).thenReturn(mockFile);
         Mockito.when(pdfRedaction.redactPdf(mockFile, redactions)).thenReturn(mockFile);
 
         RedactionRequest redactionRequest = createRedactionRequest("caseId", docStoreUUID, redactions);
