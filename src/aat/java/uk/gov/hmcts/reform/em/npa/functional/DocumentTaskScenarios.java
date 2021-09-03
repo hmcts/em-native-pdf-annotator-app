@@ -12,11 +12,13 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.reform.em.EmTestConfig;
 import uk.gov.hmcts.reform.em.npa.domain.enumeration.TaskState;
 import uk.gov.hmcts.reform.em.npa.testutil.TestUtil;
+import uk.gov.hmcts.reform.em.npa.testutil.ToggleProperties;
 import uk.gov.hmcts.reform.em.test.retry.RetryRule;
 
 import java.io.File;
@@ -28,12 +30,16 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @SpringBootTest(classes = {TestUtil.class, EmTestConfig.class})
 @TestPropertySource(value = "classpath:application.yml")
+@EnableConfigurationProperties(ToggleProperties.class)
 @RunWith(SpringIntegrationSerenityRunner.class)
 @WithTags({@WithTag("testType:Functional")})
-public class DocumentTaskScenarios extends BaseTest {
+public class DocumentTaskScenarios {
 
     @Autowired
     private TestUtil testUtil;
+
+    @Autowired
+    ToggleProperties toggleProperties;
 
     @Value("${test.url}")
     private String testUrl;

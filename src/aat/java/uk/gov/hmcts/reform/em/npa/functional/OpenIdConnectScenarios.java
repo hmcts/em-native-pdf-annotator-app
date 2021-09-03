@@ -4,7 +4,6 @@ import io.restassured.response.Response;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import net.thucydides.core.annotations.WithTag;
 import net.thucydides.core.annotations.WithTags;
-import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @TestPropertySource(value = "classpath:application.yml")
 @RunWith(SpringIntegrationSerenityRunner.class)
 @WithTags({@WithTag("testType:Functional")})
-public class OpenIdConnectScenarios extends BaseTest {
+public class OpenIdConnectScenarios {
 
     @Autowired
     private TestUtil testUtil;
@@ -37,9 +36,6 @@ public class OpenIdConnectScenarios extends BaseTest {
 
     @Test
     public void testValidAuthenticationAndAuthorisation() {
-        // If the Document Task Endpoint Toggle is enabled, continue, if not skip and ignore
-        Assume.assumeTrue(toggleProperties.isEnableDocumentTaskEndpoint());
-
         testUtil.authRequest()
                 .baseUri(testUrl)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -51,8 +47,6 @@ public class OpenIdConnectScenarios extends BaseTest {
     // Invalid S2SAuth
     @Test
     public void testInvalidS2SAuth() {
-        // If the Document Task Endpoint Toggle is enabled, continue, if not skip and ignore
-        Assume.assumeTrue(toggleProperties.isEnableDocumentTaskEndpoint());
 
         Response response =
                 testUtil.invalidS2SAuth()
@@ -66,8 +60,6 @@ public class OpenIdConnectScenarios extends BaseTest {
     //Invalid  IdamAuth
     @Test
     public void testWithInvalidIdamAuth() {
-        // If the Document Task Endpoint Toggle is enabled, continue, if not skip and ignore
-        Assume.assumeTrue(toggleProperties.isEnableDocumentTaskEndpoint());
 
         Response response =
                 testUtil.invalidIdamAuthrequest()
@@ -81,8 +73,6 @@ public class OpenIdConnectScenarios extends BaseTest {
     //Empty S2SAuth
     @Test
     public void testWithEmptyS2SAuth() {
-        // If the Document Task Endpoint Toggle is enabled, continue, if not skip and ignore
-        Assume.assumeTrue(toggleProperties.isEnableDocumentTaskEndpoint());
 
         assertThrows(NullPointerException.class, () -> testUtil
                 .validAuthRequestWithEmptyS2SAuth()
@@ -94,8 +84,6 @@ public class OpenIdConnectScenarios extends BaseTest {
     // Empty IdamAuth and Valid S2S Auth
     @Test
     public void testWithEmptyIdamAuthAndValidS2SAuth() {
-        // If the Document Task Endpoint Toggle is enabled, continue, if not skip and ignore
-        Assume.assumeTrue(toggleProperties.isEnableDocumentTaskEndpoint());
 
         Throwable exceptionThrown =
                 assertThrows(NullPointerException.class, () -> testUtil
@@ -110,8 +98,6 @@ public class OpenIdConnectScenarios extends BaseTest {
     // Empty IdamAuth and Empty S2SAuth
     @Test
     public void testIdamAuthAndS2SAuthAreEmpty() {
-        // If the Document Task Endpoint Toggle is enabled, continue, if not skip and ignore
-        Assume.assumeTrue(toggleProperties.isEnableDocumentTaskEndpoint());
 
         assertThrows(NullPointerException.class, () -> testUtil
                 .emptyIdamAuthAndEmptyS2SAuth()

@@ -5,7 +5,6 @@ import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import net.thucydides.core.annotations.WithTag;
 import net.thucydides.core.annotations.WithTags;
 import org.json.JSONObject;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,7 +30,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @TestPropertySource(value = "classpath:application.yml")
 @RunWith(SpringIntegrationSerenityRunner.class)
 @WithTags({@WithTag("testType:Functional")})
-public class RedactionScenarios extends BaseTest {
+public class RedactionScenarios {
 
     @Value("${test.url}")
     private String testUrl;
@@ -58,9 +57,6 @@ public class RedactionScenarios extends BaseTest {
                 .unauthenticatedRequest()
                 .baseUri(testUrl)
                 .contentType(APPLICATION_JSON_VALUE);
-
-        // If the Document Task Endpoint Toggle is enabled, continue, if not skip and ignore
-        Assume.assumeTrue(toggleProperties.isEnableDocumentTaskEndpoint());
     }
 
     @Test
