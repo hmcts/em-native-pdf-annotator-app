@@ -71,9 +71,10 @@ public class TestUtil {
 
     @PostConstruct
     public void init() throws Exception {
-        idamHelper.createUser("aa@bb.com",Stream.of("caseworker", "caseworker-publiclaw", "ccd-import").collect(Collectors.toList()));
+        idamHelper.createUser("redactionTestUser@redactiontest.com",
+            Stream.of("caseworker", "caseworker-publiclaw", "ccd-import").collect(Collectors.toList()));
         SerenityRest.useRelaxedHTTPSValidation();
-        idamAuth = idamHelper.authenticateUser("aa@bb.com");
+        idamAuth = idamHelper.authenticateUser("redactionTestUser@redactiontest.com");
         s2sAuth = s2sHelper.getS2sToken();
     }
 

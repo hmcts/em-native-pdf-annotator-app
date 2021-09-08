@@ -64,7 +64,7 @@ public class ExtendedCcdHelper {
                     + "        }\n"
                     + "      }";
 
-    private String redactionTestUser = "aa@bb.com";
+    private String redactionTestUser = "redactionTestUser@redactiontest.com";
     private List<String> redactionTestUserRoles = Stream.of("caseworker", "caseworker-publiclaw", "ccd-import").collect(Collectors.toList());
 
     @PostConstruct
