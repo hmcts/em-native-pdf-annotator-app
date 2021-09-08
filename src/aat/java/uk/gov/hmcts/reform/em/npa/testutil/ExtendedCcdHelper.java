@@ -72,11 +72,11 @@ public class ExtendedCcdHelper {
     private String redactionTestUser;
     private List<String> redactionTestUserRoles = Stream.of("caseworker", "caseworker-publiclaw", "ccd-import").collect(Collectors.toList());
 
-    @PostConstruct
-    public void init() throws Exception {
-        initRedactionTestUser();
-        importCcdDefinitionFile();
-    }
+//    @PostConstruct
+//    public void init() throws Exception {
+//        initRedactionTestUser();
+//        importCcdDefinitionFile();
+//    }
 
 
     public void importCcdDefinitionFile() throws Exception {
