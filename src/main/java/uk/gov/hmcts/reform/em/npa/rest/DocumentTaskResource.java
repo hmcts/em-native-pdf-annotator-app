@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -26,6 +27,7 @@ import java.util.Optional;
 /**
  * REST controller for managing DocumentTask.
  */
+@ConditionalOnProperty("toggles.document-task")
 @RestController
 @RequestMapping("/api")
 public class DocumentTaskResource {
