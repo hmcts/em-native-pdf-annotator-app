@@ -255,7 +255,7 @@ dependencies {
     annotationProcessor 'com.sun.xml.bind:jaxb-impl:3.0.2'
 
     testRuntimeOnly 'org.junit.vintage:junit-vintage-engine:5.6.2'
-    testCompile "org.junit.jupiter:junit-jupiter-api:5.6.3"
+    testCompile "org.junit.jupiter:junit-jupiter-api:5.8.0"
     testRuntime "org.junit.jupiter:junit-jupiter-engine:5.6.3"
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.6.3"
     testImplementation group: 'org.pitest', name: 'pitest', version:'1.5.2'
@@ -316,7 +316,7 @@ dependencyManagement {
             entry 'junit'
         }
 
-        dependencySet(group: 'org.junit.jupiter', version: '5.6.3') {
+        dependencySet(group: 'org.junit.jupiter', version: '5.8.0') {
             entry 'junit-jupiter'
             entry 'junit-jupiter-api'
             entry 'junit-jupiter-params'
