@@ -1,5 +1,5 @@
 {
- "10054_Cookie Without SameSite Attribute_http://em-npa-aat.service.core-compute-aat.internal/api/redaction_POST":"ignore",
+ "10054_Cookie without SameSite Attribute_http://em-npa-aat.service.core-compute-aat.internal/api/redaction_POST":"ignore",
  "10054_Cookie Without SameSite Attribute_http://em-npa-aat.service.core-compute-aat.internal/api/document-tasks?offset=10\u0026pageNumber=10\u0026pageSize=10\u0026paged=true\u0026sort.sorted=true\u0026sort.unsorted=true\u0026unpaged=true_GET":"ignore",
  "10054_Cookie Without SameSite Attribute_http://em-npa-aat.service.core-compute-aat.internal/api/markups_POST": "ignore",
  "10054_Cookie Without SameSite Attribute_http://em-npa-aat.service.core-compute-aat.internal/api/markups_PUT": "ignore",
@@ -71,5 +71,6 @@
  "10096_Timestamp Disclosure - Unix_http://em-npa-aat.service.core-compute-aat.internal/api/markups_POST": "ignore",
  "10096_Timestamp Disclosure - Unix_http://em-npa-aat.service.core-compute-aat.internal/api/document-tasks/10_DELETE": "ignore",
  "10096_Timestamp Disclosure - Unix_http://em-npa-aat.service.core-compute-aat.internal/api/markups_PUT":"ignore",
+ "10096_Timestamp Disclosure - Unix_http://em-npa-aat.service.core-compute-aat.internal/api/redaction_POST":"ignore",
  "10096_Timestamp Disclosure - Unix_http://em-npa-aat.service.core-compute-aat.internal/api/markups/documentId?offset=10\u0026pageNumber=10\u0026pageSize=10\u0026paged=true\u0026sort.sorted=true\u0026sort.unsorted=true\u0026unpaged=true_GET":"ignore"
 }
