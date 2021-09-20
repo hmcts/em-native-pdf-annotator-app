@@ -190,7 +190,7 @@ dependencies {
     compile group:'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.fasterXmlJackson
     compile group:'com.fasterxml.jackson.module', name: 'jackson-module-afterburner', version: versions.fasterXmlJackson
 
-    compile "org.zalando:problem-spring-web:0.26.2"
+    compile "org.zalando:problem-spring-web:0.27.0"
     compile("io.springfox:springfox-swagger2:${versions.springfoxSwagger}")
     compile("io.springfox:springfox-swagger-ui:${versions.springfoxSwagger}")
     compile("org.springframework.boot:spring-boot-starter-web:2.4.5")
