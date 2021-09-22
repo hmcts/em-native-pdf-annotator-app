@@ -8,7 +8,7 @@ locals {
 }
 
 module "db" {
-  source = "git@github.com:hmcts/cnp-module-postgres?ref=postgresql_tf"
+  source = "git@github.com:hmcts/cnp-module-postgres?ref=master"
   product = var.product
   component = var.component
   name = "${local.app_full_name}-postgres-db"
