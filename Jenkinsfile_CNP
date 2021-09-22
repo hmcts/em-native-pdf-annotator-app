@@ -191,4 +191,5 @@ withPipeline(type , product, component) {
             reportName           : "NPA API Contract Test Report"
         ]
     }
+    syncBranchesWithMaster(['demo', 'perftest', 'ithc'])
 }
