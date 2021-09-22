@@ -1,10 +1,3 @@
-provider "azurerm" {
-  features {}
-}
-provider "azuread" {
-  features {}
-}
-
 locals {
   app_full_name = "${var.product}-${var.component}"
   ase_name = "core-compute-${var.env}"
