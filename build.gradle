@@ -256,7 +256,7 @@ dependencies {
 
     testRuntimeOnly 'org.junit.vintage:junit-vintage-engine:5.6.2'
     testCompile "org.junit.jupiter:junit-jupiter-api:5.6.3"
-    testRuntime "org.junit.jupiter:junit-jupiter-engine:5.6.3"
+    testRuntime "org.junit.jupiter:junit-jupiter-engine:5.8.1"
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.6.3"
     testImplementation group: 'org.pitest', name: 'pitest', version:'1.5.2'
     testImplementation 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.5.2'
