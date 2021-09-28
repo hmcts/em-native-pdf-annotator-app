@@ -1,7 +1,11 @@
 package uk.gov.hmcts.reform.em.npa.redaction;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.pdfbox.pdmodel.*;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDDocumentInformation;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
@@ -34,12 +38,13 @@ public class PdfRedaction {
     public File redactPdf(File documentFile, List<RedactionDTO> redactionDTOList) throws IOException {
         PDDocument document = PDDocument.load(documentFile);
         PDFRenderer pdfRenderer = new PDFRenderer(document);
-        final File newFile = File.createTempFile(String.format("Redacted-%s", FilenameUtils.getBaseName(documentFile.getName())), ".pdf");
+        final File newFile = File.createTempFile(String.format("Redacted-%s",
+            FilenameUtils.getBaseName(documentFile.getName())), ".pdf");
         document.setDocumentInformation(new PDDocumentInformation());
 
         try (PDDocument newDocument = new PDDocument()) {
             for (RedactionDTO redactionDTO : redactionDTOList) {
-                redactPageContent(document, redactionDTO.getPage() -1, redactionDTO.getRectangles());
+                redactPageContent(document, redactionDTO.getPage() - 1, redactionDTO.getRectangles());
                 File pageImage = transformToImage(pdfRenderer, redactionDTO.getPage() - 1);
                 PDPage newPage = transformToPdf(pageImage, newDocument, document.getPage(redactionDTO.getPage() - 1));
                 replacePage(document, redactionDTO.getPage() - 1, newPage);
@@ -62,14 +67,16 @@ public class PdfRedaction {
         PDPage page = document.getPage(pageNumber);
         PDRectangle pageSize = page.getMediaBox();
 
-        PDPageContentStream contentStream = new PDPageContentStream(document, page, PDPageContentStream.AppendMode.APPEND, true, true);
+        PDPageContentStream contentStream = new PDPageContentStream(document, page,
+            PDPageContentStream.AppendMode.APPEND, true, true);
         contentStream.setNonStrokingColor(Color.BLACK);
 
         rectangles.stream().forEach(rectangle -> {
             try {
                 contentStream.addRect(
                     pixelToPointConversion(pageSize.getLowerLeftX() + rectangle.getX()),
-                    (pageSize.getHeight() - pixelToPointConversion(rectangle.getY())) - pixelToPointConversion(rectangle.getHeight()),
+                    (pageSize.getHeight() - pixelToPointConversion(rectangle.getY())) -
+                        pixelToPointConversion(rectangle.getHeight()),
                     pixelToPointConversion(rectangle.getWidth()),
                     pixelToPointConversion(rectangle.getHeight()));
                 contentStream.fill();
@@ -114,7 +121,8 @@ public class PdfRedaction {
      */
     private PDPage transformToPdf(File pageImage, PDDocument newDocument, PDPage originalPage) throws IOException {
         PDPage newPage = new PDPage(originalPage.getMediaBox());
-        try (PDPageContentStream contentStream = new PDPageContentStream(newDocument, newPage, PDPageContentStream.AppendMode.APPEND, false)) {
+        try (PDPageContentStream contentStream = new PDPageContentStream(newDocument, newPage,
+            PDPageContentStream.AppendMode.APPEND, false)) {
             PDRectangle mediaBox = newPage.getMediaBox();
             newDocument.addPage(newPage);
 

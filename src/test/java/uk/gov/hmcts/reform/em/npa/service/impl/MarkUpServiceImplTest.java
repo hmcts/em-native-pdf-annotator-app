@@ -19,7 +19,12 @@ import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 import uk.gov.hmcts.reform.em.npa.service.mapper.MarkUpMapper;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 public class MarkUpServiceImplTest {
 
@@ -55,14 +60,13 @@ public class MarkUpServiceImplTest {
 
         RedactionDTO updatedDto = markUpService.save(redactionDTO);
 
-        Mockito.verify(markUpRepository, Mockito.atLeast(1)).save(redaction);
-        Mockito.verify(markUpMapper, Mockito.atLeast(1)).toEntity(redactionDTO);
-        Mockito.verify(markUpMapper, Mockito.atLeast(1)).toDto(redaction);
-
         Assert.assertEquals(redactionDTO.getDocumentId(), updatedDto.getDocumentId());
         Assert.assertEquals(redactionDTO.getRedactionId(), updatedDto.getRedactionId());
         Assert.assertEquals(redactionDTO.getRectangles().size(), updatedDto.getRectangles().size());
 
+        Mockito.verify(markUpRepository, Mockito.atLeast(1)).save(redaction);
+        Mockito.verify(markUpMapper, Mockito.atLeast(1)).toEntity(redactionDTO);
+        Mockito.verify(markUpMapper, Mockito.atLeast(1)).toDto(redaction);
     }
 
     @Test(expected = UsernameNotFoundException.class)

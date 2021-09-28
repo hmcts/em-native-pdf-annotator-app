@@ -21,7 +21,12 @@ import uk.gov.hmcts.reform.em.npa.service.exception.RedactionProcessingException
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.UUID;
 
 public class RedactionServiceImplTest {
 
@@ -47,31 +52,21 @@ public class RedactionServiceImplTest {
 
     private ObjectMapper mapper = new ObjectMapper();
 
-    private String documentStoreResponse = "{" +
-            "\"_embedded\": {" +
-            "\"documents\": [{" +
-            "\"modifiedOn\": \"2020-04-23T14:37:02+0000\"," +
-            "\"size\": 19496," +
-            "\"createdBy\": \"7f0fd7bf-48c0-4462-9056-38c1190e391f\"," +
-            "\"_links\": {" +
-            "\"thumbnail\": {" +
-            "\"href\": \"http://localhost:4603/documents/0e38e3ad-171f-4d27-bf54-e41f2ed744eb/thumbnail\"" +
-            "}," +
-            "\"binary\": {" +
-            "\"href\": \"http://localhost:4603/documents/0e38e3ad-171f-4d27-bf54-e41f2ed744eb/binary\"" +
-            "}," +
-            "\"self\": {" +
-            "\"href\": \"http://localhost:4603/documents/0e38e3ad-171f-4d27-bf54-e41f2ed744eb\"" +
-            "}" +
-            "}," +
-            "\"lastModifiedBy\": \"7f0fd7bf-48c0-4462-9056-38c1190e391f\"," +
-            "\"originalDocumentName\": \"stitched9163237694642183694.pdf\"," +
-            "\"mimeType\": \"application/pdf\"," +
-            "\"classification\": \"PUBLIC\"," +
-            "\"createdOn\": \"2020-04-23T14:37:02+0000\"" +
-            "}]" +
-            "}" +
-            "}";
+    private String documentStoreResponse = "{_embedded\": {documents\": [{"
+        + "\"modifiedOn\": \"2020-04-23T14:37:02+0000\","
+        + "\"size\": 19496,"
+        + "\"createdBy\": \"7f0fd7bf-48c0-4462-9056-38c1190e391f\","
+        + "\"_links\": {"
+        + "\"thumbnail\": {"
+        + "\"href\": \"http://localhost:4603/documents/0e38e3ad-171f-4d27-bf54-e41f2ed744eb/thumbnail\""
+        + "},\"binary\": {"
+        + "\"href\": \"http://localhost:4603/documents/0e38e3ad-171f-4d27-bf54-e41f2ed744eb/binary\""
+        + "},\"self\": {"
+        + "\"href\": \"http://localhost:4603/documents/0e38e3ad-171f-4d27-bf54-e41f2ed744eb\""
+        + "}},\"lastModifiedBy\": \"7f0fd7bf-48c0-4462-9056-38c1190e391f\","
+        + "\"originalDocumentName\": \"stitched9163237694642183694.pdf\","
+        + "\"mimeType\": \"application/pdf\",\"classification\": \"PUBLIC\","
+        + "\"createdOn\": \"2020-04-23T14:37:02+0000\"}]}}";
 
     private static final UUID docStoreUUID = UUID.randomUUID();
 
@@ -83,7 +78,7 @@ public class RedactionServiceImplTest {
     }
 
     public void initRedactionDTOList() {
-        for (int i = 0; i < 5 ; i++) {
+        for (int i = 0; i < 5; i++) {
             RedactionDTO redaction = new RedactionDTO();
             redaction.setRedactionId(UUID.randomUUID());
             redaction.setDocumentId(UUID.randomUUID());
@@ -136,7 +131,8 @@ public class RedactionServiceImplTest {
     public void redactDocumentTaskProcessingErrorTest() throws DocumentTaskProcessingException {
 
         UUID docStoreUUID = UUID.randomUUID();
-        Mockito.when(dmStoreDownloader.downloadFile(docStoreUUID.toString())).thenThrow(DocumentTaskProcessingException.class);
+        Mockito.when(dmStoreDownloader.downloadFile(docStoreUUID.toString()))
+            .thenThrow(DocumentTaskProcessingException.class);
 
         redactionService.redactFile("jwt", "caseId", docStoreUUID, redactions);
     }

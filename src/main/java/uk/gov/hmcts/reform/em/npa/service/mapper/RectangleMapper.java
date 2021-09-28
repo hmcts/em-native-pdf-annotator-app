@@ -11,12 +11,12 @@ import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 @Mapper(componentModel = "spring", uses = {MarkUpMapper.class})
 public interface RectangleMapper extends EntityMapper<RectangleDTO, Rectangle> {
 
-    @Mapping(target="id", source="entity.rectangleId")
+    @Mapping(target = "id", source = "entity.rectangleId")
     RectangleDTO toDto(Rectangle entity);
 
-    @Mapping(target="rectangleId", source="dto.id")
-    @Mapping(target="id", ignore = true)
-    @Mapping(target="redaction", ignore = true)
+    @Mapping(target = "rectangleId", source = "dto.id")
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "redaction", ignore = true)
     @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "createdDate", ignore = true)
     @Mapping(target = "lastModifiedBy", ignore = true)
