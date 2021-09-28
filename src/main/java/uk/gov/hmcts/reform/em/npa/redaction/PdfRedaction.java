@@ -38,8 +38,7 @@ public class PdfRedaction {
     public File redactPdf(File documentFile, List<RedactionDTO> redactionDTOList) throws IOException {
         PDDocument document = PDDocument.load(documentFile);
         PDFRenderer pdfRenderer = new PDFRenderer(document);
-        final File newFile = File.createTempFile(String.format("Redacted-%s",
-            FilenameUtils.getBaseName(documentFile.getName())), ".pdf");
+        final File newFile = File.createTempFile(String.format("Redacted-%s", FilenameUtils.getBaseName(documentFile.getName())), ".pdf");
         document.setDocumentInformation(new PDDocumentInformation());
 
         try (PDDocument newDocument = new PDDocument()) {
