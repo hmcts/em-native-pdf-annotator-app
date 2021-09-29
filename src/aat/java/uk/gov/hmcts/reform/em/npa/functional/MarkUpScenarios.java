@@ -314,7 +314,8 @@ public class MarkUpScenarios {
     public void shouldReturn404WhenDeleteMarkUpByNonExistentRedactionId() {
         final String nonExistentRedactionId = UUID.randomUUID().toString();
         final String documentId = UUID.randomUUID().toString();
-        final ValidatableResponse deletedResponse = deleteMarkUpByDocumentIdAndRedactionId(documentId, nonExistentRedactionId);
+        final ValidatableResponse deletedResponse =
+            deleteMarkUpByDocumentIdAndRedactionId(documentId, nonExistentRedactionId);
 
         deletedResponse
                 .statusCode(200) //FIXME: it should be 404
@@ -340,7 +341,8 @@ public class MarkUpScenarios {
     }
 
     @NotNull
-    private ValidatableResponse createMarkUp(final String redactionId, final String documentId, final String rectangleId) {
+    private ValidatableResponse createMarkUp(final String redactionId, final String documentId,
+                                             final String rectangleId) {
         final JSONObject jsonObject = createMarkUpPayload(redactionId, documentId, rectangleId);
 
         return request
@@ -352,7 +354,8 @@ public class MarkUpScenarios {
     }
 
     @NotNull
-    private JSONObject createMarkUpPayload(final String redactionId, final String documentId, final String rectangleId) {
+    private JSONObject createMarkUpPayload(final String redactionId, final String documentId,
+                                           final String rectangleId) {
         final JSONObject markup = new JSONObject();
         markup.put("redactionId", redactionId);
         markup.put("documentId", documentId);
@@ -380,7 +383,8 @@ public class MarkUpScenarios {
     }
 
     @NotNull
-    private ValidatableResponse deleteMarkUpByDocumentIdAndRedactionId(final String documentId, final String redactionId) {
+    private ValidatableResponse deleteMarkUpByDocumentIdAndRedactionId(final String documentId,
+                                                                       final String redactionId) {
         return request
                 .delete(String.format("/api/markups/%s/%s", documentId, redactionId))
                 .then()

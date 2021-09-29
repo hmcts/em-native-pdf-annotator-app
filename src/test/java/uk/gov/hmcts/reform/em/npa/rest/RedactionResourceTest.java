@@ -15,7 +15,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.bind.WebDataBinder;
 import uk.gov.hmcts.reform.em.npa.Application;
 import uk.gov.hmcts.reform.em.npa.TestSecurityConfiguration;
-
 import uk.gov.hmcts.reform.em.npa.config.Constants;
 import uk.gov.hmcts.reform.em.npa.service.RedactionService;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
@@ -25,10 +24,17 @@ import uk.gov.hmcts.reform.em.npa.service.exception.FileTypeException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 
 @RunWith(SpringRunner.class)
@@ -59,7 +65,7 @@ public class RedactionResourceTest {
         UUID docId = UUID.randomUUID();
         List<RedactionDTO> redactions = new ArrayList<>();
 
-        for (int i = 0; i < 5 ; i++) {
+        for (int i = 0; i < 5; i++) {
             RedactionDTO redaction = new RedactionDTO();
             redaction.setRedactionId(UUID.randomUUID());
             redaction.setDocumentId(docId);
@@ -92,14 +98,16 @@ public class RedactionResourceTest {
         HttpServletRequest request = mock(HttpServletRequest.class);
 
         when(request.getHeader("Authorization")).thenReturn("jwt");
-        when(redactionService.redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getRedactions()))
+        when(redactionService.redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(),
+            redactionRequest.getRedactions()))
                 .thenReturn(TEST_PDF_FILE);
 
         ResponseEntity response = redactionResource.save(request, redactionRequest);
         assertEquals(200, response.getStatusCodeValue());
 
         verify(redactionService, Mockito.atMost(1))
-                .redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getRedactions());
+                .redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(),
+                    redactionRequest.getRedactions());
         verify(binder, Mockito.atMost(1))
             .setDisallowedFields(Constants.IS_ADMIN);
     }
@@ -110,14 +118,16 @@ public class RedactionResourceTest {
         HttpServletRequest request = mock(HttpServletRequest.class);
 
         when(request.getHeader("Authorization")).thenReturn("jwt");
-        when(redactionService.redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getRedactions()))
+        when(redactionService.redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(),
+            redactionRequest.getRedactions()))
                 .thenThrow(FileTypeException.class);
 
         ResponseEntity response = redactionResource.save(request, redactionRequest);
         assertEquals(400, response.getStatusCodeValue());
 
         verify(redactionService, Mockito.atMost(1))
-                .redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(), redactionRequest.getRedactions());
+                .redactFile("jwt", redactionRequest.getCaseId(), redactionRequest.getDocumentId(),
+                    redactionRequest.getRedactions());
     }
 
     @Test

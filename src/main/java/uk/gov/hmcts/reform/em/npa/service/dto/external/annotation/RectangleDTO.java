@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.em.npa.service.dto.external.annotation;
 
+import lombok.ToString;
+
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
@@ -7,6 +9,7 @@ import java.util.UUID;
 /**
  * A DTO for the Rectangle entity.
  */
+@ToString
 public class RectangleDTO extends AbstractAuditingDTO implements Serializable {
 
     private UUID id;
@@ -90,15 +93,4 @@ public class RectangleDTO extends AbstractAuditingDTO implements Serializable {
         return Objects.hashCode(getId());
     }
 
-    @Override
-    public String toString() {
-        return "RectangleDTO{" +
-            "id=" + getId() +
-            ", x=" + getX() +
-            ", y=" + getY() +
-            ", width=" + getWidth() +
-            ", height=" + getHeight() +
-            ", annotation=" + getAnnotationId() +
-            "}";
-    }
 }
