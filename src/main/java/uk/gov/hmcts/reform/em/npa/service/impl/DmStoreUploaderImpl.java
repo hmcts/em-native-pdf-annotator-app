@@ -2,16 +2,19 @@ package uk.gov.hmcts.reform.em.npa.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import okhttp3.*;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import org.apache.tika.Tika;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.em.npa.config.Constants;
 import uk.gov.hmcts.reform.em.npa.config.security.SecurityUtils;
-import uk.gov.hmcts.reform.em.npa.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.npa.service.DmStoreUploader;
 import uk.gov.hmcts.reform.em.npa.service.exception.DocumentTaskProcessingException;
 
@@ -42,15 +45,6 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
         this.dmStoreAppBaseUrl = dmStoreAppBaseUrl;
         this.securityUtils = securityUtils;
         this.objectMapper = objectMapper;
-    }
-
-    @Override
-    public void uploadFile(File file, DocumentTask documentTask) throws DocumentTaskProcessingException {
-        if (documentTask.getOutputDocumentId() != null) {
-            uploadNewDocumentVersion(file, documentTask);
-        } else {
-            uploadNewDocument(file, documentTask);
-        }
     }
 
     @Override
@@ -90,85 +84,6 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
         }
 
     }
-
-    private void uploadNewDocument(File file, DocumentTask documentTask) throws DocumentTaskProcessingException {
-
-        try {
-
-            String mimeType = getMimeType(file);
-
-            MultipartBody requestBody = new MultipartBody
-                    .Builder()
-                    .setType(MultipartBody.FORM)
-                    .addFormDataPart("classification", "PUBLIC")
-                    .addFormDataPart("files", file.getName(), RequestBody.create(MediaType.get(mimeType), file))
-                    .build();
-
-            Request request = new Request.Builder()
-                    .addHeader("user-id", securityUtils.getCurrentUserLogin().orElse(Constants.ANONYMOUS_USER))
-                    .addHeader("user-roles", "caseworker")
-                    .addHeader("ServiceAuthorization", authTokenGenerator.generate())
-                    .url(dmStoreAppBaseUrl + dmStoreUploadEndpoint)
-                    .method("POST", requestBody)
-                    .build();
-
-            Response response = okHttpClient.newCall(request).execute();
-
-            if (response.isSuccessful()) {
-
-                JSONObject jsonObject = new JSONObject(response.body().string());
-
-                String[] split = jsonObject
-                        .getJSONObject("_embedded")
-                        .getJSONArray("documents")
-                        .getJSONObject(0)
-                        .getJSONObject("_links")
-                        .getJSONObject("self")
-                        .getString("href")
-                        .split("\\/");
-
-                documentTask.setOutputDocumentId(split[split.length - 1]);
-
-            } else {
-                throw new DocumentTaskProcessingException("Couldn't upload the file. Response code: " + response.code(), null);
-            }
-
-        } catch (RuntimeException | IOException e) {
-            throw new DocumentTaskProcessingException(String.format("Couldn't upload the file:  %s", e.getMessage()), e);
-        }
-    }
-
-    private void uploadNewDocumentVersion(File file, DocumentTask documentTask) throws DocumentTaskProcessingException {
-
-        try {
-
-            String mimeType = getMimeType(file);
-
-            MultipartBody requestBody = new MultipartBody
-                    .Builder()
-                    .setType(MultipartBody.FORM)
-                    .addFormDataPart("file", file.getName(), RequestBody.create(MediaType.get(mimeType), file))
-                    .build();
-
-            Request request = new Request.Builder()
-                    .addHeader("user-id", securityUtils.getCurrentUserLogin().orElse(Constants.ANONYMOUS_USER))
-                    .addHeader("user-roles", "caseworker")
-                    .addHeader("ServiceAuthorization", authTokenGenerator.generate())
-                    .url(dmStoreAppBaseUrl + dmStoreUploadEndpoint + "/" + documentTask.getOutputDocumentId())
-                    .method("POST", requestBody)
-                    .build();
-
-            Response response = okHttpClient.newCall(request).execute();
-
-            if (!response.isSuccessful()) {
-                throw new DocumentTaskProcessingException("Couldn't upload the file. Response code: " + response.code(), null);
-            }
-
-        } catch (RuntimeException | IOException e) {
-            throw new DocumentTaskProcessingException("Couldn't upload the file", e);
-        }
-    }
-
 
     private String getMimeType(File file) throws IOException {
         Tika tika = new Tika();
