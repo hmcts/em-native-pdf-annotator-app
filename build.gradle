@@ -259,7 +259,7 @@ dependencies {
     testRuntime "org.junit.jupiter:junit-jupiter-engine:5.6.3"
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.6.3"
     testImplementation group: 'org.pitest', name: 'pitest', version:'1.5.2'
-    testImplementation 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.5.2'
+    testImplementation 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.7.0'
 
     testCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenityRestAssured, withoutStuff
     testCompile group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity, withoutStuff
