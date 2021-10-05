@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import uk.gov.hmcts.reform.authorisation.exceptions.InvalidTokenException;
 import uk.gov.hmcts.reform.em.npa.config.security.SecurityUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -35,14 +36,18 @@ public class ServiceNameAspect {
         if (Objects.nonNull(request)) {
             String s2sToken = request.getHeader("serviceauthorization");
             if (StringUtils.isNotBlank(s2sToken)) {
-                String serviceName;
-                if (s2sToken.startsWith(BEARER)) {
-                    serviceName = securityUtils.getServiceName(s2sToken);
-                } else {
-                    serviceName = securityUtils.getServiceName(BEARER + s2sToken);
+                try {
+                    String serviceName;
+                    if (s2sToken.startsWith(BEARER)) {
+                        serviceName = securityUtils.getServiceName(s2sToken);
+                    } else {
+                        serviceName = securityUtils.getServiceName(BEARER + s2sToken);
+                    }
+                    log.info("em-npa : Endpoint : {}  for : {} method is accessed by {} ", request.getRequestURI(),
+                            request.getMethod(), serviceName);
+                } catch (InvalidTokenException invalidTokenException) {
+                    log.warn("invalidTokenException logged is: {} ", invalidTokenException.getMessage());
                 }
-                log.info("em-npa : Endpoint : {}  for : {} method is accessed by {} ", request.getRequestURI(),
-                    request.getMethod(), serviceName);
             }
         }
     }
