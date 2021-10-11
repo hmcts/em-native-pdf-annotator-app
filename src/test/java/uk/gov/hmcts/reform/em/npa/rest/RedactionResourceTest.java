@@ -15,7 +15,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.bind.WebDataBinder;
 import uk.gov.hmcts.reform.em.npa.Application;
 import uk.gov.hmcts.reform.em.npa.TestSecurityConfiguration;
-
 import uk.gov.hmcts.reform.em.npa.config.Constants;
 import uk.gov.hmcts.reform.em.npa.service.RedactionService;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
@@ -66,7 +65,7 @@ public class RedactionResourceTest {
         UUID docId = UUID.randomUUID();
         List<RedactionDTO> redactions = new ArrayList<>();
 
-        for (int i = 0; i < 5 ; i++) {
+        for (int i = 0; i < 5; i++) {
             RedactionDTO redaction = new RedactionDTO();
             redaction.setRedactionId(UUID.randomUUID());
             redaction.setDocumentId(docId);

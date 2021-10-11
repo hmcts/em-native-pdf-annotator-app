@@ -16,7 +16,7 @@ plugins {
     id 'checkstyle'
     id 'org.liquibase.gradle' version '2.0.4'
     id 'au.com.dius.pact' version '4.1.8'
-    id 'io.franzbecker.gradle-lombok' version '4.0.0'
+    id 'io.franzbecker.gradle-lombok' version '5.0.0'
     id "info.solidsoft.pitest" version '1.5.2'
 }
 
@@ -163,7 +163,7 @@ dependencies {
     implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.48'
     implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.48'
     
-    compile group: 'com.google.guava', name: 'guava', version: '30.1.1-jre'
+    compile group: 'com.google.guava', name: 'guava', version: '31.0.1-jre'
 
     compile ('org.springframework.cloud:spring-cloud-openfeign:3.0.3') {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-actuator'
@@ -172,7 +172,7 @@ dependencies {
     compile 'org.projectlombok:lombok:1.18.20'
     compile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.24'
     compile group: 'org.apache.pdfbox', name: 'jbig2-imageio', version: '3.0.3'
-    compile 'com.squareup.okhttp3:okhttp:4.9.1'
+    compile 'com.squareup.okhttp3:okhttp:4.9.2'
     compile("org.springframework.boot:spring-boot-starter-batch:2.4.5")
     compile "org.springframework.boot:spring-boot-actuator:2.4.5"
     compile("org.springframework.boot:spring-boot-autoconfigure:2.4.5")
@@ -205,7 +205,7 @@ dependencies {
     compile group: 'org.springframework.security', name: 'spring-security-core', version: versions.springSecurity
 
     compile( 'org.apache.httpcomponents:httpclient:4.5.10')
-    compile "org.liquibase:liquibase-core:4.4.3"
+    compile "org.liquibase:liquibase-core:4.5.0"
     liquibaseRuntime "org.liquibase:liquibase-core:4.4.3"
     liquibaseRuntime "org.liquibase.ext:liquibase-hibernate5:4.4.2"
     liquibaseRuntime sourceSets.main.compileClasspath

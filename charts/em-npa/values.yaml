@@ -26,10 +26,8 @@ java:
     EM_ANNO_APP_URL: http://em-anno-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     CDAM_URL: http://ccd-case-document-am-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
 
-    SPRING_DATASOURCE_USERNAME: annotation@em-npa-postgres-db-{{ .Values.global.environment }}
-    SPRING_DATASOURCE_URL: jdbc:postgresql://em-npa-postgres-db-{{ .Values.global.environment }}.postgres.database.azure.com:5432/annotation?sslmode=require
-    TEST_VAR_1: test1
-    TEST_VAR_2: test2
+    SPRING_DATASOURCE_USERNAME: npa@em-npa-postgres-db-v11-{{ .Values.global.environment }}
+    SPRING_DATASOURCE_URL: jdbc:postgresql://em-npa-postgres-db-v11-{{ .Values.global.environment }}.postgres.database.azure.com:5432/npa?sslmode=require
 
     ENABLE_DB_MIGRATE: false
     JSON_CONSOLE_PRETTY_PRINT: false
