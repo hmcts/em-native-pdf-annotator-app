@@ -31,11 +31,6 @@ spring:
     type: com.zaxxer.hikari.HikariDataSource
     hikari:
       auto-commit: false
-  batch:
-    job:
-      enabled: false
-      jobCronExpression: ${JOB_CRON_EXPRESSION:"*/5 * * * * *"}
-    initialize-schema: never
   security:
     oauth2:
       client:
@@ -134,6 +129,3 @@ oidc:
 redaction:
   multipart:
     image-ext: ${REDACTION_MULTIPART_WHITELIST_EXT:jpg,jpeg,bmp,tif,tiff,png,apng,gif,ico,cur,jfif,pjpeg,pjp,svg,webp}
-
-toggles:
-  document-task: ${ENABLE_DOCUMENT_TASK_ENDPOINT:false}

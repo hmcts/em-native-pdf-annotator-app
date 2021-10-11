@@ -2,7 +2,12 @@ package uk.gov.hmcts.reform.em.npa.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import okhttp3.*;
+import okhttp3.Interceptor;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 import org.apache.pdfbox.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -13,7 +18,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.em.npa.Application;
 import uk.gov.hmcts.reform.em.npa.TestSecurityConfiguration;
 import uk.gov.hmcts.reform.em.npa.config.security.SecurityUtils;
-import uk.gov.hmcts.reform.em.npa.domain.DocumentTask;
 import uk.gov.hmcts.reform.em.npa.service.DmStoreUploader;
 import uk.gov.hmcts.reform.em.npa.service.exception.DocumentTaskProcessingException;
 
@@ -144,53 +148,6 @@ public class DmStoreUploaderImplTest {
 
         dmStoreUploader = new DmStoreUploaderImpl(http, () -> "auth", "https://someurl.com",
             securityUtils, new ObjectMapper());
-    }
-
-    @Test
-    public void testUploadFileSuccess() throws Exception {
-
-        setUpSuccess();
-
-        DocumentTask task = new DocumentTask();
-        task.setJwt("xxx");
-        ClassLoader classLoader = getClass().getClassLoader();
-        dmStoreUploader.uploadFile(new File(classLoader.getResource(PDF_FILENAME).getFile()), task);
-        Assert.assertEquals("0e38e3ad-171f-4d27-bf54-e41f2ed744eb", task.getOutputDocumentId());
-    }
-
-    @Test(expected = DocumentTaskProcessingException.class)
-    public void testUploadFileFailure() throws Exception {
-
-        setUpFailure();
-
-        DocumentTask task = new DocumentTask();
-        task.setJwt("xxx");
-        dmStoreUploader.uploadFile(new File("xyz.abc"), task);
-    }
-
-    @Test
-    public void testUploadNewDocumentVersionSuccess() throws Exception {
-
-        setUpSuccess();
-
-        DocumentTask task = new DocumentTask();
-        task.setJwt("xxx");
-        task.setOutputDocumentId("http://localhost/v1");
-        ClassLoader classLoader = getClass().getClassLoader();
-        dmStoreUploader.uploadFile(new File(classLoader.getResource(PDF_FILENAME).getFile()), task);
-        Assert.assertEquals("http://localhost/v1", task.getOutputDocumentId());
-    }
-
-    @Test(expected = DocumentTaskProcessingException.class)
-    public void testUploadNewDocumentVersionFailure() throws Exception {
-
-        setUpFailure();
-
-        DocumentTask task = new DocumentTask();
-        task.setJwt("xxx");
-        task.setOutputDocumentId("http://localhost/v1");
-        ClassLoader classLoader = getClass().getClassLoader();
-        dmStoreUploader.uploadFile(new File(classLoader.getResource(PDF_FILENAME).getFile()), task);
     }
 
     @Test

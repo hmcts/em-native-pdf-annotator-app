@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.npa.testutil;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import net.serenitybdd.rest.SerenityRest;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -29,6 +30,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -276,6 +278,27 @@ public class TestUtil {
     private RequestSpecification invalidS2sAuthRequest() {
 
         return SerenityRest.given().header("ServiceAuthorization", "invalidS2SAuthorization");
+    }
+
+    @NotNull
+    public JSONObject createMarkUpPayload(final String redactionId, final String documentId,
+                                           final String rectangleId) {
+        final JSONObject markup = new JSONObject();
+        markup.put("redactionId", redactionId);
+        markup.put("documentId", documentId);
+        markup.put("page", 1);
+
+        final JSONArray rectangles = new JSONArray();
+        final JSONObject rectangle = new JSONObject();
+        rectangle.put("id", rectangleId);
+        rectangle.put("x", 1f);
+        rectangle.put("y", 2f);
+        rectangle.put("width", 10f);
+        rectangle.put("height", 11f);
+        rectangles.put(0, rectangle);
+        markup.put("rectangles", rectangles);
+
+        return markup;
     }
 
     public UploadResponse uploadCdamDocument(String username, String caseTypeId, String jurisdictionId) throws IOException {

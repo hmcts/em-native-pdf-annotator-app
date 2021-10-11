@@ -5,13 +5,6 @@
         <BuiltIn enabled="true">
             <HTTP enabled="true"/>
         </BuiltIn>
-        <Class name="uk.gov.hmcts.reform.em.npa.rest.DocumentTaskResource">
-            <Method name="createDocumentTask" reportCaughtExceptions="true"/>
-            <Method name="updateDocumentTask" reportCaughtExceptions="true"/>
-            <Method name="getAllDocumentTasks" reportCaughtExceptions="true"/>
-            <Method name="getDocumentTask" reportCaughtExceptions="true"/>
-            <Method name="deleteDocumentTask" reportCaughtExceptions="true"/>
-        </Class>
         <Class name="org.apache.tomcat.websocket.server.WsFilter">
             <Method name="doFilter" reportCaughtExceptions="true"/>
         </Class>
