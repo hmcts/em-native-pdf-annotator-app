@@ -7,7 +7,6 @@ import net.thucydides.core.annotations.WithTag;
 import net.thucydides.core.annotations.WithTags;
 import org.hamcrest.Matchers;
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Rule;
@@ -85,7 +84,7 @@ public class MarkUpScenarios {
         final String redactionId = UUID.randomUUID().toString();
         final String documentId = UUID.randomUUID().toString();
         final String rectangleId = UUID.randomUUID().toString();
-        final JSONObject jsonObject = createMarkUpPayload(redactionId, documentId, rectangleId);
+        final JSONObject jsonObject = testUtil.createMarkUpPayload(redactionId, documentId, rectangleId);
 
         jsonObject.remove("redactionId");
         jsonObject.remove("documentId");
@@ -110,7 +109,7 @@ public class MarkUpScenarios {
         final String redactionId = UUID.randomUUID().toString();
         final String documentId = UUID.randomUUID().toString();
         final String rectangleId = UUID.randomUUID().toString();
-        final JSONObject jsonObject = createMarkUpPayload(redactionId, documentId, rectangleId);
+        final JSONObject jsonObject = testUtil.createMarkUpPayload(redactionId, documentId, rectangleId);
 
         unAuthenticatedRequest
                 .body(jsonObject.toString())
@@ -343,7 +342,7 @@ public class MarkUpScenarios {
     @NotNull
     private ValidatableResponse createMarkUp(final String redactionId, final String documentId,
                                              final String rectangleId) {
-        final JSONObject jsonObject = createMarkUpPayload(redactionId, documentId, rectangleId);
+        final JSONObject jsonObject = testUtil.createMarkUpPayload(redactionId, documentId, rectangleId);
 
         return request
                 .body(jsonObject.toString())
@@ -351,27 +350,6 @@ public class MarkUpScenarios {
                 .then()
                 .assertThat()
                 .statusCode(201);
-    }
-
-    @NotNull
-    private JSONObject createMarkUpPayload(final String redactionId, final String documentId,
-                                           final String rectangleId) {
-        final JSONObject markup = new JSONObject();
-        markup.put("redactionId", redactionId);
-        markup.put("documentId", documentId);
-        markup.put("page", 1);
-
-        final JSONArray rectangles = new JSONArray();
-        final JSONObject rectangle = new JSONObject();
-        rectangle.put("id", rectangleId);
-        rectangle.put("x", 1f);
-        rectangle.put("y", 2f);
-        rectangle.put("width", 10f);
-        rectangle.put("height", 11f);
-        rectangles.put(0, rectangle);
-        markup.put("rectangles", rectangles);
-
-        return markup;
     }
 
     @NotNull

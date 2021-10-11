@@ -27,8 +27,7 @@ public class ServiceNameAspect {
     SecurityUtils securityUtils;
 
     @Before(
-        "execution(* uk.gov.hmcts.reform.em.npa.rest.DocumentTaskResource.*(..)) ||"
-            + " execution(* uk.gov.hmcts.reform.em.npa.rest.MarkUpResource.*(..)) ||"
+        " execution(* uk.gov.hmcts.reform.em.npa.rest.MarkUpResource.*(..)) ||"
             + " execution(* uk.gov.hmcts.reform.em.npa.rest.RedactionResource.*(..))")
     public void logServiceName() {
 
