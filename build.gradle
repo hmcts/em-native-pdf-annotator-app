@@ -154,24 +154,27 @@ dependencies {
         exclude group: 'org.eclipse.jetty.alpn', module: 'alpn-api'
     }
 
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-batch'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-actuator'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-autoconfigure'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
+
+
     implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.48'
     implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.48'
     
     implementation group: 'com.google.guava', name: 'guava', version: '31.0.1-jre'
 
-    implementation ('org.springframework.cloud:spring-cloud-openfeign:3.0.3') {
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-openfeign', version: '3.0.4', {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-actuator'
     }
         
-    implementation 'org.projectlombok:lombok:1.18.20'
+    implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.20'
     implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.24'
     implementation group: 'org.apache.pdfbox', name: 'jbig2-imageio', version: '3.0.3'
-    implementation 'com.squareup.okhttp3:okhttp:4.9.2'
-    implementation("org.springframework.boot:spring-boot-starter-batch:2.4.5")
-    implementation "org.springframework.boot:spring-boot-actuator:2.4.5"
-    implementation("org.springframework.boot:spring-boot-autoconfigure:2.4.5")
-    implementation("org.springframework.boot:spring-boot:2.4.5")
-    implementation 'org.springframework.boot:spring-boot-starter-validation:2.4.5'
+    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.9.2'
 
     implementation group:'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.1'
 
@@ -184,11 +187,9 @@ dependencies {
     implementation group:'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.fasterXmlJackson
     implementation group:'com.fasterxml.jackson.module', name: 'jackson-module-afterburner', version: versions.fasterXmlJackson
 
-    implementation "org.zalando:problem-spring-web:0.26.2"
-    implementation("io.springfox:springfox-swagger2:${versions.springfoxSwagger}")
-    implementation("io.springfox:springfox-swagger-ui:${versions.springfoxSwagger}")
-    implementation("org.springframework.boot:spring-boot-starter-web:2.4.5")
-    implementation('org.springframework.boot:spring-boot-starter-data-jpa:2.4.5')
+    implementation group:'org.zalando', name: 'problem-spring-web', version: '0.26.2'
+    implementation group:'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
+    implementation group:'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
 
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: versions.springSecurity
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-client', version: versions.springSecurity
@@ -198,23 +199,23 @@ dependencies {
     implementation group: 'org.springframework.security', name: 'spring-security-config', version: versions.springSecurity
     implementation group: 'org.springframework.security', name: 'spring-security-core', version: versions.springSecurity
 
-    implementation( 'org.apache.httpcomponents:httpclient:4.5.10')
-    implementation "org.liquibase:liquibase-core:4.5.0"
-    liquibaseRuntime "org.liquibase:liquibase-core:4.4.3"
-    liquibaseRuntime "org.liquibase.ext:liquibase-hibernate5:4.5.0"
+    implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.10'
+    implementation group: 'org.liquibase', name: 'liquibase-core', version: '4.5.0'
+    liquibaseRuntime group: 'org.liquibase', name: 'liquibase-core', version: '4.4.3'
+    liquibaseRuntime group: 'org.liquibase.ext', name: 'liquibase-hibernate5', version: '4.5.0'
     liquibaseRuntime sourceSets.main.compileClasspath
     liquibaseRuntime sourceSets.main.output
-    liquibaseRuntime "org.liquibase:liquibase-groovy-dsl:3.0.2"
+    liquibaseRuntime group: 'org.liquibase', name: 'liquibase-groovy-dsl', version: '3.0.2'
     liquibaseRuntime group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
-    liquibaseRuntime "com.h2database:h2"
+    liquibaseRuntime group: 'com.h2database', name: 'h2'
     implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
     implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
     implementation group: 'commons-validator', name: 'commons-validator', version: '1.7'
-    implementation "javax.transaction:javax.transaction-api"
+    implementation group: 'javax.transaction', name: 'javax.transaction-api'
     implementation group: 'org.ehcache', name: 'ehcache', version: '3.9.5'
 
-    implementation "com.zaxxer:HikariCP:5.0.0"
+    implementation group: 'com.zaxxer', name: 'HikariCP', version: '5.0.0'
     implementation group: 'javax.el', name: 'javax.el-api', version: '3.0.0'
     implementation group:'org.hibernate', name: 'hibernate-core', version: versions.hibernate
     implementation group:'org.hibernate', name: 'hibernate-jcache', version: versions.hibernate
@@ -227,15 +228,15 @@ dependencies {
 
     implementation group: 'org.apache.tika', name: 'tika-core', version: '2.1.0'
 
-    implementation "org.mapstruct:mapstruct-jdk8:${mapstruct_version}"
+    implementation group: 'org.mapstruct', name: 'mapstruct-jdk8', version: '1.2.0.Final'
 
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
 
-    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstruct_version}"
+    annotationProcessor group: 'org.mapstruct',name: 'mapstruct-processor', version: '1.2.0.Final'
     annotationProcessor group:'org.hibernate', name: 'hibernate-jpamodelgen', version: versions.hibernate
-    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor:2.4.5", withoutStuff
+    annotationProcessor group:'org.springframework.boot', name: 'spring-boot-configuration-processor', version: '2.4.5', withoutStuff
 
-    testImplementation "org.springframework.boot:spring-boot-starter-test:2.4.5", withoutStuff
+    testImplementation group:'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.4.5', withoutStuff
     testImplementation group: 'com.h2database', name: 'h2', version: '1.4.200'
     implementation group: 'com.github.gmazzo', name: 'okhttp-mock', version: '1.4.1'
     testImplementation group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
@@ -243,15 +244,15 @@ dependencies {
     implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.logging
     implementation group: 'com.github.hmcts.java-logging', name: 'logging-spring', version: versions.logging
     
-    annotationProcessor 'javax.xml.bind:jaxb-api:2.3.1'
-    annotationProcessor 'com.sun.xml.bind:jaxb-core:3.0.2'
-    annotationProcessor 'com.sun.xml.bind:jaxb-impl:3.0.2'
+    annotationProcessor group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
+    annotationProcessor group: 'com.sun.xml.bind', name: 'jaxb-core', version: '3.0.2'
+    annotationProcessor group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '3.0.2'
 
-    testRuntimeOnly 'org.junit.vintage:junit-vintage-engine:5.6.2'
-    testImplementation "org.junit.jupiter:junit-jupiter-api:5.6.3"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.6.3"
+    testRuntimeOnly group: 'org.junit.vintage', name: 'junit-vintage-engine', version: '5.6.2'
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.6.3'
+    testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.6.3'
     testImplementation group: 'org.pitest', name: 'pitest', version:'1.5.2'
-    testImplementation 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.5.2'
+    testImplementation group: 'info.solidsoft.gradle.pitest',  name: 'gradle-pitest-plugin', version: '1.5.2'
 
     testImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenityRestAssured, withoutStuff
     testImplementation group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity, withoutStuff
@@ -259,15 +260,15 @@ dependencies {
     testImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
     testImplementation group: 'net.serenity-bdd', name: 'serenity-single-page-report', version: versions.serenityreporter
 
-    testImplementation 'com.github.hmcts:fortify-client:1.2.0:all'
+    testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.2.0', classifier: 'all'
 
     contractTestImplementation group: 'au.com.dius', name: 'pact-jvm-consumer-junit', version: versions.pact_version, withoutNetty
     contractTestImplementation group: 'au.com.dius', name: 'pact-jvm-consumer-junit5', version: versions.pact_version, withoutNetty
     contractTestImplementation group: 'au.com.dius', name: 'pact-jvm-consumer-java8', version: versions.pact_version, withoutNetty
     implementation group: 'au.com.dius', name: 'pact-jvm-consumer', version: versions.pact_version, withoutNetty
 
-    contractTestImplementation("org.junit.jupiter:junit-jupiter-api:5.6.3")
-    contractTestRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.3")
+    contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version:'5.6.3'
+    contractTestRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.6.3'
 
     contractTestImplementation sourceSets.main.runtimeClasspath
     contractTestImplementation sourceSets.test.runtimeClasspath
@@ -276,7 +277,7 @@ dependencies {
     contractTestImplementation group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.13'
     contractTestImplementation group: 'org.apache.httpcomponents', name: 'fluent-hc', version: '4.5.13'
 
-    aatImplementation 'com.github.hmcts:em-test-helper:1.20.3'
+    aatImplementation group: 'com.github.hmcts', name: 'em-test-helper', version: '1.20.3'
     aatImplementation group: 'org.apache.poi', name: 'poi', version: '5.0.0'
     aatImplementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.0.0'
 
