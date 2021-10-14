@@ -13,6 +13,21 @@ spring:
             client-id: webshow
             client-secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
 
+management:
+  endpoint:
+    health:
+      show-details: "always"
+      show-components: "always"
+      probes:
+        enabled: true
+  endpoints:
+    web:
+      base-path: '/'
+      exposure:
+        include:
+          - health
+          - info
+
 test:
   url: ${TEST_URL:http://localhost:8080}
 
@@ -33,6 +48,8 @@ s2s:
     serviceName: ${S2S_SERVICE_NAME:em_gw}
     ccdGwSecret: ${FUNCTIONAL_TEST_CCD_GW_SERVICE_SECRET:AAAAAAAAAAAAAAAA}
     ccdGwServiceName: ${CCD_GW_SERVICE_NAME:ccd_gw}
+    xuiWebappSecret: ${FUNCTIONAL_TEST_XUI_WEBAPP_SERVICE_SECRET:AAAAAAAAAAAAAAAA}
+    xuiWebappServiceName: ${XUI_WEBAPP_SERVICE_NAME:xui_webapp}
 
 
 ccd-def:
