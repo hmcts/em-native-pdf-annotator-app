@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.authorisation.exceptions.InvalidTokenException;
 import uk.gov.hmcts.reform.em.npa.config.security.SecurityUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Objects;
 
 @Aspect
 @Component
