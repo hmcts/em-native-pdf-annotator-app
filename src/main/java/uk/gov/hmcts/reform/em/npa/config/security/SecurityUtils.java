@@ -51,7 +51,7 @@ public class SecurityUtils {
                     return (String) authentication.getPrincipal();
                 }else if (authentication instanceof JwtAuthenticationToken) {
                     Jwt jwt = ((JwtAuthenticationToken) authentication).getToken();
-                    if (jwt.containsClaim(TOKEN_NAME) && jwt.getClaim(TOKEN_NAME).equals(ACCESS_TOKEN)) {
+                    if (Boolean.TRUE.equals(jwt.containsClaim(TOKEN_NAME)) && jwt.getClaim(TOKEN_NAME).equals(ACCESS_TOKEN)) {
                         uk.gov.hmcts.reform.idam.client.models.UserInfo userInfo = idamRepository.getUserInfo(jwt.getTokenValue());
                         return userInfo.getUid();
                     }
