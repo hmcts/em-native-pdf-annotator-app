@@ -35,7 +35,7 @@ public class ImageRedactionTest {
     }
 
     public void initRedactionDTOList() {
-        for (int i = 0; i < 5 ; i++) {
+        for (int i = 0; i < 5; i++) {
             RectangleDTO rectangle = new RectangleDTO();
             rectangle.setId(UUID.randomUUID());
             rectangle.setX(100.00);

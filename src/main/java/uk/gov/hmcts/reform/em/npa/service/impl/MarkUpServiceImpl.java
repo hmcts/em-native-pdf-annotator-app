@@ -26,15 +26,14 @@ public class MarkUpServiceImpl implements MarkUpService {
 
     private final Logger log = LoggerFactory.getLogger(MarkUpServiceImpl.class);
 
+    private static final String USER_NOT_FOUND = "User not found.";
     private MarkUpRepository markUpRepository;
-
     private MarkUpMapper markUpMapper;
-
     private SecurityUtils securityUtils;
 
     public MarkUpServiceImpl(MarkUpRepository markUpRepository,
                              MarkUpMapper markUpMapper,
-                             SecurityUtils securityUtils){
+                             SecurityUtils securityUtils) {
         this.markUpRepository = markUpRepository;
         this.markUpMapper = markUpMapper;
         this.securityUtils = securityUtils;
@@ -46,11 +45,11 @@ public class MarkUpServiceImpl implements MarkUpService {
 
         final Redaction redaction = markUpMapper.toEntity(redactionDTO);
         String createdBy = securityUtils.getCurrentUserLogin()
-            .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+            .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND));
         redaction.setCreatedBy(createdBy);
         redaction.getRectangles().stream().forEach(rectangle -> rectangle.setCreatedBy(createdBy));
 
-        if(CollectionUtils.isNotEmpty(redaction.getRectangles())) {
+        if (CollectionUtils.isNotEmpty(redaction.getRectangles())) {
             redaction.getRectangles()
                 .stream()
                 .forEach(rectangle -> rectangle.setRedaction(redaction));
@@ -65,7 +64,7 @@ public class MarkUpServiceImpl implements MarkUpService {
     public Page<RedactionDTO> findAllByDocumentId(UUID documentId, Pageable pageable) {
 
         String user = securityUtils.getCurrentUserLogin()
-            .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+            .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND));
 
         return markUpRepository.findByDocumentIdAndCreatedBy(documentId, user, pageable)
                     .map(markUpMapper::toDto);
@@ -76,9 +75,8 @@ public class MarkUpServiceImpl implements MarkUpService {
 
         log.debug("Request to delete all Redactions : {}", documentId);
         String createdBy = securityUtils.getCurrentUserLogin()
-            .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+            .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND));
         markUpRepository.deleteAllByDocumentIdAndCreatedBy(documentId, createdBy);
-
     }
 
     @Override

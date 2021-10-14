@@ -34,7 +34,7 @@ public class PdfRedactionTest {
     }
 
     public void initRedactionDTOList() {
-        for (int i = 0; i < 5 ; i++) {
+        for (int i = 0; i < 5; i++) {
             RedactionDTO redaction = new RedactionDTO();
             redaction.setRedactionId(UUID.randomUUID());
             redaction.setDocumentId(UUID.randomUUID());

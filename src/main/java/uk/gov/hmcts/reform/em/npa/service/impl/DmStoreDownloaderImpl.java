@@ -33,7 +33,7 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
 
     private String dmStoreAppBaseUrl;
 
-    private final String dmStoreDownloadEndpoint = "/documents/";
+    private static final String DM_STORE_DOWNLOAD_ENDPOINT = "/documents/";
 
     private final ObjectMapper objectMapper;
 
@@ -52,19 +52,18 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
 
         try {
 
-            Response response = getDocumentStoreResponse(dmStoreAppBaseUrl + dmStoreDownloadEndpoint + id);
+            Response response = getDocumentStoreResponse(dmStoreAppBaseUrl + DM_STORE_DOWNLOAD_ENDPOINT + id);
 
             if (response.isSuccessful()) {
                 JsonNode documentMetaData = objectMapper.readTree(response.body().byteStream());
 
-                log.info("Accessing binary of the DM document: {}",
-                    objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(documentMetaData));
+                var valueAsString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(documentMetaData);
+                log.info("Accessing binary of the DM document: {}", valueAsString);
 
-                String documentBinaryUrl = new StringBuffer()
-                                                .append(dmStoreAppBaseUrl)
-                                                    .append(dmStoreDownloadEndpoint)
-                                                    .append(id)
-                                                    .append("/binary").toString();
+                String documentBinaryUrl = dmStoreAppBaseUrl
+                        + DM_STORE_DOWNLOAD_ENDPOINT
+                        + id
+                        + "/binary";
 
                 String originalDocumentName = documentMetaData.get("originalDocumentName").asText();
                 String fileType = FilenameUtils.getExtension(originalDocumentName);
@@ -99,7 +98,7 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
     private File copyResponseToFile(Response response, String fileType) throws DocumentTaskProcessingException {
         try {
 
-            File tempFile = File.createTempFile("dm-store", "."+fileType);
+            File tempFile = File.createTempFile("dm-store", "." + fileType);
             Files.copy(response.body().byteStream(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
             return tempFile;

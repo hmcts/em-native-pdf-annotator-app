@@ -21,7 +21,7 @@ import java.util.Arrays;
 @ComponentScan("uk.gov.hmcts.reform.em.npa.rest")
 public class SwaggerConfiguration {
 
-    private final static String apiVersion = "1.0.1";
+    private static final String API_VERSION = "1.0.1";
 
     @Bean
     public Docket api() {
@@ -60,7 +60,7 @@ public class SwaggerConfiguration {
         return new ApiInfoBuilder()
                 .title("EM Native PDF Annotator App")
                 .description("API to burn annotations onto a PDF and facilitate Document Redaction")
-                .version(apiVersion)
+                .version(API_VERSION)
                 .build();
     }
 }

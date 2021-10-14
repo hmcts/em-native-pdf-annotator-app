@@ -35,7 +35,7 @@ public class RedactionServiceImpl implements RedactionService {
     @Value("#{'${redaction.multipart.image-ext}'.split(',')}")
     List<String> imageExtensionsList;
 
-    public RedactionServiceImpl (DmStoreDownloader dmStoreDownloader, PdfRedaction pdfRedaction, ImageRedaction imageRedaction,
+    public RedactionServiceImpl(DmStoreDownloader dmStoreDownloader, PdfRedaction pdfRedaction, ImageRedaction imageRedaction,
                                  MarkUpRepository markUpRepository, SecurityUtils securityUtils) {
         this.dmStoreDownloader = dmStoreDownloader;
         this.pdfRedaction = pdfRedaction;

@@ -35,7 +35,8 @@ public class AsyncEntityAuditEventWriter {
      */
     @Async
     public void writeAuditEvent(Object target, EntityAuditAction action) {
-        log.debug("-------------- Post {} audit  --------------", action.value());
+        var logAction = action != null ? action.value() : null;
+        log.debug("-------------- Post {} audit  --------------", logAction);
         try {
             EntityAuditEvent auditedEntity = prepareAuditEntity(target, action);
             if (auditedEntity != null) {
@@ -69,7 +70,7 @@ public class AsyncEntityAuditEventWriter {
             entityData = objectMapper.writeValueAsString(entity);
         } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException |
             IOException e) {
-            log.error("Exception while getting entity ID and content {}", e);
+            log.error("Exception while getting entity ID and content {}", e.getMessage(), e);
             // returning null as we dont want to raise an application exception here
             return null;
         }
@@ -85,7 +86,7 @@ public class AsyncEntityAuditEventWriter {
             auditedEntity.setModifiedDate(abstractAuditEntity.getLastModifiedDate());
             calculateVersion(auditedEntity);
         }
-        log.trace("Audit Entity --> {} ", auditedEntity.toString());
+        log.trace("Audit Entity --> {} ", auditedEntity);
         return auditedEntity;
     }
 
@@ -94,7 +95,7 @@ public class AsyncEntityAuditEventWriter {
         Integer lastCommitVersion = auditingEntityRepository.findMaxCommitVersion(auditedEntity
             .getEntityType(), auditedEntity.getEntityId());
         log.trace("Last commit version of entity => {}", lastCommitVersion);
-        if(lastCommitVersion!=null && lastCommitVersion != 0){
+        if (lastCommitVersion != null && lastCommitVersion != 0) {
             log.trace("Present. Adding version..");
             auditedEntity.setCommitVersion(lastCommitVersion + 1);
         } else {

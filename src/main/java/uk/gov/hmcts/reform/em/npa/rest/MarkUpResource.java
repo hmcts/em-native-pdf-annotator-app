@@ -49,7 +49,7 @@ public class MarkUpResource {
 
     private MarkUpService markUpService;
 
-    public MarkUpResource(MarkUpService markUpService){
+    public MarkUpResource(MarkUpService markUpService) {
         this.markUpService = markUpService;
     }
 

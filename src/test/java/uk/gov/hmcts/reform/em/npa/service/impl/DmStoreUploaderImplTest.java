@@ -36,7 +36,7 @@ public class DmStoreUploaderImplTest {
     @Autowired
     private SecurityUtils securityUtils;
 
-    private static Response interceptSuccess (Interceptor.Chain chain) throws IOException {
+    private static Response interceptSuccess(Interceptor.Chain chain) throws IOException {
 
         if (chain.request().url().toString().endsWith("/binary")) {
             InputStream file = ClassLoader.getSystemResourceAsStream(PDF_FILENAME);
@@ -49,64 +49,63 @@ public class DmStoreUploaderImplTest {
                 .protocol(Protocol.HTTP_2)
                 .build();
         } else {
-            return new Response.Builder()
-                .body(ResponseBody.create(MediaType.get("application/json"),
-                    "{\n" +
-                        "  \"_embedded\": {\n" +
-                        "    \"documents\": [\n" +
-                        "      {\n" +
-                        "        \"modifiedOn\": \"2020-04-23T14:37:02+0000\",\n" +
-                        "        \"size\": 19496,\n" +
-                        "        \"createdBy\": \"7f0fd7bf-48c0-4462-9056-38c1190e391f\",\n" +
-                        "        \"_links\": {\n" +
-                        "          \"thumbnail\": {\n" +
-                        "            \"href\": \"http://localhost:4603/documents/0e38e3ad-171f-4d27-bf54-e41f2ed744eb/thumbnail\"\n" +
-                        "          },\n" +
-                        "          \"binary\": {\n" +
-                        "            \"href\": \"http://localhost:4603/documents/0e38e3ad-171f-4d27-bf54-e41f2ed744eb/binary\"\n" +
-                        "          },\n" +
-                        "          \"self\": {\n" +
-                        "            \"href\": \"http://localhost:4603/documents/0e38e3ad-171f-4d27-bf54-e41f2ed744eb\"\n" +
-                        "          }\n" +
-                        "        },\n" +
-                        "        \"_embedded\": {\n" +
-                        "          \"allDocumentVersions\": {\n" +
-                        "            \"_embedded\": {\n" +
-                        "              \"documentVersions\": [\n" +
-                        "                {\n" +
-                        "                  \"size\": 19496,\n" +
-                        "                  \"createdBy\": \"7f0fd7bf-48c0-4462-9056-38c1190e391f\",\n" +
-                        "                  \"_links\": {\n" +
-                        "                    \"thumbnail\": {\n" +
-                        "                      \"href\": \"http://localhost:4603/documents/0e38e3ad-171f-4d27-bf54-e41f2ed744eb/versions/da13dae7-f2bc-4a43-937c-83a255f2f72f/thumbnail\"\n" +
-                        "                    },\n" +
-                        "                    \"document\": {\n" +
-                        "                      \"href\": \"http://localhost:4603/documents/0e38e3ad-171f-4d27-bf54-e41f2ed744eb\"\n" +
-                        "                    },\n" +
-                        "                    \"binary\": {\n" +
-                        "                      \"href\": \"http://localhost:4603/documents/0e38e3ad-171f-4d27-bf54-e41f2ed744eb/versions/da13dae7-f2bc-4a43-937c-83a255f2f72f/binary\"\n" +
-                        "                    },\n" +
-                        "                    \"self\": {\n" +
-                        "                      \"href\": \"http://localhost:4603/documents/0e38e3ad-171f-4d27-bf54-e41f2ed744eb/versions/da13dae7-f2bc-4a43-937c-83a255f2f72f\"\n" +
-                        "                    }\n" +
-                        "                  },\n" +
-                        "                  \"originalDocumentName\": \"stitched9163237694642183694.pdf\",\n" +
-                        "                  \"mimeType\": \"application/pdf\",\n" +
-                        "                  \"createdOn\": \"2020-04-23T14:37:02+0000\"\n" +
-                        "                }\n" +
-                        "              ]\n" +
-                        "            }\n" +
-                        "          }\n" +
-                        "        },\n" +
-                        "        \"lastModifiedBy\": \"7f0fd7bf-48c0-4462-9056-38c1190e391f\",\n" +
-                        "        \"originalDocumentName\": \"stitched9163237694642183694.pdf\",\n" +
-                        "        \"mimeType\": \"application/pdf\",\n" +
-                        "        \"classification\": \"PUBLIC\",\n" +
-                        "        \"createdOn\": \"2020-04-23T14:37:02+0000\"\n" +
-                        "      }\n" +
-                        "    ]\n" +
-                        "  }\n" +
-                        "}"))
+            return new Response.Builder().body(ResponseBody.create(
+            "{\n"
+                    + "  \"_embedded\": {\n"
+                    + "    \"documents\": [\n"
+                    + "      {\n"
+                    + "        \"modifiedOn\": \"2020-04-23T14:37:02+0000\",\n"
+                    + "        \"size\": 19496,\n"
+                    + "        \"createdBy\": \"7f0fd7bf-48c0-4462-9056-38c1190e391f\",\n"
+                    + "        \"_links\": {\n"
+                    + "          \"thumbnail\": {\n"
+                    + "            \"href\": \"http://localhost:4603/documents/0e38e3ad-171f-4d27-bf54-e41f2ed744eb/thumbnail\"\n"
+                    + "          },\n"
+                    + "          \"binary\": {\n"
+                    + "            \"href\": \"http://localhost:4603/documents/0e38e3ad-171f-4d27-bf54-e41f2ed744eb/binary\"\n"
+                    + "          },\n"
+                    + "          \"self\": {\n"
+                    + "            \"href\": \"http://localhost:4603/documents/0e38e3ad-171f-4d27-bf54-e41f2ed744eb\"\n"
+                    + "          }\n"
+                    + "        },\n"
+                    + "        \"_embedded\": {\n"
+                    + "          \"allDocumentVersions\": {\n"
+                    + "            \"_embedded\": {\n"
+                    + "              \"documentVersions\": [\n"
+                    + "                {\n"
+                    + "                  \"size\": 19496,\n"
+                    + "                  \"createdBy\": \"7f0fd7bf-48c0-4462-9056-38c1190e391f\",\n"
+                    + "                  \"_links\": {\n"
+                    + "                    \"thumbnail\": {\n"
+                    + "                      \"href\": \"http://localhost:4603/documents/0e38e3ad-171f-4d27-bf54-e41f2ed744eb/versions/da13dae7-f2bc-4a43-937c-83a255f2f72f/thumbnail\"\n"
+                    + "                    },\n"
+                    + "                    \"document\": {\n"
+                    + "                      \"href\": \"http://localhost:4603/documents/0e38e3ad-171f-4d27-bf54-e41f2ed744eb\"\n"
+                    + "                    },\n"
+                    + "                    \"binary\": {\n"
+                    + "                      \"href\": \"http://localhost:4603/documents/0e38e3ad-171f-4d27-bf54-e41f2ed744eb/versions/da13dae7-f2bc-4a43-937c-83a255f2f72f/binary\"\n"
+                    + "                    },\n"
+                    + "                    \"self\": {\n"
+                    + "                      \"href\": \"http://localhost:4603/documents/0e38e3ad-171f-4d27-bf54-e41f2ed744eb/versions/da13dae7-f2bc-4a43-937c-83a255f2f72f\"\n"
+                    + "                    }\n"
+                    + "                  },\n"
+                    + "                  \"originalDocumentName\": \"stitched9163237694642183694.pdf\",\n"
+                    + "                  \"mimeType\": \"application/pdf\",\n"
+                    + "                  \"createdOn\": \"2020-04-23T14:37:02+0000\"\n"
+                    + "                }\n"
+                    + "              ]\n"
+                    + "            }\n"
+                    + "          }\n"
+                    + "        },\n"
+                    + "        \"lastModifiedBy\": \"7f0fd7bf-48c0-4462-9056-38c1190e391f\",\n"
+                    + "        \"originalDocumentName\": \"stitched9163237694642183694.pdf\",\n"
+                    + "        \"mimeType\": \"application/pdf\",\n"
+                    + "        \"classification\": \"PUBLIC\",\n"
+                    + "        \"createdOn\": \"2020-04-23T14:37:02+0000\"\n"
+                    + "      }\n"
+                    + "    ]\n"
+                    + "  }\n"
+                    + "}", MediaType.get("application/json")))
                 .request(chain.request())
                 .message("")
                 .code(200)
@@ -116,7 +115,7 @@ public class DmStoreUploaderImplTest {
 
     }
 
-    private static Response interceptFailure (Interceptor.Chain chain) throws IOException {
+    private static Response interceptFailure(Interceptor.Chain chain) throws IOException {
 
         InputStream file = ClassLoader.getSystemResourceAsStream(PDF_FILENAME);
 
