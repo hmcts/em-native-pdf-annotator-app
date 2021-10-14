@@ -26,7 +26,7 @@ public class EntityAuditEventListener extends AuditingEntityListener {
         } catch (NoSuchBeanDefinitionException e) {
             log.error(NO_BEAN_FOUND_ERROR);
         } catch (Exception e) {
-            log.error(CREATE_AUDIT_ENTITY_EXCEPTION, e);
+            log.error(CREATE_AUDIT_ENTITY_EXCEPTION, e.getMessage(), e);
         }
     }
 
@@ -38,7 +38,7 @@ public class EntityAuditEventListener extends AuditingEntityListener {
         } catch (NoSuchBeanDefinitionException e) {
             log.error(NO_BEAN_FOUND_ERROR);
         } catch (Exception e) {
-            log.error(CREATE_AUDIT_ENTITY_EXCEPTION, e);
+            log.error(CREATE_AUDIT_ENTITY_EXCEPTION, e.getMessage(), e);
         }
     }
 
@@ -50,7 +50,7 @@ public class EntityAuditEventListener extends AuditingEntityListener {
         } catch (NoSuchBeanDefinitionException e) {
             log.error(NO_BEAN_FOUND_ERROR);
         } catch (Exception e) {
-            log.error(CREATE_AUDIT_ENTITY_EXCEPTION, e);
+            log.error(CREATE_AUDIT_ENTITY_EXCEPTION, e.getMessage(), e);
         }
     }
 
