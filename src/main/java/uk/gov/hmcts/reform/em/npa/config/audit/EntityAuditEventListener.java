@@ -13,7 +13,7 @@ import javax.persistence.PostUpdate;
 public class EntityAuditEventListener extends AuditingEntityListener {
 
     private final Logger log = LoggerFactory.getLogger(EntityAuditEventListener.class);
-
+    private static final String NO_BEAN_FOUND = "No bean found for AsyncEntityAuditEventWriter";
     private static BeanFactory beanFactory;
 
     @PostPersist
@@ -22,9 +22,9 @@ public class EntityAuditEventListener extends AuditingEntityListener {
             AsyncEntityAuditEventWriter asyncEntityAuditEventWriter = beanFactory.getBean(AsyncEntityAuditEventWriter.class);
             asyncEntityAuditEventWriter.writeAuditEvent(target, EntityAuditAction.CREATE);
         } catch (NoSuchBeanDefinitionException e) {
-            log.error("No bean found for AsyncEntityAuditEventWriter");
+            log.error(NO_BEAN_FOUND);
         } catch (Exception e) {
-            log.error("Exception while persisting create audit entity {}", e);
+            log.error("Exception while persisting create audit entity {}", e.getMessage(), e);
         }
     }
 
@@ -34,9 +34,9 @@ public class EntityAuditEventListener extends AuditingEntityListener {
             AsyncEntityAuditEventWriter asyncEntityAuditEventWriter = beanFactory.getBean(AsyncEntityAuditEventWriter.class);
             asyncEntityAuditEventWriter.writeAuditEvent(target, EntityAuditAction.UPDATE);
         } catch (NoSuchBeanDefinitionException e) {
-            log.error("No bean found for AsyncEntityAuditEventWriter");
+            log.error(NO_BEAN_FOUND);
         } catch (Exception e) {
-            log.error("Exception while persisting update audit entity {}", e);
+            log.error("Exception while persisting update audit entity {}", e.getMessage(), e);
         }
     }
 
@@ -46,9 +46,9 @@ public class EntityAuditEventListener extends AuditingEntityListener {
             AsyncEntityAuditEventWriter asyncEntityAuditEventWriter = beanFactory.getBean(AsyncEntityAuditEventWriter.class);
             asyncEntityAuditEventWriter.writeAuditEvent(target, EntityAuditAction.DELETE);
         } catch (NoSuchBeanDefinitionException e) {
-            log.error("No bean found for AsyncEntityAuditEventWriter");
+            log.error(NO_BEAN_FOUND);
         } catch (Exception e) {
-            log.error("Exception while persisting delete audit entity {}", e);
+            log.error("Exception while persisting delete audit entity {}", e.getMessage(), e);
         }
     }
 
