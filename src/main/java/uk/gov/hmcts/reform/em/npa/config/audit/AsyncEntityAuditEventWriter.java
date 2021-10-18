@@ -35,14 +35,16 @@ public class AsyncEntityAuditEventWriter {
      */
     @Async
     public void writeAuditEvent(Object target, EntityAuditAction action) {
-        log.debug("-------------- Post {} audit  --------------", action.value());
+        if (log.isDebugEnabled()) {
+            log.debug("-------------- Post {} audit  --------------", action.value());
+        }
         try {
             EntityAuditEvent auditedEntity = prepareAuditEntity(target, action);
             if (auditedEntity != null) {
                 auditingEntityRepository.save(auditedEntity);
             }
         } catch (Exception e) {
-            log.error("Exception while persisting audit entity for {} error: {}", target, e);
+            log.error("Exception while getting entity ID and content {}", e.getMessage(), e);
         }
     }
 
@@ -85,7 +87,9 @@ public class AsyncEntityAuditEventWriter {
             auditedEntity.setModifiedDate(abstractAuditEntity.getLastModifiedDate());
             calculateVersion(auditedEntity);
         }
-        log.trace("Audit Entity --> {} ", auditedEntity.toString());
+        if (log.isTraceEnabled()) {
+            log.trace("Audit Entity --> {} ", auditedEntity);
+        }
         return auditedEntity;
     }
 
