@@ -118,9 +118,9 @@ public class RedactionServiceImplTest {
         File mockFile = new File("prosecution1.pdf");
         Mockito.when(cdamService.downloadFile("jwt", "s2sToken", docStoreUUID)).thenReturn(mockFile);
         Mockito.when(pdfRedaction.redactPdf(mockFile, redactions)).thenReturn(mockFile);
-
+        redactionService.cdamEnabled = true;
         RedactionRequest redactionRequest = createRedactionRequest("caseId", docStoreUUID, redactions);
-        redactionRequest.setSecureDocStoreEnabled(true);
+
         File result = redactionService.redactFile("jwt", "s2sToken", redactionRequest);
         Assert.assertEquals(result.getName(), mockFile.getName());
     }

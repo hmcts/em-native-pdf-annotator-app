@@ -129,3 +129,6 @@ oidc:
 redaction:
   multipart:
     image-ext: ${REDACTION_MULTIPART_WHITELIST_EXT:jpg,jpeg,bmp,tif,tiff,png,apng,gif,ico,cur,jfif,pjpeg,pjp,svg,webp}
+
+toggles:
+  cdam_enabled: ${ENABLE_CDAM:false}

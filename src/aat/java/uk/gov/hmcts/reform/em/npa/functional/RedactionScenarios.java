@@ -89,7 +89,7 @@ public class RedactionScenarios {
     }
 
     @Test
-    public void shouldReturn200WhenRedactedPdfDocumentSecureDocEnabled() throws Exception {
+    public void shouldReturn200WhenRedactedPdfDocumentCdamEnabled() throws Exception {
 
         UploadResponse uploadResponse = testUtil.uploadCdamDocument("a@b.com",
             extendedCcdHelper.getEnvCcdCaseTypeId(), "PUBLICLAW");
@@ -108,7 +108,6 @@ public class RedactionScenarios {
         redactionRequest.setDocumentId(UUID.fromString(docId));
 
         redactionRequest.setRedactions(Arrays.asList(createCdamRedaction(docId), createCdamRedaction(docId)));
-        redactionRequest.setSecureDocStoreEnabled(true);
 
         final JSONObject jsonObject = new JSONObject(redactionRequest);
 
@@ -123,7 +122,7 @@ public class RedactionScenarios {
     }
 
     @Test
-    public void shouldReturn400WhenRedactedPdfDocumentSecureDocEnabled() throws Exception {
+    public void shouldReturn400WhenRedactedPdfDocumentCdamEnabled() throws Exception {
 
         UploadResponse uploadResponse = testUtil.uploadCdamDocument("a@b.com",
             extendedCcdHelper.getEnvCcdCaseTypeId(), "PUBLICLAW");
@@ -142,7 +141,6 @@ public class RedactionScenarios {
         redactionRequest.setDocumentId(UUID.fromString(docId));
 
         redactionRequest.setRedactions(Arrays.asList(createCdamRedaction(docId), createCdamRedaction(docId)));
-        redactionRequest.setSecureDocStoreEnabled(true);
 
         final JSONObject jsonObject = new JSONObject(redactionRequest);
 

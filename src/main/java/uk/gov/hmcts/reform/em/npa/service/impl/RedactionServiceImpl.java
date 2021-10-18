@@ -37,6 +37,9 @@ public class RedactionServiceImpl implements RedactionService {
     @Value("#{'${redaction.multipart.image-ext}'.split(',')}")
     List<String> imageExtensionsList;
 
+    @Value("${toggles.cdam_enabled}")
+    boolean cdamEnabled;
+
     public RedactionServiceImpl (DmStoreDownloader dmStoreDownloader, PdfRedaction pdfRedaction, ImageRedaction imageRedaction,
                                  MarkUpRepository markUpRepository, SecurityUtils securityUtils, CdamService cdamService) {
         this.dmStoreDownloader = dmStoreDownloader;
@@ -51,9 +54,8 @@ public class RedactionServiceImpl implements RedactionService {
     public File redactFile(String auth, String serviceAuth, RedactionRequest redactionRequest) {
         try {
             File originalFile;
-            log.debug("isSecureDocStoreEnabled is : {} for documentId : {} ",
-                redactionRequest.isSecureDocStoreEnabled(), redactionRequest.getDocumentId());
-            if (redactionRequest.isSecureDocStoreEnabled()) {
+            log.info("cdamEnabled is : {} for documentId : {} ", cdamEnabled);
+            if (cdamEnabled) {
                 originalFile = cdamService.downloadFile(auth, serviceAuth, redactionRequest.getDocumentId());
             } else {
                 originalFile = dmStoreDownloader.downloadFile(redactionRequest.getDocumentId().toString());
