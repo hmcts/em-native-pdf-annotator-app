@@ -13,6 +13,7 @@ public final class ErrorConstants {
     public static final URI CONSTRAINT_VIOLATION_TYPE = URI.create(PROBLEM_BASE_URL + "/constraint-violation");
     public static final URI PARAMETERIZED_TYPE = URI.create(PROBLEM_BASE_URL + "/parameterized");
     public static final URI ENTITY_NOT_FOUND_TYPE = URI.create(PROBLEM_BASE_URL + "/entity-not-found");
+    public static final URI BAD_REQUEST = URI.create(PROBLEM_BASE_URL + "/bad-request");
 
     private ErrorConstants() {
     }
