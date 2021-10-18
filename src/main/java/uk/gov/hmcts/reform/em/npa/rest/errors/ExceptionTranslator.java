@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class ExceptionTranslator implements ProblemHandling {
 
+
     /**
      * Post-process the Problem payload to add the message key for the front-end if needed
      */
