@@ -111,6 +111,7 @@ public class RedactionServiceImplTest {
         File result = redactionService.redactFile("jwt", "s2sToken", createRedactionRequest("caseId", docStoreUUID,
             redactions));
         Assert.assertEquals(result.getName(), mockFile.getName());
+        Mockito.verify(cdamService, Mockito.atLeast(0)).downloadFile("jwt", "s2sToken", docStoreUUID);
     }
 
     @Test
@@ -123,6 +124,7 @@ public class RedactionServiceImplTest {
 
         File result = redactionService.redactFile("jwt", "s2sToken", redactionRequest);
         Assert.assertEquals(result.getName(), mockFile.getName());
+        Mockito.verify(cdamService, Mockito.atLeast(1)).downloadFile("jwt", "s2sToken", docStoreUUID);
     }
 
     @Test
@@ -134,26 +136,29 @@ public class RedactionServiceImplTest {
         File result = redactionService.redactFile("jwt", "s2sToken",createRedactionRequest("caseId", docStoreUUID,
             redactions));
         Assert.assertEquals(result.getName(), mockFile.getName());
+        Mockito.verify(cdamService, Mockito.atLeast(0)).downloadFile("jwt", "s2sToken", docStoreUUID);
     }
 
     @Test(expected = FileTypeException.class)
-    public void redactInvalidFileTest() throws DocumentTaskProcessingException {
+    public void redactInvalidFileTest() throws DocumentTaskProcessingException, IOException {
 
         UUID docStoreUUID = UUID.randomUUID();
         File mockFile = new File("test.txt");
         Mockito.when(dmStoreDownloader.downloadFile(docStoreUUID.toString())).thenReturn(mockFile);
 
         redactionService.redactFile("jwt", "s2sToken",createRedactionRequest("caseId", docStoreUUID, redactions));
+        Mockito.verify(cdamService, Mockito.atLeast(0)).downloadFile("jwt", "s2sToken", docStoreUUID);
     }
 
     @Test(expected = RedactionProcessingException.class)
-    public void redactDocumentTaskProcessingErrorTest() throws DocumentTaskProcessingException {
+    public void redactDocumentTaskProcessingErrorTest() throws DocumentTaskProcessingException, IOException {
 
         UUID docStoreUUID = UUID.randomUUID();
         Mockito.when(dmStoreDownloader.downloadFile(docStoreUUID.toString()))
             .thenThrow(DocumentTaskProcessingException.class);
 
         redactionService.redactFile("jwt", "s2sToken",createRedactionRequest("caseId", docStoreUUID, redactions));
+        Mockito.verify(cdamService, Mockito.atLeast(0)).downloadFile("jwt", "s2sToken", docStoreUUID);
     }
 
     private RedactionRequest createRedactionRequest(String caseId, UUID docStoreUUID, List<RedactionDTO> redactions) {
