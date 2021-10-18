@@ -24,7 +24,7 @@ import java.util.UUID;
 @Transactional
 public class MarkUpServiceImpl implements MarkUpService {
 
-    public static final String USER_NOT_FOUND = "User not found.";
+//    public static final String USER_NOT_FOUND = "User not found.";
 
     private final Logger log = LoggerFactory.getLogger(MarkUpServiceImpl.class);
 
@@ -48,7 +48,7 @@ public class MarkUpServiceImpl implements MarkUpService {
 
         final Redaction redaction = markUpMapper.toEntity(redactionDTO);
         String createdBy = securityUtils.getCurrentUserLogin()
-            .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND));
+            .orElseThrow(() -> new UsernameNotFoundException("User not found."));
         redaction.setCreatedBy(createdBy);
         redaction.getRectangles().stream().forEach(rectangle -> rectangle.setCreatedBy(createdBy));
 
@@ -67,7 +67,7 @@ public class MarkUpServiceImpl implements MarkUpService {
     public Page<RedactionDTO> findAllByDocumentId(UUID documentId, Pageable pageable) {
 
         String user = securityUtils.getCurrentUserLogin()
-            .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND));
+            .orElseThrow(() -> new UsernameNotFoundException("User not found."));
 
         return markUpRepository.findByDocumentIdAndCreatedBy(documentId, user, pageable)
                     .map(markUpMapper::toDto);
@@ -78,7 +78,7 @@ public class MarkUpServiceImpl implements MarkUpService {
 
         log.debug("Request to delete all Redactions : {}", documentId);
         String createdBy = securityUtils.getCurrentUserLogin()
-            .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND));
+            .orElseThrow(() -> new UsernameNotFoundException("User not found."));
         markUpRepository.deleteAllByDocumentIdAndCreatedBy(documentId, createdBy);
 
     }
