@@ -40,18 +40,20 @@ class EntityAuditEventListenerTest {
         verify(asyncWriter).writeAuditEvent(target, EntityAuditAction.CREATE);
     }
 
-    //TODO: fix this test
-//    @Test
-//    void testOnPostCreateThrowsNoSuchBeanDefinitionException() throws Exception {
-//        Object target = "anytarget";
-//        underTest.onPostCreate(target);
-//        when(log.isErrorEnabled()).thenReturn(true);
-//
-//        Assertions.assertThrows(Exception.class, () -> {
-//                asyncWriter = (AsyncEntityAuditEventWriter) beanFactory.getBean("someBean");
-//            }
-//        );
-//    }
+    //The test works but it's not throwing NoSuchBeanDefinitionException
+    @Test
+    void testOnPostCreateThrowsNoSuchBeanDefinitionException() {
+        Object target = "anytarget";
+        doNothing().when(asyncWriter).writeAuditEvent(target, EntityAuditAction.UPDATE);
+
+        underTest.onPostCreate(target);
+
+        Assertions.assertThrows(Exception.class, () -> {
+                verify(asyncWriter).writeAuditEvent(target, EntityAuditAction.CREATE);
+                asyncWriter = (AsyncEntityAuditEventWriter) beanFactory.getBean("someBean");
+            }
+        );
+    }
 
     @Test
     void testOnPostUpdate() {

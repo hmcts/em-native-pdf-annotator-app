@@ -4,6 +4,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static org.mockito.Mockito.verify;
+
 public class BadRequestAlertExceptionTest {
 
     @Autowired
@@ -11,6 +13,8 @@ public class BadRequestAlertExceptionTest {
 
     @Test
     public void testException() {
+
+//        verify(badRequestAlertException.getEntityName());
 //        Assert.assertEquals();
 
     }

@@ -155,4 +155,33 @@ public class ExceptionTranslatorIntTest {
             .andExpect(jsonPath("$.title").value("Internal Server Error"));
     }
 
+    //Nearly Working!!
+//    @Test
+//    public void testNoSuchElementException() throws Exception {
+//        mockMvc.perform(get("/test/no-such-element"))
+//                .andExpect(status().isNotFound())
+//                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
+//                .andExpect(jsonPath("$.message").value(ErrorConstants.ENTITY_NOT_FOUND_TYPE))
+//                .andExpect(jsonPath("$.title").value("Not Found"));
+//    }
+
+    //Not working :(
+//    @Test
+//    public void testBadRequestAlertException() throws Exception {
+//        mockMvc.perform(get("/test/bad-request"))
+//                .andExpect(status().isBadRequest())
+//                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
+//                .andExpect(jsonPath("$.message").value(ErrorConstants.BAD_REQUEST));
+//    }
+
+    //idk if this is needed:
+//    @Test
+//    public void testMethodArgumentReturn200WhenNoContent() throws Exception {
+//        mockMvc.perform(post("/test/method-argument")
+//                        .content("{}")
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().is(200))
+//                .andReturn();
+//    }
+
 }
