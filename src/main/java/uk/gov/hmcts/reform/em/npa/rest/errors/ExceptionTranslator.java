@@ -32,12 +32,6 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class ExceptionTranslator implements ProblemHandling {
 
-//    public static final String MESSAGE = "message";
-//    public static final String PATH = "path";
-//    public static final String VIOLATIONS = "violations";
-//    public static final String FIELD_ERRORS = "fieldErrors";
-//    public static final String INVALID_ARGUMENT = "Method argument not valid";
-
     /**
      * Post-process the Problem payload to add the message key for the front-end if needed
      */

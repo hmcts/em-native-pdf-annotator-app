@@ -12,8 +12,6 @@ import javax.persistence.PostUpdate;
 
 public class EntityAuditEventListener extends AuditingEntityListener {
 
-//    public static final String NO_BEAN_FOUND_ERROR = "No bean found for AsyncEntityAuditEventWriter";
-//    public static final String CREATE_AUDIT_ENTITY_EXCEPTION = "Exception while persisting create audit entity {}";
     private final Logger log = LoggerFactory.getLogger(EntityAuditEventListener.class);
 
     private static BeanFactory beanFactory;
@@ -38,7 +36,7 @@ public class EntityAuditEventListener extends AuditingEntityListener {
         } catch (NoSuchBeanDefinitionException e) {
             log.error("No bean found for AsyncEntityAuditEventWriter");
         } catch (Exception e) {
-            log.error("Exception while persisting create audit entity {}", e);
+            log.error("Exception while persisting update audit entity {}", e);
         }
     }
 
@@ -50,7 +48,7 @@ public class EntityAuditEventListener extends AuditingEntityListener {
         } catch (NoSuchBeanDefinitionException e) {
             log.error("No bean found for AsyncEntityAuditEventWriter");
         } catch (Exception e) {
-            log.error("Exception while persisting create audit entity {}", e);
+            log.error("Exception while persisting delete audit entity {}", e);
         }
     }
 

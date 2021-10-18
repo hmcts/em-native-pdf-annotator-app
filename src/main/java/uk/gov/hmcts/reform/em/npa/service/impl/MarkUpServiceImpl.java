@@ -24,8 +24,6 @@ import java.util.UUID;
 @Transactional
 public class MarkUpServiceImpl implements MarkUpService {
 
-//    public static final String USER_NOT_FOUND = "User not found.";
-
     private final Logger log = LoggerFactory.getLogger(MarkUpServiceImpl.class);
 
     private MarkUpRepository markUpRepository;
