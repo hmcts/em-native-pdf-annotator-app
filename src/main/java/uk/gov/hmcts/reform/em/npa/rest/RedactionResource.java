@@ -51,7 +51,7 @@ public class RedactionResource {
             @ApiResponse(code = 500, message = "Server Error"),
     })
     @PostMapping("/redaction")
-    public ResponseEntity<Object> save(HttpServletRequest request,
+    public ResponseEntity save(HttpServletRequest request,
                                        @RequestBody RedactionRequest redactionRequest) {
         try {
             String jwt = request.getHeader("Authorization");
