@@ -31,7 +31,7 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
 
     private final String dmStoreAppBaseUrl;
 
-    private final String dmStoreUploadEndpoint = "/documents";
+    private static final String DM_STORE_UPLOAD_ENDPOINT = "/documents";
 
     private final SecurityUtils securityUtils;
 
@@ -58,14 +58,14 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
                 .Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("classification", "PUBLIC")
-                .addFormDataPart("files", file.getName(), RequestBody.create(MediaType.get(mimeType), file))
+                .addFormDataPart("files", file.getName(), RequestBody.create(file, MediaType.get(mimeType)))
                 .build();
 
             Request request = new Request.Builder()
                 .addHeader("user-id", securityUtils.getCurrentUserLogin().orElse(Constants.ANONYMOUS_USER))
                 .addHeader("user-roles", "caseworker")
                 .addHeader("ServiceAuthorization", authTokenGenerator.generate())
-                .url(dmStoreAppBaseUrl + dmStoreUploadEndpoint)
+                .url(dmStoreAppBaseUrl + DM_STORE_UPLOAD_ENDPOINT)
                 .method("POST", requestBody)
                 .build();
 

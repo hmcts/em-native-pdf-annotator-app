@@ -8,6 +8,7 @@ services:
     environment:
       - microserviceKeys_em_gw=AAAAAAAAAAAAAAAA
       - microserviceKeys_em_npa_app=AAAAAAAAAAAAAAAA
+      - microserviceKeys_xui_webapp=AAAAAAAAAAAAAAAA
       #      logging env vars
       - JSON_CONSOLE_PRETTY_PRINT=false
       - REFORM_SERVICE_TYPE=java
