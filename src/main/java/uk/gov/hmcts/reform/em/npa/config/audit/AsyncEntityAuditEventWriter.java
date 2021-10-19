@@ -98,7 +98,7 @@ public class AsyncEntityAuditEventWriter {
         Integer lastCommitVersion = auditingEntityRepository.findMaxCommitVersion(auditedEntity
             .getEntityType(), auditedEntity.getEntityId());
         log.trace("Last commit version of entity => {}", lastCommitVersion);
-        if(lastCommitVersion!=null && lastCommitVersion != 0){
+        if (lastCommitVersion != null && lastCommitVersion != 0) {
             log.trace("Present. Adding version..");
             auditedEntity.setCommitVersion(lastCommitVersion + 1);
         } else {

@@ -55,10 +55,10 @@ public class AsyncEntityAuditEventWriterTest {
     }
 
     //TODO: fix this test
-//    @Test
-//    public void testWriteAuditEventException() {
-//        asyncEntityAuditEventWriter.writeAuditEvent(new Object(), EntityAuditAction.CREATE);
-//        when(verify(repository).save(new EntityAuditEvent())).thenThrow(NoSuchFieldException.class);
-//    }
+    //    @Test
+    //    public void testWriteAuditEventException() {
+    //        asyncEntityAuditEventWriter.writeAuditEvent(new Object(), EntityAuditAction.CREATE);
+    //        when(verify(repository).save(new EntityAuditEvent())).thenThrow(NoSuchFieldException.class);
+    //    }
 
 }
