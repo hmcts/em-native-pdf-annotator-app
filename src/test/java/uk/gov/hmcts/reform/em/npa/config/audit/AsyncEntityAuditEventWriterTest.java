@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.em.npa.config.audit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -54,11 +55,26 @@ public class AsyncEntityAuditEventWriterTest {
         verify(repository).save(new EntityAuditEvent());
     }
 
-    //TODO: fix this test
-    //    @Test
-    //    public void testWriteAuditEventException() {
-    //        asyncEntityAuditEventWriter.writeAuditEvent(new Object(), EntityAuditAction.CREATE);
-    //        when(verify(repository).save(new EntityAuditEvent())).thenThrow(NoSuchFieldException.class);
-    //    }
+    @Test
+    public void testWriteAuditEventWithEmptyEntity() {
+        when(log.isDebugEnabled()).thenReturn(true);
+        Object target = new Redaction();
 
+        asyncEntityAuditEventWriter.writeAuditEvent(target, EntityAuditAction.CREATE);
+
+        EntityAuditEvent entityAuditEvent = null;
+
+        Assertions.assertThrows(org.mockito.exceptions.verification.opentest4j.ArgumentsAreDifferent.class, () -> {
+            verify(repository).save(entityAuditEvent);
+        });
+    }
+
+    @Test
+    public void testWriteAuditEventException() throws NoSuchFieldException {
+        asyncEntityAuditEventWriter.writeAuditEvent(new Object(), EntityAuditAction.CREATE);
+
+        Assertions.assertThrows(org.mockito.exceptions.verification.WantedButNotInvoked.class, () -> {
+            verify(repository).save(new EntityAuditEvent());
+        });
+    }
 }
