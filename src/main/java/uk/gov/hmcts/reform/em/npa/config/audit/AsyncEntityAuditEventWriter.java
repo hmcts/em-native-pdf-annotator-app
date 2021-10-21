@@ -54,7 +54,7 @@ public class AsyncEntityAuditEventWriter {
      * @param action
      * @return
      */
-    private EntityAuditEvent prepareAuditEntity(final Object entity, EntityAuditAction action) {
+    private EntityAuditEvent prepareAuditEntity(final Object entity, EntityAuditAction action) throws Exception {
         EntityAuditEvent auditedEntity = new EntityAuditEvent();
         Class<?> entityClass = entity.getClass(); // Retrieve entity class with reflection
         auditedEntity.setAction(action.value());
@@ -75,7 +75,7 @@ public class AsyncEntityAuditEventWriter {
                 | IOException e) {
             log.error("Exception while getting entity ID and content {}", e.getMessage(), e);
             // returning null as we don't want to raise an application exception here
-            return null;
+            throw new Exception(e.getMessage());
         }
         auditedEntity.setEntityId(entityId);
         auditedEntity.setEntityValue(entityData);
