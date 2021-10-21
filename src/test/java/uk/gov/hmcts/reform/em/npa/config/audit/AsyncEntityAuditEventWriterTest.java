@@ -42,6 +42,7 @@ public class AsyncEntityAuditEventWriterTest {
 
         asyncEntityAuditEventWriter.writeAuditEvent(target, EntityAuditAction.CREATE);
 
+
         verify(repository).save(new EntityAuditEvent());
     }
 
@@ -56,21 +57,29 @@ public class AsyncEntityAuditEventWriterTest {
     }
 
     @Test
-    public void testWriteAuditEventWithEmptyEntity() {
+    public void testDeleteAuditEventModifyAuditAction() {
         when(log.isDebugEnabled()).thenReturn(true);
         Object target = new Redaction();
 
-        asyncEntityAuditEventWriter.writeAuditEvent(target, EntityAuditAction.CREATE);
+        asyncEntityAuditEventWriter.writeAuditEvent(target, EntityAuditAction.DELETE);
 
-        EntityAuditEvent entityAuditEvent = null;
-
-        Assertions.assertThrows(org.mockito.exceptions.verification.opentest4j.ArgumentsAreDifferent.class, () -> {
-            verify(repository).save(entityAuditEvent);
-        });
+        verify(repository).save(new EntityAuditEvent());
     }
 
+    //TODO: Fix this test so that it hits the right part
+    //    @Test
+    //    public void testUpdateAuditEventWithEmptyEntity() {
+    //        when(log.isTraceEnabled()).thenReturn(true);
+    //        Object target = new Redaction();
+    //        asyncEntityAuditEventWriter.writeAuditEvent(target, EntityAuditAction.UPDATE);
+    //        EntityAuditEvent entityAuditEvent = null;
+    //        Assertions.assertThrows(org.mockito.exceptions.verification.opentest4j.ArgumentsAreDifferent.class, () -> {
+    //            verify(repository).save(entityAuditEvent);
+    //        });
+    //    }
+
     @Test
-    public void testWriteAuditEventException() throws NoSuchFieldException {
+    public void testWriteAuditEventException() {
         asyncEntityAuditEventWriter.writeAuditEvent(new Object(), EntityAuditAction.CREATE);
 
         Assertions.assertThrows(org.mockito.exceptions.verification.WantedButNotInvoked.class, () -> {

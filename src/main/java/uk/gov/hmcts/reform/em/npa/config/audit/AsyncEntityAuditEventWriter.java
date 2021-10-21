@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.em.npa.domain.AbstractAuditingEntity;
 import uk.gov.hmcts.reform.em.npa.domain.EntityAuditEvent;
 import uk.gov.hmcts.reform.em.npa.repository.EntityAuditEventRepository;
-
 import java.io.IOException;
 import java.lang.reflect.Field;
 
@@ -69,8 +68,11 @@ public class AsyncEntityAuditEventWriter {
             entityId = (Long) privateLongField.get(entity);
             privateLongField.setAccessible(false);
             entityData = objectMapper.writeValueAsString(entity);
-        } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException |
-            IOException e) {
+        } catch (IllegalArgumentException
+                | IllegalAccessException
+                | NoSuchFieldException
+                | SecurityException
+                | IOException e) {
             log.error("Exception while getting entity ID and content {}", e.getMessage(), e);
             // returning null as we don't want to raise an application exception here
             return null;
