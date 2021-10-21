@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.em.npa.domain.AbstractAuditingEntity;
 import uk.gov.hmcts.reform.em.npa.domain.EntityAuditEvent;
 import uk.gov.hmcts.reform.em.npa.repository.EntityAuditEventRepository;
+import uk.gov.hmcts.reform.em.npa.rest.errors.EntityAuditEventException;
+
 import java.io.IOException;
 import java.lang.reflect.Field;
 
@@ -39,9 +41,7 @@ public class AsyncEntityAuditEventWriter {
         }
         try {
             EntityAuditEvent auditedEntity = prepareAuditEntity(target, action);
-            if (auditedEntity != null) {
-                auditingEntityRepository.save(auditedEntity);
-            }
+            auditingEntityRepository.save(auditedEntity);
         } catch (Exception e) {
             log.error("Exception while getting entity ID and content {}", e.getMessage(), e);
         }
@@ -54,7 +54,7 @@ public class AsyncEntityAuditEventWriter {
      * @param action
      * @return
      */
-    private EntityAuditEvent prepareAuditEntity(final Object entity, EntityAuditAction action) throws Exception {
+    private EntityAuditEvent prepareAuditEntity(final Object entity, EntityAuditAction action) throws EntityAuditEventException {
         EntityAuditEvent auditedEntity = new EntityAuditEvent();
         Class<?> entityClass = entity.getClass(); // Retrieve entity class with reflection
         auditedEntity.setAction(action.value());
@@ -75,7 +75,7 @@ public class AsyncEntityAuditEventWriter {
                 | IOException e) {
             log.error("Exception while getting entity ID and content {}", e.getMessage(), e);
             // returning null as we don't want to raise an application exception here
-            throw new Exception(e.getMessage());
+            throw new EntityAuditEventException(e.getMessage());
         }
         auditedEntity.setEntityId(entityId);
         auditedEntity.setEntityValue(entityData);
