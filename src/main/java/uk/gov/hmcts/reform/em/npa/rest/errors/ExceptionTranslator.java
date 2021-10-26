@@ -15,7 +15,6 @@ import org.zalando.problem.ProblemBuilder;
 import org.zalando.problem.Status;
 import org.zalando.problem.spring.web.advice.ProblemHandling;
 import org.zalando.problem.violations.ConstraintViolationProblem;
-import uk.gov.hmcts.reform.em.npa.rest.util.HeaderUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -101,7 +100,11 @@ public class ExceptionTranslator implements ProblemHandling {
 
     @ExceptionHandler
     public ResponseEntity<Problem> handleBadRequestAlertException(BadRequestAlertException ex, NativeWebRequest request) {
-        return create(ex, request, HeaderUtil.createFailureAlert(ex.getEntityName(), ex.getErrorKey(), ex.getMessage()));
+        Problem problem = Problem.builder()
+                .withStatus(Status.BAD_REQUEST)
+                .with("message", ErrorConstants.BAD_REQUEST)
+                .build();
+        return create(ex, problem, request);
     }
 
     @ExceptionHandler
