@@ -10,6 +10,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 @RestController
 public class ExceptionTranslatorTestController {
@@ -62,6 +63,17 @@ public class ExceptionTranslatorTestController {
     @GetMapping("/test/internal-server-error")
     public void internalServerError() {
         throw new RuntimeException();
+    }
+
+    @GetMapping("/test/no-such-element")
+    public void noSuchElement() {
+        throw new NoSuchElementException();
+    }
+
+    @GetMapping("/test/bad-request")
+    public void badRequest() {
+        //Will need to change the arguments:
+        throw new BadRequestAlertException("test bad request error", "entityName", "bad-request");
     }
 
     public static class TestDTO {

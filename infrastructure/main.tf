@@ -1,26 +1,26 @@
 locals {
   app_full_name     = "${var.product}-${var.component}"
-  ase_name          = "core-compute-${var.env}"
   local_env         = (var.env == "preview" || var.env == "spreview") ? (var.env == "preview") ? "aat" : "saat" : var.env
   shared_vault_name = "${var.shared_product_name}-${local.local_env}"
-  tags              = merge(var.common_tags, { "Team Contact" = "#rpe" })
+  tags              = var.common_tags
   vaultName         = "${local.app_full_name}-${var.env}"
 }
 
-module "db" {
-  source          = "git@github.com:hmcts/cnp-module-postgres?ref=master"
-  product         = var.product
-  component       = var.component
-  name            = "${local.app_full_name}-postgres-db"
-  location        = var.location
-  env             = var.env
-  postgresql_user = var.postgresql_user
-  database_name   = var.database_name
-  sku_name        = "GP_Gen5_2"
-  sku_tier        = "GeneralPurpose"
-  storage_mb      = "51200"
-  common_tags     = var.common_tags
-  subscription    = var.subscription
+module "db-v11" {
+  source             = "git@github.com:hmcts/cnp-module-postgres?ref=postgresql_tf"
+  product            = var.product
+  component          = var.component
+  name               = "${local.app_full_name}-postgres-db-v11"
+  location           = var.location
+  env                = var.env
+  postgresql_user    = var.postgresql_user_v11
+  database_name      = var.database_name_v11
+  postgresql_version = "11"
+  subnet_id          = data.azurerm_subnet.postgres.id
+  sku_name           = "GP_Gen5_2"
+  sku_tier           = "GeneralPurpose"
+  common_tags        = var.common_tags
+  subscription       = var.subscription
 }
 
 provider "azurerm" {
@@ -124,49 +124,3 @@ data "azurerm_subnet" "postgres" {
   virtual_network_name = "core-infra-vnet-${var.env}"
 }
 
-module "db-v11" {
-  source             = "git@github.com:hmcts/cnp-module-postgres?ref=postgresql_tf"
-  product            = var.product
-  component          = var.component
-  name               = "${local.app_full_name}-postgres-db-v11"
-  location           = var.location
-  env                = var.env
-  postgresql_user    = var.postgresql_user_v11
-  database_name      = var.database_name_v11
-  postgresql_version = "11"
-  subnet_id          = data.azurerm_subnet.postgres.id
-  sku_name           = "GP_Gen5_2"
-  sku_tier           = "GeneralPurpose"
-  common_tags        = var.common_tags
-  subscription       = var.subscription
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES-USER-V11" {
-  name         = "${var.component}-POSTGRES-USER-V11"
-  value        = module.db-v11.user_name
-  key_vault_id = module.key_vault.key_vault_id
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES-PASS-V11" {
-  name         = "${var.component}-POSTGRES-PASS-V11"
-  value        = module.db-v11.postgresql_password
-  key_vault_id = module.key_vault.key_vault_id
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES_HOST-V11" {
-  name         = "${var.component}-POSTGRES-HOST-V11"
-  value        = module.db-v11.host_name
-  key_vault_id = module.key_vault.key_vault_id
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES_PORT-V11" {
-  name         = "${var.component}-POSTGRES-PORT-V11"
-  value        = module.db-v11.postgresql_listen_port
-  key_vault_id = module.key_vault.key_vault_id
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES_DATABASE-V11" {
-  name         = "${var.component}-POSTGRES-DATABASE-V11"
-  value        = module.db-v11.postgresql_database
-  key_vault_id = module.key_vault.key_vault_id
-}

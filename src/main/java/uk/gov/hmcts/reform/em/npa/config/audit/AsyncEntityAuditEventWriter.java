@@ -8,13 +8,14 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.em.npa.domain.AbstractAuditingEntity;
 import uk.gov.hmcts.reform.em.npa.domain.EntityAuditEvent;
 import uk.gov.hmcts.reform.em.npa.repository.EntityAuditEventRepository;
+import uk.gov.hmcts.reform.em.npa.rest.errors.EntityAuditEventException;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
 
 /**
  * Async Entity Audit Event writer
- * This is invoked by Hibernate entity listeners to write audit event for entitities
+ * This is invoked by Hibernate entity listeners to write audit event for entities
  */
 @Component
 public class AsyncEntityAuditEventWriter {
@@ -35,14 +36,14 @@ public class AsyncEntityAuditEventWriter {
      */
     @Async
     public void writeAuditEvent(Object target, EntityAuditAction action) {
-        log.debug("-------------- Post {} audit  --------------", action.value());
+        if (log.isDebugEnabled()) {
+            log.debug("-------------- Post {} audit  --------------", action.value());
+        }
         try {
             EntityAuditEvent auditedEntity = prepareAuditEntity(target, action);
-            if (auditedEntity != null) {
-                auditingEntityRepository.save(auditedEntity);
-            }
+            auditingEntityRepository.save(auditedEntity);
         } catch (Exception e) {
-            log.error("Exception while persisting audit entity for {} error: {}", target, e);
+            log.error("Exception while getting entity ID and content {}", e.getMessage(), e);
         }
     }
 
@@ -53,7 +54,7 @@ public class AsyncEntityAuditEventWriter {
      * @param action
      * @return
      */
-    private EntityAuditEvent prepareAuditEntity(final Object entity, EntityAuditAction action) {
+    private EntityAuditEvent prepareAuditEntity(final Object entity, EntityAuditAction action) throws EntityAuditEventException {
         EntityAuditEvent auditedEntity = new EntityAuditEvent();
         Class<?> entityClass = entity.getClass(); // Retrieve entity class with reflection
         auditedEntity.setAction(action.value());
@@ -67,11 +68,13 @@ public class AsyncEntityAuditEventWriter {
             entityId = (Long) privateLongField.get(entity);
             privateLongField.setAccessible(false);
             entityData = objectMapper.writeValueAsString(entity);
-        } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException |
-            IOException e) {
-            log.error("Exception while getting entity ID and content {}", e);
-            // returning null as we dont want to raise an application exception here
-            return null;
+        } catch (IllegalArgumentException
+                | IllegalAccessException
+                | NoSuchFieldException
+                | SecurityException
+                | IOException e) {
+            // instead of returning null, a custom exception is thrown, and it is caught in the writeAuditEvent method
+            throw new EntityAuditEventException(e.getMessage());
         }
         auditedEntity.setEntityId(entityId);
         auditedEntity.setEntityValue(entityData);
@@ -85,7 +88,9 @@ public class AsyncEntityAuditEventWriter {
             auditedEntity.setModifiedDate(abstractAuditEntity.getLastModifiedDate());
             calculateVersion(auditedEntity);
         }
-        log.trace("Audit Entity --> {} ", auditedEntity.toString());
+        if (log.isTraceEnabled()) {
+            log.trace("Audit Entity --> {} ", auditedEntity);
+        }
         return auditedEntity;
     }
 
@@ -94,7 +99,7 @@ public class AsyncEntityAuditEventWriter {
         Integer lastCommitVersion = auditingEntityRepository.findMaxCommitVersion(auditedEntity
             .getEntityType(), auditedEntity.getEntityId());
         log.trace("Last commit version of entity => {}", lastCommitVersion);
-        if(lastCommitVersion!=null && lastCommitVersion != 0){
+        if (lastCommitVersion != null && lastCommitVersion != 0) {
             log.trace("Present. Adding version..");
             auditedEntity.setCommitVersion(lastCommitVersion + 1);
         } else {
