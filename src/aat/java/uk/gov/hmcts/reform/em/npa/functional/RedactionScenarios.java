@@ -51,7 +51,7 @@ public class RedactionScenarios {
     private ToggleProperties toggleProperties;
 
     @Rule
-    public RetryRule retryRule = new RetryRule(1);
+    public RetryRule retryRule = new RetryRule(3);
 
     private static final UUID documentId = UUID.randomUUID();
     private static final UUID redactionId = UUID.randomUUID();
