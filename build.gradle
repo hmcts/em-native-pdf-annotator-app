@@ -346,6 +346,12 @@ dependencyManagement {
         dependencySet(group: 'net.minidev', version: '2.4.7') {
             entry 'json-smart'
         }
+
+        //CVE-2021-22044
+        dependencySet(group: 'org.springframework.cloud', version: '3.0.5') {
+            entry 'spring-cloud-openfeign-core'
+            entry 'spring-cloud-starter-openfeign'
+        }
     }
 }
 
@@ -509,7 +515,10 @@ pitest {
             'uk.gov.hmcts.reform.em.npa.domain.*' ,
             'uk.gov.hmcts.reform.em.npa.info.*',
             'uk.gov.hmcts.reform.em.npa.Application.java',
-            'uk.gov.hmcts.reform.em.npa.infrastructure.*'
+            'uk.gov.hmcts.reform.em.npa.infrastructure.*',
+            'uk.gov.hmcts.reform.em.npa.config.audit.AsyncEntityAuditEventWriter.java',
+            'uk.gov.hmcts.reform.em.npa.rest.errors.ExceptionTranslator.java'
+
     ]
     enableDefaultIncrementalAnalysis = true
     historyInputLocation = 'build/reports/pitest/fastermutationtesting'
