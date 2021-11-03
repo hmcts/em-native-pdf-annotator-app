@@ -169,7 +169,7 @@ dependencies {
     
     implementation group: 'com.google.guava', name: 'guava', version: '31.0.1-jre'
 
-    implementation group: 'org.springframework.cloud', name: 'spring-cloud-openfeign', version: '3.0.4', {
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-openfeign', version: '3.0.5', {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-actuator'
     }
         
@@ -509,7 +509,10 @@ pitest {
             'uk.gov.hmcts.reform.em.npa.domain.*' ,
             'uk.gov.hmcts.reform.em.npa.info.*',
             'uk.gov.hmcts.reform.em.npa.Application.java',
-            'uk.gov.hmcts.reform.em.npa.infrastructure.*'
+            'uk.gov.hmcts.reform.em.npa.infrastructure.*',
+            'uk.gov.hmcts.reform.em.npa.config.audit.AsyncEntityAuditEventWriter.java',
+            'uk.gov.hmcts.reform.em.npa.rest.errors.ExceptionTranslator.java'
+
     ]
     enableDefaultIncrementalAnalysis = true
     historyInputLocation = 'build/reports/pitest/fastermutationtesting'
