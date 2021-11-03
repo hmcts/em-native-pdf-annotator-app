@@ -377,7 +377,9 @@ def coverageExclusionList = [
     '**uk/gov/hmcts/reform/em/npa/ccd/exception/*',
     '**uk/gov/hmcts/reform/em/npa/service/exception/*',
     '**uk/gov/hmcts/reform/em/npa/service/dto/redaction/*',
-    '**uk/gov/hmcts/reform/em/npa/info/*'
+    '**uk/gov/hmcts/reform/em/npa/info/*',
+    '**/uk/gov/hmcts/reform/em/npa/config/audit/AsyncEntityAuditEventWriter*',
+    '**uk/gov/hmcts/reform/em/npa/rest/errors/ExceptionTranslator*'
 ]
 
 checkstyle {
@@ -515,9 +517,7 @@ pitest {
             'uk.gov.hmcts.reform.em.npa.domain.*' ,
             'uk.gov.hmcts.reform.em.npa.info.*',
             'uk.gov.hmcts.reform.em.npa.Application.java',
-            'uk.gov.hmcts.reform.em.npa.infrastructure.*',
-            'uk.gov.hmcts.reform.em.npa.config.audit.AsyncEntityAuditEventWriter.java',
-            'uk.gov.hmcts.reform.em.npa.rest.errors.ExceptionTranslator.java'
+            'uk.gov.hmcts.reform.em.npa.infrastructure.*'
 
     ]
     enableDefaultIncrementalAnalysis = true
