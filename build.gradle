@@ -169,7 +169,7 @@ dependencies {
     
     implementation group: 'com.google.guava', name: 'guava', version: '31.0.1-jre'
 
-    implementation group: 'org.springframework.cloud', name: 'spring-cloud-openfeign', version: '3.0.5', {
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-openfeign', version: '3.0.4', {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-actuator'
     }
         
@@ -345,6 +345,11 @@ dependencyManagement {
         //CVE-2021-27568
         dependencySet(group: 'net.minidev', version: '2.4.7') {
             entry 'json-smart'
+        }
+
+        //CVE-2021-22044
+        dependencySet(group: 'org.springframework.cloud', version: '3.0.5') {
+            entry 'spring-cloud-openfeign-core'
         }
     }
 }
