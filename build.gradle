@@ -202,8 +202,8 @@ dependencies {
     implementation group: 'org.springframework.security', name: 'spring-security-core', version: versions.springSecurity
 
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.10'
-    implementation group: 'org.liquibase', name: 'liquibase-core', version: '4.5.0'
-    liquibaseRuntime group: 'org.liquibase', name: 'liquibase-core', version: '4.4.3'
+    implementation group: 'org.liquibase', name: 'liquibase-core', version: '4.6.1'
+    liquibaseRuntime group: 'org.liquibase', name: 'liquibase-core', version: '4.6.1'
     liquibaseRuntime group: 'org.liquibase.ext', name: 'liquibase-hibernate5', version: '4.5.0'
     liquibaseRuntime sourceSets.main.compileClasspath
     liquibaseRuntime sourceSets.main.output
