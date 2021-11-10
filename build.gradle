@@ -202,8 +202,8 @@ dependencies {
     implementation group: 'org.springframework.security', name: 'spring-security-core', version: versions.springSecurity
 
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.10'
-    implementation group: 'org.liquibase', name: 'liquibase-core', version: '4.5.0'
-    liquibaseRuntime group: 'org.liquibase', name: 'liquibase-core', version: '4.4.3'
+    implementation group: 'org.liquibase', name: 'liquibase-core', version: '4.6.1'
+    liquibaseRuntime group: 'org.liquibase', name: 'liquibase-core', version: '4.6.1'
     liquibaseRuntime group: 'org.liquibase.ext', name: 'liquibase-hibernate5', version: '4.5.0'
     liquibaseRuntime sourceSets.main.compileClasspath
     liquibaseRuntime sourceSets.main.output
@@ -262,7 +262,7 @@ dependencies {
     testImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
     testImplementation group: 'net.serenity-bdd', name: 'serenity-single-page-report', version: versions.serenityreporter
 
-    testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.2.1', classifier: 'all'
+    testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.2.2', classifier: 'all'
 
     contractTestImplementation group: 'au.com.dius', name: 'pact-jvm-consumer-junit', version: versions.pact_version, withoutNetty
     contractTestImplementation group: 'au.com.dius', name: 'pact-jvm-consumer-junit5', version: versions.pact_version, withoutNetty
@@ -281,7 +281,7 @@ dependencies {
 
     aatImplementation group: 'com.github.hmcts', name: 'em-test-helper', version: '1.20.3'
     aatImplementation group: 'org.apache.poi', name: 'poi', version: '5.0.0'
-    aatImplementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.0.0'
+    aatImplementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.1.0'
 
 }
 
@@ -326,8 +326,8 @@ dependencyManagement {
         }
         // Do not change - END
 
-        //CVE-2021-22118
-        dependencySet(group: 'org.springframework', version: '5.3.10') {
+        //CVE-2021-22118, CVE-2021-22096
+        dependencySet(group: 'org.springframework', version: '5.3.12') {
             entry 'spring-aop'
             entry 'spring-aspects'
             entry 'spring-beans'
@@ -345,6 +345,12 @@ dependencyManagement {
         //CVE-2021-27568
         dependencySet(group: 'net.minidev', version: '2.4.7') {
             entry 'json-smart'
+        }
+
+        //CVE-2021-22044
+        dependencySet(group: 'org.springframework.cloud', version: '3.0.5') {
+            entry 'spring-cloud-openfeign-core'
+            entry 'spring-cloud-starter-openfeign'
         }
     }
 }
@@ -371,7 +377,9 @@ def coverageExclusionList = [
     '**uk/gov/hmcts/reform/em/npa/ccd/exception/*',
     '**uk/gov/hmcts/reform/em/npa/service/exception/*',
     '**uk/gov/hmcts/reform/em/npa/service/dto/redaction/*',
-    '**uk/gov/hmcts/reform/em/npa/info/*'
+    '**uk/gov/hmcts/reform/em/npa/info/*',
+    '**/uk/gov/hmcts/reform/em/npa/config/audit/AsyncEntityAuditEventWriter*',
+    '**uk/gov/hmcts/reform/em/npa/rest/errors/ExceptionTranslator*'
 ]
 
 checkstyle {
@@ -510,6 +518,7 @@ pitest {
             'uk.gov.hmcts.reform.em.npa.info.*',
             'uk.gov.hmcts.reform.em.npa.Application.java',
             'uk.gov.hmcts.reform.em.npa.infrastructure.*'
+
     ]
     enableDefaultIncrementalAnalysis = true
     historyInputLocation = 'build/reports/pitest/fastermutationtesting'
