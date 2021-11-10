@@ -79,7 +79,7 @@ public class RedactionScenarios {
 
     @Test
     public void shouldReturn200WhenRedactedPdfDocument() {
-        Assume.assumeFalse(true);
+        Assume.assumeFalse(toggleProperties.isCdamEnabled());
         final String newDocId = testUtil.uploadPdfDocumentAndReturnUrl();
         final RedactionRequest redactionRequest = new RedactionRequest();
         redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
@@ -164,7 +164,7 @@ public class RedactionScenarios {
 
     @Test
     public void shouldReturn200WhenRedactedImage() {
-        Assume.assumeFalse(true);
+        Assume.assumeFalse(toggleProperties.isCdamEnabled());
         final String newDocId = testUtil.uploadImageDocumentAndReturnUrl();
         final RedactionRequest redactionRequest = new RedactionRequest();
         redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));

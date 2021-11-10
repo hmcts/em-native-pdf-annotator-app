@@ -54,7 +54,8 @@ public class RedactionServiceImpl implements RedactionService {
     public File redactFile(String auth, String serviceAuth, RedactionRequest redactionRequest) {
         try {
             File originalFile;
-            log.info("cdamEnabled is : {} for documentId : {} ", cdamEnabled);
+            log.info("cdamEnabled is : {} for documentId : {} ", cdamEnabled,
+                    redactionRequest.getDocumentId().toString());
             if (cdamEnabled) {
                 originalFile = cdamService.downloadFile(auth, serviceAuth, redactionRequest.getDocumentId());
             } else {
