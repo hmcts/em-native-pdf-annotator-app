@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.em.npa.testutil;
 
-//@ConfigurationProperties(prefix = "toggle")
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+@ConfigurationProperties(prefix = "toggles")
 public class ToggleProperties {
 
     private boolean cdamEnabled;
