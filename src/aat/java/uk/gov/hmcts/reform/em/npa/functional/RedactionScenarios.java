@@ -12,7 +12,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
@@ -21,7 +20,6 @@ import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionRequest;
 import uk.gov.hmcts.reform.em.npa.testutil.ExtendedCcdHelper;
 import uk.gov.hmcts.reform.em.npa.testutil.TestUtil;
-import uk.gov.hmcts.reform.em.npa.testutil.ToggleProperties;
 import uk.gov.hmcts.reform.em.test.retry.RetryRule;
 
 import java.util.Arrays;
@@ -79,6 +77,7 @@ public class RedactionScenarios {
     @Test
     public void shouldReturn200WhenRedactedPdfDocument() {
         Assume.assumeFalse(cdamEnabled);
+        System.out.println("cdamEnabled value is "+cdamEnabled);
         final String newDocId = testUtil.uploadPdfDocumentAndReturnUrl();
         final RedactionRequest redactionRequest = new RedactionRequest();
         redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
@@ -98,6 +97,7 @@ public class RedactionScenarios {
     @Test
     public void shouldReturn200WhenRedactedPdfDocumentCdamEnabled() throws Exception {
         Assume.assumeTrue(cdamEnabled);
+        System.out.println("cdamEnabled value is "+cdamEnabled);
         UploadResponse uploadResponse = testUtil.uploadCdamDocument("a@b.com",
             extendedCcdHelper.getEnvCcdCaseTypeId(), "PUBLICLAW");
 
@@ -131,6 +131,7 @@ public class RedactionScenarios {
     @Test
     public void shouldReturn400WhenRedactedPdfDocumentCdamEnabled() throws Exception {
         Assume.assumeTrue(cdamEnabled);
+        System.out.println("cdamEnabled value is "+cdamEnabled);
         UploadResponse uploadResponse = testUtil.uploadCdamDocument("a@b.com",
             extendedCcdHelper.getEnvCcdCaseTypeId(), "PUBLICLAW");
 
@@ -164,6 +165,7 @@ public class RedactionScenarios {
     @Test
     public void shouldReturn200WhenRedactedImage() {
         Assume.assumeFalse(cdamEnabled);
+        System.out.println("cdamEnabled value is "+cdamEnabled);
         final String newDocId = testUtil.uploadImageDocumentAndReturnUrl();
         final RedactionRequest redactionRequest = new RedactionRequest();
         redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
@@ -183,6 +185,7 @@ public class RedactionScenarios {
     @Test
     public void shouldReturn400WhenRedactedRichTextDocument() {
         Assume.assumeFalse(cdamEnabled);
+        System.out.println("cdamEnabled value is "+cdamEnabled);
         final String newDocId = testUtil.uploadRichTextDocumentAndReturnUrl();
         final RedactionRequest redactionRequest = new RedactionRequest();
         redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
@@ -199,6 +202,7 @@ public class RedactionScenarios {
     @Test
     public void shouldReturn400WhenRedactedFileNameIsMissing() {
         Assume.assumeFalse(cdamEnabled);
+        System.out.println("cdamEnabled value is "+cdamEnabled);
         final String newDocId = testUtil.uploadRichTextDocumentAndReturnUrl();
         final RedactionRequest redactionRequest = new RedactionRequest();
         redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
@@ -215,6 +219,7 @@ public class RedactionScenarios {
     @Test
     public void shouldReturn400WhenRedactedPdfDocumentWIthNonExistentDocumentId() {
         Assume.assumeFalse(cdamEnabled);
+        System.out.println("cdamEnabled value is "+cdamEnabled);
         final UUID nonExistentDocId = UUID.randomUUID();
         final RedactionRequest redactionRequest = new RedactionRequest();
         redactionRequest.setDocumentId(nonExistentDocId);
@@ -234,6 +239,7 @@ public class RedactionScenarios {
     @Test
     public void shouldReturn401WhenRedactedPdfDocument() {
         Assume.assumeFalse(cdamEnabled);
+        System.out.println("cdamEnabled value is "+cdamEnabled);
         final String newDocId = testUtil.uploadRichTextDocumentAndReturnUrl();
         final RedactionRequest redactionRequest = new RedactionRequest();
         redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
