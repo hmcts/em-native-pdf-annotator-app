@@ -273,7 +273,7 @@ public class RedactionScenarios {
         redactionDTO.setPage(1);
         final JSONObject jsonObject = new JSONObject(redactionDTO);
 
-        return request
+        return cdamRequest
             .body(jsonObject)
             .post("/api/markups")
             .then()
