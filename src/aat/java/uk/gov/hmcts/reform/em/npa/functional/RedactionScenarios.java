@@ -101,7 +101,7 @@ public class RedactionScenarios {
     public void shouldReturn200WhenRedactedPdfDocumentCdamEnabled() throws Exception {
         Assume.assumeTrue(toggleProperties.isCdamEnabled());
         System.out.println("cdamEnabled value is "+toggleProperties.isCdamEnabled());
-        UploadResponse uploadResponse = testUtil.uploadCdamDocument("a@b.com",
+        UploadResponse uploadResponse = testUtil.uploadCdamDocument("redactionTestUser@redactiontest.com",
             extendedCcdHelper.getEnvCcdCaseTypeId(), "PUBLICLAW");
 
         String uploadedUrl = uploadResponse.getDocuments().get(0).links.self.href;
@@ -135,7 +135,7 @@ public class RedactionScenarios {
     public void shouldReturn400WhenRedactedPdfDocumentCdamEnabled() throws Exception {
         Assume.assumeTrue(toggleProperties.isCdamEnabled());
         System.out.println("cdamEnabled value is "+toggleProperties.isCdamEnabled());
-        UploadResponse uploadResponse = testUtil.uploadCdamDocument("a@b.com",
+        UploadResponse uploadResponse = testUtil.uploadCdamDocument("redactionTestUser@redactiontest.com",
             extendedCcdHelper.getEnvCcdCaseTypeId(), "PUBLICLAW");
 
         String uploadedUrl = uploadResponse.getDocuments().get(0).links.self.href;
