@@ -251,7 +251,7 @@ dependencies {
     annotationProcessor group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '3.0.2'
 
     testRuntimeOnly group: 'org.junit.vintage', name: 'junit-vintage-engine', version: '5.6.2'
-    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.6.3'
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.8.2'
     testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.6.3'
     testImplementation group: 'org.pitest', name: 'pitest', version:'1.5.2'
     testImplementation group: 'info.solidsoft.gradle.pitest',  name: 'gradle-pitest-plugin', version: '1.5.2'
@@ -310,7 +310,7 @@ dependencyManagement {
             entry 'junit'
         }
 
-        dependencySet(group: 'org.junit.jupiter', version: '5.6.3') {
+        dependencySet(group: 'org.junit.jupiter', version: '5.8.2') {
             entry 'junit-jupiter'
             entry 'junit-jupiter-api'
             entry 'junit-jupiter-params'
