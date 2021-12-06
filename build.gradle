@@ -169,7 +169,7 @@ dependencies {
     
     implementation group: 'com.google.guava', name: 'guava', version: '31.0.1-jre'
 
-    implementation group: 'org.springframework.cloud', name: 'spring-cloud-openfeign', version: '3.0.4', {
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-openfeign', version: '3.1.0', {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-actuator'
     }
         
