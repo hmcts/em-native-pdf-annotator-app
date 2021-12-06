@@ -80,7 +80,6 @@ public class RedactionScenarios {
     @Test
     public void shouldReturn200WhenRedactedPdfDocument() {
         Assume.assumeFalse(toggleProperties.isCdamEnabled());
-        System.out.println("cdamEnabled value is "+toggleProperties.isCdamEnabled());
         final String newDocId = testUtil.uploadPdfDocumentAndReturnUrl();
         final RedactionRequest redactionRequest = new RedactionRequest();
         redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
@@ -100,7 +99,6 @@ public class RedactionScenarios {
     @Test
     public void shouldReturn200WhenRedactedPdfDocumentCdamEnabled() throws Exception {
         Assume.assumeTrue(toggleProperties.isCdamEnabled());
-        System.out.println("cdamEnabled value is "+toggleProperties.isCdamEnabled());
         UploadResponse uploadResponse = testUtil.uploadCdamDocument("redactionTestUser@redactiontest.com",
             extendedCcdHelper.getEnvCcdCaseTypeId(), "PUBLICLAW");
 
@@ -134,7 +132,6 @@ public class RedactionScenarios {
     @Test
     public void shouldReturn400WhenRedactedPdfDocumentCdamEnabled() throws Exception {
         Assume.assumeTrue(toggleProperties.isCdamEnabled());
-        System.out.println("cdamEnabled value is "+toggleProperties.isCdamEnabled());
         UploadResponse uploadResponse = testUtil.uploadCdamDocument("redactionTestUser@redactiontest.com",
             extendedCcdHelper.getEnvCcdCaseTypeId(), "PUBLICLAW");
 
@@ -168,7 +165,6 @@ public class RedactionScenarios {
     @Test
     public void shouldReturn200WhenRedactedImage() {
         Assume.assumeFalse(toggleProperties.isCdamEnabled());
-        System.out.println("cdamEnabled value is "+toggleProperties.isCdamEnabled());
         final String newDocId = testUtil.uploadImageDocumentAndReturnUrl();
         final RedactionRequest redactionRequest = new RedactionRequest();
         redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
@@ -188,7 +184,6 @@ public class RedactionScenarios {
     @Test
     public void shouldReturn400WhenRedactedRichTextDocument() {
         Assume.assumeFalse(toggleProperties.isCdamEnabled());
-        System.out.println("cdamEnabled value is "+toggleProperties.isCdamEnabled());
         final String newDocId = testUtil.uploadRichTextDocumentAndReturnUrl();
         final RedactionRequest redactionRequest = new RedactionRequest();
         redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
@@ -205,7 +200,6 @@ public class RedactionScenarios {
     @Test
     public void shouldReturn400WhenRedactedFileNameIsMissing() {
         Assume.assumeFalse(toggleProperties.isCdamEnabled());
-        System.out.println("cdamEnabled value is "+toggleProperties.isCdamEnabled());
         final String newDocId = testUtil.uploadRichTextDocumentAndReturnUrl();
         final RedactionRequest redactionRequest = new RedactionRequest();
         redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
@@ -222,7 +216,6 @@ public class RedactionScenarios {
     @Test
     public void shouldReturn400WhenRedactedPdfDocumentWIthNonExistentDocumentId() {
         Assume.assumeFalse(toggleProperties.isCdamEnabled());
-        System.out.println("cdamEnabled value is "+toggleProperties.isCdamEnabled());
         final UUID nonExistentDocId = UUID.randomUUID();
         final RedactionRequest redactionRequest = new RedactionRequest();
         redactionRequest.setDocumentId(nonExistentDocId);
@@ -242,7 +235,6 @@ public class RedactionScenarios {
     @Test
     public void shouldReturn401WhenRedactedPdfDocument() {
         Assume.assumeFalse(toggleProperties.isCdamEnabled());
-        System.out.println("cdamEnabled value is "+toggleProperties.isCdamEnabled());
         final String newDocId = testUtil.uploadRichTextDocumentAndReturnUrl();
         final RedactionRequest redactionRequest = new RedactionRequest();
         redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
