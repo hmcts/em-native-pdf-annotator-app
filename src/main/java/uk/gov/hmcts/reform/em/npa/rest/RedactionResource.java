@@ -54,12 +54,10 @@ public class RedactionResource {
     public ResponseEntity save(HttpServletRequest request,
                                        @RequestBody RedactionRequest redactionRequest) {
         try {
-            String jwt = request.getHeader("Authorization");
+            String auth = request.getHeader("Authorization");
+            String serviceAuth = request.getHeader("ServiceAuthorization");
             File newlyRedactedFile = redactionService.redactFile(
-                    jwt,
-                    redactionRequest.getCaseId(),
-                    redactionRequest.getDocumentId(),
-                    redactionRequest.getRedactions());
+                    auth, serviceAuth, redactionRequest);
 
             HttpHeaders headers = new HttpHeaders();
             headers.add(CONTENT_DISPOSITION, String.format("attachment; filename=\"%s\"", newlyRedactedFile.getName()));

@@ -51,17 +51,16 @@ s2s:
     xuiWebappSecret: ${FUNCTIONAL_TEST_XUI_WEBAPP_SERVICE_SECRET:AAAAAAAAAAAAAAAA}
     xuiWebappServiceName: ${XUI_WEBAPP_SERVICE_NAME:xui_webapp}
 
-
 ccd-def:
   api:
-    url: 'http://localhost:4451'
+    url: ${CCD_DEF_API:http://localhost:4451}
 
 document_management:
   url: ${DM_STORE_APP_URL:http://localhost:4603}
 
 core_case_data:
   api:
-    url: 'http://localhost:4452'
+    url: ${CCD_DATA_API:http://localhost:4452}
 
 
 annotation:
@@ -70,3 +69,6 @@ annotation:
 
 oidc:
   issuer: ${OIDC_ISSUER_BASE_URI:http://localhost:8080/openam/oauth2/hmcts}
+
+toggles:
+  cdam_enabled: ${ENABLE_CDAM:false}
