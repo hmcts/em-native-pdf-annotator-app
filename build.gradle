@@ -179,7 +179,7 @@ dependencies {
     implementation group: 'org.apache.pdfbox', name: 'jbig2-imageio', version: '3.0.3'
     implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.9.3'
 
-    implementation group:'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.1'
+    implementation group:'org.apache.logging.log4j', name: 'log4j-core', version: versions.log4JVersion
 
     implementation group:'com.fasterxml.jackson.datatype', name: 'jackson-datatype-json-org', version: versions.fasterXmlJackson
     implementation group:'com.fasterxml.jackson.datatype', name: 'jackson-datatype-hppc', version: versions.fasterXmlJackson
