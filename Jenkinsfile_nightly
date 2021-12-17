@@ -64,7 +64,7 @@ withNightlyPipeline(type , product, component) {
 
     overrideVaultEnvironments(vaultOverrides)
     loadVaultSecrets(secrets)
-//    enableFortifyScan('em-npa-aat')
+    enableFortifyScan('em-npa-aat')
     enableMutationTest()
     enableFullFunctionalTest()
     enableSecurityScan()
