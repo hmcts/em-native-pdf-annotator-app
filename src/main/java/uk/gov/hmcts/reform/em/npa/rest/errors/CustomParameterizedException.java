@@ -21,6 +21,8 @@ import static org.zalando.problem.Status.BAD_REQUEST;
  * "error.myCustomError" :  "The server says {{param0}} to {{param1}}"
  * </pre>
  */
+
+@SuppressWarnings("squid:S110")
 public class CustomParameterizedException extends AbstractThrowableProblem {
 
     private static final long serialVersionUID = 1L;
