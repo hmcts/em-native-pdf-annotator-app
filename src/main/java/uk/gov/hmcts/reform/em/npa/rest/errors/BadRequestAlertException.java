@@ -7,6 +7,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
+@SuppressWarnings("squid:S110")
 public class BadRequestAlertException extends AbstractThrowableProblem {
 
     private static final long serialVersionUID = 1L;
