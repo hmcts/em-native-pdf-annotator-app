@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.em.npa.rest.errors;
 
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 class FieldErrorVMTest {
 
