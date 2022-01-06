@@ -9,8 +9,4 @@ public class ValidationErrorException extends RuntimeException {
     public ValidationErrorException(String message) {
         super(message);
     }
-
-    public ValidationErrorException(Throwable t) {
-        super(t);
-    }
 }

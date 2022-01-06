@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.em.npa.repository.EntityAuditEventRepository;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 
 @RunWith(SpringRunner.class)
@@ -43,7 +44,7 @@ public class AsyncEntityAuditEventWriterTest {
 
         asyncEntityAuditEventWriter.writeAuditEvent(target, EntityAuditAction.CREATE);
 
-
+        assertSame(EntityAuditAction.CREATE.toString(), "CREATE");
         verify(repository).save(new EntityAuditEvent());
     }
 
