@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.em.npa.rest.errors;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
-class FieldErrorVMTest {
+public class FieldErrorVMTest {
 
     FieldErrorVM fieldErrorVM = new FieldErrorVM("testObjectName", "testField", "testMessage");
 
