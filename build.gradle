@@ -282,7 +282,7 @@ dependencies {
 
     aatImplementation group: 'com.github.hmcts', name: 'em-test-helper', version: '1.20.3'
     aatImplementation group: 'org.apache.poi', name: 'poi', version: '5.0.0'
-    aatImplementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.0.0'
+    aatImplementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.2.0'
 
 }
 
