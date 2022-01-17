@@ -321,7 +321,7 @@ dependencyManagement {
             entry 'junit-vintage-engine'
         }
 
-        dependencySet(group: 'net.bytebuddy', version: '1.12.6') {
+        dependencySet(group: 'net.bytebuddy', version: '1.12.7') {
             entry 'byte-buddy'
             entry 'byte-buddy-agent'
         }
