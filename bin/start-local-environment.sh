@@ -10,7 +10,7 @@
 
 # Set variables
 COMPOSE_FILE="-f docker-compose-dependencies.yml"
-IDAM_URI="http://localhost:5000"
+IDAM_URI="http://localhost:5050"
 IDAM_USERNAME="idamOwner@hmcts.net"
 IDAM_PASSWORD="Ref0rmIsFun"
 export DOCMOSIS_ACCESS_KEY=$1
@@ -56,6 +56,7 @@ docker-compose ${COMPOSE_FILE} up -d shared-database\
                                      ccd-definition-store-api \
                                      ccd-data-store-api \
                                      ccd-case-document-am-api \
+                                     am-role-assignment-service \
                                      make-container-call
 
 echo "LOCAL ENVIRONMENT SUCCESSFULLY STARTED"
