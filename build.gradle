@@ -205,7 +205,7 @@ dependencies {
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.10'
     implementation group: 'org.liquibase', name: 'liquibase-core', version: '4.6.1'
     liquibaseRuntime group: 'org.liquibase', name: 'liquibase-core', version: '4.6.1'
-    liquibaseRuntime group: 'org.liquibase.ext', name: 'liquibase-hibernate5', version: '4.6.1'
+    liquibaseRuntime group: 'org.liquibase.ext', name: 'liquibase-hibernate5', version: '4.8.0'
     liquibaseRuntime sourceSets.main.compileClasspath
     liquibaseRuntime sourceSets.main.output
     liquibaseRuntime group: 'org.liquibase', name: 'liquibase-groovy-dsl', version: '3.0.2'
