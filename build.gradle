@@ -290,7 +290,7 @@ dependencyManagement {
     dependencies {
 
         //CVE-2020-15824, CVE-2020-29582
-        dependencySet(group: 'org.jetbrains.kotlin', version: '1.5.0-M1') {
+        dependencySet(group: 'org.jetbrains.kotlin', version: '1.6.0') {
             entry 'kotlin'
             entry 'kotlin-stdlib'
             entry 'kotlin-reflect'
