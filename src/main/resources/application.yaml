@@ -132,3 +132,7 @@ redaction:
 
 toggles:
   cdam_enabled: ${ENABLE_CDAM:false}
+
+springdoc:
+  packagesToScan: uk.gov.hmcts.reform.em.npa.rest
+  pathsToMatch: /**
