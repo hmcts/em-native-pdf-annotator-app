@@ -213,7 +213,7 @@ dependencies {
     implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
     implementation group: 'commons-validator', name: 'commons-validator', version: '1.7'
     implementation group: 'javax.transaction', name: 'javax.transaction-api'
-    implementation group: 'org.ehcache', name: 'ehcache', version: '3.9.9'
+    implementation group: 'org.ehcache', name: 'ehcache', version: '3.10.0'
 
     implementation group: 'com.zaxxer', name: 'HikariCP', version: '5.0.1'
     implementation group: 'javax.el', name: 'javax.el-api', version: '3.0.0'
