@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.em.npa.rest;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.apache.tika.Tika;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
@@ -42,13 +42,13 @@ public class RedactionResource {
         binder.setDisallowedFields(Constants.IS_ADMIN);
     }
 
-    @ApiOperation(value = "Burn markups onto Document", notes = "A POST request to burn markups onto Document and return the newly redacted document")
+    @Operation(summary = "Burn markups onto Document", description = "A POST request to burn markups onto Document and return the newly redacted document")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully redacted"),
-            @ApiResponse(code = 400, message = "Invalid request"),
-            @ApiResponse(code = 401, message = "Unauthorised"),
-            @ApiResponse(code = 403, message = "Forbidden"),
-            @ApiResponse(code = 500, message = "Server Error"),
+            @ApiResponse(responseCode = "200", description = "Successfully redacted"),
+            @ApiResponse(responseCode = "400", description = "Invalid request"),
+            @ApiResponse(responseCode = "401", description = "Unauthorised"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "500", description = "Server Error"),
     })
     @PostMapping("/redaction")
     public ResponseEntity<Object> save(HttpServletRequest request,
