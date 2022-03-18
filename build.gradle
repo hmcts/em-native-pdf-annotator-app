@@ -98,7 +98,6 @@ repositories {
 def versions = [
         postgresql         : '42.3.3',
         h2                 : '1.4.199',
-        liquibase          : '3.8.0',
         serenity           : '2.6.0',
         serenityreporter   : '2.6.0',
         serenityRestAssured: '2.6.0',
@@ -112,7 +111,7 @@ def versions = [
         springSecurity     : '5.6.2',
         log4JVersion       : '2.17.2',
         jupiter            : '5.8.2',
-        liquibase          : '4.6.1'
+        liquibase          : '4.8.0'
 ]
 
 sourceSets {
