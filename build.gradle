@@ -329,25 +329,20 @@ bootJar {
 def coverageExclusionList = [
     '**uk/gov/hmcts/reform/em/npa/Application*',
     '**uk/gov/hmcts/reform/em/npa/appinsights/*',
-    '**uk/gov/hmcts/reform/em/npa/config/*',
-    '**uk/gov/hmcts/reform/em/npa/config/logging/*',
+    '**uk/gov/hmcts/reform/em/npa/config/**/*',
     '**uk/gov/hmcts/reform/em/npa/domain/*',
     '**uk/gov/hmcts/reform/em/npa/service/dto/external/annotation/*',
-    '**uk/gov/hmcts/reform/em/npa/config/security/*',
     '**uk/gov/hmcts/reform/em/npa/ccd/domain/*',
     '**uk/gov/hmcts/reform/em/npa/ccd/dto/*',
     '**uk/gov/hmcts/reform/em/npa/ccd/exception/*',
     '**uk/gov/hmcts/reform/em/npa/service/exception/*',
     '**uk/gov/hmcts/reform/em/npa/service/dto/redaction/*',
     '**uk/gov/hmcts/reform/em/npa/info/*',
-    '**/uk/gov/hmcts/reform/em/npa/config/audit/AsyncEntityAuditEventWriter*',
     '**uk/gov/hmcts/reform/em/npa/rest/errors/ExceptionTranslator*',
     '**uk/gov/hmcts/reform/em/npa/service/dto/AbstractAuditingDTO*',
     '**uk/gov/hmcts/reform/em/npa/rest/ResponseUtil*',
-    '**uk/gov/hmcts/reform/em/npa/service/impl/DmStoreDownloaderImpl*',
-    '**uk/gov/hmcts/reform/em/npa/service/impl/DmStoreUploaderImpl*',
-    '**uk/gov/hmcts/reform/em/npa/config/audit/*'
-
+    '**uk/gov/hmcts/reform/em/npa/service/impl/DmStoreDownloaderImpl*', //may need unit tests?
+    '**uk/gov/hmcts/reform/em/npa/service/impl/DmStoreUploaderImpl*' //may need unit tests?
 ]
 
 checkstyle {
