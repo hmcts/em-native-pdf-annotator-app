@@ -1,8 +1,12 @@
 package uk.gov.hmcts.reform.em.npa.rest;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -41,6 +45,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/api")
+@Tag(name = "Markups Service", description = "Endpoint for managing Markups.")
 public class MarkUpResource {
 
     private final Logger log = LoggerFactory.getLogger(MarkUpResource.class);
@@ -66,7 +71,14 @@ public class MarkUpResource {
      * @return the ResponseEntity with status "201" (Created) and with body the new RedactionDTO
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
-    @Operation(summary = "Create an RedactionDTO", description = "A POST request to create an RedactionDTO")
+    @Operation(summary = "Create an RedactionDTO", description = "A POST request to create an RedactionDTO",
+            parameters = {
+                    @Parameter(in = ParameterIn.HEADER, name = "authorization",
+                            description = "Authorization (Idam Bearer token)", required = true,
+                            schema = @Schema(type = "string")),
+                    @Parameter(in = ParameterIn.HEADER, name = "serviceauthorization",
+                            description = "Service Authorization (S2S Bearer token)", required = true,
+                            schema = @Schema(type = "string"))})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Successfully created"),
             @ApiResponse(responseCode = "401", description = "Unauthorised"),
@@ -98,7 +110,14 @@ public class MarkUpResource {
      * @return the ResponseEntity with status "200" (OK) and with body the updated RedactionDTO,
      * or with status "500" (Internal Server Error) if the markup couldn't be updated
      */
-    @Operation(summary = "Update an existing RedactionDTO", description = "A PUT request to update an RedactionDTO")
+    @Operation(summary = "Update an existing RedactionDTO", description = "A PUT request to update an RedactionDTO",
+            parameters = {
+                    @Parameter(in = ParameterIn.HEADER, name = "authorization",
+                            description = "Authorization (Idam Bearer token)", required = true,
+                            schema = @Schema(type = "string")),
+                    @Parameter(in = ParameterIn.HEADER, name = "serviceauthorization",
+                            description = "Service Authorization (S2S Bearer token)", required = true,
+                            schema = @Schema(type = "string"))})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "500", description = "RedactionDTO couldn't be updated"),
@@ -129,7 +148,17 @@ public class MarkUpResource {
      * @param pageable the pagination information
      * @return the ResponseEntity with status "200" (OK) and the list of markups in body
      */
-    @Operation(summary = "Get all markups for Document ID")
+    @Operation(summary = "Get all markups for Document ID",
+            parameters = {
+                    @Parameter(in = ParameterIn.HEADER, name = "authorization",
+                            description = "Authorization (Idam Bearer token)", required = true,
+                            schema = @Schema(type = "string")),
+                    @Parameter(in = ParameterIn.HEADER, name = "serviceauthorization",
+                            description = "Service Authorization (S2S Bearer token)", required = true,
+                            schema = @Schema(type = "string")),
+                    @Parameter(in = ParameterIn.PATH, name = "documentId",
+                            description = "Document Id", required = true,
+                            schema = @Schema(type = "UUID"))})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "401", description = "Unauthorised"),
@@ -154,7 +183,17 @@ public class MarkUpResource {
      * @param documentId the id of the Document
      * @return the ResponseEntity with status "200" (OK)
      */
-    @Operation(summary = "Delete all RedactionDTOs", description = "A DELETE request to delete all the markups of the document")
+    @Operation(summary = "Delete all RedactionDTOs", description = "A DELETE request to delete all the markups of the document",
+            parameters = {
+                    @Parameter(in = ParameterIn.HEADER, name = "authorization",
+                            description = "Authorization (Idam Bearer token)", required = true,
+                            schema = @Schema(type = "string")),
+                    @Parameter(in = ParameterIn.HEADER, name = "serviceauthorization",
+                            description = "Service Authorization (S2S Bearer token)", required = true,
+                            schema = @Schema(type = "string")),
+                    @Parameter(in = ParameterIn.PATH, name = "documentId",
+                            description = "Document Id", required = true,
+                            schema = @Schema(type = "UUID"))})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success"),
             @ApiResponse(responseCode = "401", description = "Unauthorised"),
@@ -176,7 +215,20 @@ public class MarkUpResource {
      * @param redactionId the id of the RedactionDTO
      * @return the ResponseEntity with status "200" (OK)
      */
-    @Operation(summary = "Delete a RedactionDTO", description = "A DELETE request to delete the markup of the document")
+    @Operation(summary = "Delete a RedactionDTO", description = "A DELETE request to delete the markup of the document",
+            parameters = {
+                    @Parameter(in = ParameterIn.HEADER, name = "authorization",
+                            description = "Authorization (Idam Bearer token)", required = true,
+                            schema = @Schema(type = "string")),
+                    @Parameter(in = ParameterIn.HEADER, name = "serviceauthorization",
+                            description = "Service Authorization (S2S Bearer token)", required = true,
+                            schema = @Schema(type = "string")),
+                    @Parameter(in = ParameterIn.PATH, name = "documentId",
+                            description = "Document Id", required = true,
+                            schema = @Schema(type = "UUID")),
+                    @Parameter(in = ParameterIn.PATH, name = "redactionId",
+                            description = "Redaction Id", required = true,
+                            schema = @Schema(type = "UUID"))})
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Success"),
         @ApiResponse(responseCode = "401", description = "Unauthorised"),

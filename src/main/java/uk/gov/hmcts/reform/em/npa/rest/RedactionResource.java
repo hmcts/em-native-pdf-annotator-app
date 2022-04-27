@@ -1,8 +1,12 @@
 package uk.gov.hmcts.reform.em.npa.rest;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.tika.Tika;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
@@ -28,6 +32,7 @@ import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
  */
 @RestController
 @RequestMapping("/api")
+@Tag(name = "Redactions Service", description = "Endpoint for managing Redactions.")
 public class RedactionResource {
 
     private RedactionService redactionService;
@@ -42,7 +47,15 @@ public class RedactionResource {
         binder.setDisallowedFields(Constants.IS_ADMIN);
     }
 
-    @Operation(summary = "Burn markups onto Document", description = "A POST request to burn markups onto Document and return the newly redacted document")
+    @Operation(summary = "Burn markups onto Document", description = "A POST request to burn markups onto Document"
+            + "and return the newly redacted document",
+            parameters = {
+                    @Parameter(in = ParameterIn.HEADER, name = "authorization",
+                            description = "Authorization (Idam Bearer token)", required = true,
+                            schema = @Schema(type = "string")),
+                    @Parameter(in = ParameterIn.HEADER, name = "serviceauthorization",
+                            description = "Service Authorization (S2S Bearer token)", required = true,
+                            schema = @Schema(type = "string"))})
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully redacted"),
             @ApiResponse(responseCode = "400", description = "Invalid request"),
