@@ -73,12 +73,16 @@
  "90033_Loosely Scoped Cookie_http://em-npa-aat.service.core-compute-aat.internal/v3/api-docs_GET":"ignore",
  "10010_Cookie No HttpOnly Flag_http://em-npa-aat.service.core-compute-aat.internal/_GET":"ignore",
  "10010_Cookie No HttpOnly Flag_http://em-npa-aat.service.core-compute-aat.internal/api/markups/documentId?pageable=_GET":"ignore",
+ "10010_Cookie No HttpOnly Flag_http://em-npa-aat.service.core-compute-aat.internal/api/markups/?pageable=_GET":"ignore",
  "10054_Cookie without SameSite Attribute_http://em-npa-aat.service.core-compute-aat.internal/_GET":"ignore",
  "10054_Cookie without SameSite Attribute_http://em-npa-aat.service.core-compute-aat.internal/api/markups/documentId?pageable=_GET":"ignore",
+ "10054_Cookie without SameSite Attribute_http://em-npa-aat.service.core-compute-aat.internal/api/markups/?pageable=_GET":"ignore",
  "10096_Timestamp Disclosure - Unix_http://em-npa-aat.service.core-compute-aat.internal/_GET":"ignore",
  "10096_Timestamp Disclosure - Unix_http://em-npa-aat.service.core-compute-aat.internal/api/markups/documentId?pageable=_GET":"ignore",
+ "10096_Timestamp Disclosure - Unix_http://em-npa-aat.service.core-compute-aat.internal/api/markups/?pageable=_GET":"ignore",
  "10021_X-Content-Type-Options Header Missing_http://em-npa-aat.service.core-compute-aat.internal/_GET":"ignore",
  "100000_A Client Error response code was returned by the server_http://em-npa-aat.service.core-compute-aat.internal/api/markups/documentId?pageable=_GET":"ignore",
  "90033_Loosely Scoped Cookie_http://em-npa-aat.service.core-compute-aat.internal/_GET":"ignore",
+ "90033_Loosely Scoped Cookie_http://em-npa-aat.service.core-compute-aat.internal/api/markups/?pageable=_GET":"ignore",
  "90033_Loosely Scoped Cookie_http://em-npa-aat.service.core-compute-aat.internal/api/markups/documentId?pageable=_GET":"ignore"
 }
