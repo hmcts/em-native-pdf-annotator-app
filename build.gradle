@@ -166,7 +166,7 @@ dependencies {
 
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '3.1.2'
 
-    implementation group: 'com.google.guava', name: 'guava', version: '31.0.1-jre'
+    implementation group: 'com.google.guava', name: 'guava', version: '31.1-jre'
 
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-openfeign', version: '3.1.2', {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-actuator'
@@ -229,8 +229,6 @@ dependencies {
     implementation group: 'org.apache.tika', name: 'tika-core', version: '2.4.0'
 
     implementation group: 'org.mapstruct', name: 'mapstruct', version: versions.mapstruct
-
-    implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
 
     annotationProcessor group: 'org.mapstruct',name: 'mapstruct-processor', version: versions.mapstruct
     annotationProcessor group:'org.hibernate', name: 'hibernate-jpamodelgen', version: versions.hibernate
