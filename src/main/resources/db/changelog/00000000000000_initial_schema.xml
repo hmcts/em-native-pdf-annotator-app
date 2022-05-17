@@ -263,4 +263,11 @@
                        tableName="jhi_persistent_audit_evt_data"/>
     </changeSet>
 
+    <changeSet author="yogesh (manual)" id="20220516-1">
+        <modifyDataType
+                columnName="principal"
+                newDataType="varchar(1000)"
+                tableName="jhi_persistent_audit_event"/>
+    </changeSet>
+
 </databaseChangeLog>
