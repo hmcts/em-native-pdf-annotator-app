@@ -108,7 +108,7 @@ def versions = [
         fasterXmlJackson   : '2.13.2',
         hibernate          : '5.6.5.Final',
         mapstruct          : '1.4.2.Final',
-        springSecurity     : '5.6.2',
+        springSecurity     : '5.7.1',
         log4JVersion       : '2.17.2',
         jupiter            : '5.8.2',
         liquibase          : '4.8.0'
@@ -137,6 +137,7 @@ configurations.all {
     exclude group: 'com.vaadin.external.google', module: 'android-json'
     exclude group: 'org.glassfish', module: 'jakarta.el'
     exclude group: 'org.springframework.retry', module: 'spring-retry'
+    exclude group: 'org.springframework.security', module: 'spring-security-rsa'
 }
 
 dependencies {
