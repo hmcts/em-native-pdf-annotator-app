@@ -245,7 +245,7 @@ dependencies {
     
     annotationProcessor group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
     annotationProcessor group: 'com.sun.xml.bind', name: 'jaxb-core', version: '3.0.2'
-    annotationProcessor group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '3.0.2'
+    annotationProcessor group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '4.0.0'
 
     testRuntimeOnly group: 'org.junit.vintage', name: 'junit-vintage-engine', version: versions.jupiter
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.jupiter
