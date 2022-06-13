@@ -138,6 +138,7 @@ configurations.all {
     exclude group: 'org.glassfish', module: 'jakarta.el'
     exclude group: 'org.springframework.retry', module: 'spring-retry'
     exclude group: 'org.springframework.security', module: 'spring-security-rsa'
+    exclude group: 'org.springframework.boot', module: 'spring-boot-starter-security'
 }
 
 dependencies {
@@ -194,11 +195,9 @@ dependencies {
 
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: versions.springSecurity
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-client', version: versions.springSecurity
-    implementation group: 'org.springframework.security', name: 'spring-security-web', version: versions.springSecurity
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-jose', version: versions.springSecurity
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-core', version: versions.springSecurity
     implementation group: 'org.springframework.security', name: 'spring-security-config', version: versions.springSecurity
-    implementation group: 'org.springframework.security', name: 'spring-security-core', version: versions.springSecurity
 
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
     implementation group: 'org.liquibase', name: 'liquibase-core', version: versions.liquibase
