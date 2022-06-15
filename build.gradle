@@ -313,6 +313,10 @@ dependencyManagement {
             entry 'spring-cloud-starter-openfeign'
         }
 
+        //CVE-2022-23437
+        dependencySet(group: 'xerces', version: '2.12.2') {
+            entry 'xercesImpl'
+        }
     }
 }
 
