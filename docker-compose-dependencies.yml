@@ -31,7 +31,7 @@ services:
       - TESTING_SUPPORT_ENABLED=true
 #      - JAVA_TOOL_OPTIONS=-Xms128m -Xmx512m -XX:MaxPermSize=512m
     ports:
-      - 4502:8489
+      - 8489:8489
 
   annotation-api:
     image: hmctspublic.azurecr.io/em/anno:latest
@@ -88,7 +88,7 @@ services:
       - REFORM_TEAM=idam
       - REFORM_ENVIRONMENT=local
     ports:
-      - 5050:5000
+      - 5000:5000
 
   idam-web-public:
     image: hmctspublic.azurecr.io/idam/web-public:stable
