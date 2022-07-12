@@ -181,7 +181,7 @@ public class MarkUpResource {
      * DELETE  /markups/:documentId : delete all the markups of the document.
      *
      * @param documentId the id of the Document
-     * @return the ResponseEntity with status "200" (OK)
+     * @return the ResponseEntity with status "204" (No Content)
      */
     @Operation(summary = "Delete all RedactionDTOs", description = "A DELETE request to delete all the markups of the document",
             parameters = {
@@ -195,7 +195,7 @@ public class MarkUpResource {
                             description = "Document Id", required = true,
                             schema = @Schema(type = "UUID"))})
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "204", description = "No Content"),
             @ApiResponse(responseCode = "401", description = "Unauthorised"),
             @ApiResponse(responseCode = "403", description = "Forbidden"),
             @ApiResponse(responseCode = "404", description = "Not Found"),
@@ -204,7 +204,7 @@ public class MarkUpResource {
     public ResponseEntity<Void> deleteMarkUps(@PathVariable UUID documentId) {
         log.debug("REST request to delete all Redactions for entire document : {}", documentId);
         markUpService.deleteAll(documentId);
-        return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, documentId.toString())).build();
+        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, documentId.toString())).build();
     }
 
     /**

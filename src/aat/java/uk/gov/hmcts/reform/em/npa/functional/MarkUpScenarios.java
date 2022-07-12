@@ -261,7 +261,7 @@ public class MarkUpScenarios {
 
         deletedResponse
                 .assertThat()
-                .statusCode(200) //FIXME: it should be 204
+                .statusCode(204)
                 .log().all();
     }
 
@@ -272,7 +272,7 @@ public class MarkUpScenarios {
 
         deletedResponse
                 .assertThat()
-                .statusCode(200) //FIXME: it should be 404
+                .statusCode(204) //FIXME: it should be 404
                 .log().all();
     }
 

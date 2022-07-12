@@ -146,7 +146,7 @@ public class MarkUpResourceTest {
         ResponseEntity<Void> response = markUpResource.deleteMarkUps(documentId);
 
         Mockito.verify(markUpService, Mockito.atLeast(1)).deleteAll(documentId);
-        Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
+        Assert.assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 
     @Test
