@@ -4,7 +4,7 @@
 [![codecov](https://codecov.io/gh/hmcts/rpa-native-pdf-annotator-app/branch/master/graph/badge.svg)](https://codecov.io/gh/hmcts/rpa-native-pdf-annotator-app)
 
 Native PDF Annotator is a backend service that manages native annotations on PDF documents. 
-In addition the Native PDF Annotator handles requests from the Media Viewer to markup sensitive content in a case document and subsequent requests to redact marked up content..
+In addition, the Native PDF Annotator handles requests from the Media Viewer to markup sensitive content in a case document and subsequent requests to redact marked up content..
 
 ### Tech
 
@@ -20,25 +20,28 @@ It uses:
 * [lombok plugin](https://plugins.jetbrains.com/idea/plugin/6317-lombok-plugin) - Lombok IDEA plugin
 
 ## Quickstart
-```bash
-#Cloning repo and running dependencies through docker
 
-git clone git@github.com:hmcts/em-native-pdf-annotator-app.git
+#### To clone repo and prepare to pull containers:
+```
+git clone https://github.com/hmcts/em-native-pdf-annotator-app.git
 cd em-native-pdf-annotator-app/
+```
 
-az login
-az acr login --name hmctspublic
-docker-compose -f docker-compose-dependencies-simulator.yml pull
-docker-compose -f docker-compose-dependencies-simulator.yml up
-
-wait for 2-3 minutes till all the dependencies in the docker are up and running.
-
+#### Clean and build the application:
+```
 ./gradlew clean
 ./gradlew build
-
-./gradlew migratePostgresDatabase
-./gradlew bootRun
 ```
+
+#### To run the application:
+
+VPN connection is required
+
+```
+az login
+./gradlew bootWithCCD
+```
+
 
 ### Swagger UI
 To view our REST API go to http://{HOST}/swagger-ui/index.html
@@ -67,7 +70,7 @@ To run the project unit tests execute the following command:
 ./gradlew test
 ```
 
-To run the project functional tests, first ensure all project dependency Docker containers have started and you have run `./gradlew bootRun` as in the above setup instructions, then run
+To run the project functional tests, first ensure you have run `./gradlew bootWithCCD` as in the above setup instructions, then run
 ```
 ./gradlew functional 
 ```
