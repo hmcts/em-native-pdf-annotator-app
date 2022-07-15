@@ -25,7 +25,7 @@ java:
     DM_STORE_APP_URL: http://dm-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     EM_ANNO_APP_URL: http://em-anno-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     CDAM_URL: http://ccd-case-document-am-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
-    ENABLE_CDAM: false
+    ENABLE_CDAM: true
 
     SPRING_DATASOURCE_USERNAME: npa@em-npa-postgres-db-v11-{{ .Values.global.environment }}
     SPRING_DATASOURCE_URL: jdbc:postgresql://em-npa-postgres-db-v11-{{ .Values.global.environment }}.postgres.database.azure.com:5432/npa?sslmode=require
