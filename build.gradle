@@ -302,11 +302,6 @@ dependencyManagement {
         }
         // Do not change - END
 
-        //CVE-2021-27568
-        dependencySet(group: 'net.minidev', version: '2.4.8') {
-            entry 'json-smart'
-        }
-
         //CVE-2021-22044
         dependencySet(group: 'org.springframework.cloud', version: '3.1.2') {
             entry 'spring-cloud-openfeign-core'
