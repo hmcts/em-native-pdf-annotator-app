@@ -152,7 +152,7 @@ public class MarkUpScenarios {
                 .get("/api/markups/" + documentId)
                 .then()
                 .assertThat()
-                .statusCode(204) //FIXME: it should be 404
+                .statusCode(404)
                 .log().all();
     }
 

@@ -15,8 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.server.ResponseStatusException;
 import uk.gov.hmcts.reform.em.npa.config.Constants;
-import uk.gov.hmcts.reform.em.npa.rest.errors.EmptyResponseException;
 import uk.gov.hmcts.reform.em.npa.rest.errors.ValidationErrorException;
 import uk.gov.hmcts.reform.em.npa.service.MarkUpService;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
@@ -126,7 +126,7 @@ public class MarkUpResourceTest {
         Mockito.verify(markUpService, Mockito.atLeast(1)).findAllByDocumentId(id, pageable);
     }
 
-    @Test(expected = EmptyResponseException.class)
+    @Test(expected = ResponseStatusException.class)
     public void testGetAllDocumentMarkUpsFailure() {
 
         UUID id =  UUID.randomUUID();
