@@ -61,7 +61,7 @@ repositories {
 }
 
 def versions = [
-        postgresql         : '42.3.3',
+        postgresql         : '42.4.1',
         h2                 : '1.4.199',
         serenity           : '2.6.0',
         serenityreporter   : '2.6.0',
