@@ -14,11 +14,11 @@ plugins {
     id 'org.sonarqube' version '3.3'
     id 'jacoco'
     id 'checkstyle'
-    id 'org.liquibase.gradle' version '2.1.0'
     id 'au.com.dius.pact' version '4.2.14'
     id 'io.franzbecker.gradle-lombok' version '5.0.0'
     id "info.solidsoft.pitest" version '1.5.2'
     id 'com.github.hmcts.rse-cft-lib' version '0.19.296'
+    id 'org.flywaydb.flyway' version '8.5.13'
 }
 
 apply plugin: 'java'
@@ -42,42 +42,6 @@ if (!project.hasProperty('runList')) {
     project.ext.runList = 'main'
 }
 
-//loading properties file.
-Properties liquibaseProps = new Properties()
-liquibaseProps.load(new FileInputStream("$projectDir/src/main/resources/liquibase.properties"))
-
-project.ext.diffChangelogFile = 'src/main/resources/db/changelog/' + new Date().format('yyyyMMddHHmmss') + '_changelog.xml'
-
-liquibase {
-    activities {
-        main {
-            driver liquibaseProps.getProperty('driver')
-            url project.hasProperty("dburl") ? "jdbc:postgresql://$dburl" : liquibaseProps.getProperty('url')
-            username project.hasProperty("flyway.user") ? "${rootProject.properties['flyway.user']}" : liquibaseProps.getProperty('username')
-            password project.hasProperty("flyway.password") ? "${rootProject.properties['flyway.password']}" : liquibaseProps.getProperty('password')
-            changeLogFile liquibaseProps.getProperty('changeLogFile')
-            referenceUrl liquibaseProps.getProperty('referenceUrl')
-            defaultSchemaName ''
-            logLevel 'debug'
-            classpath 'src/main/resources/'
-        }
-        diffLog {
-            driver liquibaseProps.getProperty('driver')
-            url project.hasProperty("dburl") ? "jdbc:postgresql://$dburl" : liquibaseProps.getProperty('url')
-            username project.hasProperty("flyway.user") ? "${rootProject.properties['flyway.user']}" : liquibaseProps.getProperty('username')
-            password project.hasProperty("flyway.password") ? "${rootProject.properties['flyway.password']}" : liquibaseProps.getProperty('password')
-            referenceUrl liquibaseProps.getProperty('referenceUrl')
-            defaultSchemaName ''
-            logLevel 'debug'
-            classpath 'src/main/resources/'
-        }
-    }
-
-    runList = project.ext.runList
-}
-
-liquibaseDiff.dependsOn compileJava
-liquibaseDiffChangeLog.dependsOn compileJava
 
 group 'uk.gov.hmcts.reform.em.npa'
 version '1.0.0'
@@ -112,7 +76,6 @@ def versions = [
         springSecurity     : '5.7.1',
         log4JVersion       : '2.17.2',
         jupiter            : '5.8.2',
-        liquibase          : '4.8.0'
 ]
 
 sourceSets {
@@ -201,14 +164,7 @@ dependencies {
     implementation group: 'org.springframework.security', name: 'spring-security-config', version: versions.springSecurity
 
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
-    implementation group: 'org.liquibase', name: 'liquibase-core', version: versions.liquibase
-    liquibaseRuntime group: 'org.liquibase', name: 'liquibase-core', version: versions.liquibase
-    liquibaseRuntime group: 'org.liquibase.ext', name: 'liquibase-hibernate5', version: versions.liquibase
-    liquibaseRuntime sourceSets.main.compileClasspath
-    liquibaseRuntime sourceSets.main.output
-    liquibaseRuntime group: 'org.liquibase', name: 'liquibase-groovy-dsl', version: '3.0.2'
-    liquibaseRuntime group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
-    liquibaseRuntime group: 'com.h2database', name: 'h2'
+    implementation group: 'org.flywaydb', name: 'flyway-core', version: '8.5.13'
     implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
     implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
@@ -328,6 +284,9 @@ def coverageExclusionList = [
     '**uk/gov/hmcts/reform/em/npa/Application*',
     '**uk/gov/hmcts/reform/em/npa/appinsights/*',
     '**uk/gov/hmcts/reform/em/npa/config/**/*',
+    '**uk/gov/hmcts/reform/em/npa/data/migration/PendingMigrationScriptException*',
+    '**uk/gov/hmcts/reform/em/npa/data/migration/FlywayNoOpStrategy*',
+    '**uk/gov/hmcts/reform/em/npa/config/FlywayConfiguration*',
     '**uk/gov/hmcts/reform/em/npa/domain/*',
     '**uk/gov/hmcts/reform/em/npa/service/dto/external/annotation/*',
     '**uk/gov/hmcts/reform/em/npa/ccd/domain/*',
@@ -416,8 +375,6 @@ task smoke(type: Test) {
 
     environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }
-
-task migratePostgresDatabase(dependsOn: 'liquibaseUpdate')
 
 
 task contract(type: Test) {
@@ -566,12 +523,26 @@ bootWithCCD {
         }
 
     }
-    environment 'ENABLE_LIQUIBASE', true
     environment 'RSE_LIB_ADDITIONAL_DATABASES', 'emnpa'
     environment 'DATA_STORE_S2S_AUTHORISED_SERVICES', 'ccd_gw,ccd_data,ccd_ps,aac_manage_case_assignment,ccd_case_document_am_api,am_role_assignment_service,hmc_cft_hearing_service,prl_citizen_frontend,xui_webapp'
     environment 'S2S_URL', 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
     environment 'CASE_DOCUMENT_AM_API_S2S_SECRET','${CASE_DOCUMENT_AM_API_S2S_SECRET}'
     authMode = uk.gov.hmcts.rse.AuthMode.AAT
+}
+
+flyway {
+    url = System.getenv('FLYWAY_URL')
+    user = System.getenv('FLYWAY_USER')
+    password = System.getenv('FLYWAY_PASSWORD')
+    baselineOnMigrate = true
+    baselineVersion = '1'
+}
+
+task migratePostgresDatabase(type: org.flywaydb.gradle.task.FlywayMigrateTask) {
+    baselineOnMigrate = true
+    if (project.hasProperty("dburl")) {
+        url = "jdbc:postgresql://${dburl}"
+    }
 }
 
 // exclude the logback binding is coming in via cftlib
