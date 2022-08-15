@@ -8,9 +8,11 @@ java:
         - name: microservicekey-em-npa-app
           alias: S2S_KEY
   environment:
-    SPRING_DATASOURCE_URL: jdbc:postgresql://{{ .Release.Name }}-{{ .Values.postgresql.nameOverride}}:5432/postgres?ssl=disable
-    SPRING_DATASOURCE_USERNAME: "{{ .Values.postgresql.postgresqlUsername}}"
-    SPRING_DATASOURCE_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
+    DATA_STORE_DB_HOST: "{{ .Release.Name }}-postgresql"
+    DATA_STORE_DB_NAME: "{{ .Values.postgresql.auth.database}}"
+    DATA_STORE_DB_USERNAME: "{{ .Values.postgresql.auth.username}}"
+    DATA_STORE_DB_PASSWORD: "{{ .Values.postgresql.auth.password}}"
+    DATA_STORE_DB_OPTIONS: "?stringtype=unspecified"
     RUN_DB_MIGRATION_ON_STARTUP: true
   postgresql:
     enabled: true
