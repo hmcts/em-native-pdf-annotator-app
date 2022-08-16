@@ -1,8 +1,4 @@
 java:
-  postgresql:
-    postgresqlUsername: emnpa
-    postgresqlPassword: emnpa
-    nameOverride: rpa-npa-db
   image: 'hmctspublic.azurecr.io/em/npa:latest'
   applicationPort: 8080
   ingressHost: em-npa-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
@@ -27,8 +23,11 @@ java:
     CDAM_URL: http://ccd-case-document-am-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     ENABLE_CDAM: false
 
+    SPRING_DATASOURCE_PORT: 5432
+    SPRING_DATASOURCE_NAME: npa
+    SPRING_DATASOURCE_OPTIONS: "?sslmode=require"
     SPRING_DATASOURCE_USERNAME: npa@em-npa-postgres-db-v11-{{ .Values.global.environment }}
-    SPRING_DATASOURCE_URL: jdbc:postgresql://em-npa-postgres-db-v11-{{ .Values.global.environment }}.postgres.database.azure.com:5432/npa?sslmode=require
+    SPRING_DATASOURCE_HOST: em-npa-postgres-db-v11-{{ .Values.global.environment }}.postgres.database.azure.com
 
     ENABLE_DB_MIGRATE: false
     JSON_CONSOLE_PRETTY_PRINT: false
