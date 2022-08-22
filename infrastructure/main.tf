@@ -19,6 +19,7 @@ module "db-v11" {
   subnet_id          = data.azurerm_subnet.postgres.id
   sku_name           = "GP_Gen5_2"
   sku_tier           = "GeneralPurpose"
+  storage_mb         = var.database_storage_mb
   common_tags        = var.common_tags
   subscription       = var.subscription
 }
