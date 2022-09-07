@@ -77,7 +77,8 @@ def versions = [
         springcloud        : '3.1.4',
         log4JVersion       : '2.17.2',
         jupiter            : '5.8.2',
-        poi                : '5.2.2'
+        poi                : '5.2.2',
+        zalando            : '0.27.0'
 ]
 
 sourceSets {
@@ -156,7 +157,8 @@ dependencies {
     implementation group:'com.fasterxml.jackson.core', name: 'jackson-core', version: versions.fasterXmlJackson
     implementation group:'com.fasterxml.jackson.module', name: 'jackson-module-afterburner', version: versions.fasterXmlJackson
 
-    implementation group:'org.zalando', name: 'problem-spring-web', version: '0.26.2'
+    implementation group: 'org.zalando', name: 'problem-spring-web', version: versions.zalando
+    implementation group: 'org.zalando', name: 'jackson-datatype-problem', version: versions.zalando
     implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.11'
 
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: versions.springSecurity
