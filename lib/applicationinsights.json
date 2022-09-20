@@ -1,0 +1,6 @@
+{
+  "connectionString": "${file:/mnt/secrets/em-npa/app-insights-connection-string}",
+  "role": {
+    "name": "em-npa"
+  }
+}

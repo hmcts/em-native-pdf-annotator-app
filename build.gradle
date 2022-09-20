@@ -15,10 +15,10 @@ plugins {
     id 'jacoco'
     id 'checkstyle'
     id 'au.com.dius.pact' version '4.2.14'
-    id 'io.franzbecker.gradle-lombok' version '5.0.0'
-    id "info.solidsoft.pitest" version '1.5.2'
+    id "info.solidsoft.pitest" version '1.9.0'
     id 'com.github.hmcts.rse-cft-lib' version '0.19.355'
     id 'org.flywaydb.flyway' version '9.3.0'
+    id "io.freefair.lombok" version "6.5.1"
 }
 
 apply plugin: 'java'
@@ -45,8 +45,13 @@ if (!project.hasProperty('runList')) {
 
 group 'uk.gov.hmcts.reform.em.npa'
 version '1.0.0'
-sourceCompatibility = 11
-targetCompatibility = 11
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
 mainClassName = 'uk.gov.hmcts.reform.em.npa.Application'
 
 configurations {
@@ -68,8 +73,6 @@ def versions = [
         serenityRestAssured: '2.6.0',
         pact_version       : '4.0.10',
         logging            : '5.1.7',
-        gradlePitest       : '1.3.0',
-        sonarPitest        : '0.5',
         fasterXmlJackson   : '2.13.2',
         hibernate          : '5.6.5.Final',
         mapstruct          : '1.4.2.Final',
@@ -141,7 +144,7 @@ dependencies {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-actuator'
     }
         
-    implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.24'
+    implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.22'
     implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.26'
     implementation group: 'org.apache.pdfbox', name: 'jbig2-imageio', version: '3.0.4'
     implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.10.0'
@@ -194,6 +197,7 @@ dependencies {
     annotationProcessor group: 'org.mapstruct',name: 'mapstruct-processor', version: versions.mapstruct
     annotationProcessor group:'org.hibernate', name: 'hibernate-jpamodelgen', version: versions.hibernate
     annotationProcessor group:'org.springframework.boot', name: 'spring-boot-configuration-processor', withoutStuff
+
 
     testImplementation group:'org.springframework.boot', name: 'spring-boot-starter-test', withoutStuff
     testImplementation group: 'com.h2database', name: 'h2', version: '2.1.214'
@@ -357,6 +361,10 @@ idea {
     }
 }
 
+// https://github.com/gradle/gradle/issues/16791
+tasks.withType(JavaExec).configureEach {
+    javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
+}
 
 test {
     useJUnitPlatform()
@@ -459,7 +467,6 @@ pitest {
     fileExtensionsToFilter.addAll('xml','json')
     outputFormats = ['XML', 'HTML','CSV']
     coverageThreshold = 0
-    maxMutationsPerClass = 15
     jvmArgs = ['-Xms1G','-Xmx3G']
     timestampedReports = false
     failWhenNoMutations = false

@@ -1,8 +1,8 @@
-ARG APP_INSIGHTS_AGENT_VERSION=2.5.1
+ARG APP_INSIGHTS_AGENT_VERSION=3.2.6
 
-FROM hmctspublic.azurecr.io/base/java:openjdk-11-distroless-1.4
+FROM hmctspublic.azurecr.io/base/java:17-distroless
 
-COPY build/libs/rpa-native-pdf-annotator-app.jar lib/applicationinsights-agent-2.5.1.jar lib/AI-Agent.xml /opt/app/
+COPY build/libs/rpa-native-pdf-annotator-app.jar /opt/app/
 
 EXPOSE 8080
 CMD ["rpa-native-pdf-annotator-app.jar"]
