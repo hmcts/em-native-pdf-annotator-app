@@ -109,6 +109,7 @@ configurations.all {
     exclude group: 'org.springframework.retry', module: 'spring-retry'
     exclude group: 'org.springframework.security', module: 'spring-security-rsa'
     exclude group: 'org.springframework.boot', module: 'spring-boot-starter-security'
+    exclude group: 'org.codehaus.jettison', module: 'jettison'
 }
 
 dependencies {
@@ -279,11 +280,6 @@ dependencyManagement {
         //CVE-2022-25857
         dependencySet(group: 'org.yaml', version: '1.32') {
             entry 'snakeyaml'
-        }
-
-        //avoid CVE-2022-40149, CVE-2022-40150
-        dependencySet(group: 'org.codehaus.jettison', version: '1.5.0') {
-            entry 'jettison'
         }
     }
 }
