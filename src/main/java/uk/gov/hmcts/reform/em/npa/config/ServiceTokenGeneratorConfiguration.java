@@ -23,8 +23,4 @@ public class ServiceTokenGeneratorConfiguration {
         return AuthTokenGeneratorFactory.createDefaultGenerator(secret, microService, serviceAuthorisationApi);
     }
 
-    @Bean
-    public AuthTokenValidator authTokenValidator(final ServiceAuthorisationApi serviceAuthorisationApi) {
-        return new ServiceAuthTokenValidator(serviceAuthorisationApi);
-    }
 }
