@@ -238,7 +238,7 @@ dependencies {
     contractTestImplementation group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.13'
     contractTestImplementation group: 'org.apache.httpcomponents', name: 'fluent-hc', version: '4.5.13'
 
-    aatImplementation group: 'com.github.hmcts', name: 'em-test-helper', version: '1.21.4'
+    aatImplementation group: 'com.github.hmcts', name: 'em-test-helper', version: '1.21.5'
     aatImplementation group: 'org.apache.poi', name: 'poi', version: versions.poi
     aatImplementation group: 'org.apache.poi', name: 'poi-ooxml', version: versions.poi
     cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
