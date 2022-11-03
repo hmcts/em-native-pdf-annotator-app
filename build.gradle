@@ -76,7 +76,7 @@ def versions = [
         fasterXmlJackson   : '2.14.0-rc1',
         hibernate          : '5.6.5.Final',
         mapstruct          : '1.4.2.Final',
-        springSecurity     : '5.7.1',
+        springSecurity     : '5.7.5',
         springcloud        : '3.1.4',
         log4JVersion       : '2.17.2',
         jupiter            : '5.8.2',
@@ -94,6 +94,7 @@ sourceSets {
     contractTest {
         java {
             compileClasspath += main.output
+            runtimeClasspath += main.output
             runtimeClasspath += main.output
         }
     }
@@ -247,11 +248,6 @@ dependencies {
 
 dependencyManagement {
     dependencies {
-        
-        //CVE-2021-29425
-        dependencySet(group: 'commons-io', version: '2.11.0') {
-            entry 'commons-io'
-        }
 
         // Do not change - START
         // Changing below will break Serenity Report generation
@@ -279,6 +275,13 @@ dependencyManagement {
         //CVE-2022-25857
         dependencySet(group: 'org.yaml', version: '1.33') {
             entry 'snakeyaml'
+        }
+
+        // CVE-2022-31692 - CVE-2022-31690
+        dependencySet(group: 'org.springframework.security', version: '5.7.5') {
+            entry 'spring-security-crypto'
+            entry 'spring-security-core'
+            entry 'spring-security-web'
         }
     }
 }
