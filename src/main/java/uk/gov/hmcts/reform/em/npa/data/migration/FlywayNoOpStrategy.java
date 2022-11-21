@@ -1,14 +1,15 @@
 package uk.gov.hmcts.reform.em.npa.data.migration;
 
-import lombok.extern.slf4j.Slf4j;
 import org.flywaydb.core.Flyway;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
 
 import java.util.stream.Stream;
 
-@Slf4j
-public class FlywayNoOpStrategy implements FlywayMigrationStrategy {
 
+public class FlywayNoOpStrategy implements FlywayMigrationStrategy {
+    private final Logger log = LoggerFactory.getLogger(FlywayNoOpStrategy.class);
     @Override
     public void migrate(Flyway flyway) {
         log.info("flyway migration invoked {}",
