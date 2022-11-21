@@ -11,6 +11,8 @@ public class FlywayNoOpStrategy implements FlywayMigrationStrategy {
 
     @Override
     public void migrate(Flyway flyway) {
+        log.info("flyway migration invoked {}",
+                flyway);
         Stream.of(flyway.info().all())
                 .peek(info ->
                         log.info("flyway migration info {} and state {}",
