@@ -7,19 +7,18 @@ import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
 
 import java.util.stream.Stream;
 
+import static org.flywaydb.core.api.MigrationState.BASELINE;
+import static org.flywaydb.core.api.MigrationState.BASELINE_IGNORED;
+
 
 public class FlywayNoOpStrategy implements FlywayMigrationStrategy {
-    private final Logger log = LoggerFactory.getLogger(FlywayNoOpStrategy.class);
+
     @Override
     public void migrate(Flyway flyway) {
-        log.info("flyway migration invoked {}",
-                flyway);
         Stream.of(flyway.info().all())
-                .peek(info ->
-                        log.info("flyway migration info {} and state {}",
-                                info,
-                                info.getState()))
-                .filter(info -> !info.getState().isApplied())
+                .filter(info -> !BASELINE.equals(info.getState())
+                        && !BASELINE_IGNORED.equals(info.getState())
+                        && !info.getState().isApplied())
                 .findFirst()
                 .ifPresent(info -> {
                     throw new PendingMigrationScriptException(info.getScript());
