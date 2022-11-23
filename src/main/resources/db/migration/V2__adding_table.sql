@@ -1,5 +1,5 @@
 
-CREATE TABLE public.batch_job_execution (
+CREATE TABLE public.test_execution (
     job_execution_id bigint NOT NULL,
     version bigint,
     job_instance_id bigint NOT NULL,
