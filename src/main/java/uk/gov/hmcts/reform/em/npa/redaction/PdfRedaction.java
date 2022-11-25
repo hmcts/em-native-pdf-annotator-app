@@ -121,7 +121,7 @@ public class PdfRedaction {
     private PDPage transformToPdf(File pageImage, PDDocument newDocument, PDPage originalPage) throws IOException {
         PDPage newPage = new PDPage(originalPage.getMediaBox());
         try (PDPageContentStream contentStream = new PDPageContentStream(newDocument, newPage,
-            PDPageContentStream.AppendMode.APPEND, false)) {
+            PDPageContentStream.AppendMode.APPEND, true)) {
             PDRectangle mediaBox = newPage.getMediaBox();
             newDocument.addPage(newPage);
 
