@@ -9,6 +9,7 @@ import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
@@ -104,7 +105,7 @@ public class PdfRedaction {
      * @throws IOException
      */
     private File transformToImage(PDFRenderer pdfRenderer, int pageNumber) throws IOException {
-        BufferedImage img = pdfRenderer.renderImage(pageNumber);
+        BufferedImage img = pdfRenderer.renderImageWithDPI(pageNumber, 300, ImageType.ARGB);
         final File alteredImage = File.createTempFile("altered", ".png");
         ImageIO.write(img, "png", alteredImage);
         return alteredImage;
@@ -120,7 +121,7 @@ public class PdfRedaction {
     private PDPage transformToPdf(File pageImage, PDDocument newDocument, PDPage originalPage) throws IOException {
         PDPage newPage = new PDPage(PDRectangle.A4);
         try (PDPageContentStream contentStream = new PDPageContentStream(newDocument, newPage,
-            PDPageContentStream.AppendMode.APPEND, true)) {
+            PDPageContentStream.AppendMode.APPEND, false)) {
             PDRectangle mediaBox = newPage.getMediaBox();
             newDocument.addPage(newPage);
 
