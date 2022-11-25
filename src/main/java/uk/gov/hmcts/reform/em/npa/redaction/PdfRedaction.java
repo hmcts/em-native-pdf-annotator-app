@@ -73,7 +73,7 @@ public class PdfRedaction {
         rectangles.stream().forEach(rectangle -> {
             try {
                 contentStream.addRect(
-                    pixelToPointConversion(pageSize.getLowerLeftX() + rectangle.getX()),
+                    pixelToPointConversion(pageSize.getLowerLeftX() + pixelToPointConversion(rectangle.getX())),
                     (pageSize.getHeight() - pixelToPointConversion(rectangle.getY())) -
                         pixelToPointConversion(rectangle.getHeight()),
                     pixelToPointConversion(rectangle.getWidth()),
