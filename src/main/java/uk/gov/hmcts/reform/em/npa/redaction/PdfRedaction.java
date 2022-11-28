@@ -107,7 +107,7 @@ public class PdfRedaction {
      * @throws IOException
      */
     private File transformToImage(PDFRenderer pdfRenderer, int pageNumber) throws IOException {
-        BufferedImage img = pdfRenderer.renderImageWithDPI(pageNumber, 200, ImageType.GRAY);
+        BufferedImage img = pdfRenderer.renderImageWithDPI(pageNumber, 300, ImageType.ARGB);
         final File alteredImage = File.createTempFile("altered", ".png");
         ImageIO.write(img, "png", alteredImage);
         return alteredImage;
