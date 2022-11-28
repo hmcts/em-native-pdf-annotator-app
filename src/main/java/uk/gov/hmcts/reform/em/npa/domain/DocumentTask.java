@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.em.npa.domain;
 
 import uk.gov.hmcts.reform.em.npa.domain.enumeration.TaskState;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 

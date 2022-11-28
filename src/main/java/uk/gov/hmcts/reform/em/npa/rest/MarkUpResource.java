@@ -33,7 +33,7 @@ import uk.gov.hmcts.reform.em.npa.rest.util.PaginationUtil;
 import uk.gov.hmcts.reform.em.npa.service.MarkUpService;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -54,7 +54,7 @@ public class MarkUpResource {
 
     private MarkUpService markUpService;
 
-    public MarkUpResource(MarkUpService markUpService){
+    public MarkUpResource(MarkUpService markUpService) {
         this.markUpService = markUpService;
     }
 

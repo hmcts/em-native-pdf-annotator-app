@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.em.npa.data.migration;
 
 import org.flywaydb.core.Flyway;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
 
 import java.util.stream.Stream;

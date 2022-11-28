@@ -40,7 +40,7 @@ public class RedactionServiceImpl implements RedactionService {
     @Value("${toggles.cdam_enabled}")
     boolean cdamEnabled;
 
-    public RedactionServiceImpl (DmStoreDownloader dmStoreDownloader, PdfRedaction pdfRedaction, ImageRedaction imageRedaction,
+    public RedactionServiceImpl(DmStoreDownloader dmStoreDownloader, PdfRedaction pdfRedaction, ImageRedaction imageRedaction,
                                  MarkUpRepository markUpRepository, SecurityUtils securityUtils, CdamService cdamService) {
         this.dmStoreDownloader = dmStoreDownloader;
         this.pdfRedaction = pdfRedaction;

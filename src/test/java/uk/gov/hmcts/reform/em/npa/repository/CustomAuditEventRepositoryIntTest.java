@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.em.npa.config.Constants;
 import uk.gov.hmcts.reform.em.npa.config.audit.AuditEventConverter;
 import uk.gov.hmcts.reform.em.npa.domain.PersistentAuditEvent;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;

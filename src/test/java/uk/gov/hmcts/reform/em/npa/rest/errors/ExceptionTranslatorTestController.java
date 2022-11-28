@@ -6,8 +6,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -93,6 +93,9 @@ public class ExceptionTranslatorTestController {
     @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "test response status")
     @SuppressWarnings("serial")
     public static class TestResponseStatusException extends RuntimeException {
+        public TestResponseStatusException () {
+            super("test response status");
+        }
     }
 
 }

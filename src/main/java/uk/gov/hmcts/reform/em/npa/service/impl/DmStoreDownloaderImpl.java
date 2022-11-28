@@ -99,7 +99,7 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
     private File copyResponseToFile(Response response, String fileType) throws DocumentTaskProcessingException {
         try {
 
-            File tempFile = File.createTempFile("dm-store", "."+fileType);
+            File tempFile = File.createTempFile("dm-store", "." + fileType);
             Files.copy(response.body().byteStream(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
             return tempFile;

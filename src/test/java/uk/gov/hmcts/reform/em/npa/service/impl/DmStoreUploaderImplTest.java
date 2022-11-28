@@ -36,7 +36,7 @@ public class DmStoreUploaderImplTest {
     @Autowired
     private SecurityUtils securityUtils;
 
-    private static Response interceptSuccess (Interceptor.Chain chain) throws IOException {
+    private static Response interceptSuccess(Interceptor.Chain chain) throws IOException {
 
         if (chain.request().url().toString().endsWith("/binary")) {
             InputStream file = ClassLoader.getSystemResourceAsStream(PDF_FILENAME);
@@ -116,7 +116,7 @@ public class DmStoreUploaderImplTest {
 
     }
 
-    private static Response interceptFailure (Interceptor.Chain chain) throws IOException {
+    private static Response interceptFailure(Interceptor.Chain chain) throws IOException {
 
         InputStream file = ClassLoader.getSystemResourceAsStream(PDF_FILENAME);
 

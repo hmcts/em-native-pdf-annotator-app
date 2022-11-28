@@ -36,7 +36,7 @@ public class MarkUpServiceImpl implements MarkUpService {
 
     public MarkUpServiceImpl(MarkUpRepository markUpRepository,
                              MarkUpMapper markUpMapper,
-                             SecurityUtils securityUtils){
+                             SecurityUtils securityUtils) {
         this.markUpRepository = markUpRepository;
         this.markUpMapper = markUpMapper;
         this.securityUtils = securityUtils;
@@ -52,7 +52,7 @@ public class MarkUpServiceImpl implements MarkUpService {
         redaction.setCreatedBy(createdBy);
         redaction.getRectangles().stream().forEach(rectangle -> rectangle.setCreatedBy(createdBy));
 
-        if(CollectionUtils.isNotEmpty(redaction.getRectangles())) {
+        if (CollectionUtils.isNotEmpty(redaction.getRectangles())) {
             redaction.getRectangles()
                 .stream()
                 .forEach(rectangle -> rectangle.setRedaction(redaction));

@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.em.npa.domain;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.HashMap;
@@ -36,7 +36,7 @@ public class PersistentAuditEvent implements Serializable {
     @ElementCollection
     @MapKeyColumn(name = "name")
     @Column(name = "audit_data")
-    @CollectionTable(name = "jhi_persistent_audit_evt_data", joinColumns=@JoinColumn(name="event_id"))
+    @CollectionTable(name = "jhi_persistent_audit_evt_data", joinColumns = @JoinColumn(name = "event_id"))
     private Map<String, String> data = new HashMap<>();
 
     public Long getId() {
