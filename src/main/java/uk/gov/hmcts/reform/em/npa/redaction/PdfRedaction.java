@@ -65,7 +65,9 @@ public class PdfRedaction {
     private void redactPageContent(PDDocument document, int pageNumber, Set<RectangleDTO> rectangles) throws IOException {
         PDPage page = document.getPage(pageNumber);
         PDRectangle pageSize = page.getMediaBox();
-
+        pageSize.setLowerLeftX(page.getCropBox().getLowerLeftX() / 0.75f);
+        pageSize.setLowerLeftY(page.getCropBox().getLowerLeftY() / 0.75f);
+        pageSize.setUpperRightX(page.getCropBox().getUpperRightX() / 0.75f);
         PDPageContentStream contentStream = new PDPageContentStream(document, page,
             PDPageContentStream.AppendMode.APPEND, true, true);
         contentStream.setNonStrokingColor(Color.BLACK);
