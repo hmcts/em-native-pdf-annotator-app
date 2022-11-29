@@ -121,15 +121,18 @@ public class PdfRedaction {
      * @throws IOException
      */
     private PDPage transformToPdf(File pageImage, PDDocument newDocument, PDPage originalPage) throws IOException {
-        PDPage newPage = new PDPage(PDRectangle.A4);
+        PDPage newPage = new PDPage(originalPage.getMediaBox());
+        newPage.setCropBox(originalPage.getCropBox());
+
         try (PDPageContentStream contentStream = new PDPageContentStream(newDocument, newPage,
             PDPageContentStream.AppendMode.APPEND, false)) {
-            PDRectangle mediaBox = newPage.getMediaBox();
+            PDRectangle cropBox = newPage.getCropBox();
             newDocument.addPage(newPage);
 
             BufferedImage awtImage = ImageIO.read(pageImage);
             PDImageXObject pdImageXObject = LosslessFactory.createFromImage(newDocument, awtImage);
-            contentStream.drawImage(pdImageXObject, 0, 0, mediaBox.getWidth(), mediaBox.getHeight());
+            contentStream.drawImage(pdImageXObject, cropBox.getLowerLeftX(), cropBox.getLowerLeftY(),
+                    cropBox.getWidth(), cropBox.getHeight());
 
             return newPage;
         } catch (IOException e) {
