@@ -68,6 +68,8 @@ public class PdfRedaction {
         pageSize.setLowerLeftX(page.getCropBox().getLowerLeftX() / 0.75f);
         pageSize.setLowerLeftY(page.getCropBox().getLowerLeftY() / 0.75f);
         pageSize.setUpperRightX(page.getCropBox().getUpperRightX() / 0.75f);
+        pageSize.setUpperRightY(page.getCropBox().getUpperRightY());
+
         PDPageContentStream contentStream = new PDPageContentStream(document, page,
             PDPageContentStream.AppendMode.APPEND, true, true);
         contentStream.setNonStrokingColor(Color.BLACK);
