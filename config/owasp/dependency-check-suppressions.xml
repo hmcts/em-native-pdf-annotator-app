@@ -6,4 +6,10 @@
         </notes>
         <cve>CVE-2016-1000027</cve>
     </suppress>
+    <suppress>
+        <notes>
+            Will resolve this later.
+        </notes>
+        <cve>CVE-2021-37533</cve>
+    </suppress>
 </suppressions>
