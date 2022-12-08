@@ -65,6 +65,10 @@ public class PdfRedaction {
     private void redactPageContent(PDDocument document, int pageNumber, Set<RectangleDTO> rectangles) throws IOException {
         PDPage page = document.getPage(pageNumber);
         PDRectangle pageSize = page.getMediaBox();
+        pageSize.setLowerLeftX(page.getCropBox().getLowerLeftX() / 0.75f);
+        pageSize.setLowerLeftY(page.getCropBox().getLowerLeftY() / 0.75f);
+        pageSize.setUpperRightX(page.getCropBox().getUpperRightX() / 0.75f);
+        pageSize.setUpperRightY(page.getCropBox().getUpperRightY());
 
         PDPageContentStream contentStream = new PDPageContentStream(document, page,
             PDPageContentStream.AppendMode.APPEND, true, true);
@@ -120,14 +124,17 @@ public class PdfRedaction {
      */
     private PDPage transformToPdf(File pageImage, PDDocument newDocument, PDPage originalPage) throws IOException {
         PDPage newPage = new PDPage(originalPage.getMediaBox());
+        newPage.setCropBox(originalPage.getCropBox());
+
         try (PDPageContentStream contentStream = new PDPageContentStream(newDocument, newPage,
             PDPageContentStream.AppendMode.APPEND, false)) {
-            PDRectangle mediaBox = newPage.getMediaBox();
+            PDRectangle cropBox = newPage.getCropBox();
             newDocument.addPage(newPage);
 
             BufferedImage awtImage = ImageIO.read(pageImage);
             PDImageXObject pdImageXObject = LosslessFactory.createFromImage(newDocument, awtImage);
-            contentStream.drawImage(pdImageXObject, 0, 0, mediaBox.getWidth(), mediaBox.getHeight());
+            contentStream.drawImage(pdImageXObject, cropBox.getLowerLeftX(), cropBox.getLowerLeftY(),
+                    cropBox.getWidth(), cropBox.getHeight());
 
             return newPage;
         } catch (IOException e) {
