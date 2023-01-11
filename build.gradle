@@ -283,6 +283,12 @@ dependencyManagement {
         dependencySet(group: 'org.codehaus.jettison', version: '1.5.0') {
             entry 'jettison'
         }
+
+        //CVE-2022-45143
+        dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.69') {
+            entry 'tomcat-embed-core'
+            entry 'tomcat-embed-websocket'
+        }
     }
 }
 
