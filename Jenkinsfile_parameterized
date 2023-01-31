@@ -51,11 +51,11 @@ withParameterizedPipeline(type, product, component, params.ENVIRONMENT, 'sandbox
     overrideVaultEnvironments(vaultOverrides)
     loadVaultSecrets(secrets)
 
-    afterAlways('functionalTest:preview') {
+    after('functionalTest:preview') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
     }
 
-    afterAlways('functionalTest:aat') {
+    after('functionalTest:aat') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
     }
 
