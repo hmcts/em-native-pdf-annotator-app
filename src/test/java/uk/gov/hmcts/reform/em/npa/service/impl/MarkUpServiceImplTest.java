@@ -121,7 +121,14 @@ public class MarkUpServiceImplTest {
         RedactionDTO redactionDTO1 = createRedactionDTO();
         RedactionDTO redactionDTO2 = createRedactionDTO();
 
-        RedactionSetDTO redactionSetDTO = new RedactionSetDTO(Set.of(redactionDTO,redactionDTO1,redactionDTO2));
+        Redaction redaction = createRedaction();
+        Redaction redaction1 = createRedaction();
+        Redaction redaction2 = createRedaction();
+
+        Set<RedactionDTO> redactionDTOS = Set.of(redactionDTO, redactionDTO1, redactionDTO2);
+        RedactionSetDTO redactionSetDTO = new RedactionSetDTO(redactionDTOS);
+        Set<Redaction> redactionSet = Set.of(redaction, redaction1, redaction2);
+        Mockito.when(markUpMapper.toEntity(redactionSetDTO.getSearchRedactions())).thenReturn(redactionSet);
 
         RedactionSetDTO updatedDto = markUpService.saveAll(redactionSetDTO);
     }
