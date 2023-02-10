@@ -109,7 +109,7 @@ public class MarkUpResource {
      * @param redactionSetDTO the RedactionSetDTO to create
      * @return the ResponseEntity with status "200" (Success) and with body the new RedactionSetDTO
      */
-    @Operation(summary = "Create an RedactionDTO", description = "A POST request to create an RedactionDTO",
+    @Operation(summary = "Create an RedactionSetDTO", description = "A POST request to create an RedactionSetDTO",
             parameters = {
                     @Parameter(in = ParameterIn.HEADER, name = "authorization",
                             description = "Authorization (Idam Bearer token)", required = true,
