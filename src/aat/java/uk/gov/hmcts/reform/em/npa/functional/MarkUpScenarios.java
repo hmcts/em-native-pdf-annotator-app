@@ -120,6 +120,60 @@ public class MarkUpScenarios {
     }
 
     @Test
+    public void shouldReturn200WhenCreateSearchMarkUps() {
+        final String documentId = UUID.randomUUID().toString();
+        final ValidatableResponse response = createSearchMarkUps(documentId);
+
+        response
+                .assertThat()
+                .statusCode(200)
+                .body("searchRedactions", Matchers.hasSize(3))
+                .body("searchRedactions[0].documentId", equalTo(documentId))
+                .body("searchRedactions[0].page", equalTo(1))
+                .body("searchRedactions[0].rectangles", Matchers.hasSize(1))
+                .body("searchRedactions[1].rectangles[0].x", equalTo(1f))
+                .body("searchRedactions[1].rectangles[0].y", equalTo(2f))
+                .body("searchRedactions[2].rectangles[0].width", equalTo(10f))
+                .body("searchRedactions[2].rectangles[0].height", equalTo(11f))
+                .log().all();
+    }
+
+    @Test
+    public void shouldReturn422WhenCreateSearchMarkUpsWithoutMandatoryFields() {
+        final String documentId = UUID.randomUUID().toString();
+        final JSONObject jsonObject = testUtil.createSearchMarkUpsPayload(documentId);
+
+        jsonObject.remove("searchRedactions");
+
+        request
+                .body(jsonObject.toString())
+                .post("/api/markups/search")
+                .then()
+                .assertThat()
+                .statusCode(422)
+                .body("type", equalTo("https://npa/problem/problem-with-message"))
+                .body("title", equalTo("Unprocessable Entity"))
+                .body("detail", notNullValue())
+                .body("path", equalTo("/api/markups/search"))
+                .body("message", equalTo("error.http.422"))
+                .log().all();
+    }
+
+    @Test
+    public void shouldReturn401WhenUnAuthenticatedUserCreateSearchMarkUps() {
+        final String documentId = UUID.randomUUID().toString();
+        final JSONObject jsonObject = testUtil.createSearchMarkUpsPayload(documentId);
+
+        unAuthenticatedRequest
+                .body(jsonObject.toString())
+                .post("/api/markups/search")
+                .then()
+                .assertThat()
+                .statusCode(401);
+    }
+
+
+    @Test
     public void shouldReturn200WhenGetMarkUpByDocumentId() {
         final String redactionId = UUID.randomUUID().toString();
         final String documentId = UUID.randomUUID().toString();
@@ -350,6 +404,18 @@ public class MarkUpScenarios {
                 .then()
                 .assertThat()
                 .statusCode(201);
+    }
+
+    @NotNull
+    private ValidatableResponse createSearchMarkUps(final String documentId) {
+        final JSONObject jsonObject = testUtil.createSearchMarkUpsPayload(documentId);
+
+        return request
+                .body(jsonObject.toString())
+                .post("/api/markups/search")
+                .then()
+                .assertThat()
+                .statusCode(200);
     }
 
     @NotNull

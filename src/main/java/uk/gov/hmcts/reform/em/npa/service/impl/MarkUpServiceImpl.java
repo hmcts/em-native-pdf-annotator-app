@@ -13,9 +13,12 @@ import uk.gov.hmcts.reform.em.npa.domain.Redaction;
 import uk.gov.hmcts.reform.em.npa.repository.MarkUpRepository;
 import uk.gov.hmcts.reform.em.npa.service.MarkUpService;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionSetDTO;
 import uk.gov.hmcts.reform.em.npa.service.mapper.MarkUpMapper;
 
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Service Implementation for managing MarkUps.
@@ -88,5 +91,44 @@ public class MarkUpServiceImpl implements MarkUpService {
 
         log.debug("Request to delete Redaction : {}", redactionId);
         markUpRepository.deleteByRedactionId(redactionId);
+    }
+
+    @Override
+    public RedactionSetDTO saveAll(RedactionSetDTO redactionSetDTO) {
+        log.debug("Request to save Redaction Set : {}", redactionSetDTO);
+
+        Set<Redaction> redactionSet = redactionSetDTO.getSearchRedactions()
+                .stream()
+                .map(redactionDTO -> markUpMapper.toEntity(redactionDTO))
+                .collect(Collectors.toSet());
+
+        redactionSet
+                .forEach(this::setCreatedData);
+
+        Set<Redaction> savedRedactions = Set.copyOf(markUpRepository.saveAll(redactionSet));
+
+        Set<RedactionDTO> redactionDTOS = savedRedactions
+                .stream()
+                .map(redaction -> markUpMapper.toDto(redaction))
+                .collect(Collectors.toSet());
+
+        return new RedactionSetDTO(redactionDTOS);
+    }
+
+    private void setCreatedData(Redaction redaction) {
+        String createdBy = securityUtils.getCurrentUserLogin()
+                .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND));
+        redaction.setCreatedBy(createdBy);
+        setRectangleData(redaction, createdBy);
+    }
+
+    private void setRectangleData(Redaction redaction, String createdBy) {
+        if(CollectionUtils.isNotEmpty(redaction.getRectangles())) {
+            redaction.getRectangles()
+                    .forEach(rectangle -> {
+                        rectangle.setCreatedBy(createdBy);
+                        rectangle.setRedaction(redaction);
+                    });
+        }
     }
 }

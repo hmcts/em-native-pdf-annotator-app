@@ -32,6 +32,7 @@ import uk.gov.hmcts.reform.em.npa.rest.util.HeaderUtil;
 import uk.gov.hmcts.reform.em.npa.rest.util.PaginationUtil;
 import uk.gov.hmcts.reform.em.npa.service.MarkUpService;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionSetDTO;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -99,6 +100,43 @@ public class MarkUpResource {
         RedactionDTO response = markUpService.save(redactionDTO);
         return ResponseEntity.created(new URI("/api/markups/" + response.getRedactionId()))
                 .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, response.getRedactionId().toString()))
+                .body(response);
+    }
+
+    /**
+     * POST  /markups : Create new markups.
+     *
+     * @param redactionSetDTO the RedactionSetDTO to create
+     * @return the ResponseEntity with status "200" (Success) and with body the new RedactionSetDTO
+     * @throws URISyntaxException if the Location URI syntax is incorrect
+     */
+    @Operation(summary = "Create an RedactionDTO", description = "A POST request to create an RedactionDTO",
+            parameters = {
+                    @Parameter(in = ParameterIn.HEADER, name = "authorization",
+                            description = "Authorization (Idam Bearer token)", required = true,
+                            schema = @Schema(type = "string")),
+                    @Parameter(in = ParameterIn.HEADER, name = "serviceauthorization",
+                            description = "Service Authorization (S2S Bearer token)", required = true,
+                            schema = @Schema(type = "string"))})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "401", description = "Unauthorised"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+    })
+    @PostMapping("/markups/search")
+    public ResponseEntity<RedactionSetDTO> createSearchMarkUps(@Valid @RequestBody RedactionSetDTO redactionSetDTO,
+                                                            BindingResult result) throws URISyntaxException {
+
+        log.debug("REST request to save Redaction Set : {}", redactionSetDTO);
+
+        if (result.hasErrors()) {
+            throw new ValidationErrorException(result.getFieldErrors().stream()
+                    .map(fe -> String.format("%s - %s", fe.getField(), fe.getCode()))
+                    .collect(Collectors.joining(",")));
+        }
+
+        RedactionSetDTO response = markUpService.saveAll(redactionSetDTO);
+        return ResponseEntity.ok()
                 .body(response);
     }
 

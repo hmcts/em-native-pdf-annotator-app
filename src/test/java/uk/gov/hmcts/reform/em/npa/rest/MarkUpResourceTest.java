@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.em.npa.rest.errors.ValidationErrorException;
 import uk.gov.hmcts.reform.em.npa.service.MarkUpService;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionSetDTO;
 
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -80,6 +81,31 @@ public class MarkUpResourceTest {
         Assert.assertEquals(redactionDTO.getRectangles().size(), response.getRectangles().size());
 
         Mockito.verify(markUpService, Mockito.atLeast(1)).save(redactionDTO);
+    }
+
+    @Test(expected = ValidationErrorException.class)
+    public void createMarkUpsFailure() throws URISyntaxException {
+        RedactionSetDTO redactionSetDTO = createRedactionSetDTO();
+        String[] codes = {"1"};
+        FieldError fieldError = new FieldError("testField", "field", null, true, codes, null, null);
+        List<FieldError> errors = List.of(fieldError);
+        Mockito.when(result.hasErrors()).thenReturn(true);
+        Mockito.when(result.getFieldErrors()).thenReturn(errors);
+
+        ResponseEntity<RedactionSetDTO>  responseEntity = markUpResource.createSearchMarkUps(redactionSetDTO, result);
+    }
+
+    @Test
+    public void createMarkUpsSuccess() throws URISyntaxException {
+        RedactionSetDTO redactionSetDTO = createRedactionSetDTO();
+        Mockito.when(markUpService.saveAll(Mockito.any())).thenReturn(redactionSetDTO);
+
+        ResponseEntity<RedactionSetDTO>  responseEntity = markUpResource.createSearchMarkUps(redactionSetDTO, result);
+        RedactionSetDTO response = responseEntity.getBody();
+
+        Assert.assertNotNull(response);
+        Assert.assertTrue(redactionSetDTO.getSearchRedactions().contains(response.getSearchRedactions().iterator().next()));
+        Mockito.verify(markUpService, Mockito.atLeast(1)).saveAll(redactionSetDTO);
     }
 
     @Test(expected = ValidationErrorException.class)
@@ -170,6 +196,10 @@ public class MarkUpResourceTest {
         Assert.assertNull(webDataBinder.getDisallowedFields());
         markUpResource.initBinder(webDataBinder);
         Assert.assertTrue(Arrays.asList(webDataBinder.getDisallowedFields()).contains(Constants.IS_ADMIN));
+    }
+
+    private RedactionSetDTO createRedactionSetDTO() {
+        return new RedactionSetDTO(Set.of(createRedactionDTO(), createRedactionDTO(), createRedactionDTO()));
     }
 
     private RedactionDTO createRedactionDTO() {
