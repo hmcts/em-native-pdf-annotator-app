@@ -84,7 +84,7 @@ public class MarkUpResourceTest {
     }
 
     @Test(expected = ValidationErrorException.class)
-    public void createMarkUpsFailure() throws URISyntaxException {
+    public void createMarkUpsFailure() {
         RedactionSetDTO redactionSetDTO = createRedactionSetDTO();
         String[] codes = {"1"};
         FieldError fieldError = new FieldError("testField", "field", null, true, codes, null, null);
@@ -96,7 +96,7 @@ public class MarkUpResourceTest {
     }
 
     @Test
-    public void createMarkUpsSuccess() throws URISyntaxException {
+    public void createMarkUpsSuccess() {
         RedactionSetDTO redactionSetDTO = createRedactionSetDTO();
         Mockito.when(markUpService.saveAll(Mockito.any())).thenReturn(redactionSetDTO);
 

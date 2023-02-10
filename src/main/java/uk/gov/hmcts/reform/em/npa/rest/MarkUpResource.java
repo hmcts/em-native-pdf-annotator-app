@@ -108,7 +108,6 @@ public class MarkUpResource {
      *
      * @param redactionSetDTO the RedactionSetDTO to create
      * @return the ResponseEntity with status "200" (Success) and with body the new RedactionSetDTO
-     * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @Operation(summary = "Create an RedactionDTO", description = "A POST request to create an RedactionDTO",
             parameters = {
@@ -125,7 +124,7 @@ public class MarkUpResource {
     })
     @PostMapping("/markups/search")
     public ResponseEntity<RedactionSetDTO> createSearchMarkUps(@Valid @RequestBody RedactionSetDTO redactionSetDTO,
-                                                            BindingResult result) throws URISyntaxException {
+                                                            BindingResult result) {
 
         log.debug("REST request to save Redaction Set : {}", redactionSetDTO);
 
