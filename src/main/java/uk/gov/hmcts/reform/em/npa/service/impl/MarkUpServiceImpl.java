@@ -97,20 +97,12 @@ public class MarkUpServiceImpl implements MarkUpService {
     public RedactionSetDTO saveAll(RedactionSetDTO redactionSetDTO) {
         log.debug("Request to save Redaction Set : {}", redactionSetDTO);
 
-        Set<Redaction> redactionSet = redactionSetDTO.getSearchRedactions()
-                .stream()
-                .map(redactionDTO -> markUpMapper.toEntity(redactionDTO))
-                .collect(Collectors.toSet());
-
+        Set<Redaction> redactionSet = markUpMapper.toEntity(redactionSetDTO.getSearchRedactions());
         redactionSet
                 .forEach(this::setCreatedData);
 
         Set<Redaction> savedRedactions = Set.copyOf(markUpRepository.saveAll(redactionSet));
-
-        Set<RedactionDTO> redactionDTOS = savedRedactions
-                .stream()
-                .map(redaction -> markUpMapper.toDto(redaction))
-                .collect(Collectors.toSet());
+        Set<RedactionDTO> redactionDTOS = markUpMapper.toDto(savedRedactions);
 
         return new RedactionSetDTO(redactionDTOS);
     }
