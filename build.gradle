@@ -173,7 +173,7 @@ dependencies {
     implementation group: 'org.springframework.security', name: 'spring-security-config', version: versions.springSecurity
 
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.14'
-    implementation group: 'org.flywaydb', name: 'flyway-core', version: '9.14.1'
+    implementation group: 'org.flywaydb', name: 'flyway-core', version: '9.15.0'
     implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
     implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
@@ -239,7 +239,7 @@ dependencies {
     contractTestImplementation group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.14'
     contractTestImplementation group: 'org.apache.httpcomponents', name: 'fluent-hc', version: '4.5.14'
 
-    aatImplementation group: 'com.github.hmcts', name: 'em-test-helper', version: '1.21.6'
+    aatImplementation group: 'com.github.hmcts', name: 'em-test-helper', version: '1.21.8'
     aatImplementation group: 'org.apache.poi', name: 'poi', version: versions.poi
     aatImplementation group: 'org.apache.poi', name: 'poi-ooxml', version: versions.poi
     cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
