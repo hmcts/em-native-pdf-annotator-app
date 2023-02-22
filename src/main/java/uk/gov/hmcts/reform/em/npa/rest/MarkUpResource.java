@@ -205,7 +205,7 @@ public class MarkUpResource {
     @GetMapping("/markups/{documentId}")
     public ResponseEntity<List<RedactionDTO>> getAllDocumentMarkUps(@PathVariable UUID documentId, Pageable pageable) {
         log.debug("REST request to get a page of markups");
-        Page<RedactionDTO> page = markUpService.findAllByDocumentId(documentId, pageable);
+        Page<RedactionDTO> page = markUpService.findAllByDocumentId(documentId, Pageable.unpaged());
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/markups");
         if (page.hasContent()) {
             return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);

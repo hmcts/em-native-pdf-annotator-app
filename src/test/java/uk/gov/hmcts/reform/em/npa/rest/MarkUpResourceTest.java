@@ -146,10 +146,10 @@ public class MarkUpResourceTest {
         List<RedactionDTO> redactions = Arrays.asList(createRedactionDTO());
         Page<RedactionDTO> redactionDTOS = new PageImpl<>(redactions);
 
-        Mockito.when(markUpService.findAllByDocumentId(id, pageable)).thenReturn(redactionDTOS);
+        Mockito.when(markUpService.findAllByDocumentId(id, Pageable.unpaged())).thenReturn(redactionDTOS);
         ResponseEntity<List<RedactionDTO>> response = markUpResource.getAllDocumentMarkUps(id, pageable);
 
-        Mockito.verify(markUpService, Mockito.atLeast(1)).findAllByDocumentId(id, pageable);
+        Mockito.verify(markUpService, Mockito.atLeast(1)).findAllByDocumentId(id, Pageable.unpaged());
     }
 
     @Test(expected = ResponseStatusException.class)
@@ -159,7 +159,7 @@ public class MarkUpResourceTest {
 
         Page<RedactionDTO> redactionDTOS = new PageImpl<>(Collections.emptyList());
 
-        Mockito.when(markUpService.findAllByDocumentId(id, pageable)).thenReturn(redactionDTOS);
+        Mockito.when(markUpService.findAllByDocumentId(id, Pageable.unpaged())).thenReturn(redactionDTOS);
         markUpResource.getAllDocumentMarkUps(id, pageable);
     }
 

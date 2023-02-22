@@ -20,6 +20,8 @@ import uk.gov.hmcts.reform.em.EmTestConfig;
 import uk.gov.hmcts.reform.em.npa.testutil.TestUtil;
 import uk.gov.hmcts.reform.em.test.retry.RetryRule;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -390,6 +392,34 @@ public class MarkUpScenarios {
                 .then()
                 .assertThat()
                 .statusCode(401)
+                .log().all();
+    }
+
+    @Test
+    public void shouldReturn200WhenGetAllMarkupsMoreThan20ByDocumentId() {
+        List<String> redactions = new ArrayList<>();
+        final UUID documentId = UUID.randomUUID();
+
+        for (int i = 0; i < 30; i++) {
+            final UUID redactionId = UUID.randomUUID();
+            final UUID rectangleId = UUID.randomUUID();
+            final JSONObject jsonObject = testUtil.createMarkUpPayload(
+                    redactionId.toString(),documentId.toString(),rectangleId.toString());
+
+            final ValidatableResponse response =
+                    request.log().all()
+                            .body(jsonObject.toString())
+                            .post("/api/markups")
+                            .then()
+                            .statusCode(201);
+            redactions.add(redactionId.toString());
+        }
+
+        request
+                .get(String.format("/api/markups/%s", documentId))
+                .then()
+                .statusCode(200)
+                .body("redactionId", equalTo(redactions))
                 .log().all();
     }
 
