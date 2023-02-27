@@ -235,7 +235,7 @@ dependencies {
     contractTestImplementation sourceSets.main.runtimeClasspath
     contractTestImplementation sourceSets.test.runtimeClasspath
 
-    contractTestImplementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
+    contractTestImplementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.14'
     contractTestImplementation group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.14'
     contractTestImplementation group: 'org.apache.httpcomponents', name: 'fluent-hc', version: '4.5.14'
 
