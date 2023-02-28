@@ -15,7 +15,7 @@ plugins {
     id 'jacoco'
     id 'checkstyle'
     id 'au.com.dius.pact' version '4.2.14'
-    id 'org.owasp.dependencycheck' version '8.1.0'
+    id 'org.owasp.dependencycheck' version '8.1.1'
     id 'info.solidsoft.pitest' version '1.9.0'
     id 'com.github.hmcts.rse-cft-lib' version '0.19.590'
     id 'org.flywaydb.flyway' version '9.15.1'
@@ -235,7 +235,7 @@ dependencies {
     contractTestImplementation sourceSets.main.runtimeClasspath
     contractTestImplementation sourceSets.test.runtimeClasspath
 
-    contractTestImplementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
+    contractTestImplementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.14'
     contractTestImplementation group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.14'
     contractTestImplementation group: 'org.apache.httpcomponents', name: 'fluent-hc', version: '4.5.14'
 
