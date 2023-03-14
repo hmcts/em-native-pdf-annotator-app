@@ -79,7 +79,7 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
             // Rethrow Exception
             throw ex;
         }
-        if (ex instanceof ErrorResponse){
+        if (ex instanceof ErrorResponse) {
             return handleExceptionInternal(ex, null, new HttpHeaders(),
                     HttpStatus.INTERNAL_SERVER_ERROR, request);
         }
