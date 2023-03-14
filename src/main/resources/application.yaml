@@ -19,9 +19,9 @@ spring:
         temp:
           use_jdbc_metadata_defaults: false
   datasource:
-    url: jdbc:postgresql://${SPRING_DATASOURCE_HOST:localhost}:${SPRING_DATASOURCE_PORT:6432}/${SPRING_DATASOURCE_NAME:emnpa}${SPRING_DATASOURCE_OPTIONS:?ssl=disable}
-    username: ${SPRING_DATASOURCE_USERNAME:postgres}
-    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
+    url: jdbc:postgresql://${SPRING_DATASOURCE_HOST}:${SPRING_DATASOURCE_PORT}/${SPRING_DATASOURCE_NAME}${SPRING_DATASOURCE_OPTIONS}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     tomcat:
       max-active: ${MAX_ACTIVE_DB_CONNECTIONS:50} # Maximum number of active connections that can be allocated from this pool at the same time.
       max-idle: ${MAX_IDLE_DB_CONNECTIONS:25}
