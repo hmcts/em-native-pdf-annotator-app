@@ -30,6 +30,9 @@ spring:
     type: com.zaxxer.hikari.HikariDataSource
     hikari:
       auto-commit: false
+  batch:
+    job:
+      enabled: false
   security:
     oauth2:
       client:
