@@ -69,9 +69,9 @@ repositories {
 def versions = [
         postgresql         : '42.5.1',
         h2                 : '1.4.199',
-        serenity           : '3.6.12',
-        serenityreporter   : '3.6.12',
-        serenityRestAssured: '3.6.12',
+        serenity           : '3.4.2',
+        serenityreporter   : '3.4.2',
+        serenityRestAssured: '3.4.2',
         pact_version       : '4.0.10',
         logging            : '6.0.1',
         fasterXmlJackson   : '2.14.0-rc1',
