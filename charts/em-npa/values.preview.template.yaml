@@ -3,11 +3,11 @@ java:
   disableKeyVaults: true
   devmemoryLimits: '2048Mi'
   ingressHost: ${SERVICE_FQDN}
-  keyVaults:
-    em-npa:
-      secrets:
-        - name: microservicekey-em-npa-app
-          alias: S2S_KEY
+#  keyVaults:
+#    em-npa:
+#      secrets:
+#        - name: microservicekey-em-npa-app
+#          alias: S2S_KEY
   readinessDelay: 45
   environment:
     SPRING_DATASOURCE_HOST: "{{ .Release.Name }}-postgresql"
