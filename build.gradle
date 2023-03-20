@@ -17,8 +17,8 @@ plugins {
     id 'au.com.dius.pact' version '4.2.14'
     id 'org.owasp.dependencycheck' version '8.1.2'
     id 'info.solidsoft.pitest' version '1.9.0'
-    id 'com.github.hmcts.rse-cft-lib' version '0.19.590'
-    id 'org.flywaydb.flyway' version '9.15.1'
+    id 'com.github.hmcts.rse-cft-lib' version '0.19.596'
+    id 'org.flywaydb.flyway' version '9.16.0'
     id 'io.freefair.lombok' version '6.6.3'
 }
 
@@ -164,7 +164,7 @@ dependencies {
 
     implementation group: 'org.zalando', name: 'problem-spring-web', version: versions.zalando
     implementation group: 'org.zalando', name: 'jackson-datatype-problem', version: versions.zalando
-    implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.14'
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.15'
 
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: versions.springSecurity
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-client', version: versions.springSecurity
@@ -173,7 +173,7 @@ dependencies {
     implementation group: 'org.springframework.security', name: 'spring-security-config', version: versions.springSecurity
 
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.14'
-    implementation group: 'org.flywaydb', name: 'flyway-core', version: '9.15.1'
+    implementation group: 'org.flywaydb', name: 'flyway-core', version: '9.16.0'
     implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
     implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
@@ -254,7 +254,7 @@ dependencyManagement {
             entry 'junit'
         }
 
-        dependencySet(group: 'net.bytebuddy', version: '1.14.0') {
+        dependencySet(group: 'net.bytebuddy', version: '1.14.2') {
             entry 'byte-buddy'
             entry 'byte-buddy-agent'
         }
