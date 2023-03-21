@@ -1,6 +1,5 @@
 java:
   image: ${IMAGE_NAME}
-  disableKeyVaults: true
   devmemoryLimits: '2048Mi'
   ingressHost: ${SERVICE_FQDN}
   keyVaults:
