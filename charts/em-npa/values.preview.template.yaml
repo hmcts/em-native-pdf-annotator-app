@@ -7,7 +7,6 @@ java:
       secrets:
         - name: microservicekey-em-npa-app
           alias: S2S_KEY
-  readinessDelay: 45
   environment:
     SPRING_DATASOURCE_HOST: "{{ .Release.Name }}-postgresql"
     SPRING_DATASOURCE_NAME: "{{ .Values.postgresql.auth.database}}"
