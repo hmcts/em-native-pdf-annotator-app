@@ -74,4 +74,6 @@ oidc:
 
 toggles:
   cdam_enabled: ${ENABLE_CDAM:false}
-  search_markups: ${ENABLE_SEARCH_MARKUPS_ENDPOINT:false}
+
+endpoint-toggles:
+  search-markups: ${ENABLE_SEARCH_MARKUPS_ENDPOINT:true}

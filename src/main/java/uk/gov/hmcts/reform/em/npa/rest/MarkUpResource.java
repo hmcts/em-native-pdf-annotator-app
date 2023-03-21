@@ -123,7 +123,7 @@ public class MarkUpResource {
             @ApiResponse(responseCode = "401", description = "Unauthorised"),
             @ApiResponse(responseCode = "403", description = "Forbidden"),
     })
-    @ConditionalOnProperty("toggles.search_markups")
+    @ConditionalOnProperty("endpoint-toggles.search-markups")
     @PostMapping("/markups/search")
     public ResponseEntity<RedactionSetDTO> createSearchMarkUps(@Valid @RequestBody RedactionSetDTO redactionSetDTO,
                                                             BindingResult result) {
