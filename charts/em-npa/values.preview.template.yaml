@@ -14,5 +14,6 @@ java:
     SPRING_DATASOURCE_PASSWORD: "{{ .Values.postgresql.auth.password}}"
     SPRING_DATASOURCE_OPTIONS: "?ssl=disable"
     RUN_DB_MIGRATION_ON_STARTUP: true
+    ENABLE_CDAM: true
   postgresql:
     enabled: true
