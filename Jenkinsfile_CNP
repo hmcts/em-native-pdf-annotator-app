@@ -70,6 +70,10 @@ withPipeline(type , product, component) {
         }
     }
 
+onPR()
+        {
+            env.ENABLE_CDAM = true
+        }
     onMaster()
         {
             enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
