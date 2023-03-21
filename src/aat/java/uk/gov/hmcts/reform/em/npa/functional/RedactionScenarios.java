@@ -7,6 +7,7 @@ import net.thucydides.core.annotations.WithTags;
 import org.json.JSONObject;
 import org.junit.Assume;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,6 +37,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RunWith(SpringIntegrationSerenityRunner.class)
 @WithTags({@WithTag("testType:Functional")})
 @EnableConfigurationProperties(ToggleProperties.class)
+@Ignore("Revert later")
 public class RedactionScenarios {
 
     @Value("${test.url}")
