@@ -19,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.reform.em.EmTestConfig;
 import uk.gov.hmcts.reform.em.npa.testutil.TestUtil;
+import uk.gov.hmcts.reform.em.npa.testutil.ToggleProperties;
 import uk.gov.hmcts.reform.em.test.retry.RetryRule;
 
 import java.util.ArrayList;
@@ -41,8 +42,8 @@ public class MarkUpScenarios {
     @Value("${test.url}")
     private String testUrl;
 
-    @Value("${endpoint-toggles.search-markups}")
-    private boolean searchMarkupsEnabled;
+    @Autowired
+    private ToggleProperties toggleProperties;
 
     @Rule
     public RetryRule retryRule = new RetryRule(3);
@@ -127,7 +128,7 @@ public class MarkUpScenarios {
 
     @Test
     public void shouldReturn200WhenCreateSearchMarkUps() {
-        Assume.assumeTrue(searchMarkupsEnabled);
+        Assume.assumeTrue(toggleProperties.isSearchMarkupsEnabled());
         final String documentId = UUID.randomUUID().toString();
         final ValidatableResponse response = createSearchMarkUps(documentId);
 
@@ -147,7 +148,7 @@ public class MarkUpScenarios {
 
     @Test
     public void shouldReturn422WhenCreateSearchMarkUpsWithoutMandatoryFields() {
-        Assume.assumeTrue(searchMarkupsEnabled);
+        Assume.assumeTrue(toggleProperties.isSearchMarkupsEnabled());
         final String documentId = UUID.randomUUID().toString();
         final JSONObject jsonObject = testUtil.createSearchMarkUpsPayload(documentId);
 
@@ -169,7 +170,7 @@ public class MarkUpScenarios {
 
     @Test
     public void shouldReturn401WhenUnAuthenticatedUserCreateSearchMarkUps() {
-        Assume.assumeTrue(searchMarkupsEnabled);
+        Assume.assumeTrue(toggleProperties.isSearchMarkupsEnabled());
         final String documentId = UUID.randomUUID().toString();
         final JSONObject jsonObject = testUtil.createSearchMarkUpsPayload(documentId);
 
