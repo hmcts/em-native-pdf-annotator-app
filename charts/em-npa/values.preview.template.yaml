@@ -20,33 +20,36 @@ java:
       username: hmcts
       password: hmcts
 
-  xui-webapp:
-    enabled: true
-    nodejs:
-      imagePullPolicy: Always
-      releaseNameOverride: ${SERVICE_NAME}-xui-webapp
-      image: hmctspublic.azurecr.io/xui/webapp:latest
-      ingressHost: xui-${SERVICE_FQDN}
-      environment:
-        HEALTH_CCD_COMPONENT_API: https://gateway-ccd.aat.platform.hmcts.net/health
-        HEALTH_CCD_ACTIVITY_API: http://ccd-case-activity-api-aat.service.core-compute-aat.internal/health
-        HEALTH_CCD_DATA_API: http://ccd-data-store-api-aat.service.core-compute-aat.internal/health
 
-        HEALTH_TERMS_AND_CONDITIONS_API: http://xui-terms-and-conditions-${SERVICE_FQDN}.service.core-compute-preview.internal/health
-        SERVICES_CCD_COMPONENT_API: https://gateway-ccd.aat.platform.hmcts.net
-        SERVICES_CCD_DATA_STORE_API: http://ccd-data-store-api-aat.service.core-compute-aat.internal
 
-        SERVICES_TERMS_AND_CONDITIONS: http://xui-terms-and-conditions-${SERVICE_FQDN}.service.core-compute-preview.internal
-        FEATURE_REDIS_ENABLED: false
-        FEATURE_APP_INSIGHTS_ENABLED: false
-        FEATURE_SECURE_COOKIE_ENABLED: false
-        FEATURE_HELMET_ENABLED: false
-        REDISCLOUD_URL: http://dummyrediscloudurl
-        UV_THREADPOOL_SIZE: 128
-        PROTOCOL: http
+xui-webapp:
+  enabled: true
+  nodejs:
+    imagePullPolicy: Always
+    releaseNameOverride: ${SERVICE_NAME}-xui-webapp
+    image: hmctspublic.azurecr.io/xui/webapp:prod-816d45c5
+    ingressHost: xui-${SERVICE_FQDN}
+    environment:
+      HEALTH_CCD_COMPONENT_API: https://gateway-ccd.aat.platform.hmcts.net/health
+      HEALTH_CCD_ACTIVITY_API: http://ccd-case-activity-api-aat.service.core-compute-aat.internal/health
+      HEALTH_CCD_DATA_API: http://ccd-data-store-api-aat.service.core-compute-aat.internal/health
 
-  idam-pr:
-    enabled: true
-    redirect_uris:
-      XUI:
-        - https://xui-${SERVICE_FQDN}/oauth2/callback
+      HEALTH_TERMS_AND_CONDITIONS_API: http://xui-terms-and-conditions-${SERVICE_FQDN}.service.core-compute-preview.internal/health
+      SERVICES_CCD_COMPONENT_API: https://gateway-ccd.aat.platform.hmcts.net
+      SERVICES_CCD_DATA_STORE_API: http://ccd-data-store-api-aat.service.core-compute-aat.internal
+
+      SERVICES_TERMS_AND_CONDITIONS: http://xui-terms-and-conditions-${SERVICE_FQDN}.service.core-compute-preview.internal
+      FEATURE_REDIS_ENABLED: false
+      FEATURE_APP_INSIGHTS_ENABLED: false
+      FEATURE_SECURE_COOKIE_ENABLED: false
+      FEATURE_HELMET_ENABLED: false
+      REDISCLOUD_URL: http://dummyrediscloudurl
+      UV_THREADPOOL_SIZE: 128
+      PROTOCOL: http
+
+idam-pr:
+  enabled: true
+  redirect_uris:
+    XUI:
+      - https://xui-${SERVICE_FQDN}/oauth2/callback
+
