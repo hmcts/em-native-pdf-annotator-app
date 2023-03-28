@@ -35,6 +35,7 @@ xui-webapp:
       HEALTH_CCD_DATA_API: http://ccd-data-store-api-aat.service.core-compute-aat.internal/health
       SERVICES_CCD_COMPONENT_API: https://gateway-ccd.aat.platform.hmcts.net
       SERVICES_CCD_DATA_STORE_API: http://ccd-data-store-api-aat.service.core-compute-aat.internal
+      SERVICES_MARKUP_API: https://${SERVICE_FQDN}
       FEATURE_REDIS_ENABLED: false
       FEATURE_APP_INSIGHTS_ENABLED: false
       FEATURE_SECURE_COOKIE_ENABLED: false
