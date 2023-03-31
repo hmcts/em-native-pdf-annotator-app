@@ -17,7 +17,7 @@ plugins {
     id 'au.com.dius.pact' version '4.2.14'
     id 'org.owasp.dependencycheck' version '8.2.1'
     id 'info.solidsoft.pitest' version '1.9.0'
-    id 'com.github.hmcts.rse-cft-lib' version '0.19.631'
+    id 'com.github.hmcts.rse-cft-lib' version '0.19.641'
     id 'org.flywaydb.flyway' version '9.16.1'
     id 'io.freefair.lombok' version '8.0.1'
 }
@@ -239,7 +239,7 @@ dependencies {
     contractTestImplementation group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.14'
     contractTestImplementation group: 'org.apache.httpcomponents', name: 'fluent-hc', version: '4.5.14'
 
-    aatImplementation group: 'com.github.hmcts', name: 'em-test-helper', version: '1.21.8'
+    aatImplementation group: 'com.github.hmcts', name: 'em-test-helper', version: '1.21.9'
     aatImplementation group: 'org.apache.poi', name: 'poi', version: versions.poi
     aatImplementation group: 'org.apache.poi', name: 'poi-ooxml', version: versions.poi
     cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
@@ -281,12 +281,6 @@ dependencyManagement {
             entry 'spring-security-crypto'
             entry 'spring-security-core'
             entry 'spring-security-web'
-        }
-
-        //CVE-2022-45143
-        dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.69') {
-            entry 'tomcat-embed-core'
-            entry 'tomcat-embed-websocket'
         }
 
         //CVE-2023-24998
