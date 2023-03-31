@@ -88,7 +88,7 @@ public class MarkUpResource {
     public ResponseEntity<RedactionDTO> createMarkUp(@Valid @RequestBody RedactionDTO redactionDTO,
                                                      BindingResult result) throws URISyntaxException {
 
-        log.info("REST request to save Redaction : {}", redactionDTO);
+        log.debug("REST request to save Redaction : {}", redactionDTO);
 
         if (result.hasErrors()) {
             throw new ValidationErrorException(result.getFieldErrors().stream()
@@ -128,7 +128,7 @@ public class MarkUpResource {
     @PutMapping("/markups")
     public ResponseEntity<RedactionDTO> updateMarkUp(@Valid @RequestBody RedactionDTO redactionDTO,
                                                      BindingResult result) {
-        log.info("REST request to update Redaction : {}", redactionDTO);
+        log.debug("REST request to update Redaction : {}", redactionDTO);
 
         if (result.hasErrors()) {
             throw new ValidationErrorException(result.getFieldErrors().stream()
@@ -167,7 +167,7 @@ public class MarkUpResource {
     })
     @GetMapping("/markups/{documentId}")
     public ResponseEntity<List<RedactionDTO>> getAllDocumentMarkUps(@PathVariable UUID documentId, Pageable pageable) {
-        log.info("REST request to get a page of markups");
+        log.debug("REST request to get a page of markups");
         Page<RedactionDTO> page = markUpService.findAllByDocumentId(documentId, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/markups");
         if (page.hasContent()) {
@@ -204,7 +204,7 @@ public class MarkUpResource {
     })
     @DeleteMapping("/markups/{documentId}")
     public ResponseEntity<Void> deleteMarkUps(@PathVariable UUID documentId) {
-        log.info("REST request to delete all Redactions for entire document : {}", documentId);
+        log.debug("REST request to delete all Redactions for entire document : {}", documentId);
         markUpService.deleteAll(documentId);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, documentId.toString())).build();
     }
@@ -239,7 +239,7 @@ public class MarkUpResource {
     })
     @DeleteMapping("/markups/{documentId}/{redactionId}")
     public ResponseEntity<Void> deleteMarkUp(@PathVariable UUID documentId, @PathVariable UUID redactionId) {
-        log.info("REST request to delete a Redaction of the document : {}", documentId);
+        log.debug("REST request to delete a Redaction of the document : {}", documentId);
         markUpService.delete(redactionId);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, redactionId.toString())).build();
     }
