@@ -76,4 +76,4 @@ toggles:
   cdam_enabled: ${ENABLE_CDAM:false}
 
 endpoint-toggles:
-  search-markups: ${ENABLE_SEARCH_MARKUPS_ENDPOINT:true}
+  search-markups: ${ENABLE_SEARCH_MARKUPS_ENDPOINT:false}
