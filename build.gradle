@@ -164,7 +164,7 @@ dependencies {
 
     implementation group: 'org.zalando', name: 'problem-spring-web', version: versions.zalando
     implementation group: 'org.zalando', name: 'jackson-datatype-problem', version: versions.zalando
-    implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.15'
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.7.0'
 
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: versions.springSecurity
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-client', version: versions.springSecurity
