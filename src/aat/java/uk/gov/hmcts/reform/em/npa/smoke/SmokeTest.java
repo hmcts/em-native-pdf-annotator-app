@@ -13,6 +13,8 @@ import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.reform.em.EmTestConfig;
 import uk.gov.hmcts.reform.em.npa.testutil.TestUtil;
 
+import java.util.Map;
+
 @SpringBootTest(classes = {TestUtil.class, EmTestConfig.class})
 @TestPropertySource(value = "classpath:application.yml")
 @RunWith(SpringIntegrationSerenityRunner.class)
@@ -29,7 +31,7 @@ public class SmokeTest {
 
         SerenityRest.useRelaxedHTTPSValidation();
 
-        String response =
+        Map responseMap =
                 SerenityRest
                         .given()
                         .baseUri(testUrl)
@@ -38,10 +40,10 @@ public class SmokeTest {
                         .statusCode(200)
                         .extract()
                         .body()
-                        .asString();
+                        .as(Map.class);
 
-        Assert.assertEquals(MESSAGE, response);
-
+        Assert.assertEquals(1, responseMap.size());
+        Assert.assertEquals(MESSAGE, responseMap.get("message"));
 
     }
 }
