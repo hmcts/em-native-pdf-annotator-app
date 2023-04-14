@@ -17,9 +17,6 @@ java:
     LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_EM_NPA: DEBUG
   postgresql:
     enabled: true
-    auth:
-      username: hmcts
-      password: hmcts
 
 
 
