@@ -14,5 +14,32 @@ java:
     SPRING_DATASOURCE_PASSWORD: "{{ .Values.postgresql.auth.password}}"
     SPRING_DATASOURCE_OPTIONS: "?ssl=disable"
     RUN_DB_MIGRATION_ON_STARTUP: true
+    LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_EM_NPA: DEBUG
   postgresql:
     enabled: true
+
+
+
+xui-webapp:
+  enabled: true
+  nodejs:
+    imagePullPolicy: Always
+    releaseNameOverride: ${SERVICE_NAME}-xui-webapp
+    image: hmctspublic.azurecr.io/xui/webapp:latest
+    ingressHost: xui-${SERVICE_FQDN}
+    environment:
+      SERVICES_MARKUP_API: https://${SERVICE_FQDN}
+      FEATURE_REDIS_ENABLED: false
+      FEATURE_APP_INSIGHTS_ENABLED: false
+      FEATURE_SECURE_COOKIE_ENABLED: false
+      FEATURE_HELMET_ENABLED: false
+      REDISCLOUD_URL: http://dummyrediscloudurl
+      UV_THREADPOOL_SIZE: 128
+      PROTOCOL: http
+
+idam-pr:
+  enabled: true
+  redirect_uris:
+    XUI:
+      - https://xui-${SERVICE_FQDN}/oauth2/callback
+
