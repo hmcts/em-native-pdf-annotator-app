@@ -301,6 +301,18 @@ public class TestUtil {
         return markup;
     }
 
+    @NotNull
+    public JSONObject createSearchMarkUpsPayload(final String documentId) {
+        final JSONObject payload = new JSONObject();
+        final JSONArray markups = new JSONArray();
+        markups.put(createMarkUpPayload(UUID.randomUUID().toString(), documentId, UUID.randomUUID().toString()));
+        markups.put(createMarkUpPayload(UUID.randomUUID().toString(), documentId, UUID.randomUUID().toString()));
+        markups.put(createMarkUpPayload(UUID.randomUUID().toString(), documentId, UUID.randomUUID().toString()));
+
+        payload.put("searchRedactions", markups);
+        return payload;
+    }
+
     public UploadResponse uploadCdamDocument(String username, String caseTypeId, String jurisdictionId) throws IOException {
 
         final MultipartFile multipartFile = new MockMultipartFile(

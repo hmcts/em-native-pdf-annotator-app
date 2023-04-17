@@ -8,6 +8,7 @@ import net.thucydides.core.annotations.WithTags;
 import org.hamcrest.Matchers;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -20,6 +21,8 @@ import uk.gov.hmcts.reform.em.EmTestConfig;
 import uk.gov.hmcts.reform.em.npa.testutil.TestUtil;
 import uk.gov.hmcts.reform.em.test.retry.RetryRule;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -37,6 +40,9 @@ public class MarkUpScenarios {
 
     @Value("${test.url}")
     private String testUrl;
+
+    @Value("${endpoint-toggles.search-markups}")
+    private boolean searchMarkupsEnabled;
 
     @Rule
     public RetryRule retryRule = new RetryRule(3);
@@ -118,6 +124,63 @@ public class MarkUpScenarios {
                 .assertThat()
                 .statusCode(401);
     }
+
+    @Test
+    public void shouldReturn200WhenCreateSearchMarkUps() {
+        Assume.assumeTrue(searchMarkupsEnabled);
+        final String documentId = UUID.randomUUID().toString();
+        final ValidatableResponse response = createSearchMarkUps(documentId);
+
+        response
+                .assertThat()
+                .statusCode(200)
+                .body("searchRedactions", Matchers.hasSize(3))
+                .body("searchRedactions[0].documentId", equalTo(documentId))
+                .body("searchRedactions[0].page", equalTo(1))
+                .body("searchRedactions[0].rectangles", Matchers.hasSize(1))
+                .body("searchRedactions[1].rectangles[0].x", equalTo(1f))
+                .body("searchRedactions[1].rectangles[0].y", equalTo(2f))
+                .body("searchRedactions[2].rectangles[0].width", equalTo(10f))
+                .body("searchRedactions[2].rectangles[0].height", equalTo(11f))
+                .log().all();
+    }
+
+    @Test
+    public void shouldReturn422WhenCreateSearchMarkUpsWithoutMandatoryFields() {
+        Assume.assumeTrue(searchMarkupsEnabled);
+        final String documentId = UUID.randomUUID().toString();
+        final JSONObject jsonObject = testUtil.createSearchMarkUpsPayload(documentId);
+
+        jsonObject.remove("searchRedactions");
+
+        request
+                .body(jsonObject.toString())
+                .post("/api/markups/search")
+                .then()
+                .assertThat()
+                .statusCode(422)
+                .body("type", equalTo("https://npa/problem/problem-with-message"))
+                .body("title", equalTo("Unprocessable Entity"))
+                .body("detail", notNullValue())
+                .body("path", equalTo("/api/markups/search"))
+                .body("message", equalTo("error.http.422"))
+                .log().all();
+    }
+
+    @Test
+    public void shouldReturn401WhenUnAuthenticatedUserCreateSearchMarkUps() {
+        Assume.assumeTrue(searchMarkupsEnabled);
+        final String documentId = UUID.randomUUID().toString();
+        final JSONObject jsonObject = testUtil.createSearchMarkUpsPayload(documentId);
+
+        unAuthenticatedRequest
+                .body(jsonObject.toString())
+                .post("/api/markups/search")
+                .then()
+                .assertThat()
+                .statusCode(401);
+    }
+
 
     @Test
     public void shouldReturn200WhenGetMarkUpByDocumentId() {
@@ -339,6 +402,34 @@ public class MarkUpScenarios {
                 .log().all();
     }
 
+    @Test
+    public void shouldReturn200WhenGetAllMarkupsMoreThan20ByDocumentId() {
+        List<String> redactions = new ArrayList<>();
+        final UUID documentId = UUID.randomUUID();
+
+        for (int i = 0; i < 30; i++) {
+            final UUID redactionId = UUID.randomUUID();
+            final UUID rectangleId = UUID.randomUUID();
+            final JSONObject jsonObject = testUtil.createMarkUpPayload(
+                    redactionId.toString(),documentId.toString(),rectangleId.toString());
+
+            final ValidatableResponse response =
+                    request.log().all()
+                            .body(jsonObject.toString())
+                            .post("/api/markups")
+                            .then()
+                            .statusCode(201);
+            redactions.add(redactionId.toString());
+        }
+
+        request
+                .get(String.format("/api/markups/%s", documentId))
+                .then()
+                .statusCode(200)
+                .body("redactionId", equalTo(redactions))
+                .log().all();
+    }
+
     @NotNull
     private ValidatableResponse createMarkUp(final String redactionId, final String documentId,
                                              final String rectangleId) {
@@ -350,6 +441,18 @@ public class MarkUpScenarios {
                 .then()
                 .assertThat()
                 .statusCode(201);
+    }
+
+    @NotNull
+    private ValidatableResponse createSearchMarkUps(final String documentId) {
+        final JSONObject jsonObject = testUtil.createSearchMarkUpsPayload(documentId);
+
+        return request
+                .body(jsonObject.toString())
+                .post("/api/markups/search")
+                .then()
+                .assertThat()
+                .statusCode(200);
     }
 
     @NotNull

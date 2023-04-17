@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.npa.service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionSetDTO;
 
 import java.util.UUID;
 
@@ -15,6 +16,15 @@ public interface MarkUpService {
      * @return the persisted entity
      */
     RedactionDTO save(RedactionDTO redactionDTO);
+
+    /**
+     * Save a set of markUps.
+     *
+     * @param redactionSetDTO the set of markUps to save
+     * @return a set of the saved markUps
+     */
+    RedactionSetDTO saveAll(RedactionSetDTO redactionSetDTO);
+
 
     /**
      *

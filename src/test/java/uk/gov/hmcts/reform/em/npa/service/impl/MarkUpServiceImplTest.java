@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.em.npa.domain.Redaction;
 import uk.gov.hmcts.reform.em.npa.repository.MarkUpRepository;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionSetDTO;
 import uk.gov.hmcts.reform.em.npa.service.mapper.MarkUpMapper;
 
 import java.util.Arrays;
@@ -76,6 +77,62 @@ public class MarkUpServiceImplTest {
 
         RedactionDTO updatedDto = markUpService.save(redactionDTO);
     }
+
+    @Test
+    public void testSaveAllSuccess() {
+
+        RedactionDTO redactionDTO = createRedactionDTO();
+        RedactionDTO redactionDTO1 = createRedactionDTO();
+        RedactionDTO redactionDTO2 = createRedactionDTO();
+
+        Redaction redaction = createRedaction();
+        Redaction redaction1 = createRedaction();
+        Redaction redaction2 = createRedaction();
+
+        Set<RedactionDTO> redactionDTOS = Set.of(redactionDTO, redactionDTO1, redactionDTO2);
+        RedactionSetDTO redactionSetDTO = new RedactionSetDTO(redactionDTOS);
+        List<Redaction> redactionList = List.of(redaction, redaction1, redaction2);
+        Set<Redaction> redactionSet = Set.copyOf(redactionList);
+        Mockito.when(securityUtils.getCurrentUserLogin()).thenReturn(Optional.of("testuser"));
+        Mockito.when(markUpRepository.saveAll(Mockito.any())).thenReturn(redactionList);
+        Mockito.when(markUpMapper.toEntity(redactionSetDTO.getSearchRedactions())).thenReturn(redactionSet);
+        Mockito.when(markUpMapper.toDto(redactionSet)).thenReturn(redactionDTOS);
+
+
+        RedactionSetDTO updatedDto = markUpService.saveAll(redactionSetDTO);
+
+        Set<RedactionDTO> updatedRedactionDTOS = updatedDto.getSearchRedactions();
+        Assert.assertEquals(updatedRedactionDTOS.size(), 3);
+
+        RedactionDTO savedRedactionDTO = updatedRedactionDTOS.iterator().next();
+
+        Assert.assertTrue(savedRedactionDTO.equals(redactionDTO) ||
+                savedRedactionDTO.equals(redactionDTO1) || savedRedactionDTO.equals(redactionDTO2));
+
+        Mockito.verify(markUpRepository, Mockito.atLeast(1)).saveAll(Mockito.any());
+        Mockito.verify(markUpMapper, Mockito.atLeast(1)).toEntity(redactionDTOS);
+        Mockito.verify(markUpMapper, Mockito.atLeast(1)).toDto(redactionSet);
+    }
+
+    @Test(expected = UsernameNotFoundException.class)
+    public void testSaveAllFailure() {
+
+        RedactionDTO redactionDTO = createRedactionDTO();
+        RedactionDTO redactionDTO1 = createRedactionDTO();
+        RedactionDTO redactionDTO2 = createRedactionDTO();
+
+        Redaction redaction = createRedaction();
+        Redaction redaction1 = createRedaction();
+        Redaction redaction2 = createRedaction();
+
+        Set<RedactionDTO> redactionDTOS = Set.of(redactionDTO, redactionDTO1, redactionDTO2);
+        RedactionSetDTO redactionSetDTO = new RedactionSetDTO(redactionDTOS);
+        Set<Redaction> redactionSet = Set.of(redaction, redaction1, redaction2);
+        Mockito.when(markUpMapper.toEntity(redactionSetDTO.getSearchRedactions())).thenReturn(redactionSet);
+
+        RedactionSetDTO updatedDto = markUpService.saveAll(redactionSetDTO);
+    }
+
 
     @Test
     public void testFindAllByDocumentIdSuccess() {
