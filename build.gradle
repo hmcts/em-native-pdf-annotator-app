@@ -17,8 +17,8 @@ plugins {
     id 'au.com.dius.pact' version '4.2.14'
     id 'org.owasp.dependencycheck' version '8.2.1'
     id 'info.solidsoft.pitest' version '1.9.0'
-    id 'com.github.hmcts.rse-cft-lib' version '0.19.639'
-    id 'org.flywaydb.flyway' version '9.16.1'
+    id 'com.github.hmcts.rse-cft-lib' version '0.19.654'
+    id 'org.flywaydb.flyway' version '9.16.3'
     id 'io.freefair.lombok' version '8.0.1'
 }
 
@@ -147,7 +147,7 @@ dependencies {
     }
         
     implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.26'
-    implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.27'
+    implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.28'
     implementation group: 'org.apache.pdfbox', name: 'jbig2-imageio', version: '3.0.4'
     implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.10.0'
 
@@ -164,7 +164,7 @@ dependencies {
 
     implementation group: 'org.zalando', name: 'problem-spring-web', version: versions.zalando
     implementation group: 'org.zalando', name: 'jackson-datatype-problem', version: versions.zalando
-    implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.15'
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.7.0'
 
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: versions.springSecurity
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-client', version: versions.springSecurity
@@ -173,7 +173,7 @@ dependencies {
     implementation group: 'org.springframework.security', name: 'spring-security-config', version: versions.springSecurity
 
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.14'
-    implementation group: 'org.flywaydb', name: 'flyway-core', version: '9.16.1'
+    implementation group: 'org.flywaydb', name: 'flyway-core', version: '9.16.3'
     implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
     implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
@@ -222,7 +222,7 @@ dependencies {
 
     testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.3.0', classifier: 'all'
 
-    testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.17.6'
+    testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.18.0'
 
     contractTestImplementation group: 'au.com.dius', name: 'pact-jvm-consumer-junit', version: versions.pact_version, withoutNetty
     contractTestImplementation group: 'au.com.dius', name: 'pact-jvm-consumer-junit5', version: versions.pact_version, withoutNetty
@@ -239,7 +239,7 @@ dependencies {
     contractTestImplementation group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.14'
     contractTestImplementation group: 'org.apache.httpcomponents', name: 'fluent-hc', version: '4.5.14'
 
-    aatImplementation group: 'com.github.hmcts', name: 'em-test-helper', version: '1.21.8'
+    aatImplementation group: 'com.github.hmcts', name: 'em-test-helper', version: '1.21.9'
     aatImplementation group: 'org.apache.poi', name: 'poi', version: versions.poi
     aatImplementation group: 'org.apache.poi', name: 'poi-ooxml', version: versions.poi
     cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
@@ -254,7 +254,7 @@ dependencyManagement {
             entry 'junit'
         }
 
-        dependencySet(group: 'net.bytebuddy', version: '1.14.2') {
+        dependencySet(group: 'net.bytebuddy', version: '1.14.4') {
             entry 'byte-buddy'
             entry 'byte-buddy-agent'
         }
@@ -286,6 +286,11 @@ dependencyManagement {
         //CVE-2023-24998
         dependencySet(group: 'commons-fileupload', version: '1.5') {
             entry 'commons-fileupload'
+        }
+
+        //CVE-2022-45688
+        dependencySet(group: 'org.json', version: '20230227') {
+            entry 'json'
         }
     }
 }
