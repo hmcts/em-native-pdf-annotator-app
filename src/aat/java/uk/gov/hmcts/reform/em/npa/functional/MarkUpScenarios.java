@@ -27,6 +27,7 @@ import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @SpringBootTest(classes = {TestUtil.class, EmTestConfig.class})
@@ -426,7 +427,7 @@ public class MarkUpScenarios {
                 .get(String.format("/api/markups/%s", documentId))
                 .then()
                 .statusCode(200)
-                .body("redactionId", equalTo(redactions))
+                .body("redactionId", containsInAnyOrder(redactions.toArray()))
                 .log().all();
     }
 
