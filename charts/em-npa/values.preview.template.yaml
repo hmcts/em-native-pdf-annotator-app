@@ -39,6 +39,7 @@ xui-webapp:
       REDISCLOUD_URL: http://dummyrediscloudurl
       UV_THREADPOOL_SIZE: 128
       PROTOCOL: http
+      SERVICES_DOCUMENTS_API: https://dm-store-pr-1743.preview.platform.hmcts.net
 
 idam-pr:
   enabled: true
