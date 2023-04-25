@@ -16,6 +16,7 @@ java:
     RUN_DB_MIGRATION_ON_STARTUP: true
     LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_EM_NPA: DEBUG
     ENABLE_SEARCH_MARKUPS_ENDPOINT: true
+    DM_STORE_APP_URL: https://dm-store-pr-1743.preview.platform.hmcts.net
 
   postgresql:
     enabled: true
