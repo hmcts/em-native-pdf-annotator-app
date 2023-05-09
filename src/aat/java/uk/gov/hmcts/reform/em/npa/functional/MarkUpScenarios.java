@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.reform.em.EmTestConfig;
 import uk.gov.hmcts.reform.em.npa.testutil.TestUtil;
@@ -34,6 +35,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @TestPropertySource(value = "classpath:application.yml")
 @RunWith(SpringIntegrationSerenityRunner.class)
 @WithTags({@WithTag("testType:Functional")})
+@ComponentScan({ "uk.gov.hmcts.reform" })
 public class MarkUpScenarios {
 
     @Autowired
