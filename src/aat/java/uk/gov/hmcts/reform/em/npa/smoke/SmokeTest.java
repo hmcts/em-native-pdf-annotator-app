@@ -1,21 +1,14 @@
 package uk.gov.hmcts.reform.em.npa.smoke;
 
 import net.serenitybdd.rest.SerenityRest;
-import net.thucydides.core.annotations.WithTag;
-import net.thucydides.core.annotations.WithTags;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
-import uk.gov.hmcts.reform.em.EmTestConfig;
-import uk.gov.hmcts.reform.em.npa.Application;
 
 import java.util.Map;
 
-@SpringBootTest(classes = {EmTestConfig.class, Application.class})
-@TestPropertySource(value = "classpath:application.yml")
-@WithTags({@WithTag("testType:Smoke")})
+@SpringBootTest
 public class SmokeTest {
 
     private static final String MESSAGE = "Welcome to Native PDF Annotator API!";
