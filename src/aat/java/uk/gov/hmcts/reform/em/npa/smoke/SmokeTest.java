@@ -6,24 +6,15 @@ import net.thucydides.core.annotations.WithTag;
 import net.thucydides.core.annotations.WithTags;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
-import uk.gov.hmcts.reform.em.EmTestConfig;
-import uk.gov.hmcts.reform.em.npa.Application;
-import uk.gov.hmcts.reform.em.npa.testutil.TestUtil;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Map;
 
-@SpringBootTest(classes = {TestUtil.class, EmTestConfig.class, Application.class})
-@EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class,HibernateJpaAutoConfiguration.class})
-@TestPropertySource(value = "classpath:application.yml")
-@RunWith(SpringIntegrationSerenityRunner.class)
-@WithTags({@WithTag("testType:Smoke")})
+@ExtendWith(SpringExtension.class)
+@TestPropertySource("classpath:application.yaml")
 public class SmokeTest {
 
     private static final String MESSAGE = "Welcome to Native PDF Annotator API!";
