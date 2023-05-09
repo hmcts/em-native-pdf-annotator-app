@@ -3,12 +3,15 @@ package uk.gov.hmcts.reform.em.npa.smoke;
 import net.serenitybdd.rest.SerenityRest;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Map;
 
-@SpringBootTest
+@ExtendWith(SpringExtension.class)
+@TestPropertySource("classpath:application.yaml")
 public class SmokeTest {
 
     private static final String MESSAGE = "Welcome to Native PDF Annotator API!";
