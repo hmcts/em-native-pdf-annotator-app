@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -32,6 +33,7 @@ import uk.gov.hmcts.reform.em.npa.rest.util.HeaderUtil;
 import uk.gov.hmcts.reform.em.npa.rest.util.PaginationUtil;
 import uk.gov.hmcts.reform.em.npa.service.MarkUpService;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionSetDTO;
 
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -102,6 +104,43 @@ public class MarkUpResource {
                 .body(response);
     }
 
+    /**
+     * POST  /markups : Create new markups.
+     *
+     * @param redactionSetDTO the RedactionSetDTO to create
+     * @return the ResponseEntity with status "200" (Success) and with body the new RedactionSetDTO
+     */
+    @Operation(summary = "Create an RedactionSetDTO", description = "A POST request to create an RedactionSetDTO",
+            parameters = {
+                    @Parameter(in = ParameterIn.HEADER, name = "authorization",
+                            description = "Authorization (Idam Bearer token)", required = true,
+                            schema = @Schema(type = "string")),
+                    @Parameter(in = ParameterIn.HEADER, name = "serviceauthorization",
+                            description = "Service Authorization (S2S Bearer token)", required = true,
+                            schema = @Schema(type = "string"))})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "401", description = "Unauthorised"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+    })
+    @ConditionalOnProperty("endpoint-toggles.search-markups")
+    @PostMapping("/markups/search")
+    public ResponseEntity<RedactionSetDTO> createSearchMarkUps(@Valid @RequestBody RedactionSetDTO redactionSetDTO,
+                                                            BindingResult result) {
+
+        log.debug("REST request to save Redaction Set : {}", redactionSetDTO);
+
+        if (result.hasErrors()) {
+            throw new ValidationErrorException(result.getFieldErrors().stream()
+                    .map(fe -> String.format("%s - %s", fe.getField(), fe.getCode()))
+                    .collect(Collectors.joining(",")));
+        }
+
+        RedactionSetDTO response = markUpService.saveAll(redactionSetDTO);
+        return ResponseEntity.ok()
+                .body(response);
+    }
+
 
     /**
      * PUT  /markups : Updates an existing markup.
@@ -168,7 +207,7 @@ public class MarkUpResource {
     @GetMapping("/markups/{documentId}")
     public ResponseEntity<List<RedactionDTO>> getAllDocumentMarkUps(@PathVariable UUID documentId, Pageable pageable) {
         log.debug("REST request to get a page of markups");
-        Page<RedactionDTO> page = markUpService.findAllByDocumentId(documentId, pageable);
+        Page<RedactionDTO> page = markUpService.findAllByDocumentId(documentId, Pageable.unpaged());
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/markups");
         if (page.hasContent()) {
             return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);

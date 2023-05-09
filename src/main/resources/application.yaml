@@ -132,6 +132,9 @@ redaction:
 toggles:
   cdam_enabled: ${ENABLE_CDAM:false}
 
+endpoint-toggles:
+  search-markups: ${ENABLE_SEARCH_MARKUPS_ENDPOINT:false}
+
 springdoc:
   packagesToScan: uk.gov.hmcts.reform.em.npa.rest
   pathsToMatch: /**

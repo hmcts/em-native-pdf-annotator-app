@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.em.npa.rest.errors.ValidationErrorException;
 import uk.gov.hmcts.reform.em.npa.service.MarkUpService;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
+import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionSetDTO;
 
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -83,6 +84,31 @@ public class MarkUpResourceTest {
     }
 
     @Test(expected = ValidationErrorException.class)
+    public void createMarkUpsFailure() {
+        RedactionSetDTO redactionSetDTO = createRedactionSetDTO();
+        String[] codes = {"1"};
+        FieldError fieldError = new FieldError("testField", "field", null, true, codes, null, null);
+        List<FieldError> errors = List.of(fieldError);
+        Mockito.when(result.hasErrors()).thenReturn(true);
+        Mockito.when(result.getFieldErrors()).thenReturn(errors);
+
+        ResponseEntity<RedactionSetDTO>  responseEntity = markUpResource.createSearchMarkUps(redactionSetDTO, result);
+    }
+
+    @Test
+    public void createMarkUpsSuccess() {
+        RedactionSetDTO redactionSetDTO = createRedactionSetDTO();
+        Mockito.when(markUpService.saveAll(Mockito.any())).thenReturn(redactionSetDTO);
+
+        ResponseEntity<RedactionSetDTO>  responseEntity = markUpResource.createSearchMarkUps(redactionSetDTO, result);
+        RedactionSetDTO response = responseEntity.getBody();
+
+        Assert.assertNotNull(response);
+        Assert.assertTrue(redactionSetDTO.getSearchRedactions().contains(response.getSearchRedactions().iterator().next()));
+        Mockito.verify(markUpService, Mockito.atLeast(1)).saveAll(redactionSetDTO);
+    }
+
+    @Test(expected = ValidationErrorException.class)
     public void updateMarkUpFailure() throws URISyntaxException {
 
         RedactionDTO redactionDTO = createRedactionDTO();
@@ -120,10 +146,10 @@ public class MarkUpResourceTest {
         List<RedactionDTO> redactions = Arrays.asList(createRedactionDTO());
         Page<RedactionDTO> redactionDTOS = new PageImpl<>(redactions);
 
-        Mockito.when(markUpService.findAllByDocumentId(id, pageable)).thenReturn(redactionDTOS);
+        Mockito.when(markUpService.findAllByDocumentId(id, Pageable.unpaged())).thenReturn(redactionDTOS);
         ResponseEntity<List<RedactionDTO>> response = markUpResource.getAllDocumentMarkUps(id, pageable);
 
-        Mockito.verify(markUpService, Mockito.atLeast(1)).findAllByDocumentId(id, pageable);
+        Mockito.verify(markUpService, Mockito.atLeast(1)).findAllByDocumentId(id, Pageable.unpaged());
     }
 
     @Test(expected = ResponseStatusException.class)
@@ -133,7 +159,7 @@ public class MarkUpResourceTest {
 
         Page<RedactionDTO> redactionDTOS = new PageImpl<>(Collections.emptyList());
 
-        Mockito.when(markUpService.findAllByDocumentId(id, pageable)).thenReturn(redactionDTOS);
+        Mockito.when(markUpService.findAllByDocumentId(id, Pageable.unpaged())).thenReturn(redactionDTOS);
         markUpResource.getAllDocumentMarkUps(id, pageable);
     }
 
@@ -170,6 +196,10 @@ public class MarkUpResourceTest {
         Assert.assertNull(webDataBinder.getDisallowedFields());
         markUpResource.initBinder(webDataBinder);
         Assert.assertTrue(Arrays.asList(webDataBinder.getDisallowedFields()).contains(Constants.IS_ADMIN));
+    }
+
+    private RedactionSetDTO createRedactionSetDTO() {
+        return new RedactionSetDTO(Set.of(createRedactionDTO(), createRedactionDTO(), createRedactionDTO()));
     }
 
     private RedactionDTO createRedactionDTO() {
