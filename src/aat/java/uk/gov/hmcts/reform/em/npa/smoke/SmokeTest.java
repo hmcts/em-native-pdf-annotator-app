@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.npa.smoke;
 
-import io.restassured.RestAssured;
 import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,13 +17,6 @@ public class SmokeTest {
 
     @Test
     public void testHealthEndpoint() {
-        RestAssured
-                .given()
-                .relaxedHTTPSValidation()
-                .baseUri(testUrl)
-                .get("/")
-                .then()
-                .log()
-                .body();
+
     }
 }

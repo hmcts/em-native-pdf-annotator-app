@@ -14,10 +14,9 @@ spring:
             client-secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
   flyway:
     enabled: false
-  batch:
-    jdbc:
-      initialize-schema: never
-
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 management:
   endpoint:
     health:
