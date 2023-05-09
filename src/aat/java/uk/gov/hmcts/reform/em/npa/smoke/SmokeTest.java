@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.hamcrest.Matchers.equalTo;
-
 @ExtendWith(SpringExtension.class)
 @TestPropertySource("classpath:application.yaml")
 public class SmokeTest {
