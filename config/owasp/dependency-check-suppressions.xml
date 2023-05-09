@@ -4,4 +4,10 @@
         <notes>Awaiting fix as updating to latest available version hasn't resolved this.</notes>
         <cve>CVE-2022-45688</cve>
     </suppress>
+    <suppress>
+   <notes><![CDATA[
+   file name: all spring 
+   ]]></notes>
+   <cve>CVE-2023-20862</cve>
+</suppress>
 </suppressions>
