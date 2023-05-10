@@ -9,9 +9,9 @@ import au.com.dius.pact.consumer.junit5.PactTestFor;
 import au.com.dius.pact.core.model.RequestResponsePact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import com.google.common.collect.Maps;
+import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import lombok.extern.slf4j.Slf4j;
-import net.serenitybdd.rest.SerenityRest;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -74,7 +74,7 @@ public class IdamConsumerTest {
     public void should_post_to_token_endpoint_and_receive_access_token_with_200_response(MockServer mockServer)
             throws JSONException {
         String actualResponseBody =
-                SerenityRest
+                RestAssured
                         .given()
                         .contentType(ContentType.URLENC)
                         .formParam("redirect_uri", "http://www.dummy-pact-service.com/callback")
@@ -134,7 +134,7 @@ public class IdamConsumerTest {
         headers.put(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 
         String detailsResponseBody =
-                SerenityRest
+                RestAssured
                         .given()
                         .headers(headers)
                         .when()

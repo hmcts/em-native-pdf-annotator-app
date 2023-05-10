@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.em.npa.testutil;
 
+import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import net.serenitybdd.rest.SerenityRest;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -74,7 +74,6 @@ public class TestUtil {
     public void init() {
         idamHelper.createUser("redactionTestUser2@redactiontest.com",
             Stream.of("caseworker", "caseworker-publiclaw", "ccd-import").collect(Collectors.toList()));
-        SerenityRest.useRelaxedHTTPSValidation();
         idamAuth = idamHelper.authenticateUser("redactionTestUser2@redactiontest.com");
         s2sAuth = s2sHelper.getS2sToken();
     }
@@ -221,18 +220,18 @@ public class TestUtil {
     }
 
     public RequestSpecification unauthenticatedRequest() {
-        return SerenityRest.given();
+        return RestAssured.given();
     }
 
     public RequestSpecification s2sAuthRequest() {
-        return SerenityRest
+        return  RestAssured
                 .given()
                 .log().all()
                 .header("ServiceAuthorization", s2sAuth);
     }
 
     public RequestSpecification cdamS2sAuthRequest() {
-        return SerenityRest
+        return RestAssured
             .given()
             .log().all()
             .header("ServiceAuthorization", cdamS2sHelper.getS2sToken());
@@ -244,7 +243,7 @@ public class TestUtil {
     }
 
     public RequestSpecification emptyIdamAuthAndEmptyS2SAuth() {
-        return SerenityRest
+        return RestAssured
                 .given()
                 .header("ServiceAuthorization", null)
                 .header("Authorization", null);
@@ -261,7 +260,7 @@ public class TestUtil {
 
     private RequestSpecification emptyS2sAuthRequest() {
 
-        return SerenityRest.given().header("ServiceAuthorization", null);
+        return RestAssured.given().header("ServiceAuthorization", null);
     }
 
     public RequestSpecification invalidIdamAuthrequest() {
@@ -276,7 +275,7 @@ public class TestUtil {
 
     private RequestSpecification invalidS2sAuthRequest() {
 
-        return SerenityRest.given().header("ServiceAuthorization", "invalidS2SAuthorization");
+        return RestAssured.given().header("ServiceAuthorization", "invalidS2SAuthorization");
     }
 
     @NotNull
