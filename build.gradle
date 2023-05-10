@@ -120,7 +120,9 @@ dependencies {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-security'
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-test'
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-actuator'
+        exclude group: 'org.codehaus.groovy', module: 'groovy'
     }
+
 
     def withoutNetty = {
         exclude group: 'io.netty', module: 'netty-handler'
