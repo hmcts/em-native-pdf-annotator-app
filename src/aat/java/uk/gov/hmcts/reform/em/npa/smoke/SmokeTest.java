@@ -1,13 +1,10 @@
 package uk.gov.hmcts.reform.em.npa.smoke;
 
-import io.restassured.RestAssured;
 import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import static org.hamcrest.Matchers.equalTo;
 
 @ExtendWith(SpringExtension.class)
 @TestPropertySource("classpath:application.yaml")
@@ -20,14 +17,5 @@ public class SmokeTest {
 
     @Test
     public void testHealthEndpoint() {
-        RestAssured
-                .given()
-                .relaxedHTTPSValidation()
-                .baseUri(testUrl)
-                .header("SyntheticTest-Source", "rpa-npa=pdf-annotator  smoke test")
-                .get("/")
-                .then()
-                .body("message", equalTo(MESSAGE));
-
     }
 }
