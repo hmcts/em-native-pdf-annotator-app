@@ -4,7 +4,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClientApi;
@@ -32,7 +32,7 @@ public class CdamService {
             IOException, DocumentTaskProcessingException {
 
         ResponseEntity<Resource> response =  caseDocumentClientApi.getDocumentBinary(auth, serviceAuth, documentId);
-        HttpStatus status = null;
+        HttpStatusCode status = null;
 
         if (Objects.nonNull(response)) {
             status = response.getStatusCode();
