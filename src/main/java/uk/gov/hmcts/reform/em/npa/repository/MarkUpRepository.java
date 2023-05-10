@@ -22,7 +22,10 @@ public interface MarkUpRepository extends JpaRepository<Redaction, Long> {
 
     @Transactional
     @Modifying
-    @Query(value = "DELETE FROM Redaction m WHERE m.document_id = :documentId AND m.created_by = :createdBy", nativeQuery = true)
+    @Query(
+        value = "DELETE FROM Redaction m WHERE m.document_id = :documentId AND m.created_by = :createdBy",
+        nativeQuery = true
+    )
     void deleteAllByDocumentIdAndCreatedBy(@Param("documentId") UUID documentId, @Param("createdBy") String createdBy);
 
     void deleteByRedactionId(UUID redactionId);

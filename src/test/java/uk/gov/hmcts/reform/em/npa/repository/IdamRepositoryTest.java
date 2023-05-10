@@ -30,7 +30,13 @@ public class IdamRepositoryTest {
     @Test
     public void getUserDetailsTestSuccess() {
 
-        final UserInfo userInfo = UserInfo.builder().uid("100").givenName(FORE_NAME).familyName(SURNAME).roles(asList("Admin", "CaseWorker")).build();
+        final UserInfo userInfo = UserInfo
+                .builder()
+                .uid("100")
+                .givenName(FORE_NAME)
+                .familyName(SURNAME)
+                .roles(asList("Admin", "CaseWorker"))
+                .build();
         Mockito.when(idamClient.getUserInfo(Mockito.anyString())).thenReturn(userInfo);
         String token = "randomValue";
 

@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.em.npa.service.mapper.MarkUpMapper;
 
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * Service Implementation for managing MarkUps.
@@ -37,9 +36,11 @@ public class MarkUpServiceImpl implements MarkUpService {
 
     private SecurityUtils securityUtils;
 
-    public MarkUpServiceImpl(MarkUpRepository markUpRepository,
-                             MarkUpMapper markUpMapper,
-                             SecurityUtils securityUtils){
+    public MarkUpServiceImpl(
+            MarkUpRepository markUpRepository,
+            MarkUpMapper markUpMapper,
+            SecurityUtils securityUtils
+    ) {
         this.markUpRepository = markUpRepository;
         this.markUpMapper = markUpMapper;
         this.securityUtils = securityUtils;
@@ -50,15 +51,19 @@ public class MarkUpServiceImpl implements MarkUpService {
         log.debug("Request to save Rectangle : {}", redactionDTO);
 
         final Redaction redaction = markUpMapper.toEntity(redactionDTO);
-        String createdBy = securityUtils.getCurrentUserLogin()
-            .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND));
+        String createdBy = securityUtils
+                .getCurrentUserLogin()
+                .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND));
         redaction.setCreatedBy(createdBy);
-        redaction.getRectangles().stream().forEach(rectangle -> rectangle.setCreatedBy(createdBy));
-
-        if(CollectionUtils.isNotEmpty(redaction.getRectangles())) {
-            redaction.getRectangles()
+        redaction
+                .getRectangles()
                 .stream()
-                .forEach(rectangle -> rectangle.setRedaction(redaction));
+                .forEach(rectangle -> rectangle.setCreatedBy(createdBy));
+
+        if (CollectionUtils.isNotEmpty(redaction.getRectangles())) {
+            redaction.getRectangles()
+                    .stream()
+                    .forEach(rectangle -> rectangle.setRedaction(redaction));
         }
 
         Redaction response = markUpRepository.save(redaction);
@@ -115,8 +120,9 @@ public class MarkUpServiceImpl implements MarkUpService {
     }
 
     private void setRectangleData(Redaction redaction, String createdBy) {
-        if(CollectionUtils.isNotEmpty(redaction.getRectangles())) {
-            redaction.getRectangles()
+        if (CollectionUtils.isNotEmpty(redaction.getRectangles())) {
+            redaction
+                    .getRectangles()
                     .forEach(rectangle -> {
                         rectangle.setCreatedBy(createdBy);
                         rectangle.setRedaction(redaction);

@@ -8,7 +8,8 @@ public class IdamDetailsDTO {
 
     private String email;
 
-    public IdamDetailsDTO() {}
+    public IdamDetailsDTO() {
+    }
 
     public IdamDetailsDTO(String forename, String surname) {
         this.forename = forename;

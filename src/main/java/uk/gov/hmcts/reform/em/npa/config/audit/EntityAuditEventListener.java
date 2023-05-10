@@ -20,19 +20,22 @@ public class EntityAuditEventListener extends AuditingEntityListener {
 
     @PostPersist
     public void onPostCreate(Object target) {
-        AsyncEntityAuditEventWriter asyncEntityAuditEventWriter = beanFactory.getBean(AsyncEntityAuditEventWriter.class);
+        AsyncEntityAuditEventWriter asyncEntityAuditEventWriter
+                = beanFactory.getBean(AsyncEntityAuditEventWriter.class);
         asyncEntityAuditEventWriter.writeAuditEvent(target, EntityAuditAction.CREATE);
     }
 
     @PostUpdate
     public void onPostUpdate(Object target) {
-        AsyncEntityAuditEventWriter asyncEntityAuditEventWriter = beanFactory.getBean(AsyncEntityAuditEventWriter.class);
+        AsyncEntityAuditEventWriter asyncEntityAuditEventWriter
+                = beanFactory.getBean(AsyncEntityAuditEventWriter.class);
         asyncEntityAuditEventWriter.writeAuditEvent(target, EntityAuditAction.UPDATE);
     }
 
     @PostRemove
     public void onPostRemove(Object target) {
-        AsyncEntityAuditEventWriter asyncEntityAuditEventWriter = beanFactory.getBean(AsyncEntityAuditEventWriter.class);
+        AsyncEntityAuditEventWriter asyncEntityAuditEventWriter
+                = beanFactory.getBean(AsyncEntityAuditEventWriter.class);
         asyncEntityAuditEventWriter.writeAuditEvent(target, EntityAuditAction.DELETE);
     }
 

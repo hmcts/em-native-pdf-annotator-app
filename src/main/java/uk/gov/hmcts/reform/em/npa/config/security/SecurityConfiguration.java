@@ -11,7 +11,12 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
-import org.springframework.security.oauth2.jwt.*;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtDecoders;
+import org.springframework.security.oauth2.jwt.JwtIssuerValidator;
+import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationFilter;
 import uk.gov.hmcts.reform.authorisation.filters.ServiceAuthFilter;
 
@@ -37,14 +42,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) {
         web.ignoring().antMatchers("/swagger-ui.html",
                 "/swagger-ui/**",
-            "/swagger-resources/**",
-            "/v3/**",
-            "/health",
-            "/health/liveness",
-            "/health/readiness",
-            "/status/health",
-            "/loggers/**",
-            "/");
+                "/swagger-resources/**",
+                "/v3/**",
+                "/health",
+                "/health/liveness",
+                "/health/readiness",
+                "/status/health",
+                "/loggers/**",
+                "/");
     }
 
     @Override

@@ -16,13 +16,13 @@ import org.zalando.problem.Status;
 import org.zalando.problem.spring.web.advice.ProblemHandling;
 import org.zalando.problem.violations.ConstraintViolationProblem;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Controller advice to translate the server side exceptions to client-friendly json structures.
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 public class ExceptionTranslator implements ProblemHandling {
 
     /**
-     * Post-process the Problem payload to add the message key for the front-end if needed
+     * Post-process the Problem payload to add the message key for the front-end if needed.
      */
     @Override
     public ResponseEntity<Problem> process(@Nullable ResponseEntity<Problem> entity, NativeWebRequest request) {
@@ -73,7 +73,10 @@ public class ExceptionTranslator implements ProblemHandling {
     }
 
     @Override
-    public ResponseEntity<Problem> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, @Nonnull NativeWebRequest request) {
+    public ResponseEntity<Problem> handleMethodArgumentNotValid(
+            MethodArgumentNotValidException ex,
+            @Nonnull NativeWebRequest request
+    ) {
         BindingResult result = ex.getBindingResult();
         List<FieldErrorVM> fieldErrors = result.getFieldErrors().stream()
             .map(f -> new FieldErrorVM(f.getObjectName(), f.getField(), f.getCode()))
@@ -90,7 +93,10 @@ public class ExceptionTranslator implements ProblemHandling {
     }
 
     @ExceptionHandler
-    public ResponseEntity<Problem> handleNoSuchElementException(NoSuchElementException ex, NativeWebRequest request) {
+    public ResponseEntity<Problem> handleNoSuchElementException(
+            NoSuchElementException ex,
+            NativeWebRequest request
+    ) {
         Problem problem = Problem.builder()
             .withStatus(Status.NOT_FOUND)
             .with("message", ErrorConstants.ENTITY_NOT_FOUND_TYPE)
@@ -99,7 +105,10 @@ public class ExceptionTranslator implements ProblemHandling {
     }
 
     @ExceptionHandler
-    public ResponseEntity<Problem> handleBadRequestAlertException(BadRequestAlertException ex, NativeWebRequest request) {
+    public ResponseEntity<Problem> handleBadRequestAlertException(
+            BadRequestAlertException ex,
+            NativeWebRequest request
+    ) {
         Problem problem = Problem.builder()
                 .withStatus(Status.BAD_REQUEST)
                 .with("message", ErrorConstants.BAD_REQUEST)
@@ -108,7 +117,10 @@ public class ExceptionTranslator implements ProblemHandling {
     }
 
     @ExceptionHandler
-    public ResponseEntity<Problem> handleConcurrencyFailure(ConcurrencyFailureException ex, NativeWebRequest request) {
+    public ResponseEntity<Problem> handleConcurrencyFailure(
+            ConcurrencyFailureException ex,
+            NativeWebRequest request
+    ) {
         Problem problem = Problem.builder()
             .withStatus(Status.CONFLICT)
             .with("message", ErrorConstants.ERR_CONCURRENCY_FAILURE)
@@ -117,7 +129,10 @@ public class ExceptionTranslator implements ProblemHandling {
     }
 
     @ExceptionHandler
-    public ResponseEntity<Problem> handleAccessDenied(AccessDeniedException ex, NativeWebRequest request) {
+    public ResponseEntity<Problem> handleAccessDenied(
+            AccessDeniedException ex,
+            NativeWebRequest request
+    ) {
         Problem problem = Problem.builder()
                 .withStatus(Status.FORBIDDEN)
                 .with("message", ErrorConstants.ERR_FORBIDDEN)
@@ -126,7 +141,10 @@ public class ExceptionTranslator implements ProblemHandling {
     }
 
     @ExceptionHandler
-    public ResponseEntity<Problem> handleUnAuthorised(BadCredentialsException ex, NativeWebRequest request) {
+    public ResponseEntity<Problem> handleUnAuthorised(
+            BadCredentialsException ex,
+            NativeWebRequest request
+    ) {
         Problem problem = Problem.builder()
                 .withStatus(Status.UNAUTHORIZED)
                 .with("message", ErrorConstants.ERR_UNAUTHORISED)

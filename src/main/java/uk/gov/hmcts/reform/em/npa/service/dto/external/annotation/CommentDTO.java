@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.em.npa.service.dto.external.annotation;
 
-import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
+import javax.validation.constraints.Size;
 
 /**
  * A DTO for the Comment entity.
@@ -64,10 +64,10 @@ public class CommentDTO extends AbstractAuditingDTO implements Serializable {
 
     @Override
     public String toString() {
-        return "CommentDTO{" +
-            "id=" + getId() +
-            ", content='" + getContent() + "'" +
-            ", annotation=" + getAnnotationId() +
-            "}";
+        return "CommentDTO{"
+            + "id=" + getId()
+            + ", content='" + getContent() + "'"
+            + ", annotation=" + getAnnotationId()
+            + "}";
     }
 }

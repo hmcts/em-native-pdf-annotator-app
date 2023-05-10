@@ -5,13 +5,18 @@ import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.em.npa.domain.PersistentAuditEvent;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Component
 public class AuditEventConverter {
 
     /**
-     * Convert a list of PersistentAuditEvent to a list of AuditEvent
+     * Convert a list of PersistentAuditEvent to a list of AuditEvent.
      *
      * @param persistentAuditEvents the list to convert
      * @return the converted list.
@@ -28,7 +33,7 @@ public class AuditEventConverter {
     }
 
     /**
-     * Convert a PersistentAuditEvent to an AuditEvent
+     * Convert a PersistentAuditEvent to an AuditEvent.
      *
      * @param persistentAuditEvent the event to convert
      * @return the converted list.
@@ -42,7 +47,7 @@ public class AuditEventConverter {
     }
 
     /**
-     * Internal conversion. This is needed to support the current SpringBoot actuator AuditEventRepository interface
+     * Internal conversion. This is needed to support the current SpringBoot actuator AuditEventRepository interface.
      *
      * @param data the data to convert
      * @return a map of String, Object

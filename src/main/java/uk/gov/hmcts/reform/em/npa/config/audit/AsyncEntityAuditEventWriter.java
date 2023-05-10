@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 
 /**
- * Async Entity Audit Event writer
+ * Async Entity Audit Event writer.
  * This is invoked by Hibernate entity listeners to write audit event for entities
  */
 @Component
@@ -32,7 +32,7 @@ public class AsyncEntityAuditEventWriter {
     }
 
     /**
-     * Writes audit events to DB asynchronously in a new thread
+     * Writes audit events to DB asynchronously in a new thread.
      */
     @Async
     public void writeAuditEvent(Object target, EntityAuditAction action) {
@@ -48,13 +48,16 @@ public class AsyncEntityAuditEventWriter {
     }
 
     /**
-     * Method to prepare auditing entity
+     * Method to prepare auditing entity.
      *
-     * @param entity
-     * @param action
-     * @return
+     * @param entity to write
+     * @param action audit action
+     * @return EntityAuditEvent
      */
-    private EntityAuditEvent prepareAuditEntity(final Object entity, EntityAuditAction action) throws EntityAuditEventException {
+    private EntityAuditEvent prepareAuditEntity(
+            final Object entity,
+            EntityAuditAction action
+    ) throws EntityAuditEventException {
         EntityAuditEvent auditedEntity = new EntityAuditEvent();
         Class<?> entityClass = entity.getClass(); // Retrieve entity class with reflection
         auditedEntity.setAction(action.value());
