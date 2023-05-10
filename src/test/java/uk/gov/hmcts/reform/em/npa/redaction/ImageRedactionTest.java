@@ -14,7 +14,9 @@ import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
@@ -35,7 +37,7 @@ public class ImageRedactionTest {
     }
 
     public void initRedactionDTOList() {
-        for (int i = 0; i < 5 ; i++) {
+        for (int i = 0; i < 5; i++) {
             RectangleDTO rectangle = new RectangleDTO();
             rectangle.setId(UUID.randomUUID());
             rectangle.setX(100.00);

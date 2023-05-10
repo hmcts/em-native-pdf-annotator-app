@@ -26,7 +26,7 @@ public class SecurityUtils {
     private final IdamRepository idamRepository;
 
     @Autowired
-    public SecurityUtils(final IdamRepository idamRepository){
+    public SecurityUtils(final IdamRepository idamRepository) {
         this.idamRepository = idamRepository;
     }
 
@@ -39,26 +39,29 @@ public class SecurityUtils {
     public Optional<String> getCurrentUserLogin() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         return Optional.ofNullable(securityContext.getAuthentication())
-            .map(authentication -> {
-                if (authentication.getPrincipal() instanceof UserDetails) {
-                    UserDetails springSecurityUser = (UserDetails) authentication.getPrincipal();
-                    return springSecurityUser.getUsername();
-                } else if (authentication.getPrincipal() instanceof String) {
-                    return (String) authentication.getPrincipal();
-                }else if (authentication instanceof JwtAuthenticationToken) {
-                    Jwt jwt = ((JwtAuthenticationToken) authentication).getToken();
-                    if (Boolean.TRUE.equals(jwt.containsClaim(TOKEN_NAME)) && jwt.getClaim(TOKEN_NAME).equals(ACCESS_TOKEN)) {
-                        uk.gov.hmcts.reform.idam.client.models.UserInfo userInfo = idamRepository.getUserInfo(jwt.getTokenValue());
-                        return userInfo.getUid();
+                .map(authentication -> {
+                    if (authentication.getPrincipal() instanceof UserDetails) {
+                        UserDetails springSecurityUser = (UserDetails) authentication.getPrincipal();
+                        return springSecurityUser.getUsername();
+                    } else if (authentication.getPrincipal() instanceof String) {
+                        return (String) authentication.getPrincipal();
+                    } else if (authentication instanceof JwtAuthenticationToken) {
+                        Jwt jwt = ((JwtAuthenticationToken) authentication).getToken();
+                        if (Boolean.TRUE.equals(jwt.hasClaim(TOKEN_NAME))
+                                && jwt.getClaim(TOKEN_NAME).equals(ACCESS_TOKEN)) {
+                            uk.gov.hmcts.reform.idam.client.models.UserInfo userInfo
+                                    = idamRepository.getUserInfo(jwt.getTokenValue());
+                            return userInfo.getUid();
+                        }
+                    } else if (authentication.getPrincipal() instanceof DefaultOidcUser) {
+                        Map<String, Object> attributes =
+                                ((DefaultOidcUser) authentication.getPrincipal()).getAttributes();
+                        if (attributes.containsKey("preferred_username")) {
+                            return (String) attributes.get("preferred_username");
+                        }
                     }
-                } else if (authentication.getPrincipal() instanceof DefaultOidcUser) {
-                    Map<String, Object> attributes = ((DefaultOidcUser) authentication.getPrincipal()).getAttributes();
-                    if (attributes.containsKey("preferred_username")) {
-                        return (String) attributes.get("preferred_username");
-                    }
-                }
-                return null;
-            });
+                    return null;
+                });
     }
 
 }

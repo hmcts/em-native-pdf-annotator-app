@@ -40,8 +40,14 @@ public class RedactionServiceImpl implements RedactionService {
     @Value("${toggles.cdam_enabled}")
     boolean cdamEnabled;
 
-    public RedactionServiceImpl (DmStoreDownloader dmStoreDownloader, PdfRedaction pdfRedaction, ImageRedaction imageRedaction,
-                                 MarkUpRepository markUpRepository, SecurityUtils securityUtils, CdamService cdamService) {
+    public RedactionServiceImpl(
+            DmStoreDownloader dmStoreDownloader,
+            PdfRedaction pdfRedaction,
+            ImageRedaction imageRedaction,
+            MarkUpRepository markUpRepository,
+            SecurityUtils securityUtils,
+            CdamService cdamService
+    ) {
         this.dmStoreDownloader = dmStoreDownloader;
         this.pdfRedaction = pdfRedaction;
         this.imageRedaction = imageRedaction;
@@ -70,7 +76,10 @@ public class RedactionServiceImpl implements RedactionService {
                 updatedFile = pdfRedaction.redactPdf(originalFile, redactionRequest.getRedactions());
             } else if (imageExtensionsList.contains(fileType.toLowerCase())) {
                 log.debug("Applying redaction to Image Document");
-                updatedFile = imageRedaction.redactImage(originalFile, redactionRequest.getRedactions().get(0).getRectangles());
+                updatedFile = imageRedaction.redactImage(
+                        originalFile,
+                        redactionRequest.getRedactions().get(0).getRectangles()
+                );
             } else {
                 throw new FileTypeException("Redaction cannot be applied to the file type provided");
             }

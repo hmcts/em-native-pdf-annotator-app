@@ -3,9 +3,15 @@ package uk.gov.hmcts.reform.em.npa.domain;
 
 import uk.gov.hmcts.reform.em.npa.domain.enumeration.TaskState;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Table;
 
 /**
  * A DocumentTask.
@@ -16,7 +22,7 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
 
     private static final long serialVersionUID = 1L;
 
-    @Id
+    @javax.persistence.Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
@@ -120,13 +126,13 @@ public class DocumentTask extends AbstractAuditingEntity implements Serializable
 
     @Override
     public String toString() {
-        return "DocumentTask{" +
-            "id=" + getId() +
-            ", inputDocumentId='" + getInputDocumentId() + "'" +
-            ", outputDocumentId='" + getOutputDocumentId() + "'" +
-            ", taskState='" + getTaskState() + "'" +
-            ", failureDescription='" + getFailureDescription() + "'" +
-            "}";
+        return "DocumentTask{"
+            + "id=" + getId()
+            + ", inputDocumentId='" + getInputDocumentId() + "'"
+            + ", outputDocumentId='" + getOutputDocumentId() + "'"
+            + ", taskState='" + getTaskState() + "'"
+            + ", failureDescription='" + getFailureDescription() + "'"
+            + "}";
     }
 
     public String getJwt() {

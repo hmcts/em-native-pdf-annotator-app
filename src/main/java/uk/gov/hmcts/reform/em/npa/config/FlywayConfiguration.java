@@ -14,10 +14,7 @@ import org.springframework.context.annotation.Configuration;
 import uk.gov.hmcts.reform.em.npa.data.migration.FlywayNoOpStrategy;
 
 
-@AutoConfigureAfter({
-        DataSourceAutoConfiguration.class,
-        HibernateJpaAutoConfiguration.class
-})
+@AutoConfigureAfter({DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
 @AutoConfigureBefore(FlywayAutoConfiguration.class)
 @Configuration
 @ConditionalOnClass(Flyway.class)

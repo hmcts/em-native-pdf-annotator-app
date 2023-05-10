@@ -22,8 +22,8 @@ import uk.gov.hmcts.reform.em.npa.config.Constants;
 import uk.gov.hmcts.reform.em.npa.service.RedactionService;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionRequest;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.File;
+import javax.servlet.http.HttpServletRequest;
 
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 
@@ -42,26 +42,29 @@ public class RedactionResource {
     }
 
     @InitBinder
-    public void initBinder(WebDataBinder binder)
-    {
+    public void initBinder(WebDataBinder binder) {
         binder.setDisallowedFields(Constants.IS_ADMIN);
     }
 
-    @Operation(summary = "Burn markups onto Document", description = "A POST request to burn markups onto Document"
-            + "and return the newly redacted document",
-            parameters = {
-                    @Parameter(in = ParameterIn.HEADER, name = "authorization",
-                            description = "Authorization (Idam Bearer token)", required = true,
-                            schema = @Schema(type = "string")),
-                    @Parameter(in = ParameterIn.HEADER, name = "serviceauthorization",
-                            description = "Service Authorization (S2S Bearer token)", required = true,
-                            schema = @Schema(type = "string"))})
+    @Operation(
+        summary = "Burn markups onto Document",
+        description = "A POST request to burn markups onto Document and return the newly redacted document",
+        parameters = {
+            @Parameter(
+                in = ParameterIn.HEADER, name = "authorization",
+                description = "Authorization (Idam Bearer token)", required = true,
+                schema = @Schema(type = "string")),
+            @Parameter(
+                in = ParameterIn.HEADER, name = "serviceauthorization",
+                description = "Service Authorization (S2S Bearer token)", required = true,
+                schema = @Schema(type = "string"))}
+    )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully redacted"),
-            @ApiResponse(responseCode = "400", description = "Invalid request"),
-            @ApiResponse(responseCode = "401", description = "Unauthorised"),
-            @ApiResponse(responseCode = "403", description = "Forbidden"),
-            @ApiResponse(responseCode = "500", description = "Server Error"),
+        @ApiResponse(responseCode = "200", description = "Successfully redacted"),
+        @ApiResponse(responseCode = "400", description = "Invalid request"),
+        @ApiResponse(responseCode = "401", description = "Unauthorised"),
+        @ApiResponse(responseCode = "403", description = "Forbidden"),
+        @ApiResponse(responseCode = "500", description = "Server Error"),
     })
     @PostMapping("/redaction")
     public ResponseEntity<Object> save(HttpServletRequest request,

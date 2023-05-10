@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.em.npa.config.audit;
 
 /**
- * Enum for the different audit actions
+ * Enum for the different audit actions.
  */
 public enum EntityAuditAction {
     CREATE("CREATE"),

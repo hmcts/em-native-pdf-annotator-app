@@ -15,9 +15,9 @@ import uk.gov.hmcts.reform.em.npa.domain.EntityAuditEvent;
 import uk.gov.hmcts.reform.em.npa.domain.Redaction;
 import uk.gov.hmcts.reform.em.npa.repository.EntityAuditEventRepository;
 
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.junit.jupiter.api.Assertions.assertSame;
 
 
 @RunWith(SpringRunner.class)

@@ -14,9 +14,15 @@ public class RectangleDTO extends AbstractAuditingDTO implements Serializable {
 
     private UUID id;
 
+    //CHECKSTYLE:OFF
     private Double x;
+    //CHECKSTYLE:ON
 
+
+    //CHECKSTYLE:OFF
     private Double y;
+    //CHECKSTYLE:ON
+
 
     private Double width;
 

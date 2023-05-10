@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.em.test.dm.DmHelper;
 import uk.gov.hmcts.reform.em.test.idam.IdamHelper;
 import uk.gov.hmcts.reform.em.test.s2s.S2sHelper;
 
-import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -31,12 +30,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.annotation.PostConstruct;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -72,7 +71,7 @@ public class TestUtil {
     private String dmDocumentApiUrl;
 
     @PostConstruct
-    public void init() throws Exception {
+    public void init() {
         idamHelper.createUser("redactionTestUser2@redactiontest.com",
             Stream.of("caseworker", "caseworker-publiclaw", "ccd-import").collect(Collectors.toList()));
         SerenityRest.useRelaxedHTTPSValidation();
@@ -313,7 +312,11 @@ public class TestUtil {
         return payload;
     }
 
-    public UploadResponse uploadCdamDocument(String username, String caseTypeId, String jurisdictionId) throws IOException {
+    public UploadResponse uploadCdamDocument(
+            String username,
+            String caseTypeId,
+            String jurisdictionId
+    ) throws IOException {
 
         final MultipartFile multipartFile = new MockMultipartFile(
             "annotationTemplate.pdf",
