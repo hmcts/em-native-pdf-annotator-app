@@ -23,7 +23,6 @@ plugins {
 
 apply plugin: 'java'
 apply plugin: 'idea'
-apply plugin: 'net.serenity-bdd.aggregator'
 
 dependencyUpdates.resolutionStrategy {
     componentSelection { rules ->
