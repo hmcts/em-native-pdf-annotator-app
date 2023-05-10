@@ -77,7 +77,7 @@ def versions = [
         fasterXmlJackson   : '2.14.0-rc1',
         hibernate          : '5.6.5.Final',
         mapstruct          : '1.4.2.Final',
-        springSecurity     : '5.7.8',
+        springSecurity     : '6.0.3',
         springcloud        : '3.1.4',
         log4JVersion       : '2.17.2',
         jupiter            : '5.8.2',
@@ -188,7 +188,11 @@ dependencies {
     implementation group:'org.hibernate', name: 'hibernate-entitymanager', version: versions.hibernate
     implementation group:'org.hibernate', name: 'hibernate-envers', version: versions.hibernate
 
-    implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.1.2'
+    // delete these when moved to spring-3
+    implementation group: 'org.springframework', name: 'spring-web', version: '6.0.8'
+    implementation group: 'jakarta.servlet', name: 'jakarta.servlet-api', version: '6.0.0'
+    // end
+    implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.0.0'
     implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '3.0.0'
     implementation 'com.github.hmcts:ccd-case-document-am-client:1.59'
     implementation group: 'org.apache.tika', name: 'tika-core', version: '2.7.0'
