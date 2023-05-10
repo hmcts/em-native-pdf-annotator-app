@@ -106,8 +106,8 @@ public class MarkUpServiceImplTest {
 
         RedactionDTO savedRedactionDTO = updatedRedactionDTOS.iterator().next();
 
-        Assert.assertTrue(savedRedactionDTO.equals(redactionDTO) ||
-                savedRedactionDTO.equals(redactionDTO1) || savedRedactionDTO.equals(redactionDTO2));
+        Assert.assertTrue(savedRedactionDTO.equals(redactionDTO)
+                || savedRedactionDTO.equals(redactionDTO1) || savedRedactionDTO.equals(redactionDTO2));
 
         Mockito.verify(markUpRepository, Mockito.atLeast(1)).saveAll(Mockito.any());
         Mockito.verify(markUpMapper, Mockito.atLeast(1)).toEntity(redactionDTOS);

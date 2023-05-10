@@ -76,11 +76,16 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
                 return copyResponseToFile(binaryResponse, fileType);
 
             } else {
-                throw new DocumentTaskProcessingException("Could not access the binary. HTTP response: " + response.code());
+                throw new DocumentTaskProcessingException(
+                        "Could not access the binary. HTTP response: " + response.code()
+                );
             }
 
         } catch (RuntimeException | IOException e) {
-            throw new DocumentTaskProcessingException(String.format("Could not access the binary: %s", e.getMessage()), e);
+            throw new DocumentTaskProcessingException(String.format(
+                    "Could not access the binary: %s", e.getMessage()),
+                    e
+            );
         }
 
     }
@@ -99,7 +104,7 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
     private File copyResponseToFile(Response response, String fileType) throws DocumentTaskProcessingException {
         try {
 
-            File tempFile = File.createTempFile("dm-store", "."+fileType);
+            File tempFile = File.createTempFile("dm-store", "." + fileType);
             Files.copy(response.body().byteStream(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
             return tempFile;

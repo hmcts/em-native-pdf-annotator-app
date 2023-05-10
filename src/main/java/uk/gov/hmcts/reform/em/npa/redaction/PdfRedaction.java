@@ -16,29 +16,34 @@ import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 import uk.gov.hmcts.reform.em.npa.service.exception.RedactionProcessingException;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
+;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
+import javax.imageio.ImageIO;
 
 @Service
 public class PdfRedaction {
 
     /**
-     * Applying Redaction to pdf file
+     * Applying Redaction to pdf file.
      *
-     * @param documentFile pdf file to be redacted
+     * @param documentFile     pdf file to be redacted
      * @param redactionDTOList list of redactions to be applied to the pdf
      * @return the redacted file
-     * @throws IOException
+     * @throws IOException in document process
      */
     public File redactPdf(File documentFile, List<RedactionDTO> redactionDTOList) throws IOException {
         PDDocument document = PDDocument.load(documentFile);
         PDFRenderer pdfRenderer = new PDFRenderer(document);
-        final File newFile = File.createTempFile(String.format("Redacted-%s", FilenameUtils.getBaseName(documentFile.getName())), ".pdf");
+        final File newFile =
+                File.createTempFile(
+                        String.format("Redacted-%s", FilenameUtils.getBaseName(documentFile.getName())),
+                        ".pdf"
+                );
         document.setDocumentInformation(new PDDocumentInformation());
 
         try (PDDocument newDocument = new PDDocument()) {
@@ -55,14 +60,18 @@ public class PdfRedaction {
     }
 
     /**
-     * Draw rectangles on pdf document to redact marked up content on page
+     * Draw rectangles on pdf document to redact marked up content on page.
      *
      * @param document The pdf to be redacted
      * @param pageNumber The page number in the PDF (zero indexed)
      * @param rectangles Rectangles to be drawn onto the pdf document
-     * @throws IOException
+     * @throws IOException If it fails in document process
      */
-    private void redactPageContent(PDDocument document, int pageNumber, Set<RectangleDTO> rectangles) throws IOException {
+    private void redactPageContent(
+            PDDocument document,
+            int pageNumber,
+            Set<RectangleDTO> rectangles
+    ) throws IOException {
         PDPage page = document.getPage(pageNumber);
         PDRectangle pageSize = page.getMediaBox();
         pageSize.setLowerLeftX(page.getCropBox().getLowerLeftX() / 0.75f);
@@ -78,8 +87,8 @@ public class PdfRedaction {
             try {
                 contentStream.addRect(
                     pixelToPointConversion(pageSize.getLowerLeftX() + rectangle.getX()),
-                    (pageSize.getHeight() - pixelToPointConversion(rectangle.getY())) -
-                        pixelToPointConversion(rectangle.getHeight()),
+                    (pageSize.getHeight() - pixelToPointConversion(rectangle.getY()))
+                            - pixelToPointConversion(rectangle.getHeight()),
                     pixelToPointConversion(rectangle.getWidth()),
                     pixelToPointConversion(rectangle.getHeight()));
                 contentStream.fill();
@@ -91,7 +100,7 @@ public class PdfRedaction {
     }
 
     /**
-     * Convert pixel values passed by media viewer into pdf friendly point values
+     * Convert pixel values passed by media viewer into pdf friendly point values.
      *
      * @param value Pixel value to be converted into Point value
      * @return Converted Point value
@@ -101,12 +110,12 @@ public class PdfRedaction {
     }
 
     /**
-     * Transform PDF Page to Image
+     * Transform PDF Page to Image.
      *
-     * @param pdfRenderer
+     * @param pdfRenderer pdf file to be redacted
      * @param pageNumber The page number in the PDF (zero indexed)
      * @return The file containing the converted page
-     * @throws IOException
+     * @throws IOException if document process and image process fails
      */
     private File transformToImage(PDFRenderer pdfRenderer, int pageNumber) throws IOException {
         BufferedImage img = pdfRenderer.renderImageWithDPI(pageNumber, 300, ImageType.ARGB);
@@ -116,11 +125,11 @@ public class PdfRedaction {
     }
 
     /**
-     * Convert the page back to pdf after redaction on image
+     * Convert the page back to pdf after redaction on image.
      *
      * @param pageImage The file containing the PDF page image
      * @return The newly redacted page in PDF format
-     * @throws IOException
+     * @throws IOException if document process fails
      */
     private PDPage transformToPdf(File pageImage, PDDocument newDocument, PDPage originalPage) throws IOException {
         PDPage newPage = new PDPage(originalPage.getMediaBox());
@@ -133,9 +142,13 @@ public class PdfRedaction {
 
             BufferedImage awtImage = ImageIO.read(pageImage);
             PDImageXObject pdImageXObject = LosslessFactory.createFromImage(newDocument, awtImage);
-            contentStream.drawImage(pdImageXObject, cropBox.getLowerLeftX(), cropBox.getLowerLeftY(),
-                    cropBox.getWidth(), cropBox.getHeight());
-
+            contentStream.drawImage(
+                    pdImageXObject,
+                    cropBox.getLowerLeftX(),
+                    cropBox.getLowerLeftY(),
+                    cropBox.getWidth(),
+                    cropBox.getHeight()
+            );
             return newPage;
         } catch (IOException e) {
             throw new RedactionProcessingException("Error transforming image file to PDF page");
@@ -143,7 +156,7 @@ public class PdfRedaction {
     }
 
     /**
-     * Replace old version of page in PDF with newly redacted one
+     * Replace old version of page in PDF with newly redacted one.
      *
      * @param document The PDF document to be redacted
      * @param index The page number in the PDF (zero indexed)

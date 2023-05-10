@@ -1,9 +1,5 @@
 package uk.gov.hmcts.reform.em.npa.redaction;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +11,14 @@ import uk.gov.hmcts.reform.em.npa.Application;
 import uk.gov.hmcts.reform.em.npa.TestSecurityConfiguration;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.UUID;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
@@ -34,7 +38,7 @@ public class PdfRedactionTest {
     }
 
     public void initRedactionDTOList() {
-        for (int i = 0; i < 5 ; i++) {
+        for (int i = 0; i < 5; i++) {
             RedactionDTO redaction = new RedactionDTO();
             redaction.setRedactionId(UUID.randomUUID());
             redaction.setDocumentId(UUID.randomUUID());

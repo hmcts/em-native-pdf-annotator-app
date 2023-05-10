@@ -76,11 +76,17 @@ public class DmStoreUploaderImpl implements DmStoreUploader {
                 return objectMapper.readTree(response.body().string());
 
             } else {
-                throw new DocumentTaskProcessingException("Couldn't upload the file. Response code: " + response.code(), null);
+                throw new DocumentTaskProcessingException(
+                        "Couldn't upload the file. Response code: " + response.code(),
+                        null
+                );
             }
 
         } catch (RuntimeException | IOException e) {
-            throw new DocumentTaskProcessingException(String.format("Couldn't upload the file:  %s", e.getMessage()), e);
+            throw new DocumentTaskProcessingException(String.format(
+                    "Couldn't upload the file:  %s", e.getMessage()),
+                    e
+            );
         }
 
     }

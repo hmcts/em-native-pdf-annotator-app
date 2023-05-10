@@ -1,11 +1,9 @@
 package uk.gov.hmcts.reform.em.npa.rest;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -30,6 +28,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class MarkUpResourceTest {
 
@@ -58,10 +66,18 @@ public class MarkUpResourceTest {
 
         RedactionDTO redactionDTO = createRedactionDTO();
         String[] codes = {"1"};
-        FieldError fieldError = new FieldError("testField", "field", null, true, codes, null, null);
+        FieldError fieldError = new FieldError(
+                "testField",
+                "field",
+                null,
+                true,
+                codes,
+                null,
+                null
+        );
         List<FieldError> errors = Arrays.asList(fieldError);
-        Mockito.when(result.hasErrors()).thenReturn(true);
-        Mockito.when(result.getFieldErrors()).thenReturn(errors);
+        when(result.hasErrors()).thenReturn(true);
+        when(result.getFieldErrors()).thenReturn(errors);
 
         ResponseEntity<RedactionDTO>  responseEntity = markUpResource.createMarkUp(redactionDTO, result);
     }
@@ -71,16 +87,16 @@ public class MarkUpResourceTest {
 
         RedactionDTO redactionDTO = createRedactionDTO();
 
-        Mockito.when(markUpService.save(redactionDTO)).thenReturn(redactionDTO);
+        when(markUpService.save(redactionDTO)).thenReturn(redactionDTO);
 
         ResponseEntity<RedactionDTO>  responseEntity = markUpResource.createMarkUp(redactionDTO, result);
 
         RedactionDTO response = responseEntity.getBody();
-        Assert.assertEquals(redactionDTO.getDocumentId(), response.getDocumentId());
-        Assert.assertEquals(redactionDTO.getRedactionId(), response.getRedactionId());
-        Assert.assertEquals(redactionDTO.getRectangles().size(), response.getRectangles().size());
+        assertEquals(redactionDTO.getDocumentId(), response.getDocumentId());
+        assertEquals(redactionDTO.getRedactionId(), response.getRedactionId());
+        assertEquals(redactionDTO.getRectangles().size(), response.getRectangles().size());
 
-        Mockito.verify(markUpService, Mockito.atLeast(1)).save(redactionDTO);
+        verify(markUpService, atLeast(1)).save(redactionDTO);
     }
 
     @Test(expected = ValidationErrorException.class)
@@ -89,8 +105,8 @@ public class MarkUpResourceTest {
         String[] codes = {"1"};
         FieldError fieldError = new FieldError("testField", "field", null, true, codes, null, null);
         List<FieldError> errors = List.of(fieldError);
-        Mockito.when(result.hasErrors()).thenReturn(true);
-        Mockito.when(result.getFieldErrors()).thenReturn(errors);
+        when(result.hasErrors()).thenReturn(true);
+        when(result.getFieldErrors()).thenReturn(errors);
 
         ResponseEntity<RedactionSetDTO>  responseEntity = markUpResource.createSearchMarkUps(redactionSetDTO, result);
     }
@@ -98,14 +114,14 @@ public class MarkUpResourceTest {
     @Test
     public void createMarkUpsSuccess() {
         RedactionSetDTO redactionSetDTO = createRedactionSetDTO();
-        Mockito.when(markUpService.saveAll(Mockito.any())).thenReturn(redactionSetDTO);
+        when(markUpService.saveAll(any())).thenReturn(redactionSetDTO);
 
         ResponseEntity<RedactionSetDTO>  responseEntity = markUpResource.createSearchMarkUps(redactionSetDTO, result);
         RedactionSetDTO response = responseEntity.getBody();
 
-        Assert.assertNotNull(response);
-        Assert.assertTrue(redactionSetDTO.getSearchRedactions().contains(response.getSearchRedactions().iterator().next()));
-        Mockito.verify(markUpService, Mockito.atLeast(1)).saveAll(redactionSetDTO);
+        assertNotNull(response);
+        assertTrue(redactionSetDTO.getSearchRedactions().contains(response.getSearchRedactions().iterator().next()));
+        verify(markUpService, atLeast(1)).saveAll(redactionSetDTO);
     }
 
     @Test(expected = ValidationErrorException.class)
@@ -113,10 +129,17 @@ public class MarkUpResourceTest {
 
         RedactionDTO redactionDTO = createRedactionDTO();
         String[] codes = {"1"};
-        FieldError fieldError = new FieldError("testField", "field", null, true, codes, null, null);
+        FieldError fieldError = new FieldError(
+                "testField",
+                "field",
+                null,
+                true, codes,
+                null,
+                null
+        );
         List<FieldError> errors = Arrays.asList(fieldError);
-        Mockito.when(result.hasErrors()).thenReturn(true);
-        Mockito.when(result.getFieldErrors()).thenReturn(errors);
+        when(result.hasErrors()).thenReturn(true);
+        when(result.getFieldErrors()).thenReturn(errors);
 
         ResponseEntity<RedactionDTO>  responseEntity = markUpResource.updateMarkUp(redactionDTO, result);
 
@@ -127,16 +150,16 @@ public class MarkUpResourceTest {
 
         RedactionDTO redactionDTO = createRedactionDTO();
 
-        Mockito.when(markUpService.save(redactionDTO)).thenReturn(redactionDTO);
+        when(markUpService.save(redactionDTO)).thenReturn(redactionDTO);
 
         ResponseEntity<RedactionDTO>  responseEntity = markUpResource.updateMarkUp(redactionDTO, result);
 
         RedactionDTO response = responseEntity.getBody();
-        Assert.assertEquals(redactionDTO.getDocumentId(), response.getDocumentId());
-        Assert.assertEquals(redactionDTO.getRedactionId(), response.getRedactionId());
-        Assert.assertEquals(redactionDTO.getRectangles().size(), response.getRectangles().size());
+        assertEquals(redactionDTO.getDocumentId(), response.getDocumentId());
+        assertEquals(redactionDTO.getRedactionId(), response.getRedactionId());
+        assertEquals(redactionDTO.getRectangles().size(), response.getRectangles().size());
 
-        Mockito.verify(markUpService, Mockito.atLeast(1)).save(redactionDTO);
+        verify(markUpService, atLeast(1)).save(redactionDTO);
     }
 
     @Test
@@ -146,10 +169,10 @@ public class MarkUpResourceTest {
         List<RedactionDTO> redactions = Arrays.asList(createRedactionDTO());
         Page<RedactionDTO> redactionDTOS = new PageImpl<>(redactions);
 
-        Mockito.when(markUpService.findAllByDocumentId(id, Pageable.unpaged())).thenReturn(redactionDTOS);
+        when(markUpService.findAllByDocumentId(id, Pageable.unpaged())).thenReturn(redactionDTOS);
         ResponseEntity<List<RedactionDTO>> response = markUpResource.getAllDocumentMarkUps(id, pageable);
 
-        Mockito.verify(markUpService, Mockito.atLeast(1)).findAllByDocumentId(id, Pageable.unpaged());
+        verify(markUpService, atLeast(1)).findAllByDocumentId(id, Pageable.unpaged());
     }
 
     @Test(expected = ResponseStatusException.class)
@@ -159,7 +182,7 @@ public class MarkUpResourceTest {
 
         Page<RedactionDTO> redactionDTOS = new PageImpl<>(Collections.emptyList());
 
-        Mockito.when(markUpService.findAllByDocumentId(id, Pageable.unpaged())).thenReturn(redactionDTOS);
+        when(markUpService.findAllByDocumentId(id, Pageable.unpaged())).thenReturn(redactionDTOS);
         markUpResource.getAllDocumentMarkUps(id, pageable);
     }
 
@@ -167,12 +190,12 @@ public class MarkUpResourceTest {
     public void testDeleteMarkUpsSuccess() {
 
         UUID documentId =  UUID.randomUUID();
-        Mockito.doNothing().when(markUpService).deleteAll(documentId);
+        doNothing().when(markUpService).deleteAll(documentId);
 
         ResponseEntity<Void> response = markUpResource.deleteMarkUps(documentId);
 
-        Mockito.verify(markUpService, Mockito.atLeast(1)).deleteAll(documentId);
-        Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
+        verify(markUpService, atLeast(1)).deleteAll(documentId);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
@@ -180,12 +203,12 @@ public class MarkUpResourceTest {
 
         UUID documentId =  UUID.randomUUID();
         UUID redactionId =  UUID.randomUUID();
-        Mockito.doNothing().when(markUpService).delete(redactionId);
+        doNothing().when(markUpService).delete(redactionId);
 
         ResponseEntity<Void> response = markUpResource.deleteMarkUp(documentId, redactionId);
 
-        Mockito.verify(markUpService, Mockito.atLeast(1)).delete(redactionId);
-        Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
+        verify(markUpService, atLeast(1)).delete(redactionId);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
@@ -193,9 +216,9 @@ public class MarkUpResourceTest {
 
         WebDataBinder webDataBinder = new WebDataBinder(null);
 
-        Assert.assertNull(webDataBinder.getDisallowedFields());
+        assertNull(webDataBinder.getDisallowedFields());
         markUpResource.initBinder(webDataBinder);
-        Assert.assertTrue(Arrays.asList(webDataBinder.getDisallowedFields()).contains(Constants.IS_ADMIN));
+        assertTrue(Arrays.asList(webDataBinder.getDisallowedFields()).contains(Constants.IS_ADMIN));
     }
 
     private RedactionSetDTO createRedactionSetDTO() {

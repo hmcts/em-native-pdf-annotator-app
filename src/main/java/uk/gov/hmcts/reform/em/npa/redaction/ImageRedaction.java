@@ -4,24 +4,25 @@ import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Set;
+import javax.imageio.ImageIO;
 
 @Service
 public class ImageRedaction {
 
     /**
-     * Apply redaction to an image file
+     * Apply redaction to an image file.
      *
      * @param imageFile the image to which the redactions are to be applied to
      * @param rectangles a list containing the information for the redactions to be applied to the image
      * @return the redacted image
-     * @throws IOException
+     * @throws IOException if document process fails
      */
     public File redactImage(File imageFile, Set<RectangleDTO> rectangles) throws IOException {
         BufferedImage img = ImageIO.read(imageFile);
@@ -29,11 +30,14 @@ public class ImageRedaction {
 
         rectangles.stream().forEach(redactionDTO -> {
             graph.setColor(Color.BLACK);
-            graph.fill(new Rectangle2D.Double(
-                    redactionDTO.getX(),
-                    redactionDTO.getY(),
-                    redactionDTO.getWidth(),
-                    redactionDTO.getHeight()));
+            graph.fill(
+                    new Rectangle2D.Double(
+                            redactionDTO.getX(),
+                            redactionDTO.getY(),
+                            redactionDTO.getWidth(),
+                            redactionDTO.getHeight()
+                    )
+            );
         });
         graph.dispose();
 

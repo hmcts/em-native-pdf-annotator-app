@@ -27,10 +27,11 @@ public interface MarkUpService {
 
 
     /**
+     * find All By DocumentId.
      *
-     * @param pageable
-     * @param documentId
-     * @return
+     * @param documentId document Id
+     * @param pageable pageable
+     * @return RedactionDTO
      */
     Page<RedactionDTO> findAllByDocumentId(UUID documentId, Pageable pageable);
 
