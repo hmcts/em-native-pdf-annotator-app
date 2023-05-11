@@ -1,7 +1,7 @@
 buildscript {
     dependencies {
-        classpath("net.serenity-bdd:serenity-gradle-plugin:2.6.0")
-        classpath("net.serenity-bdd:serenity-single-page-report:2.6.0")
+        classpath("net.serenity-bdd:serenity-gradle-plugin:3.7.0")
+        classpath("net.serenity-bdd:serenity-single-page-report:3.7.0")
     }
 }
 
@@ -25,7 +25,7 @@ plugins {
 
 apply plugin: 'java'
 apply plugin: 'idea'
-apply plugin: 'net.serenity-bdd.aggregator'
+apply plugin: 'net.serenity-bdd.serenity-gradle-plugin'
 
 dependencyUpdates.resolutionStrategy {
     componentSelection { rules ->
