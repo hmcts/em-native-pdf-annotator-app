@@ -10,7 +10,7 @@ In addition, the Native PDF Annotator handles requests from the Media Viewer to 
 
 It uses:
 
-* Java11
+* Java17
 * Spring boot
 * Junit, Mockito and SpringBootTest
 * Gradle
