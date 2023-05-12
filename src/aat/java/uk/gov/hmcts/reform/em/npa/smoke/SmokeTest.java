@@ -8,14 +8,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
-import uk.gov.hmcts.reform.em.EmTestConfig;
-import uk.gov.hmcts.reform.em.npa.testutil.TestUtil;
 
 import java.util.Map;
 
-@SpringBootTest(classes = {TestUtil.class, EmTestConfig.class})
 @TestPropertySource(value = "classpath:application.yml")
 @RunWith(SpringIntegrationSerenityRunner.class)
 @WithTags({@WithTag("testType:Smoke")})
