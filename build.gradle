@@ -138,12 +138,9 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
 
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: versions.springcloud
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: versions.springcloud
 
     implementation group: 'com.google.guava', name: 'guava', version: '31.1-jre'
-
-    implementation group: 'org.springframework.cloud', name: 'spring-cloud-openfeign', version: versions.springcloud, {
-        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-actuator'
-    }
 
     implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.26'
     implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.28'
@@ -253,12 +250,6 @@ dependencyManagement {
             entry 'byte-buddy-agent'
         }
         // Do not change - END
-
-        //CVE-2021-22044
-        dependencySet(group: 'org.springframework.cloud', version: versions.springcloud) {
-            entry 'spring-cloud-openfeign-core'
-            entry 'spring-cloud-starter-openfeign'
-        }
 
         //CVE-2022-23437
         dependencySet(group: 'xerces', version: '2.12.2') {
