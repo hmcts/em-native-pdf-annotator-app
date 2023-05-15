@@ -1,7 +1,7 @@
 buildscript {
     dependencies {
-        classpath("net.serenity-bdd:serenity-gradle-plugin:2.6.0")
-        classpath("net.serenity-bdd:serenity-single-page-report:2.6.0")
+        classpath("net.serenity-bdd:serenity-gradle-plugin:3.0.0")
+        classpath("net.serenity-bdd:serenity-single-page-report:3.0.0")
     }
 }
 
@@ -69,9 +69,9 @@ repositories {
 def versions = [
         postgresql         : '42.5.1',
         h2                 : '1.4.199',
-        serenity           : '2.6.0',
-        serenityreporter   : '2.6.0',
-        serenityRestAssured: '2.6.0',
+        serenity           : '3.0.0',
+        serenityreporter   : '3.0.0',
+        serenityRestAssured: '3.0.0',
         pact_version       : '4.0.10',
         logging            : '5.1.7',
         fasterXmlJackson   : '2.15.0',
