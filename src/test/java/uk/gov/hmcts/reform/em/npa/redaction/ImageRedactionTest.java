@@ -4,12 +4,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
-import uk.gov.hmcts.reform.em.npa.Application;
-import uk.gov.hmcts.reform.em.npa.TestSecurityConfiguration;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 
 import java.io.File;
@@ -18,16 +12,14 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
+
 public class ImageRedactionTest {
 
     private static final File TEST_IMAGE_FILE = new File(
             ClassLoader.getSystemResource("fist.png").getPath()
     );
 
-    @Autowired
-    private ImageRedaction imageRedaction;
+    private ImageRedaction imageRedaction = new ImageRedaction();
 
     private Set<RectangleDTO> rectangles = new HashSet<>();
 

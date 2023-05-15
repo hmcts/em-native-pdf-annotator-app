@@ -3,12 +3,6 @@ package uk.gov.hmcts.reform.em.npa.redaction;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
-import uk.gov.hmcts.reform.em.npa.Application;
-import uk.gov.hmcts.reform.em.npa.TestSecurityConfiguration;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 
@@ -20,15 +14,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
 public class PdfRedactionTest {
     private static final File TEST_PDF_FILE = new File(
             ClassLoader.getSystemResource("layered.pdf").getPath()
     );
 
-    @Autowired
-    private PdfRedaction pdfRedaction;
+    private PdfRedaction pdfRedaction = new PdfRedaction();
 
     private List<RedactionDTO> redactions = new ArrayList<>();
 
