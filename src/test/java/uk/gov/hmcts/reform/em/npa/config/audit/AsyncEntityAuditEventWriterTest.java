@@ -6,40 +6,28 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.slf4j.Logger;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
-import uk.gov.hmcts.reform.em.npa.Application;
-import uk.gov.hmcts.reform.em.npa.TestSecurityConfiguration;
+import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.em.npa.domain.EntityAuditEvent;
 import uk.gov.hmcts.reform.em.npa.domain.Redaction;
 import uk.gov.hmcts.reform.em.npa.repository.EntityAuditEventRepository;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
+@RunWith(MockitoJUnitRunner.class)
 public class AsyncEntityAuditEventWriterTest {
 
     @Mock
-    Logger log;
+    private EntityAuditEventRepository repository;
 
     @Mock
-    EntityAuditEventRepository repository;
-
-    @Mock
-    ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
 
     @InjectMocks
-    AsyncEntityAuditEventWriter asyncEntityAuditEventWriter;
+    private AsyncEntityAuditEventWriter asyncEntityAuditEventWriter;
 
     @Test
     public void testWriteAuditEventWithDebug() {
-        when(log.isDebugEnabled()).thenReturn(true);
-        when(log.isTraceEnabled()).thenReturn(true);
         Object target = new Redaction();
 
         asyncEntityAuditEventWriter.writeAuditEvent(target, EntityAuditAction.CREATE);
@@ -50,8 +38,6 @@ public class AsyncEntityAuditEventWriterTest {
 
     @Test
     public void testWriteAuditEventModifyAuditAction() {
-        when(log.isDebugEnabled()).thenReturn(false);
-        when(log.isTraceEnabled()).thenReturn(false);
         Object target = new Redaction();
 
         asyncEntityAuditEventWriter.writeAuditEvent(target, EntityAuditAction.UPDATE);
@@ -61,7 +47,6 @@ public class AsyncEntityAuditEventWriterTest {
 
     @Test
     public void testDeleteAuditEventModifyAuditAction() {
-        when(log.isDebugEnabled()).thenReturn(true);
         Object target = new Redaction();
 
         asyncEntityAuditEventWriter.writeAuditEvent(target, EntityAuditAction.DELETE);
