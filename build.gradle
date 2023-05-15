@@ -265,12 +265,6 @@ dependencyManagement {
         dependencySet(group: 'org.json', version: '20230227') {
             entry 'json'
         }
-
-        //CVE-2022-45143
-        dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.69') {
-            entry 'tomcat-embed-core'
-            entry 'tomcat-embed-websocket'
-        }
     }
 }
 
