@@ -8,6 +8,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
 import java.util.Map;
@@ -15,6 +16,7 @@ import java.util.Map;
 @TestPropertySource(value = "classpath:application.yml")
 @RunWith(SpringIntegrationSerenityRunner.class)
 @WithTags({@WithTag("testType:Smoke")})
+@SpringBootTest(classes = SmokeTest.class)
 public class SmokeTest {
 
     private static final String MESSAGE = "Welcome to Native PDF Annotator API!";

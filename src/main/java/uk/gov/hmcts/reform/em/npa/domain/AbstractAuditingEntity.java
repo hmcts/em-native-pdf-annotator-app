@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.em.npa.domain;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.MappedSuperclass;
 import org.hibernate.envers.Audited;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -10,9 +13,6 @@ import uk.gov.hmcts.reform.em.npa.config.audit.EntityAuditEventListener;
 
 import java.io.Serializable;
 import java.time.Instant;
-import javax.persistence.Column;
-import javax.persistence.EntityListeners;
-import javax.persistence.MappedSuperclass;
 
 /**
  * Base abstract class for entities which will hold definitions for created, last modified by and created,
