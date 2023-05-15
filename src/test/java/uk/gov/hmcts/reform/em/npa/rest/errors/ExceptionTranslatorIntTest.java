@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.em.npa.rest.errors;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,13 +58,12 @@ public class ExceptionTranslatorIntTest {
     @Test
     public void testMethodArgumentReturn200WhenNoContent() throws Exception {
         mockMvc.perform(post("/test/method-argument")
-                        .content("{}")
+                        .content("{ \"test\": \"test_content\" }")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is(200))
                 .andReturn();
     }
 
-    @Ignore("Revisit as it return status 200 as compare to original")
     @Test
     public void testMethodArgumentNotValid() throws Exception {
         mockMvc.perform(post("/test/method-argument").content("{}").contentType(MediaType.APPLICATION_JSON))
