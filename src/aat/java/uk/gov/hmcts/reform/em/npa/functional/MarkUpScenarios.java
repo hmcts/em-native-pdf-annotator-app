@@ -16,7 +16,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.reform.em.EmTestConfig;
 import uk.gov.hmcts.reform.em.npa.testutil.TestUtil;
@@ -405,8 +404,7 @@ public class MarkUpScenarios {
     }
 
     @Test
-    public void
-    shouldReturn200WhenGetAllMarkupsMoreThan20ByDocumentId() {
+    public void shouldReturn200WhenGetAllMarkupsMoreThan20ByDocumentId() {
         List<String> redactions = new ArrayList<>();
         final UUID documentId = UUID.randomUUID();
 

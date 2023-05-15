@@ -73,13 +73,13 @@ def versions = [
         serenityreporter   : '3.4.2',
         serenityRestAssured: '3.4.2',
         pact_version       : '4.0.10',
-        logging            : '5.1.7',
+        logging            : '6.0.1',
         fasterXmlJackson   : '2.15.0',
         hibernate          : '6.1.7.Final',
         mapstruct          : '1.4.2.Final',
         springSecurity     : '6.0.3',
         springcloud        : '4.0.0',
-        log4JVersion       : '2.17.2',
+        log4JVersion       : '2.20.0',
         jupiter            : '5.8.2',
         poi                : '5.2.2'
 ]
