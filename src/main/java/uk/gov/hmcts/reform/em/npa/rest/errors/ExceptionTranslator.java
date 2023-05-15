@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.npa.rest.errors;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.dao.ConcurrencyFailureException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -22,7 +23,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * Controller advice to translate the server side exceptions to client-friendly json structures.
