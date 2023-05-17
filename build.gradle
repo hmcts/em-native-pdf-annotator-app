@@ -78,7 +78,7 @@ def versions = [
         hibernate          : '6.1.7.Final',
         mapstruct          : '1.4.2.Final',
         springSecurity     : '6.0.3',
-        springcloud        : '4.0.0',
+        springcloud        : '4.0.2',
         log4JVersion       : '2.20.0',
         jupiter            : '5.8.2',
         poi                : '5.2.2'
@@ -224,7 +224,7 @@ dependencies {
     contractTestImplementation group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.14'
     contractTestImplementation group: 'org.apache.httpcomponents', name: 'fluent-hc', version: '4.5.14'
 
-    aatImplementation group: 'com.github.hmcts', name: 'em-test-helper', version: '1.21.9'
+    aatImplementation group: 'com.github.hmcts', name: 'em-test-helper', version: '2.0.4'
     aatImplementation group: 'org.apache.poi', name: 'poi', version: versions.poi
     aatImplementation group: 'org.apache.poi', name: 'poi-ooxml', version: versions.poi
     cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
