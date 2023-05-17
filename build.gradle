@@ -188,6 +188,9 @@ dependencies {
     annotationProcessor group:'org.hibernate', name: 'hibernate-jpamodelgen', version: versions.hibernate
     annotationProcessor group:'org.springframework.boot', name: 'spring-boot-configuration-processor', withoutStuff
 
+    annotationProcessor group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
+    annotationProcessor group: 'com.sun.xml.bind', name: 'jaxb-core', version: '4.0.2'
+    annotationProcessor group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '4.0.2'
 
     testImplementation group:'org.springframework.boot', name: 'spring-boot-starter-test', withoutStuff
     implementation group: 'com.github.gmazzo', name: 'okhttp-mock', version: '1.5.0'

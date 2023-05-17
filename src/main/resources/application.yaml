@@ -147,3 +147,8 @@ dbMigration:
 logging:
   level:
     uk.gov.hmcts.reform.authorisation.filters: DEBUG
+    uk.gov: DEBUG
+    org.springframework: DEBUG
+
+
+
