@@ -167,7 +167,6 @@ dependencies {
     implementation group: 'org.flywaydb', name: 'flyway-core', version: '9.18.0'
     implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
-    implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
     implementation group: 'commons-validator', name: 'commons-validator', version: '1.7'
     implementation group: 'javax.transaction', name: 'javax.transaction-api'
     implementation group: 'org.ehcache', name: 'ehcache', version: '3.10.8'
