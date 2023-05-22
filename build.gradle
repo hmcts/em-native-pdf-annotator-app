@@ -12,8 +12,8 @@ plugins {
     id 'au.com.dius.pact' version '4.2.14'
     id 'org.owasp.dependencycheck' version '8.2.1'
     id 'info.solidsoft.pitest' version '1.9.0'
-    id 'com.github.hmcts.rse-cft-lib' version '0.19.674'
-    id 'org.flywaydb.flyway' version '9.17.0'
+    id 'com.github.hmcts.rse-cft-lib' version '0.19.682'
+    id 'org.flywaydb.flyway' version '9.18.0'
     id 'io.freefair.lombok' version '8.0.1'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '3.0.0'
 }
@@ -159,7 +159,7 @@ dependencies {
     implementation group: 'org.springframework.security', name: 'spring-security-config', version: versions.springSecurity
 
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.14'
-    implementation group: 'org.flywaydb', name: 'flyway-core', version: '9.17.0'
+    implementation group: 'org.flywaydb', name: 'flyway-core', version: '9.18.0'
     implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
     implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
@@ -176,7 +176,7 @@ dependencies {
     implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.1.2'
     implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '3.0.0'
     implementation 'com.github.hmcts:ccd-case-document-am-client:1.59'
-    implementation group: 'org.apache.tika', name: 'tika-core', version: '2.7.0'
+    implementation group: 'org.apache.tika', name: 'tika-core', version: '2.8.0'
 
     implementation group: 'org.mapstruct', name: 'mapstruct', version: versions.mapstruct
 
@@ -220,7 +220,7 @@ dependencies {
     contractTestImplementation group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.14'
     contractTestImplementation group: 'org.apache.httpcomponents', name: 'fluent-hc', version: '4.5.14'
 
-    aatImplementation group: 'com.github.hmcts', name: 'em-test-helper', version: '1.21.9'
+    aatImplementation group: 'com.github.hmcts', name: 'em-test-helper', version: '2.0.4'
     aatImplementation group: 'org.apache.poi', name: 'poi', version: versions.poi
     aatImplementation group: 'org.apache.poi', name: 'poi-ooxml', version: versions.poi
     cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
