@@ -4,7 +4,7 @@ spring:
   config:
     import: "optional:configtree:/mnt/secrets/em-npa/"
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQL94Dialect
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     database: postgresql
     show-sql: ${SHOW_SQL:false}
     hibernate:
