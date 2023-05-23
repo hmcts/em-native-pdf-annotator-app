@@ -99,7 +99,7 @@ idam:
     totp_secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
     microservice: em_npa_app
   s2s-authorised:
-    services: ${S2S_NAMES_WHITELIST:sscs,divorce,ccd,em_gw,jui_webapp,pui_webapp,xui_webapp}
+    services: ${S2S_NAMES_WHITELIST:ccd,em_gw,xui_webapp}
 
 azure:
   app_insights_key: ${APPINSIGHTS_INSTRUMENTATIONKEY:true}
@@ -147,4 +147,3 @@ dbMigration:
 logging:
   level:
     uk.gov.hmcts.reform.authorisation.filters: DEBUG
-
