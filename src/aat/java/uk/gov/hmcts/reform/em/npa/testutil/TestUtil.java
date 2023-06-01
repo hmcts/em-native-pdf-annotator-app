@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.em.npa.testutil;
 
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import jakarta.annotation.PostConstruct;
 import net.serenitybdd.rest.SerenityRest;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -10,6 +11,8 @@ import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,11 +38,12 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.PostConstruct;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Service
+@Configuration
+@ComponentScan({ "uk.gov.hmcts.reform" })
 public class TestUtil {
 
     private String annotationSetId;

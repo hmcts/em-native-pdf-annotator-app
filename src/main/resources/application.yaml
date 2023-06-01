@@ -4,16 +4,18 @@ spring:
   config:
     import: "optional:configtree:/mnt/secrets/em-npa/"
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQL94Dialect
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     database: postgresql
     show-sql: ${SHOW_SQL:false}
     hibernate:
       ddl-auto: none
       naming:
-        physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
         implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
     properties:
       hibernate:
+        id:
+          db_structure_naming_strategy: legacy
         temp:
           use_jdbc_metadata_defaults: false
   datasource:

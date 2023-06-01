@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.em.npa.rest.errors;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.dao.ConcurrencyFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
@@ -15,8 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 @RestController
 public class ExceptionTranslatorTestController {
@@ -61,7 +61,7 @@ public class ExceptionTranslatorTestController {
         throw new BadCredentialsException("test authentication failed!");
     }
 
-    @GetMapping("/test/response-status")
+    @GetMapping(path = "/test/response-status")
     public void exceptionWithReponseStatus() {
         throw new TestResponseStatusException();
     }
@@ -97,7 +97,6 @@ public class ExceptionTranslatorTestController {
     }
 
     @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "test response status")
-    @SuppressWarnings("serial")
     public static class TestResponseStatusException extends RuntimeException {
     }
 

@@ -1,9 +1,10 @@
 package uk.gov.hmcts.reform.em.npa.service.dto.external.annotation;
 
+import jakarta.validation.constraints.Size;
+
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
-import javax.validation.constraints.Size;
 
 /**
  * A DTO for the Comment entity.
