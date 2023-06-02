@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.npa.service.dto.redaction;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,7 +8,6 @@ import lombok.ToString;
 
 import java.io.Serializable;
 import java.util.UUID;
-import javax.validation.constraints.NotNull;
 
 /**
  * A DTO for the Rectangle entity.

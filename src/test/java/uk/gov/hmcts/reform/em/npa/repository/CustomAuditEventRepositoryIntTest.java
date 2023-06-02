@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.npa.repository;
 
+import jakarta.servlet.http.HttpSession;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,7 +22,6 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpSession;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.em.npa.repository.CustomAuditEventRepository.EVENT_DATA_COLUMN_MAX_LENGTH;

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.npa.service.dto.redaction;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,7 +10,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import javax.validation.constraints.NotNull;
 
 @Setter
 @Getter

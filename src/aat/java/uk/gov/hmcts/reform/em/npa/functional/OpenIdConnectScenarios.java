@@ -50,7 +50,7 @@ public class OpenIdConnectScenarios {
                 .baseUri(testUrl)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(jsonObject.toString())
-                .post("/api/markups/")
+                .post("/api/markups")
                 .then()
                 .statusCode(201);
     }

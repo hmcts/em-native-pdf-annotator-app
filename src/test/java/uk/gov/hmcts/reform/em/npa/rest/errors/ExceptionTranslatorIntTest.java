@@ -124,8 +124,7 @@ public class ExceptionTranslatorIntTest {
         mockMvc.perform(get("/test/unauthorized"))
             .andExpect(status().isUnauthorized())
             .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
-            .andExpect(jsonPath("$.message").value("error.http.401"))
-            .andExpect(jsonPath("$.path").value("/test/unauthorized"));
+            .andExpect(jsonPath("$.message").value("error.http.401"));
     }
 
     @Test
@@ -134,7 +133,7 @@ public class ExceptionTranslatorIntTest {
             .andExpect(status().isMethodNotAllowed())
             .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
             .andExpect(jsonPath("$.message").value("error.http.405"))
-            .andExpect(jsonPath("$.detail").value("Request method 'POST' not supported"));
+            .andExpect(jsonPath("$.detail").value("Request method 'POST' is not supported"));
     }
 
     @Test
