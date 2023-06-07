@@ -236,7 +236,7 @@ dependencyManagement {
             entry 'junit'
         }
 
-        dependencySet(group: 'net.bytebuddy', version: '1.14.4') {
+        dependencySet(group: 'net.bytebuddy', version: '1.14.5') {
             entry 'byte-buddy'
             entry 'byte-buddy-agent'
         }
