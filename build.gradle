@@ -1,9 +1,4 @@
-buildscript {
-    dependencies {
-        classpath("net.serenity-bdd:serenity-gradle-plugin:3.0.0")
-        classpath("net.serenity-bdd:serenity-single-page-report:3.0.0")
-    }
-}
+
 
 plugins {
     id 'application'
@@ -18,13 +13,13 @@ plugins {
     id 'org.owasp.dependencycheck' version '8.2.1'
     id 'info.solidsoft.pitest' version '1.9.0'
     id 'com.github.hmcts.rse-cft-lib' version '0.19.702'
-    id 'org.flywaydb.flyway' version '9.19.1'
+    id 'org.flywaydb.flyway' version '9.19.3'
     id 'io.freefair.lombok' version '8.0.1'
+    id 'net.serenity-bdd.serenity-gradle-plugin' version '3.0.0'
 }
 
 apply plugin: 'java'
 apply plugin: 'idea'
-apply plugin: 'net.serenity-bdd.aggregator'
 
 dependencyUpdates.resolutionStrategy {
     componentSelection { rules ->
