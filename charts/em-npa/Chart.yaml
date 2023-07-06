@@ -7,7 +7,7 @@ maintainers:
   - name: HMCTS EM Team
 dependencies:
   - name: java
-    version: 4.1.4
+    version: 4.1.5
     repository: https://hmctspublic.azurecr.io/helm/v1/repo/
   - name: xui-webapp
     version: ~1.0.0
