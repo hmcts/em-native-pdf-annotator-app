@@ -209,13 +209,13 @@ public class MarkUpScenarios {
     }
 
     @Test
-    public void shouldReturn404WhenGetMarkUpByNonExistentDocumentId() {
+    public void shouldReturn204WhenGetMarkUpByNonExistentDocumentId() {
         final String documentId = UUID.randomUUID().toString();
         request
                 .get("/api/markups/" + documentId)
                 .then()
                 .assertThat()
-                .statusCode(404)
+                .statusCode(204)
                 .log().all();
     }
 
