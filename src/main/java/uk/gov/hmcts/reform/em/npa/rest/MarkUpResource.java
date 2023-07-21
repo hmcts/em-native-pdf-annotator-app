@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 import uk.gov.hmcts.reform.em.npa.config.Constants;
 import uk.gov.hmcts.reform.em.npa.rest.errors.ValidationErrorException;
 import uk.gov.hmcts.reform.em.npa.rest.util.HeaderUtil;
@@ -228,9 +227,7 @@ public class MarkUpResource {
         if (page.hasContent()) {
             return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
         } else {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Could not find markups for this document id#" + documentId
-            );
+            return ResponseEntity.noContent().build();
         }
     }
 
