@@ -14,6 +14,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.WebDataBinder;
 import uk.gov.hmcts.reform.em.npa.config.Constants;
+import uk.gov.hmcts.reform.em.npa.rest.errors.EmptyResponseException;
 import uk.gov.hmcts.reform.em.npa.rest.errors.ValidationErrorException;
 import uk.gov.hmcts.reform.em.npa.service.MarkUpService;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
@@ -174,7 +175,7 @@ public class MarkUpResourceTest {
         verify(markUpService, atLeast(1)).findAllByDocumentId(id, Pageable.unpaged());
     }
 
-    @Test
+    @Test(expected = EmptyResponseException.class)
     public void testGetAllDocumentMarkUpsFailure() {
 
         UUID id =  UUID.randomUUID();
@@ -183,7 +184,6 @@ public class MarkUpResourceTest {
 
         when(markUpService.findAllByDocumentId(id, Pageable.unpaged())).thenReturn(redactionDTOS);
         ResponseEntity<List<RedactionDTO>> response = markUpResource.getAllDocumentMarkUps(id, pageable);
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 
     @Test
