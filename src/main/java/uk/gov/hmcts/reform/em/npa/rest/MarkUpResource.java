@@ -27,8 +27,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 import uk.gov.hmcts.reform.em.npa.config.Constants;
+import uk.gov.hmcts.reform.em.npa.rest.errors.EmptyResponseException;
 import uk.gov.hmcts.reform.em.npa.rest.errors.ValidationErrorException;
 import uk.gov.hmcts.reform.em.npa.rest.util.HeaderUtil;
 import uk.gov.hmcts.reform.em.npa.rest.util.PaginationUtil;
@@ -216,9 +216,9 @@ public class MarkUpResource {
                 schema = @Schema(type = "UUID"))})
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Success"),
+        @ApiResponse(responseCode = "204", description = "No Content"),
         @ApiResponse(responseCode = "401", description = "Unauthorised"),
         @ApiResponse(responseCode = "403", description = "Forbidden"),
-        @ApiResponse(responseCode = "404", description = "Not Found"),
     })
     @GetMapping("/markups/{documentId}")
     public ResponseEntity<List<RedactionDTO>> getAllDocumentMarkUps(@PathVariable UUID documentId, Pageable pageable) {
@@ -228,9 +228,7 @@ public class MarkUpResource {
         if (page.hasContent()) {
             return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
         } else {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Could not find markups for this document id#" + documentId
-            );
+            throw new EmptyResponseException("Could not find markups for this document id#" + documentId);
         }
     }
 
