@@ -72,7 +72,7 @@ def versions = [
         fasterXmlJackson   : '2.15.2',
         hibernate          : '6.1.7.Final',
         mapstruct          : '1.4.2.Final',
-        springSecurity     : '6.0.3',
+        springSecurity     : '6.0.5',
         springcloud        : '4.0.2',
         log4JVersion       : '2.20.0',
         jupiter            : '5.8.2',
@@ -226,19 +226,6 @@ dependencies {
 
 dependencyManagement {
     dependencies {
-
-        // Do not change - START
-        // Changing below will break Serenity Report generation
-        dependencySet(group: 'junit', version: '4.13') {
-            entry 'junit'
-        }
-
-        dependencySet(group: 'net.bytebuddy', version: '1.14.5') {
-            entry 'byte-buddy'
-            entry 'byte-buddy-agent'
-        }
-        // Do not change - END
-
         //CVE-2022-23437
         dependencySet(group: 'xerces', version: '2.12.2') {
             entry 'xercesImpl'
@@ -254,14 +241,14 @@ dependencyManagement {
             entry 'commons-fileupload'
         }
 
-        //CVE-2022-45688
-        dependencySet(group: 'org.json', version: '20230618') {
-            entry 'json'
-        }
-
         //CVE-2020-13956
         dependencySet(group: 'org.apache.httpcomponents', version: '4.5.14') {
             entry 'fluent-hc'
+        }
+
+        //CVE-2023-3635
+        dependencySet(group: 'com.squareup.okio', version: '3.4.0') {
+            entry 'okio-jvm'
         }
     }
 }
