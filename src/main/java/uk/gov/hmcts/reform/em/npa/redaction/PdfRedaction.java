@@ -16,11 +16,15 @@ import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 import uk.gov.hmcts.reform.em.npa.service.exception.RedactionProcessingException;
 
-import java.awt.Color;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import javax.imageio.ImageIO;
 
@@ -44,18 +48,51 @@ public class PdfRedaction {
                         ".pdf"
                 );
         document.setDocumentInformation(new PDDocumentInformation());
-
+        Map<Integer, Set<RectangleDTO>> redactionsPerPage = copyAllRedactionsForAPage(redactionDTOList);
         try (PDDocument newDocument = new PDDocument()) {
-            for (RedactionDTO redactionDTO : redactionDTOList) {
-                redactPageContent(document, redactionDTO.getPage() - 1, redactionDTO.getRectangles());
-                File pageImage = transformToImage(pdfRenderer, redactionDTO.getPage() - 1);
-                PDPage newPage = transformToPdf(pageImage, newDocument, document.getPage(redactionDTO.getPage() - 1));
-                replacePage(document, redactionDTO.getPage() - 1, newPage);
-            }
+            redactionsPerPage.entrySet()
+                    .forEach(
+                        redaction -> {
+                            try {
+                                redactPageContent(document, redaction.getKey() - 1, redaction.getValue());
+                                File pageImage = transformToImage(pdfRenderer, redaction.getKey() - 1);
+                                PDPage newPage = transformToPdf(pageImage, newDocument,
+                                        document.getPage(redaction.getKey() - 1));
+                                replacePage(document, redaction.getKey() - 1, newPage);
+                            } catch (IOException ioException) {
+                                throw new RedactionProcessingException(ioException.getMessage());
+                            }
+                        }
+                        );
             document.save(newFile);
         }
         document.close();
         return newFile;
+    }
+
+    private Map<Integer, Set<RectangleDTO>> copyAllRedactionsForAPage(List<RedactionDTO> redactionDTOList) {
+        Map<Integer, Set<RectangleDTO>> pages = null;
+
+        for (RedactionDTO redactionDTO : redactionDTOList) {
+            if (Objects.isNull(pages)) {
+                pages = new HashMap<>();
+                createRectangles(pages, redactionDTO);
+            } else {
+                if (pages.containsKey(redactionDTO.getPage())) {
+                    pages.get(redactionDTO.getPage()).add(redactionDTO.getRectangles().stream().findFirst().get());
+                } else {
+                    createRectangles(pages, redactionDTO);
+                }
+            }
+        }
+        return pages;
+    }
+
+    private static void createRectangles(Map<Integer, Set<RectangleDTO>> pages, RedactionDTO redactionDTO) {
+        Set<RectangleDTO> rectangleDtos = new HashSet<>();
+        //Currently, from front end we get one rectangle in each Set. Irrespective of the Page.
+        rectangleDtos.add(redactionDTO.getRectangles().stream().findFirst().get());
+        pages.put(redactionDTO.getPage(), rectangleDtos);
     }
 
     /**
