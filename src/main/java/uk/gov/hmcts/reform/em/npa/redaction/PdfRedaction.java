@@ -50,20 +50,22 @@ public class PdfRedaction {
         document.setDocumentInformation(new PDDocumentInformation());
         Map<Integer, Set<RectangleDTO>> redactionsPerPage = copyAllRedactionsForAPage(redactionDTOList);
         try (PDDocument newDocument = new PDDocument()) {
-            redactionsPerPage.entrySet()
-                    .forEach(
-                        redaction -> {
-                            try {
-                                redactPageContent(document, redaction.getKey() - 1, redaction.getValue());
-                                File pageImage = transformToImage(pdfRenderer, redaction.getKey() - 1);
-                                PDPage newPage = transformToPdf(pageImage, newDocument,
-                                        document.getPage(redaction.getKey() - 1));
-                                replacePage(document, redaction.getKey() - 1, newPage);
-                            } catch (IOException ioException) {
-                                throw new RedactionProcessingException(ioException.getMessage());
-                            }
-                        }
-                );
+            if (Objects.nonNull(redactionsPerPage)) {
+                redactionsPerPage.entrySet()
+                        .forEach(
+                                redaction -> {
+                                    try {
+                                        redactPageContent(document, redaction.getKey() - 1, redaction.getValue());
+                                        File pageImage = transformToImage(pdfRenderer, redaction.getKey() - 1);
+                                        PDPage newPage = transformToPdf(pageImage, newDocument,
+                                                document.getPage(redaction.getKey() - 1));
+                                        replacePage(document, redaction.getKey() - 1, newPage);
+                                    } catch (IOException ioException) {
+                                        throw new RedactionProcessingException(ioException.getMessage());
+                                    }
+                                }
+                    );
+            }
             document.save(newFile);
         }
         document.close();
@@ -74,14 +76,16 @@ public class PdfRedaction {
         Map<Integer, Set<RectangleDTO>> pages = null;
 
         for (RedactionDTO redactionDTO : redactionDTOList) {
-            if (Objects.isNull(pages)) {
-                pages = new HashMap<>();
-                createRectangles(pages, redactionDTO);
-            } else {
-                if (pages.containsKey(redactionDTO.getPage())) {
-                    pages.get(redactionDTO.getPage()).add(redactionDTO.getRectangles().stream().findFirst().get());
-                } else {
+            if (!redactionDTO.getRectangles().isEmpty()) {
+                if (Objects.isNull(pages)) {
+                    pages = new HashMap<>();
                     createRectangles(pages, redactionDTO);
+                } else {
+                    if (pages.containsKey(redactionDTO.getPage())) {
+                        pages.get(redactionDTO.getPage()).add(redactionDTO.getRectangles().stream().findFirst().get());
+                    } else {
+                        createRectangles(pages, redactionDTO);
+                    }
                 }
             }
         }
