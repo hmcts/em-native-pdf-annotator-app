@@ -16,7 +16,7 @@ import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 import uk.gov.hmcts.reform.em.npa.service.exception.RedactionProcessingException;
 
-import java.awt.*;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -63,7 +63,7 @@ public class PdfRedaction {
                                 throw new RedactionProcessingException(ioException.getMessage());
                             }
                         }
-                        );
+                );
             document.save(newFile);
         }
         document.close();
