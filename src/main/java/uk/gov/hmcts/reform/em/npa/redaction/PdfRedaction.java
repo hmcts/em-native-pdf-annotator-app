@@ -77,7 +77,7 @@ public class PdfRedaction {
 
         for (RedactionDTO redactionDTO : redactionDTOList) {
             if (redactionDTO.getRectangles().stream().findFirst().isPresent()) {
-                RectangleDTO rectangle = redactionDTO.getRectangles().stream().findFirst().get();
+                RectangleDTO rectangle = redactionDTO.getRectangles().stream().findFirst().orElse(null);
                 if (Objects.isNull(pages)) {
                     pages = new HashMap<>();
                     createRectangles(pages, redactionDTO);
@@ -97,7 +97,7 @@ public class PdfRedaction {
         if (redactionDTO.getRectangles().stream().findFirst().isPresent()) {
             Set<RectangleDTO> rectangleDtos = new HashSet<>();
             //Currently, from front end we get one rectangle in each Set. Irrespective of the Page.
-            rectangleDtos.add(redactionDTO.getRectangles().stream().findFirst().get());
+            rectangleDtos.add(redactionDTO.getRectangles().stream().findFirst().orElse(null));
             pages.put(redactionDTO.getPage(), rectangleDtos);
         }
     }
