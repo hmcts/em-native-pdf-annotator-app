@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.em.npa.redaction;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -36,7 +37,7 @@ public class PdfRedaction {
      * @throws IOException in document process
      */
     public File redactPdf(File documentFile, List<RedactionDTO> redactionDTOList) throws IOException {
-        PDDocument document = PDDocument.load(documentFile);
+        PDDocument document = Loader.loadPDF(documentFile);
         PDFRenderer pdfRenderer = new PDFRenderer(document);
         final File newFile =
                 File.createTempFile(
