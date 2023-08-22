@@ -22,7 +22,10 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 
 @Service
@@ -46,12 +49,29 @@ public class PdfRedaction {
                 );
         document.setDocumentInformation(new PDDocumentInformation());
 
+        //Create a Map using page number as key and Collect all rectangles in to List for each page.
+        Map<Integer, Set<RectangleDTO>> redactionsPerPage = redactionDTOList.stream()
+                .collect(Collectors
+                        .groupingByConcurrent(RedactionDTO::getPage,
+                                Collectors.mapping(redactionDTO -> redactionDTO.getRectangles()
+                                        .stream().findFirst().orElse(null), Collectors.toSet())));
+
         try (PDDocument newDocument = new PDDocument()) {
-            for (RedactionDTO redactionDTO : redactionDTOList) {
-                redactPageContent(document, redactionDTO.getPage() - 1, redactionDTO.getRectangles());
-                File pageImage = transformToImage(pdfRenderer, redactionDTO.getPage() - 1);
-                PDPage newPage = transformToPdf(pageImage, newDocument, document.getPage(redactionDTO.getPage() - 1));
-                replacePage(document, redactionDTO.getPage() - 1, newPage);
+            if (Objects.nonNull(redactionsPerPage)) {
+                redactionsPerPage.entrySet()
+                        .forEach(
+                                redaction -> {
+                                    try {
+                                        redactPageContent(document, redaction.getKey() - 1, redaction.getValue());
+                                        File pageImage = transformToImage(pdfRenderer, redaction.getKey() - 1);
+                                        PDPage newPage = transformToPdf(pageImage, newDocument,
+                                                document.getPage(redaction.getKey() - 1));
+                                        replacePage(document, redaction.getKey() - 1, newPage);
+                                    } catch (IOException ioException) {
+                                        throw new RedactionProcessingException(ioException.getMessage());
+                                    }
+                                }
+                    );
             }
             document.save(newFile);
         }
