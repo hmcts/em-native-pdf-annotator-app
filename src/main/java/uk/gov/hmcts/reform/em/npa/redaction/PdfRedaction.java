@@ -21,12 +21,11 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 
 @Service
@@ -49,7 +48,14 @@ public class PdfRedaction {
                         ".pdf"
                 );
         document.setDocumentInformation(new PDDocumentInformation());
-        Map<Integer, Set<RectangleDTO>> redactionsPerPage = copyAllRedactionsForAPage(redactionDTOList);
+
+        //Create a Map using page number as key and Collect all rectangles in to List for each page.
+        Map<Integer, Set<RectangleDTO>> redactionsPerPage = redactionDTOList.stream()
+                .collect(Collectors
+                        .groupingByConcurrent(RedactionDTO::getPage,
+                                Collectors.mapping(redactionDTO -> redactionDTO.getRectangles()
+                                        .stream().findFirst().orElse(null), Collectors.toSet())));
+
         try (PDDocument newDocument = new PDDocument()) {
             if (Objects.nonNull(redactionsPerPage)) {
                 redactionsPerPage.entrySet()
@@ -71,32 +77,6 @@ public class PdfRedaction {
         }
         document.close();
         return newFile;
-    }
-
-    private Map<Integer, Set<RectangleDTO>> copyAllRedactionsForAPage(List<RedactionDTO> redactionDTOList) {
-        Map<Integer, Set<RectangleDTO>> pages = null;
-
-        for (RedactionDTO redactionDTO : redactionDTOList) {
-            RectangleDTO rectangle = redactionDTO.getRectangles().stream().findFirst().orElse(null);
-            if (Objects.isNull(pages)) {
-                pages = new HashMap<>();
-                createRectangles(pages, redactionDTO);
-            } else {
-                if (pages.containsKey(redactionDTO.getPage())) {
-                    pages.get(redactionDTO.getPage()).add(rectangle);
-                } else {
-                    createRectangles(pages, redactionDTO);
-                }
-            }
-        }
-        return pages;
-    }
-
-    private static void createRectangles(Map<Integer, Set<RectangleDTO>> pages, RedactionDTO redactionDTO) {
-        Set<RectangleDTO> rectangleDtos = new HashSet<>();
-        //Currently, from front end we get one rectangle in each Set. Irrespective of the Page.
-        rectangleDtos.add(redactionDTO.getRectangles().stream().findFirst().orElse(null));
-        pages.put(redactionDTO.getPage(), rectangleDtos);
     }
 
     /**
