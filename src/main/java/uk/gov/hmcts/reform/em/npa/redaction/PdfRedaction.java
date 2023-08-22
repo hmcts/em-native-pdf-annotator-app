@@ -77,17 +77,15 @@ public class PdfRedaction {
         Map<Integer, Set<RectangleDTO>> pages = null;
 
         for (RedactionDTO redactionDTO : redactionDTOList) {
-            if (redactionDTO.getRectangles().stream().findFirst().isPresent()) {
-                RectangleDTO rectangle = redactionDTO.getRectangles().stream().findFirst().orElse(null);
-                if (Objects.isNull(pages)) {
-                    pages = new HashMap<>();
-                    createRectangles(pages, redactionDTO);
+            RectangleDTO rectangle = redactionDTO.getRectangles().stream().findFirst().orElse(null);
+            if (Objects.isNull(pages)) {
+                pages = new HashMap<>();
+                createRectangles(pages, redactionDTO);
+            } else {
+                if (pages.containsKey(redactionDTO.getPage())) {
+                    pages.get(redactionDTO.getPage()).add(rectangle);
                 } else {
-                    if (pages.containsKey(redactionDTO.getPage())) {
-                        pages.get(redactionDTO.getPage()).add(rectangle);
-                    } else {
-                        createRectangles(pages, redactionDTO);
-                    }
+                    createRectangles(pages, redactionDTO);
                 }
             }
         }
@@ -95,12 +93,10 @@ public class PdfRedaction {
     }
 
     private static void createRectangles(Map<Integer, Set<RectangleDTO>> pages, RedactionDTO redactionDTO) {
-        if (redactionDTO.getRectangles().stream().findFirst().isPresent()) {
-            Set<RectangleDTO> rectangleDtos = new HashSet<>();
-            //Currently, from front end we get one rectangle in each Set. Irrespective of the Page.
-            rectangleDtos.add(redactionDTO.getRectangles().stream().findFirst().orElse(null));
-            pages.put(redactionDTO.getPage(), rectangleDtos);
-        }
+        Set<RectangleDTO> rectangleDtos = new HashSet<>();
+        //Currently, from front end we get one rectangle in each Set. Irrespective of the Page.
+        rectangleDtos.add(redactionDTO.getRectangles().stream().findFirst().orElse(null));
+        pages.put(redactionDTO.getPage(), rectangleDtos);
     }
 
     /**
