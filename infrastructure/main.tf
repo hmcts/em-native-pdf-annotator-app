@@ -163,6 +163,9 @@ module "db-v14" {
       name : "npa"
     }
   ]
+  //Below attributes needs to be overridden for Perftest & Prod
+  pgsql_sku            = var.pgsql_sku
+  pgsql_storage_mb     = var.pgsql_storage_mb
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-USER-V14" {
