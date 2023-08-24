@@ -101,6 +101,7 @@ variable application_type {
   description = "Type of Application Insights (Web/Other)"
 }
 
+variable "aks_subscription_id" {}
 ////////////////////////////////////////////////
 // Toggle Features
 ////////////////////////////////////////////////
