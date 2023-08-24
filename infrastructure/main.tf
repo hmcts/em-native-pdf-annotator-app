@@ -28,6 +28,13 @@ provider "azurerm" {
   features {}
 }
 
+provider "azurerm" {
+  features {}
+  skip_provider_registration = true
+  alias                      = "postgres_network"
+  subscription_id            = var.aks_subscription_id
+}
+
 provider "vault" {
   address = "https://vault.reform.hmcts.net:6200"
 }
@@ -136,3 +143,24 @@ data "azurerm_subnet" "postgres" {
   virtual_network_name = "core-infra-vnet-${var.env}"
 }
 
+
+# FlexibleServer v14
+module "db-v14" {
+  providers = {
+    azurerm.postgres_network = azurerm.cft_vnet
+  }
+  source               = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
+  env                  = var.env
+  product              = var.product
+  component            = var.component
+  common_tags          = var.common_tags
+  name                 = "${local.app_full_name}-postgres-db-v14"
+  pgsql_version        = "14"
+  admin_user_object_id = var.jenkins_AAD_objectId
+  business_area        = "CFT"
+  pgsql_databases      = [
+    {
+      name : "em-npa"
+    }
+  ]
+}
