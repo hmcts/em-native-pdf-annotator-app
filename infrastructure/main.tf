@@ -160,7 +160,37 @@ module "db-v14" {
   business_area        = "CFT"
   pgsql_databases      = [
     {
-      name : "em-npa"
+      name : "npa"
     }
   ]
+}
+
+resource "azurerm_key_vault_secret" "POSTGRES-USER-V14" {
+  name         = "${var.component}-POSTGRES-USER-V14"
+  value        = module.db-v14.username
+  key_vault_id = module.key_vault.key_vault_id
+}
+
+resource "azurerm_key_vault_secret" "POSTGRES-PASS-V14" {
+  name         = "${var.component}-POSTGRES-PASS-V14"
+  value        = module.db-v14.password
+  key_vault_id = module.key_vault.key_vault_id
+}
+
+resource "azurerm_key_vault_secret" "POSTGRES_HOST-V14" {
+  name         = "${var.component}-POSTGRES-HOST-V14"
+  value        = module.db-v14.fqdn
+  key_vault_id = module.key_vault.key_vault_id
+}
+
+resource "azurerm_key_vault_secret" "POSTGRES_PORT-V14" {
+  name         = "${var.component}-POSTGRES-PORT-V14"
+  value        = "5432"
+  key_vault_id = module.key_vault.key_vault_id
+}
+
+resource "azurerm_key_vault_secret" "POSTGRES_DATABASE-V14" {
+  name         = "${var.component}-POSTGRES-DATABASE-V14"
+  value        = "npa"
+  key_vault_id = module.key_vault.key_vault_id
 }
