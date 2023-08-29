@@ -88,6 +88,14 @@ variable database_storage_mb {
   default     = "51200"
 }
 
+variable sku_name {
+  default = "GP_Gen5_2"
+}
+
+variable sku_capacity {
+  default = "2"
+}
+
 variable appinsights_instrumentation_key {
   description = "Instrumentation key of the App Insights instance this webapp should use. Module will create own App Insights resource if this is not provided"
   default     = ""
