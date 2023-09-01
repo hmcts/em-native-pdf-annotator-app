@@ -28,6 +28,13 @@ provider "azurerm" {
   features {}
 }
 
+provider "azurerm" {
+  features {}
+  skip_provider_registration = true
+  alias                      = "cft_vnet"
+  subscription_id            = var.aks_subscription_id
+}
+
 provider "vault" {
   address = "https://vault.reform.hmcts.net:6200"
 }
@@ -123,16 +130,70 @@ resource "azurerm_key_vault_secret" "local_app_insights_key" {
   name         = "em-app-insights-connection-string"
   key_vault_id = data.azurerm_key_vault.shared_key_vault.id
 }
-  
+
 resource "azurerm_key_vault_secret" "local_app_insights_connection_string" {
   name         = "app-insights-connection-string"
   value        = data.azurerm_key_vault_secret.app_insights_connection_string.value
   key_vault_id = module.key_vault.key_vault_id
 }
-  
+
 data "azurerm_subnet" "postgres" {
   name                 = "core-infra-subnet-0-${var.env}"
   resource_group_name  = "core-infra-${var.env}"
   virtual_network_name = "core-infra-vnet-${var.env}"
 }
 
+
+# FlexibleServer v14
+module "db-v14" {
+  providers = {
+    azurerm.postgres_network = azurerm.cft_vnet
+  }
+  source               = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
+  env                  = var.env
+  product              = var.product
+  component            = var.component
+  common_tags          = var.common_tags
+  name                 = "${local.app_full_name}-postgres-db-v14"
+  pgsql_version        = "14"
+  admin_user_object_id = var.jenkins_AAD_objectId
+  business_area        = "CFT"
+  pgsql_databases      = [
+    {
+      name : "npa"
+    }
+  ]
+  //Below attributes needs to be overridden for Perftest & Prod
+  pgsql_sku            = var.pgsql_sku
+  pgsql_storage_mb     = var.pgsql_storage_mb
+}
+
+resource "azurerm_key_vault_secret" "POSTGRES-USER-V14" {
+  name         = "${var.component}-POSTGRES-USER-V14"
+  value        = module.db-v14.username
+  key_vault_id = module.key_vault.key_vault_id
+}
+
+resource "azurerm_key_vault_secret" "POSTGRES-PASS-V14" {
+  name         = "${var.component}-POSTGRES-PASS-V14"
+  value        = module.db-v14.password
+  key_vault_id = module.key_vault.key_vault_id
+}
+
+resource "azurerm_key_vault_secret" "POSTGRES_HOST-V14" {
+  name         = "${var.component}-POSTGRES-HOST-V14"
+  value        = module.db-v14.fqdn
+  key_vault_id = module.key_vault.key_vault_id
+}
+
+resource "azurerm_key_vault_secret" "POSTGRES_PORT-V14" {
+  name         = "${var.component}-POSTGRES-PORT-V14"
+  value        = "5432"
+  key_vault_id = module.key_vault.key_vault_id
+}
+
+resource "azurerm_key_vault_secret" "POSTGRES_DATABASE-V14" {
+  name         = "${var.component}-POSTGRES-DATABASE-V14"
+  value        = "npa"
+  key_vault_id = module.key_vault.key_vault_id
+}
