@@ -134,6 +134,7 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
 
+
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: versions.springcloud
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: versions.springcloud
 
@@ -252,6 +253,11 @@ dependencyManagement {
         //CVE-2023-3635
         dependencySet(group: 'com.squareup.okio', version: '3.5.0') {
             entry 'okio-jvm'
+        }
+        //CVE-2023-41080
+        dependencySet(group: 'org.apache.tomcat.embed', version: '10.1.13') {
+            entry 'tomcat-embed-websocket'
+            entry 'tomcat-embed-core'
         }
     }
 }
