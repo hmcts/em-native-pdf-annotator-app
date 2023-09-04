@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.npa.redaction;
 
+import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.geom.Rectangle;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfReader;
@@ -54,7 +55,8 @@ public class PdfRedaction {
         redactionDTOList.forEach(redactionDTO -> redactionDTO.getRectangles().forEach(rectangleDTO ->
             cleanUpLocations.add(
                 new PdfCleanUpLocation(redactionDTO.getPage(),
-                    createRectangle(pdDocument, redactionDTO.getPage() - 1, rectangleDTO)))));
+                    createRectangle(pdDocument, redactionDTO.getPage() - 1, rectangleDTO),
+                    ColorConstants.BLACK))));
 
         try (PdfDocument pdfDocument = new PdfDocument(new PdfReader(documentFile), new PdfWriter(newFile))) {
             PdfCleanUpTool cleaner = new PdfCleanUpTool(pdfDocument, cleanUpLocations, new CleanUpProperties());
