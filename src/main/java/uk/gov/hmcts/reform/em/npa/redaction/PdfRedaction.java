@@ -43,58 +43,28 @@ public class PdfRedaction {
      * @throws IOException in document process
      */
     public File redactPdf(File documentFile, List<RedactionDTO> redactionDTOList) throws IOException {
-//        PDDocument document = Loader.loadPDF(documentFile);
-//        PDFRenderer pdfRenderer = new PDFRenderer(document);
         final File newFile =
                 File.createTempFile(
                         String.format("Redacted-%s", FilenameUtils.getBaseName(documentFile.getName())),
                         ".pdf"
                 );
-//        document.setDocumentInformation(new PDDocumentInformation());
 
         List<PdfCleanUpLocation> cleanUpLocations = new ArrayList<>();
 
-
-        //Create a Map using page number as key and Collect all rectangles in to List for each page.
-//        Map<Integer, Set<RectangleDTO>> redactionsPerPage = redactionDTOList.stream()
-//                .collect(Collectors
-//                        .groupingByConcurrent(RedactionDTO::getPage,
-//                                Collectors.mapping(redactionDTO -> redactionDTO.getRectangles()
-//                                        .stream().findFirst().orElse(null), Collectors.toSet())));
-
-        redactionDTOList.forEach(redactionDTO -> {
-            redactionDTO.getRectangles().forEach(rectangleDTO -> cleanUpLocations.add(
+        redactionDTOList.forEach(redactionDTO -> redactionDTO.getRectangles().forEach(rectangleDTO ->
+            cleanUpLocations.add(
                 new PdfCleanUpLocation(redactionDTO.getPage(),
                     new Rectangle(rectangleDTO.getX().floatValue(),
                         rectangleDTO.getY().floatValue(),
                         rectangleDTO.getWidth().floatValue(),
-                        rectangleDTO.getHeight().floatValue()))));
-            });
+                        rectangleDTO.getHeight().floatValue())))));
+
         PdfDocument pdfDocument = new PdfDocument(new PdfReader(documentFile), new PdfWriter(newFile));
 
         PdfCleanUpTool cleaner = new PdfCleanUpTool(pdfDocument, cleanUpLocations, new CleanUpProperties());
         cleaner.cleanUp();
         pdfDocument.close();
         return newFile;
-
-//        try (PDDocument newDocument = new PDDocument()) {
-//            if (Objects.nonNull(redactionsPerPage)) {
-//                redactionsPerPage.forEach((key, value) -> {
-//                    try {
-//                        redactPageContent(document, key - 1, value);
-//                        File pageImage = transformToImage(pdfRenderer, key - 1);
-//                        PDPage newPage = transformToPdf(pageImage, newDocument,
-//                            document.getPage(key - 1));
-//                        replacePage(document, key - 1, newPage);
-//                    } catch (IOException ioException) {
-//                        throw new RedactionProcessingException(ioException.getMessage());
-//                    }
-//                });
-//            }
-//            document.save(newFile);
-//        }
-//        document.close();
-//        return newFile;
     }
 
     /**
