@@ -59,11 +59,10 @@ public class PdfRedaction {
                         rectangleDTO.getWidth().floatValue(),
                         rectangleDTO.getHeight().floatValue())))));
 
-        PdfDocument pdfDocument = new PdfDocument(new PdfReader(documentFile), new PdfWriter(newFile));
-
-        PdfCleanUpTool cleaner = new PdfCleanUpTool(pdfDocument, cleanUpLocations, new CleanUpProperties());
-        cleaner.cleanUp();
-        pdfDocument.close();
+        try(PdfDocument pdfDocument = new PdfDocument(new PdfReader(documentFile), new PdfWriter(newFile))) {
+            PdfCleanUpTool cleaner = new PdfCleanUpTool(pdfDocument, cleanUpLocations, new CleanUpProperties());
+            cleaner.cleanUp();
+        }
         return newFile;
     }
 
