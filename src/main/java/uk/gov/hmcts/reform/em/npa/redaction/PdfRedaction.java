@@ -1,9 +1,14 @@
 package uk.gov.hmcts.reform.em.npa.redaction;
 
+import com.itextpdf.kernel.geom.Rectangle;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfReader;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.pdfcleanup.CleanUpProperties;
+import com.itextpdf.pdfcleanup.PdfCleanUpLocation;
+import com.itextpdf.pdfcleanup.PdfCleanUpTool;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageTree;
@@ -21,11 +26,9 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 
 @Service
@@ -40,43 +43,58 @@ public class PdfRedaction {
      * @throws IOException in document process
      */
     public File redactPdf(File documentFile, List<RedactionDTO> redactionDTOList) throws IOException {
-        PDDocument document = Loader.loadPDF(documentFile);
-        PDFRenderer pdfRenderer = new PDFRenderer(document);
+//        PDDocument document = Loader.loadPDF(documentFile);
+//        PDFRenderer pdfRenderer = new PDFRenderer(document);
         final File newFile =
                 File.createTempFile(
                         String.format("Redacted-%s", FilenameUtils.getBaseName(documentFile.getName())),
                         ".pdf"
                 );
-        document.setDocumentInformation(new PDDocumentInformation());
+//        document.setDocumentInformation(new PDDocumentInformation());
+
+        List<PdfCleanUpLocation> cleanUpLocations = new ArrayList<>();
+
 
         //Create a Map using page number as key and Collect all rectangles in to List for each page.
-        Map<Integer, Set<RectangleDTO>> redactionsPerPage = redactionDTOList.stream()
-                .collect(Collectors
-                        .groupingByConcurrent(RedactionDTO::getPage,
-                                Collectors.mapping(redactionDTO -> redactionDTO.getRectangles()
-                                        .stream().findFirst().orElse(null), Collectors.toSet())));
+//        Map<Integer, Set<RectangleDTO>> redactionsPerPage = redactionDTOList.stream()
+//                .collect(Collectors
+//                        .groupingByConcurrent(RedactionDTO::getPage,
+//                                Collectors.mapping(redactionDTO -> redactionDTO.getRectangles()
+//                                        .stream().findFirst().orElse(null), Collectors.toSet())));
 
-        try (PDDocument newDocument = new PDDocument()) {
-            if (Objects.nonNull(redactionsPerPage)) {
-                redactionsPerPage.entrySet()
-                        .forEach(
-                                redaction -> {
-                                    try {
-                                        redactPageContent(document, redaction.getKey() - 1, redaction.getValue());
-                                        File pageImage = transformToImage(pdfRenderer, redaction.getKey() - 1);
-                                        PDPage newPage = transformToPdf(pageImage, newDocument,
-                                                document.getPage(redaction.getKey() - 1));
-                                        replacePage(document, redaction.getKey() - 1, newPage);
-                                    } catch (IOException ioException) {
-                                        throw new RedactionProcessingException(ioException.getMessage());
-                                    }
-                                }
-                    );
-            }
-            document.save(newFile);
-        }
-        document.close();
+        redactionDTOList.forEach(redactionDTO -> {
+            redactionDTO.getRectangles().forEach(rectangleDTO -> cleanUpLocations.add(
+                new PdfCleanUpLocation(redactionDTO.getPage(),
+                    new Rectangle(rectangleDTO.getX().floatValue(),
+                        rectangleDTO.getY().floatValue(),
+                        rectangleDTO.getWidth().floatValue(),
+                        rectangleDTO.getHeight().floatValue()))));
+            });
+        PdfDocument pdfDocument = new PdfDocument(new PdfReader(documentFile), new PdfWriter(newFile));
+
+        PdfCleanUpTool cleaner = new PdfCleanUpTool(pdfDocument, cleanUpLocations, new CleanUpProperties());
+        cleaner.cleanUp();
+        pdfDocument.close();
         return newFile;
+
+//        try (PDDocument newDocument = new PDDocument()) {
+//            if (Objects.nonNull(redactionsPerPage)) {
+//                redactionsPerPage.forEach((key, value) -> {
+//                    try {
+//                        redactPageContent(document, key - 1, value);
+//                        File pageImage = transformToImage(pdfRenderer, key - 1);
+//                        PDPage newPage = transformToPdf(pageImage, newDocument,
+//                            document.getPage(key - 1));
+//                        replacePage(document, key - 1, newPage);
+//                    } catch (IOException ioException) {
+//                        throw new RedactionProcessingException(ioException.getMessage());
+//                    }
+//                });
+//            }
+//            document.save(newFile);
+//        }
+//        document.close();
+//        return newFile;
     }
 
     /**
@@ -103,7 +121,7 @@ public class PdfRedaction {
             PDPageContentStream.AppendMode.APPEND, true, true);
         contentStream.setNonStrokingColor(Color.BLACK);
 
-        rectangles.stream().forEach(rectangle -> {
+        rectangles.forEach(rectangle -> {
             try {
                 contentStream.addRect(
                     pixelToPointConversion(pageSize.getLowerLeftX() + rectangle.getX()),
