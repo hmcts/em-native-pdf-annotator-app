@@ -23,13 +23,11 @@ import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 import uk.gov.hmcts.reform.em.npa.service.exception.RedactionProcessingException;
 
-import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import javax.imageio.ImageIO;
 
 @Service
@@ -56,7 +54,7 @@ public class PdfRedaction {
         redactionDTOList.forEach(redactionDTO -> redactionDTO.getRectangles().forEach(rectangleDTO ->
             cleanUpLocations.add(
                 new PdfCleanUpLocation(redactionDTO.getPage(),
-                    createRectangle(pdDocument, redactionDTO.getPage(), rectangleDTO)))));
+                    createRectangle(pdDocument, redactionDTO.getPage() - 1, rectangleDTO)))));
 
         try (PdfDocument pdfDocument = new PdfDocument(new PdfReader(documentFile), new PdfWriter(newFile))) {
             PdfCleanUpTool cleaner = new PdfCleanUpTool(pdfDocument, cleanUpLocations, new CleanUpProperties());
