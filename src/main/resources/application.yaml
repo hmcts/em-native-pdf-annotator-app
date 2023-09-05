@@ -130,7 +130,7 @@ toggles:
   cdam_enabled: ${ENABLE_CDAM:false}
 
 endpoint-toggles:
-  search-markups: ${ENABLE_SEARCH_MARKUPS_ENDPOINT:false}
+  search-markups: ${ENABLE_SEARCH_MARKUPS_ENDPOINT:true}
 
 springdoc:
   packagesToScan: uk.gov.hmcts.reform.em.npa.rest
