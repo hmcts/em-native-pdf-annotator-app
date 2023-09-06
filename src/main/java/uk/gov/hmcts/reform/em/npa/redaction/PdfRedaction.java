@@ -1,9 +1,16 @@
 package uk.gov.hmcts.reform.em.npa.redaction;
 
+import com.itextpdf.kernel.colors.ColorConstants;
+import com.itextpdf.kernel.geom.Rectangle;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfReader;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.pdfcleanup.CleanUpProperties;
+import com.itextpdf.pdfcleanup.PdfCleanUpLocation;
+import com.itextpdf.pdfcleanup.PdfCleanUpTool;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageTree;
@@ -17,15 +24,11 @@ import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 import uk.gov.hmcts.reform.em.npa.service.exception.RedactionProcessingException;
 
-import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 
 @Service
@@ -40,42 +43,26 @@ public class PdfRedaction {
      * @throws IOException in document process
      */
     public File redactPdf(File documentFile, List<RedactionDTO> redactionDTOList) throws IOException {
-        PDDocument document = Loader.loadPDF(documentFile);
-        PDFRenderer pdfRenderer = new PDFRenderer(document);
+        PDDocument pdDocument = Loader.loadPDF(documentFile);
         final File newFile =
                 File.createTempFile(
                         String.format("Redacted-%s", FilenameUtils.getBaseName(documentFile.getName())),
                         ".pdf"
                 );
-        document.setDocumentInformation(new PDDocumentInformation());
 
-        //Create a Map using page number as key and Collect all rectangles in to List for each page.
-        Map<Integer, Set<RectangleDTO>> redactionsPerPage = redactionDTOList.stream()
-                .collect(Collectors
-                        .groupingByConcurrent(RedactionDTO::getPage,
-                                Collectors.mapping(redactionDTO -> redactionDTO.getRectangles()
-                                        .stream().findFirst().orElse(null), Collectors.toSet())));
+        List<PdfCleanUpLocation> cleanUpLocations = new ArrayList<>();
 
-        try (PDDocument newDocument = new PDDocument()) {
-            if (Objects.nonNull(redactionsPerPage)) {
-                redactionsPerPage.entrySet()
-                        .forEach(
-                                redaction -> {
-                                    try {
-                                        redactPageContent(document, redaction.getKey() - 1, redaction.getValue());
-                                        File pageImage = transformToImage(pdfRenderer, redaction.getKey() - 1);
-                                        PDPage newPage = transformToPdf(pageImage, newDocument,
-                                                document.getPage(redaction.getKey() - 1));
-                                        replacePage(document, redaction.getKey() - 1, newPage);
-                                    } catch (IOException ioException) {
-                                        throw new RedactionProcessingException(ioException.getMessage());
-                                    }
-                                }
-                    );
-            }
-            document.save(newFile);
+        redactionDTOList.forEach(redactionDTO -> redactionDTO.getRectangles().forEach(rectangleDTO ->
+            cleanUpLocations.add(
+                new PdfCleanUpLocation(redactionDTO.getPage(),
+                    createRectangle(pdDocument, redactionDTO.getPage() - 1, rectangleDTO),
+                    ColorConstants.BLACK))));
+
+        try (PdfDocument pdfDocument = new PdfDocument(new PdfReader(documentFile), new PdfWriter(newFile))) {
+            PdfCleanUpTool cleaner = new PdfCleanUpTool(pdfDocument, cleanUpLocations, new CleanUpProperties());
+            cleaner.cleanUp();
         }
-        document.close();
+        pdDocument.close();
         return newFile;
     }
 
@@ -84,14 +71,13 @@ public class PdfRedaction {
      *
      * @param document The pdf to be redacted
      * @param pageNumber The page number in the PDF (zero indexed)
-     * @param rectangles Rectangles to be drawn onto the pdf document
+     * @param rectangle Rectangle to be drawn onto the pdf document
      * @throws IOException If it fails in document process
      */
-    private void redactPageContent(
+    private Rectangle createRectangle(
             PDDocument document,
             int pageNumber,
-            Set<RectangleDTO> rectangles
-    ) throws IOException {
+            RectangleDTO rectangle) {
         PDPage page = document.getPage(pageNumber);
         PDRectangle pageSize = page.getMediaBox();
         pageSize.setLowerLeftX(page.getCropBox().getLowerLeftX() / 0.75f);
@@ -99,24 +85,13 @@ public class PdfRedaction {
         pageSize.setUpperRightX(page.getCropBox().getUpperRightX() / 0.75f);
         pageSize.setUpperRightY(page.getCropBox().getUpperRightY());
 
-        PDPageContentStream contentStream = new PDPageContentStream(document, page,
-            PDPageContentStream.AppendMode.APPEND, true, true);
-        contentStream.setNonStrokingColor(Color.BLACK);
+        return new Rectangle(
+            pixelToPointConversion(pageSize.getLowerLeftX() + rectangle.getX()),
+            (pageSize.getHeight() - pixelToPointConversion(rectangle.getY()))
+                - pixelToPointConversion(rectangle.getHeight()),
+            pixelToPointConversion(rectangle.getWidth()),
+            pixelToPointConversion(rectangle.getHeight()));
 
-        rectangles.stream().forEach(rectangle -> {
-            try {
-                contentStream.addRect(
-                    pixelToPointConversion(pageSize.getLowerLeftX() + rectangle.getX()),
-                    (pageSize.getHeight() - pixelToPointConversion(rectangle.getY()))
-                            - pixelToPointConversion(rectangle.getHeight()),
-                    pixelToPointConversion(rectangle.getWidth()),
-                    pixelToPointConversion(rectangle.getHeight()));
-                contentStream.fill();
-            } catch (IOException e) {
-                throw new RedactionProcessingException(e.getMessage());
-            }
-        });
-        contentStream.close();
     }
 
     /**
