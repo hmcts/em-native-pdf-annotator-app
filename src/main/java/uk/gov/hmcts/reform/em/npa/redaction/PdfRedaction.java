@@ -8,6 +8,7 @@ import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.pdfcleanup.CleanUpProperties;
 import com.itextpdf.pdfcleanup.PdfCleanUpLocation;
 import com.itextpdf.pdfcleanup.PdfCleanUpTool;
+import com.itextpdf.pdfcleanup.util.CleanUpImageUtil;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -19,6 +20,8 @@ import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
@@ -33,6 +36,8 @@ import javax.imageio.ImageIO;
 
 @Service
 public class PdfRedaction {
+
+    private final Logger log = LoggerFactory.getLogger(PdfRedaction.class);
 
     /**
      * Applying Redaction to pdf file.
@@ -61,6 +66,9 @@ public class PdfRedaction {
         try (PdfDocument pdfDocument = new PdfDocument(new PdfReader(documentFile), new PdfWriter(newFile))) {
             PdfCleanUpTool cleaner = new PdfCleanUpTool(pdfDocument, cleanUpLocations, new CleanUpProperties());
             cleaner.cleanUp();
+        } catch (CleanUpImageUtil.CleanupImageHandlingUtilException e) {
+            log.info("Saving redactions failed with error: {}", e.getMessage());
+            throw e;
         }
         pdDocument.close();
         return newFile;
