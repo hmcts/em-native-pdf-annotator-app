@@ -67,8 +67,7 @@ public class PdfRedaction {
             PdfCleanUpTool cleaner = new PdfCleanUpTool(pdfDocument, cleanUpLocations, new CleanUpProperties());
             cleaner.cleanUp();
         } catch (CleanUpImageUtil.CleanupImageHandlingUtilException e) {
-            log.info("Saving redactions failed with error: {}", e.getMessage());
-            throw e;
+            log.error("Saving redactions failed with error: {}", e.getMessage());
         }
         pdDocument.close();
         return newFile;
