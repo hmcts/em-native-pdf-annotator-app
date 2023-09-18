@@ -15,7 +15,7 @@ plugins {
     id 'com.github.hmcts.rse-cft-lib' version '0.19.800'
     id 'org.flywaydb.flyway' version '9.22.1'
     id 'io.freefair.lombok' version '8.3'
-    id 'net.serenity-bdd.serenity-gradle-plugin' version '4.0.12'
+    id 'net.serenity-bdd.serenity-gradle-plugin' version '3.9.8'
 }
 
 apply plugin: 'java'
