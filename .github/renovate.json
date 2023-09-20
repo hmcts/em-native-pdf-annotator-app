@@ -11,14 +11,8 @@
         "au.com.dius.pact",
         "info.solidsoft.pitest"
       ],
-      "matchManagers": ["gradle","gradle-wrapper"],
       "enabled": false
     }
-  ],
-  "enabledManagers": [
-    "helm-requirements",
-    "gradle-wrapper",
-    "terraform"
   ],
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "labels": [
@@ -33,6 +27,7 @@
     }
   },
   "extends": [
-    "local>hmcts/.github:renovate-config"
+    "local>hmcts/.github:renovate-config",
+    "local>hmcts/.github//renovate/automerge-minor"
   ]
 }
