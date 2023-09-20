@@ -15,7 +15,7 @@ plugins {
     id 'com.github.hmcts.rse-cft-lib' version '0.19.804'
     id 'org.flywaydb.flyway' version '9.22.1'
     id 'io.freefair.lombok' version '8.3'
-    id 'net.serenity-bdd.serenity-gradle-plugin' version '3.2.4'
+    id 'net.serenity-bdd.serenity-gradle-plugin' version '4.0.12'
 }
 
 apply plugin: 'java'
@@ -64,9 +64,9 @@ repositories {
 def versions = [
         postgresql         : '42.5.1',
         h2                 : '1.4.199',
-        serenity           : '3.4.2',
-        serenityreporter   : '3.4.2',
-        serenityRestAssured: '3.4.2',
+        serenity           : '3.7.0',
+        serenityreporter   : '3.7.0',
+        serenityRestAssured: '3.7.0',
         pact_version       : '4.0.10',
         logging            : '6.0.1',
         fasterXmlJackson   : '2.15.2',
