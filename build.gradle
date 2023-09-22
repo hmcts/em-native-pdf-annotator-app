@@ -62,7 +62,7 @@ repositories {
 }
 
 def versions = [
-        postgresql         : '42.5.1',
+        postgresql         : '42.6.0',
         h2                 : '1.4.199',
         serenity           : '3.7.0',
         serenityreporter   : '3.7.0',
@@ -70,13 +70,13 @@ def versions = [
         pact_version       : '4.0.10',
         logging            : '6.0.1',
         fasterXmlJackson   : '2.15.2',
-        hibernate          : '6.1.7.Final',
+        hibernate          : '6.3.1.Final',
         mapstruct          : '1.4.2.Final',
         springSecurity     : '6.0.5',
         springcloud        : '4.0.4',
         log4JVersion       : '2.20.0',
         jupiter            : '5.8.2',
-        poi                : '5.2.2'
+        poi                : '5.2.3'
 ]
 
 sourceSets {
@@ -140,7 +140,7 @@ dependencies {
 
     implementation group: 'com.google.guava', name: 'guava', version: '32.1.2-jre'
 
-    implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.28'
+    implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
     implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '3.0.0'
     implementation group: 'org.apache.pdfbox', name: 'pdfbox-io', version: '3.0.0'
     implementation group: 'org.apache.pdfbox', name: 'jbig2-imageio', version: '3.0.4'
@@ -165,7 +165,7 @@ dependencies {
     implementation group: 'org.springframework.security', name: 'spring-security-config', version: versions.springSecurity
 
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.14'
-    implementation group: 'org.flywaydb', name: 'flyway-core', version: '9.22.1'
+    implementation group: 'org.flywaydb', name: 'flyway-core', version: '9.22.2'
     implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.13.0'
     implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
