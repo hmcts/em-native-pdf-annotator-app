@@ -16,15 +16,6 @@
         <packageUrl regex="true">^pkg:maven/io\.netty/netty-handler@.*$</packageUrl>
         <cve>CVE-2023-4586</cve>
     </suppress>
-    <suppress until="2023-10-25">
-        <cve>CVE-2017-9096</cve>
-    </suppress>
-    <suppress until="2023-10-25">
-        <cve>CVE-2022-24196</cve>
-    </suppress>
-    <suppress until="2023-10-25">
-        <cve>CVE-2022-24197</cve>
-    </suppress>
     <suppress until="2023-10-31">
         <notes>okhttp-4.10.0.jar (pkg:maven/com.squareup.okhttp3/okhttp@4.10.0,.</notes>
         <packageUrl regex="true">^pkg:maven/com.squareup.okhttp3/okhttp@.*$</packageUrl>
