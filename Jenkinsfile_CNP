@@ -61,6 +61,7 @@ withPipeline(type , product, component) {
     loadVaultSecrets(secrets)
     enableAksStagingDeployment()
     disableLegacyDeployment()
+
     onMaster {
         afterSuccess('test') {
             sh '''
@@ -70,10 +71,16 @@ withPipeline(type , product, component) {
         }
     }
 
-    onMaster()
-        {
-            enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
-        }
+    onPR() {
+        env.ENV = 'preview'
+        enablePactAs([AppPipelineDsl.PactRoles.CONSUMER,
+                      AppPipelineDsl.PactRoles.CONSUMER_DEPLOY_CHECK
+        ])
+    }
+
+    onMaster() {
+        enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
+    }
 
     afterAlways('test') {
 
