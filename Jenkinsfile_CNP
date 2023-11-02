@@ -72,7 +72,6 @@ withPipeline(type , product, component) {
     }
 
     onPR() {
-        env.ENV = 'preview'
         enablePactAs([AppPipelineDsl.PactRoles.CONSUMER,
                       AppPipelineDsl.PactRoles.CONSUMER_DEPLOY_CHECK
         ])
