@@ -389,6 +389,21 @@ task runAndPublishConsumerPactTests(type: Test){
 
 }
 
+task runProviderPactVerification(type: Test) {
+    useJUnitPlatform()
+    logger.lifecycle("Runs provider pact Tests")
+    testClassesDirs = sourceSets.contractTest.output.classesDirs
+    classpath = sourceSets.contractTest.runtimeClasspath
+    if (project.hasProperty('pact.verifier.publishResults')) {
+        systemProperty 'pact.verifier.publishResults', project.property('pact.verifier.publishResults')
+    }
+    systemProperty 'pact.provider.version', project.pacticipantVersion
+//    include "uk/gov/hmcts/reform/orgrolemapping/provider/**"
+    include "uk/gov/hmcts/reform/em/npa/provider/**"
+}
+
+runProviderPactVerification.finalizedBy pactVerify
+
 task fortifyScan(type: JavaExec)  {
     mainClass.set("uk.gov.hmcts.fortifyclient.FortifyClientMainApp")
     classpath += sourceSets.test.runtimeClasspath

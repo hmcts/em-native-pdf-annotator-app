@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.em.npa;
+package uk.gov.hmcts.reform.em.npa.consumer;
 
 import au.com.dius.pact.consumer.MockServer;
 import au.com.dius.pact.consumer.dsl.DslPart;
