@@ -338,6 +338,10 @@ idea {
     }
 }
 
+project.ext {
+    pactVersion = getCheckedOutGitCommitHash()
+}
+
 // https://github.com/gradle/gradle/issues/16791
 tasks.withType(JavaExec).configureEach {
     javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
@@ -413,11 +417,6 @@ task fortifyScan(type: JavaExec)  {
 runAndPublishConsumerPactTests.dependsOn contract
 
 runAndPublishConsumerPactTests.finalizedBy pactPublish
-
-
-project.ext {
-    pactVersion = getCheckedOutGitCommitHash()
-}
 
 static def getCheckedOutGitCommitHash() {
     'git rev-parse --verify --short HEAD'.execute().text.trim()
