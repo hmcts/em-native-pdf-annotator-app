@@ -397,7 +397,7 @@ task runProviderPactVerification(type: Test) {
     if (project.hasProperty('pact.verifier.publishResults')) {
         systemProperty 'pact.verifier.publishResults', project.property('pact.verifier.publishResults')
     }
-    systemProperty 'pact.provider.version', project.pacticipantVersion
+    systemProperty 'pact.provider.version', project.pactVersion
 //    include "uk/gov/hmcts/reform/orgrolemapping/provider/**"
     include "uk/gov/hmcts/reform/em/npa/provider/**"
 }
