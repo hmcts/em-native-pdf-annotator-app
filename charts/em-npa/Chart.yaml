@@ -1,13 +1,13 @@
 apiVersion: v2
 name: em-npa
 home: https://github.com/hmcts/em-native-pdf-annotator-app
-version: 2.0.13
+version: 2.0.14
 description: Helm chart for HMCTS Native PDF Annotator API
 maintainers:
   - name: HMCTS EM Team
 dependencies:
   - name: java
-    version: 5.0.1
+    version: 5.0.2
     repository: https://hmctspublic.azurecr.io/helm/v1/repo/
   - name: xui-webapp
     version: ~1.0.0
