@@ -294,9 +294,9 @@ def coverageExclusionList = [
     '**uk/gov/hmcts/reform/em/npa/rest/errors/ExceptionTranslator*',
     '**uk/gov/hmcts/reform/em/npa/service/dto/AbstractAuditingDTO*',
     '**uk/gov/hmcts/reform/em/npa/rest/ResponseUtil*',
-    '**uk/gov/hmcts/reform/em/annotation/config/FlywayConfiguration*',
-    '**uk/gov/hmcts/reform/em/annotation/config/BatchConfiguration*',
-    '**uk/gov/hmcts/reform/em/annotation/batch/EntityValueProcessor*'
+    '**uk/gov/hmcts/reform/em/npa/config/FlywayConfiguration*',
+    '**uk/gov/hmcts/reform/em/npa/config/BatchConfiguration*',
+    '**uk/gov/hmcts/reform/em/npa/batch/EntityValueProcessor*'
 ]
 
 checkstyle {
