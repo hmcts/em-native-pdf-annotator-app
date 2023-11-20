@@ -31,8 +31,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.PlatformTransactionManager;
-import uk.gov.hmcts.reform.em.annotation.batch.EntityValueProcessor;
-import uk.gov.hmcts.reform.em.annotation.domain.EntityAuditEvent;
+import uk.gov.hmcts.reform.em.npa.batch.EntityValueProcessor;
+import uk.gov.hmcts.reform.em.npa.domain.EntityAuditEvent;
 
 import java.util.Random;
 import javax.sql.DataSource;
