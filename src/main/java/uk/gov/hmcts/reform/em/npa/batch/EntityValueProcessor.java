@@ -1,4 +1,4 @@
-ackage uk.gov.hmcts.reform.em.npa.batch;
+package uk.gov.hmcts.reform.em.npa.batch;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
