@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.reform.em.npa.domain.EntityAuditEvent;
 
 @Service
 @Transactional(propagation = Propagation.REQUIRED)
