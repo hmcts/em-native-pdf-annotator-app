@@ -5,8 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.npa.Propagation;
-import org.springframework.transaction.npa.Transactional;
-import uk.gov.hmcts.reform.em.npa.domain.EntityAuditEvent;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(propagation = Propagation.REQUIRED)
