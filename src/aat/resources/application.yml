@@ -80,8 +80,3 @@ toggles:
 endpoint-toggles:
   search-markups: ${ENABLE_SEARCH_MARKUPS_ENDPOINT:true}
 
-task:
-  env: ${TASK_ENV:documentTaskLock-local}
-
-scheduling:
-  enabled: true
