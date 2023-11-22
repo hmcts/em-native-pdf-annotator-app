@@ -6,6 +6,8 @@ spring:
   batch:
     entityValueCopy:
       cronJobSchedule: ${ENTITY_VALUE_COPY_CRONJOB_SCHEDULE:0 0/5 * * * *} # Every 5 minutes
+      pageSize: ${ENTITY_VALUE_COPY_PAGE_SIZE:50}
+      chunkSize: ${ENTITY_VALUE_COPY_CHUNK_SIZE:50}
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     database: postgresql
