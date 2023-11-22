@@ -3,14 +3,6 @@ spring:
     name: EM Native PDF Annotator App
   config:
     import: "optional:configtree:/mnt/secrets/em-npa/"
-  batch:
-    entityValueCopy:
-      cronJobSchedule: ${ENTITY_VALUE_COPY_CRONJOB_SCHEDULE:0 0/5 * * * *} # Every 5 minutes
-      pageSize: ${ENTITY_VALUE_COPY_PAGE_SIZE:50}
-      chunkSize: ${ENTITY_VALUE_COPY_CHUNK_SIZE:50}
-      maxItemCount: ${ENTITY_VALUE_MAX_ITEM_COUNT:50}
-      enabled: ${ENTITY_VALUE_COPY_ENABLED:true}
-    initialize-schema: never
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     database: postgresql
@@ -152,9 +144,3 @@ dbMigration:
 logging:
   level:
     uk.gov.hmcts.reform.authorisation.filters: DEBUG
-    
-task:
-  env: ${TASK_ENV:documentTaskLock-local}
-
-scheduling:
-  enabled: true
