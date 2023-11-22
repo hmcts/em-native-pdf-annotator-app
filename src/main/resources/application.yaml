@@ -10,7 +10,8 @@ spring:
       chunkSize: ${ENTITY_VALUE_COPY_CHUNK_SIZE:50}
       maxItemCount: ${ENTITY_VALUE_MAX_ITEM_COUNT:50}
       enabled: ${ENTITY_VALUE_COPY_ENABLED:true}
-    initialize-schema: never
+    jdbc:
+      initialize-schema: never
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     database: postgresql
