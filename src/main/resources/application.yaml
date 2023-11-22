@@ -3,6 +3,9 @@ spring:
     name: EM Native PDF Annotator App
   config:
     import: "optional:configtree:/mnt/secrets/em-npa/"
+  batch:
+    entityValueCopy:
+      cronJobSchedule: ${ENTITY_VALUE_COPY_CRONJOB_SCHEDULE:0 0/5 * * * *} # Every 5 minutes
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     database: postgresql
