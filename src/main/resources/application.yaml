@@ -157,4 +157,4 @@ task:
   env: ${TASK_ENV:documentTaskLock-local}
 
 scheduling:
-  enabled: false
+  enabled: true
