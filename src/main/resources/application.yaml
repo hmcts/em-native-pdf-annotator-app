@@ -144,3 +144,9 @@ dbMigration:
 logging:
   level:
     uk.gov.hmcts.reform.authorisation.filters: DEBUG
+
+task:
+  env: ${TASK_ENV:documentTaskLock-local}
+
+scheduling:
+  enabled: true
