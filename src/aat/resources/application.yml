@@ -81,4 +81,3 @@ toggles:
 
 endpoint-toggles:
   search-markups: ${ENABLE_SEARCH_MARKUPS_ENDPOINT:true}
-
