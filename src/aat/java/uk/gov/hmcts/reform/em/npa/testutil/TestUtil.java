@@ -11,8 +11,8 @@ import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -42,8 +42,10 @@ import java.util.stream.Stream;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Service
-@Configuration
-@ComponentScan({ "uk.gov.hmcts.reform" })
+@ComponentScan({"uk.gov.hmcts.reform.em.test",
+    "uk.gov.hmcts.reform.document",
+    "uk.gov.hmcts.reform.ccd.document.am.config"})
+@EnableAutoConfiguration
 public class TestUtil {
 
     private String annotationSetId;
