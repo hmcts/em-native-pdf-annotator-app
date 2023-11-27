@@ -50,10 +50,6 @@ public class EntityAuditEvent implements Serializable {
     @Column(name = "action", length = 20, nullable = false)
     private String action;
 
-    @Lob
-    @Column(name = "entity_value")
-    private String entityValue;
-
     @Column(name = "commit_version")
     private Integer commitVersion;
 
@@ -96,14 +92,6 @@ public class EntityAuditEvent implements Serializable {
 
     public void setAction(String action) {
         this.action = action;
-    }
-
-    public String getEntityValue() {
-        return entityValue;
-    }
-
-    public void setEntityValue(String entityValue) {
-        this.entityValue = entityValue;
     }
 
     public String getEntityValueV2() {
