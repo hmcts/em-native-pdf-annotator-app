@@ -302,7 +302,9 @@ def coverageExclusionList = [
     '**uk/gov/hmcts/reform/em/npa/rest/ResponseUtil*',
     '**uk/gov/hmcts/reform/em/npa/config/FlywayConfiguration*',
     '**uk/gov/hmcts/reform/em/npa/config/BatchConfiguration*',
-    '**uk/gov/hmcts/reform/em/npa/batch/EntityValueProcessor*'
+    '**uk/gov/hmcts/reform/em/npa/batch/EntityValueProcessor*',
+    '**uk/gov/hmcts/reform/em/npa/batch/RemoveLargeObjectsTasklet',
+    '**uk/gov/hmcts/reform/em/npa/repository/LargeObjectRepository*'
 ]
 
 checkstyle {
