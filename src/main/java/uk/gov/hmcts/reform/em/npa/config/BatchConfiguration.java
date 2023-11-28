@@ -32,6 +32,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.PlatformTransactionManager;
 import uk.gov.hmcts.reform.em.npa.batch.EntityValueProcessor;
+import uk.gov.hmcts.reform.em.npa.batch.RemoveLargeObjectsTasklet;
+import uk.gov.hmcts.reform.em.npa.repository.LargeObjectRepository;
 
 import java.util.Collections;
 import java.util.Random;
@@ -59,6 +61,9 @@ public class BatchConfiguration {
 
     @Autowired
     EntityValueProcessor entityValueProcessor;
+
+    @Autowired
+    private LargeObjectRepository largeObjectRepository;
 
     @Value("${spring.batch.entityValueCopy.pageSize}")
     int entryValueCopyPageSize;
@@ -116,9 +121,8 @@ public class BatchConfiguration {
     @Bean
     public Step copyEntityValuesStep() {
         return new StepBuilder("copyEntityValuesStep", this.jobRepository)
-                .<Integer,Integer>chunk(entryValueCopyChunkSize, transactionManager)
-                .reader(copyEntityValueReader())
-                .writer(itemWriter())
+                .tasklet(
+                    new RemoveLargeObjectsTasklet(largeObjectRepository, entryValueMaxItemCount), transactionManager)
                 .build();
 
     }
