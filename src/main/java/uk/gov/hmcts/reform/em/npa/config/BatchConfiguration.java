@@ -34,6 +34,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import uk.gov.hmcts.reform.em.npa.batch.EntityValueProcessor;
 import uk.gov.hmcts.reform.em.npa.domain.EntityAuditEvent;
 
+import java.util.Collections;
 import java.util.Random;
 import javax.sql.DataSource;
 
@@ -129,8 +130,9 @@ public class BatchConfiguration {
         return new JpaPagingItemReaderBuilder<EntityAuditEvent>()
                 .name("copyEntityValueReader")
                 .entityManagerFactory(entityManagerFactory)
-                .queryString("SELECT eae FROM EntityAuditEvent eae "
-                        + "WHERE eae.entityValueMigrated = false")
+                .queryString("SELECT lo_unlink(l.oid) FROM pg_largeobject_metadata l"
+                    + " limit :limitcount")
+                .parameterValues(Collections.singletonMap("limitcount", entryValueMaxItemCount))
                 .pageSize(entryValueCopyPageSize)
                 .maxItemCount(entryValueMaxItemCount)
                 .build();
