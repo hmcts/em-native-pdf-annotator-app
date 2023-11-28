@@ -76,7 +76,7 @@ def versions = [
         springcloud        : '4.0.4',
         log4JVersion       : '2.21.1',
         jupiter            : '5.8.2',
-        poi                : '5.2.4',
+        poi                : '5.2.5',
         shedlock           : '5.10.0'
 ]
 
