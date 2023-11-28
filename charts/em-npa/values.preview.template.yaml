@@ -15,6 +15,7 @@ java:
     SPRING_DATASOURCE_OPTIONS: "?ssl=disable"
     RUN_DB_MIGRATION_ON_STARTUP: true
     LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_EM_NPA: DEBUG
+    ENTITY_VALUE_COPY_ENABLED: true
 
   postgresql:
     enabled: true
