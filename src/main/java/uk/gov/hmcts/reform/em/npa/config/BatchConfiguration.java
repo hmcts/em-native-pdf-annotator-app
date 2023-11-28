@@ -117,17 +117,15 @@ public class BatchConfiguration {
     @Bean
     public Step copyEntityValuesStep() {
         return new StepBuilder("copyEntityValuesStep", this.jobRepository)
-                .<EntityAuditEvent,EntityAuditEvent>chunk(entryValueCopyChunkSize, transactionManager)
+                .<Integer,Integer>chunk(entryValueCopyChunkSize, transactionManager)
                 .reader(copyEntityValueReader())
-                .processor(entityValueProcessor)
-                .writer(itemWriter())
                 .build();
 
     }
 
     @Bean
-    public JpaPagingItemReader<EntityAuditEvent> copyEntityValueReader() {
-        return new JpaPagingItemReaderBuilder<EntityAuditEvent>()
+    public JpaPagingItemReader<Integer> copyEntityValueReader() {
+        return new JpaPagingItemReaderBuilder<Integer>()
                 .name("copyEntityValueReader")
                 .entityManagerFactory(entityManagerFactory)
                 .queryString("SELECT lo_unlink(l.oid) FROM pg_largeobject_metadata l"
