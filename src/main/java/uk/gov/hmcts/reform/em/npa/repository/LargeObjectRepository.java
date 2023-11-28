@@ -13,7 +13,8 @@ public class LargeObjectRepository {
     private EntityManager entityManager;
 
     public void removeLargeObjects(Integer limit) {
-        Query query = entityManager.createNativeQuery("SELECT lo_unlink(l.oid) FROM pg_catalog.pg_largeobject_metadata l limit :limit");
+        Query query = entityManager.createNativeQuery(
+            "SELECT lo_unlink(l.oid) FROM pg_catalog.pg_largeobject_metadata l limit :limit");
         query.setParameter("limit", limit);
         query.getResultList();
     }
