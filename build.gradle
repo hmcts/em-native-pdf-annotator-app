@@ -270,7 +270,11 @@ dependencyManagement {
             entry 'jackson-databind'
             entry 'jackson-annotations'
         }
-
+         // CVE-2023-6378
+        dependencySet(group: 'ch.qos.logback', version: '1.4.14') {
+          entry 'logback-classic'
+          entry 'logback-core'
+        }
     }
 }
 
