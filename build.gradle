@@ -78,7 +78,7 @@ def versions = [
         log4JVersion       : '2.21.1',
         jupiter            : '5.10.1',
         poi                : '5.2.5',
-        shedlock           : '5.10.0'
+        shedlock           : '5.10.1'
 ]
 
 sourceSets {
