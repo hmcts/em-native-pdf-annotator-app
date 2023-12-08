@@ -1,0 +1,2 @@
+ALTER TABLE jhi_entity_audit_event DROP COLUMN IF EXISTS entity_value_migrated;
+DROP INDEX IF EXISTS jhi_entity_audit_event_entity_value_migrated_index;

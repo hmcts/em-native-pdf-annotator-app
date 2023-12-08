@@ -77,8 +77,7 @@ def versions = [
         springcloud        : '4.1.0-RC1',
         log4JVersion       : '2.21.1',
         jupiter            : '5.10.1',
-        poi                : '5.2.5',
-        shedlock           : '5.10.0'
+        poi                : '5.2.5'
 ]
 
 sourceSets {
@@ -129,20 +128,15 @@ dependencies {
         exclude group: 'org.eclipse.jetty.alpn', module: 'alpn-api'
     }
 
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-batch'
     implementation group: 'org.springframework.boot', name: 'spring-boot-actuator'
     implementation group: 'org.springframework.boot', name: 'spring-boot-autoconfigure'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-batch'
 
 
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: versions.springcloud
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: versions.springcloud
-
-    implementation group: "net.javacrumbs.shedlock", name: "shedlock-spring", version: versions.shedlock
-    implementation group: "net.javacrumbs.shedlock", name: "shedlock-provider-jdbc-template", version: versions.shedlock
 
     implementation group: 'com.google.guava', name: 'guava', version: '32.1.3-jre'
 
@@ -293,7 +287,6 @@ def coverageExclusionList = [
     '**uk/gov/hmcts/reform/em/npa/config/**/*',
     '**uk/gov/hmcts/reform/em/npa/data/migration/PendingMigrationScriptException*',
     '**uk/gov/hmcts/reform/em/npa/data/migration/FlywayNoOpStrategy*',
-    '**uk/gov/hmcts/reform/em/npa/config/FlywayConfiguration*',
     '**uk/gov/hmcts/reform/em/npa/domain/*',
     '**uk/gov/hmcts/reform/em/npa/service/dto/external/annotation/*',
     '**uk/gov/hmcts/reform/em/npa/ccd/domain/*',
@@ -306,8 +299,6 @@ def coverageExclusionList = [
     '**uk/gov/hmcts/reform/em/npa/service/dto/AbstractAuditingDTO*',
     '**uk/gov/hmcts/reform/em/npa/rest/ResponseUtil*',
     '**uk/gov/hmcts/reform/em/npa/config/FlywayConfiguration*',
-    '**uk/gov/hmcts/reform/em/npa/config/BatchConfiguration*',
-    '**uk/gov/hmcts/reform/em/npa/batch/EntityValueProcessor*',
     '**uk/gov/hmcts/reform/em/npa/batch/RemoveLargeObjectsTasklet*',
     '**uk/gov/hmcts/reform/em/npa/repository/LargeObjectRepository*'
 ]
