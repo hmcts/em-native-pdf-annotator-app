@@ -12,7 +12,7 @@ plugins {
     id 'au.com.dius.pact' version '4.2.14'
     id 'org.owasp.dependencycheck' version '9.0.1'
     id 'info.solidsoft.pitest' version '1.9.0'
-    id 'com.github.hmcts.rse-cft-lib' version '0.19.957'
+    id 'com.github.hmcts.rse-cft-lib' version '0.19.966'
     id 'org.flywaydb.flyway' version '9.22.3'
     id 'io.freefair.lombok' version '8.4'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '3.0.0'
@@ -177,7 +177,7 @@ dependencies {
     implementation group:'org.hibernate', name: 'hibernate-envers', version: versions.hibernate
 
     implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.1.1'
-    implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '3.0.2'
+    implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '3.0.3'
     implementation 'com.github.hmcts:ccd-case-document-am-client:1.59'
     implementation group: 'org.apache.tika', name: 'tika-core', version: '2.9.1'
 
