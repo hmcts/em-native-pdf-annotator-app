@@ -6,4 +6,3 @@ database_storage_mb = "358400"
 
 //v15 DB
 pgsql_storage_mb = "262144"
-pgsql_sku = "MO_Standard_E8ds_v4"
