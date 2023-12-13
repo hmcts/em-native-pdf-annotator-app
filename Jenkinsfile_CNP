@@ -76,6 +76,7 @@ withPipeline(type , product, component) {
                 AppPipelineDsl.PactRoles.PRODUCER,
                 AppPipelineDsl.PactRoles.CONSUMER_DEPLOY_CHECK
         ])
+    }
 
     afterAlways('test') {
 
