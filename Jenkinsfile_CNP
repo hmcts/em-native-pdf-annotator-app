@@ -70,8 +70,6 @@ withPipeline(type , product, component) {
         }
     }
 
-    }
-
     afterAlways('test') {
 
            publishHTML target: [
