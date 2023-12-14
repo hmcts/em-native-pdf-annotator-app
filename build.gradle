@@ -235,14 +235,9 @@ dependencyManagement {
             entry 'xercesImpl'
         }
 
-        //CVE-2022-1471
-        dependencySet(group: 'org.yaml', version: '2.2') {
-            entry 'snakeyaml'
-        }
-
-        //CVE-2023-24998
-        dependencySet(group: 'commons-fileupload', version: '1.5') {
-            entry 'commons-fileupload'
+        //CVE-2020-13956
+        dependencySet(group: 'org.apache.httpcomponents', version: '4.5.14') {
+            entry 'fluent-hc'
         }
 
         dependencySet(group: 'com.fasterxml.jackson.core', version: '2.16.0') {
