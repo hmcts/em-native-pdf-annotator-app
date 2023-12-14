@@ -235,30 +235,11 @@ dependencyManagement {
             entry 'xercesImpl'
         }
 
-        //CVE-2022-1471
-        dependencySet(group: 'org.yaml', version: '2.2') {
-            entry 'snakeyaml'
-        }
-
-        //CVE-2023-24998
-        dependencySet(group: 'commons-fileupload', version: '1.5') {
-            entry 'commons-fileupload'
-        }
-
         //CVE-2020-13956
         dependencySet(group: 'org.apache.httpcomponents', version: '4.5.14') {
             entry 'fluent-hc'
         }
 
-        //CVE-2023-3635
-        dependencySet(group: 'com.squareup.okio', version: '3.6.0') {
-            entry 'okio-jvm'
-        }
-        //CVE-2023-41080
-        dependencySet(group: 'org.apache.tomcat.embed', version: '10.1.17') {
-            entry 'tomcat-embed-websocket'
-            entry 'tomcat-embed-core'
-        }
         dependencySet(group: 'com.fasterxml.jackson.core', version: '2.16.0') {
             entry 'jackson-core'
             entry 'jackson-databind'
