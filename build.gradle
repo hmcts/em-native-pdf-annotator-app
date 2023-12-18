@@ -69,6 +69,7 @@ def versions = [
         serenityreporter   : '3.4.2',
         serenityRestAssured: '3.4.2',
         pact_version       : '4.0.10',
+        pact_junit5        : '4.6.4',
         logging            : '6.0.1',
         fasterXmlJackson   : '2.16.0',
         hibernate          : '6.4.0.Final',
@@ -208,7 +209,7 @@ dependencies {
     testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.19.3'
 
     contractTestImplementation group: 'au.com.dius', name: 'pact-jvm-consumer-junit', version: versions.pact_version, withoutPactExtras
-    contractTestImplementation group: 'au.com.dius', name: 'pact-jvm-consumer-junit5', version: versions.pact_version, withoutPactExtras
+    contractTestImplementation group: 'au.com.dius', name: 'pact-jvm-consumer-junit5', version: versions.pact_junit5, withoutPactExtras
     contractTestImplementation group: 'au.com.dius', name: 'pact-jvm-consumer-java8', version: versions.pact_version, withoutPactExtras
     implementation group: 'au.com.dius', name: 'pact-jvm-consumer', version: versions.pact_version, withoutPactExtras
 
