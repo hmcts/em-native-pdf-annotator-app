@@ -68,26 +68,6 @@ variable em_anno_app_url {
   default = "em-anno"
 }
 
-variable postgresql_user {
-  default = "annotation"
-}
-
-variable database_name {
-  default = "annotation"
-}
-
-variable postgresql_user_v11 {
-  default = "npa"
-}
-
-variable database_name_v11 {
-  default = "npa"
-}
-
-variable database_storage_mb {
-  default     = "51200"
-}
-
 variable appinsights_instrumentation_key {
   description = "Instrumentation key of the App Insights instance this webapp should use. Module will create own App Insights resource if this is not provided"
   default     = ""

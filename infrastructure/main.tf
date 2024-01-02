@@ -6,26 +6,12 @@ locals {
   vaultName         = "${local.app_full_name}-${var.env}"
 }
 
-module "db-v11" {
-  source             = "git@github.com:hmcts/cnp-module-postgres?ref=postgresql_tf"
-  product            = var.product
-  component          = var.component
-  name               = "${local.app_full_name}-postgres-db-v11"
-  location           = var.location
-  env                = var.env
-  postgresql_user    = var.postgresql_user_v11
-  database_name      = var.database_name_v11
-  postgresql_version = "11"
-  subnet_id          = data.azurerm_subnet.postgres.id
-  sku_name           = "GP_Gen5_2"
-  sku_tier           = "GeneralPurpose"
-  storage_mb         = var.database_storage_mb
-  common_tags        = var.common_tags
-  subscription       = var.subscription
-}
-
 provider "azurerm" {
-  features {}
+  features {
+    resource_group {
+      prevent_deletion_if_contains_resources = false
+    }
+  }
 }
 
 provider "azurerm" {
