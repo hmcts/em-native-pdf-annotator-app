@@ -6,24 +6,6 @@ locals {
   vaultName         = "${local.app_full_name}-${var.env}"
 }
 
-module "db-v11" {
-  source             = "git@github.com:hmcts/cnp-module-postgres?ref=postgresql_tf"
-  product            = var.product
-  component          = var.component
-  name               = "${local.app_full_name}-postgres-db-v11"
-  location           = var.location
-  env                = var.env
-  postgresql_user    = var.postgresql_user_v11
-  database_name      = var.database_name_v11
-  postgresql_version = "11"
-  subnet_id          = data.azurerm_subnet.postgres.id
-  sku_name           = "GP_Gen5_2"
-  sku_tier           = "GeneralPurpose"
-  storage_mb         = var.database_storage_mb
-  common_tags        = var.common_tags
-  subscription       = var.subscription
-}
-
 provider "azurerm" {
   features {}
 }
@@ -80,31 +62,31 @@ data "azurerm_user_assigned_identity" "rpa-shared-identity" {
 
 resource "azurerm_key_vault_secret" "POSTGRES-USER" {
   name         = "${var.component}-POSTGRES-USER"
-  value        = module.db-v11.user_name
+  value        = module.db-v15.username
   key_vault_id = module.key_vault.key_vault_id
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-PASS" {
   name         = "${var.component}-POSTGRES-PASS"
-  value        = module.db-v11.postgresql_password
+  value        = module.db-v15.password
   key_vault_id = module.key_vault.key_vault_id
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_HOST" {
   name         = "${var.component}-POSTGRES-HOST"
-  value        = module.db-v11.host_name
+  value        = module.db-v15.fqdn
   key_vault_id = module.key_vault.key_vault_id
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_PORT" {
   name         = "${var.component}-POSTGRES-PORT"
-  value        = module.db-v11.postgresql_listen_port
+  value        = "5432"
   key_vault_id = module.key_vault.key_vault_id
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
   name         = "${var.component}-POSTGRES-DATABASE"
-  value        = module.db-v11.postgresql_database
+  value        = "npa"
   key_vault_id = module.key_vault.key_vault_id
 }
 
@@ -174,34 +156,5 @@ module "db-v15" {
   //Below attributes needs to be overridden for Perftest & Prod
   pgsql_sku            = var.pgsql_sku
   pgsql_storage_mb     = var.pgsql_storage_mb
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES-USER-V15" {
-  name         = "${var.component}-POSTGRES-USER-V15"
-  value        = module.db-v15.username
-  key_vault_id = module.key_vault.key_vault_id
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES-PASS-V15" {
-  name         = "${var.component}-POSTGRES-PASS-V15"
-  value        = module.db-v15.password
-  key_vault_id = module.key_vault.key_vault_id
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES_HOST-V15" {
-  name         = "${var.component}-POSTGRES-HOST-V15"
-  value        = module.db-v15.fqdn
-  key_vault_id = module.key_vault.key_vault_id
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES_PORT-V15" {
-  name         = "${var.component}-POSTGRES-PORT-V15"
-  value        = "5432"
-  key_vault_id = module.key_vault.key_vault_id
-}
-
-resource "azurerm_key_vault_secret" "POSTGRES_DATABASE-V15" {
-  name         = "${var.component}-POSTGRES-DATABASE-V15"
-  value        = "npa"
-  key_vault_id = module.key_vault.key_vault_id
+  force_user_permissions_trigger = "1"
 }
