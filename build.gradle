@@ -555,3 +555,12 @@ task migratePostgresDatabase(type: org.flywaydb.gradle.task.FlywayMigrateTask) {
 configurations.cftlibTestImplementation {
     exclude group: 'ch.qos.logback', module: 'logback-classic'
 }
+
+task runProviderPactVerification(type: Test) {
+    logger.lifecycle("Runnning contract Tests")
+    useJUnitPlatform()
+    testClassesDirs = sourceSets.contractTest.output.classesDirs
+    classpath = sourceSets.contractTest.runtimeClasspath
+    systemProperty 'pact.verifier.publishResults', System.getProperty('pact.verifier.publishResults')
+    systemProperty 'pact.provider.version', pactVersion.toString();
+}
