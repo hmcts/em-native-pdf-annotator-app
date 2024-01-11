@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.em.npa.config.Constants;
 import uk.gov.hmcts.reform.em.npa.config.security.SecurityUtils;
 import uk.gov.hmcts.reform.em.npa.redaction.ImageRedaction;
 import uk.gov.hmcts.reform.em.npa.redaction.PdfRedaction;
@@ -83,8 +82,8 @@ public class RedactionServiceImpl implements RedactionService {
             } else {
                 throw new FileTypeException("Redaction cannot be applied to the file type provided");
             }
-            markUpRepository.deleteAllByDocumentIdAndCreatedBy(redactionRequest.getDocumentId(),
-                securityUtils.getCurrentUserLogin().orElse(Constants.ANONYMOUS_USER));
+            //markUpRepository.deleteAllByDocumentIdAndCreatedBy(redactionRequest.getDocumentId(),
+            //securityUtils.getCurrentUserLogin().orElse(Constants.ANONYMOUS_USER));
             return updatedFile;
         } catch (DocumentTaskProcessingException e) {
             log.error(e.getMessage(), e);
