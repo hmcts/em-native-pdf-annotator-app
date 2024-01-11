@@ -83,8 +83,8 @@ public class RedactionServiceImpl implements RedactionService {
             } else {
                 throw new FileTypeException("Redaction cannot be applied to the file type provided");
             }
-            markUpRepository.deleteAllByDocumentIdAndCreatedBy(redactionRequest.getDocumentId(),
-                securityUtils.getCurrentUserLogin().orElse(Constants.ANONYMOUS_USER));
+//            markUpRepository.deleteAllByDocumentIdAndCreatedBy(redactionRequest.getDocumentId(),
+//                securityUtils.getCurrentUserLogin().orElse(Constants.ANONYMOUS_USER));
             return updatedFile;
         } catch (DocumentTaskProcessingException e) {
             log.error(e.getMessage(), e);
