@@ -213,7 +213,7 @@ dependencies {
 
     testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.1', classifier: 'all'
 
-    testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.19.4'
+    testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.19.5'
 
     contractTestImplementation group: 'au.com.dius', name: 'pact-jvm-consumer-junit', version: versions.pact_version, withoutPactExtras
     contractTestImplementation group: 'au.com.dius', name: 'pact-jvm-consumer-junit5', version: versions.pact_version, withoutPactExtras
