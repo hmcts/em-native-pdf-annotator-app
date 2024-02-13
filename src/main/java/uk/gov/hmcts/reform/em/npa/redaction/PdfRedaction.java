@@ -63,7 +63,9 @@ public class PdfRedaction {
                     createRectangle(pdDocument, redactionDTO.getPage() - 1, rectangleDTO),
                     ColorConstants.BLACK))));
 
-        try (PdfDocument pdfDocument = new PdfDocument(new PdfReader(documentFile), new PdfWriter(newFile))) {
+        PdfReader reader = new PdfReader(documentFile);
+        reader.setUnethicalReading(true);
+        try (PdfDocument pdfDocument = new PdfDocument(reader, new PdfWriter(newFile))) {
             PdfCleanUpTool cleaner = new PdfCleanUpTool(pdfDocument, cleanUpLocations, new CleanUpProperties());
             cleaner.cleanUp();
         } catch (CleanUpImageUtil.CleanupImageHandlingUtilException e) {
