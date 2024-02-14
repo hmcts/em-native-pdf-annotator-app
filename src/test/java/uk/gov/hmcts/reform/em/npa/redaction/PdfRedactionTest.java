@@ -19,6 +19,10 @@ public class PdfRedactionTest {
             ClassLoader.getSystemResource("layered.pdf").getPath()
     );
 
+    private static final File TEST_PDF_FILE_PASSWORD = new File(
+        ClassLoader.getSystemResource("passwordprotected.pdf").getPath()
+    );
+
     private PdfRedaction pdfRedaction = new PdfRedaction();
 
     private List<RedactionDTO> redactions = new ArrayList<>();
@@ -52,6 +56,13 @@ public class PdfRedactionTest {
     public void pdfRedactionTest() throws IOException {
         File result = pdfRedaction.redactPdf(TEST_PDF_FILE, redactions);
         Assert.assertTrue(result.getName().contains("Redacted-layered"));
+        Assert.assertTrue(result.getName().contains(".pdf"));
+    }
+
+    @Test
+    public void pdfRedactionPasswordTest() throws IOException {
+        File result = pdfRedaction.redactPdf(TEST_PDF_FILE_PASSWORD, redactions);
+        Assert.assertTrue(result.getName().contains("Redacted-passwordprotected"));
         Assert.assertTrue(result.getName().contains(".pdf"));
     }
 
