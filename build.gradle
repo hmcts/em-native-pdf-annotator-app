@@ -250,7 +250,7 @@ dependencyManagement {
             entry 'fluent-hc'
         }
 
-        dependencySet(group: 'com.fasterxml.jackson.core', version: '2.16.1') {
+        dependencySet(group: 'com.fasterxml.jackson.core', version: '2.16.2') {
             entry 'jackson-core'
             entry 'jackson-databind'
             entry 'jackson-annotations'
