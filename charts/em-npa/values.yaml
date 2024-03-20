@@ -48,7 +48,7 @@ java:
     SERVER_PORT: 8080
     APPLICATIONINSIGHTS_INSTRUMENTATION_LOGGING_LEVEL: DEBUG
     spotInstances:
-      enabled: false #merge CNP flux prod disable before flipping to true
+      enabled: true #merge CNP flux prod disable before merging in
 xui-webapp:
   enabled: false
 idam-pr:
