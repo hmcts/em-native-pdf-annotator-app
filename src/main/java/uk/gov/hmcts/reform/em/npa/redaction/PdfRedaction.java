@@ -13,26 +13,17 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
-import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
-import org.apache.pdfbox.rendering.ImageType;
-import org.apache.pdfbox.rendering.PDFRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
-import uk.gov.hmcts.reform.em.npa.service.exception.RedactionProcessingException;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.imageio.ImageIO;
 
 @Service
 public class PdfRedaction {
@@ -113,69 +104,4 @@ public class PdfRedaction {
         return (float) (0.75 * value);
     }
 
-    /**
-     * Transform PDF Page to Image.
-     *
-     * @param pdfRenderer pdf file to be redacted
-     * @param pageNumber The page number in the PDF (zero indexed)
-     * @return The file containing the converted page
-     * @throws IOException if document process and image process fails
-     */
-    private File transformToImage(PDFRenderer pdfRenderer, int pageNumber) throws IOException {
-        BufferedImage img = pdfRenderer.renderImageWithDPI(pageNumber, 300, ImageType.ARGB);
-        final File alteredImage = File.createTempFile("altered", ".png");
-        ImageIO.write(img, "png", alteredImage);
-        return alteredImage;
-    }
-
-    /**
-     * Convert the page back to pdf after redaction on image.
-     *
-     * @param pageImage The file containing the PDF page image
-     * @return The newly redacted page in PDF format
-     * @throws IOException if document process fails
-     */
-    private PDPage transformToPdf(File pageImage, PDDocument newDocument, PDPage originalPage) throws IOException {
-        PDPage newPage = new PDPage(originalPage.getMediaBox());
-        newPage.setCropBox(originalPage.getCropBox());
-
-        try (PDPageContentStream contentStream = new PDPageContentStream(newDocument, newPage,
-            PDPageContentStream.AppendMode.APPEND, false)) {
-            PDRectangle cropBox = newPage.getCropBox();
-            newDocument.addPage(newPage);
-
-            BufferedImage awtImage = ImageIO.read(pageImage);
-            PDImageXObject pdImageXObject = LosslessFactory.createFromImage(newDocument, awtImage);
-            contentStream.drawImage(
-                    pdImageXObject,
-                    cropBox.getLowerLeftX(),
-                    cropBox.getLowerLeftY(),
-                    cropBox.getWidth(),
-                    cropBox.getHeight()
-            );
-            return newPage;
-        } catch (IOException e) {
-            throw new RedactionProcessingException("Error transforming image file to PDF page");
-        }
-    }
-
-    /**
-     * Replace old version of page in PDF with newly redacted one.
-     *
-     * @param document The PDF document to be redacted
-     * @param index The page number in the PDF (zero indexed)
-     * @param page The redacted page to be inserted into the PDF
-     * @return the pdf document with the newly redacted page inserted at the required position
-     */
-    private PDDocument replacePage(PDDocument document, final int index, final PDPage page) {
-        if (index >= document.getNumberOfPages()) {
-            document.addPage(page);
-        } else {
-            PDPageTree allPages = document.getDocumentCatalog().getPages();
-            PDPage pageToRemove = allPages.get(index);
-            allPages.insertBefore(page, pageToRemove);
-            document.removePage(pageToRemove);
-        }
-        return document;
-    }
 }

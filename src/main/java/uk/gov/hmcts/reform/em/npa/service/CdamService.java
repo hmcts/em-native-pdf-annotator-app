@@ -24,9 +24,12 @@ import java.util.UUID;
 @Service
 public class CdamService {
 
-    @Autowired
-    private CaseDocumentClientApi caseDocumentClientApi;
+    private final CaseDocumentClientApi caseDocumentClientApi;
 
+    @Autowired
+    public CdamService(CaseDocumentClientApi caseDocumentClientApi) {
+        this.caseDocumentClientApi = caseDocumentClientApi;
+    }
 
     public File downloadFile(String auth, String serviceAuth, UUID documentId) throws
             IOException, DocumentTaskProcessingException {

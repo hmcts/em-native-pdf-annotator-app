@@ -54,6 +54,8 @@ public class MarkUpResource {
 
     private static final String ENTITY_NAME = "redaction";
 
+    private static final String STRING_FORMAT = "%s - %s";
+
     private MarkUpService markUpService;
 
     public MarkUpResource(MarkUpService markUpService) {
@@ -98,7 +100,7 @@ public class MarkUpResource {
 
         if (result.hasErrors()) {
             throw new ValidationErrorException(result.getFieldErrors().stream()
-                    .map(fe -> String.format("%s - %s", fe.getField(), fe.getCode()))
+                    .map(fe -> String.format(STRING_FORMAT, fe.getField(), fe.getCode()))
                     .collect(Collectors.joining(",")));
         }
 
@@ -141,7 +143,7 @@ public class MarkUpResource {
 
         if (result.hasErrors()) {
             throw new ValidationErrorException(result.getFieldErrors().stream()
-                    .map(fe -> String.format("%s - %s", fe.getField(), fe.getCode()))
+                    .map(fe -> String.format(STRING_FORMAT, fe.getField(), fe.getCode()))
                     .collect(Collectors.joining(",")));
         }
 
@@ -183,7 +185,7 @@ public class MarkUpResource {
 
         if (result.hasErrors()) {
             throw new ValidationErrorException(result.getFieldErrors().stream()
-                    .map(fe -> String.format("%s - %s", fe.getField(), fe.getCode()))
+                    .map(fe -> String.format(STRING_FORMAT, fe.getField(), fe.getCode()))
                     .collect(Collectors.joining(",")));
         }
 
