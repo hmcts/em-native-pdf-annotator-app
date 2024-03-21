@@ -27,7 +27,7 @@ public class CdamService {
     private final CaseDocumentClientApi caseDocumentClientApi;
 
     @Autowired
-    public CdamService (CaseDocumentClientApi caseDocumentClientApi) {
+    public CdamService(CaseDocumentClientApi caseDocumentClientApi) {
         this.caseDocumentClientApi = caseDocumentClientApi;
     }
 
