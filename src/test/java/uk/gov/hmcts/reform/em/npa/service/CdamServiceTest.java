@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.em.npa.service;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -24,7 +23,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CdamServiceTest {
-    @InjectMocks
+
     private CdamService cdamService;
 
     @Mock
@@ -38,6 +37,7 @@ public class CdamServiceTest {
     @Before
     public void setup() {
         MockitoAnnotations.openMocks(this);
+        cdamService = new CdamService(caseDocumentClientApi);
     }
 
     @Test
