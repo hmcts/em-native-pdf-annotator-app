@@ -27,6 +27,8 @@ java:
     CDAM_URL: http://ccd-case-document-am-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     S2S_NAMES_WHITELIST: ccd,em_gw,xui_webapp
     ENABLE_CDAM: false
+    spotInstances:
+      enabled: true
 
     SPRING_DATASOURCE_PORT: 5432
     SPRING_DATASOURCE_NAME: npa
