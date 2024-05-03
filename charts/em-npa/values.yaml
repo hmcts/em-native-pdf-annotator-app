@@ -47,8 +47,6 @@ java:
     ENABLE_SEARCH_MARKUPS_ENDPOINT: true
     SERVER_PORT: 8080
     APPLICATIONINSIGHTS_INSTRUMENTATION_LOGGING_LEVEL: DEBUG
-  spotInstances:
-    enabled: true
 xui-webapp:
   enabled: false
 idam-pr:
