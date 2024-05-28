@@ -78,7 +78,7 @@ def versions = [
         fasterXmlJackson   : '2.17.1',
         hibernate          : '6.5.2.Final',
         mapstruct          : '1.5.5.Final',
-        springSecurity     : '6.2.4',
+        springSecurity     : '6.3.0',
         log4JVersion       : '2.23.1',
         jupiter            : '5.10.2',
         poi                : '5.2.5'
