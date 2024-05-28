@@ -78,7 +78,7 @@ def versions = [
         fasterXmlJackson   : '2.17.1',
         hibernate          : '6.5.2.Final',
         mapstruct          : '1.5.5.Final',
-        springSecurity     : '6.2.4',
+        springSecurity     : '6.3.0',
         log4JVersion       : '2.23.1',
         jupiter            : '5.10.2',
         poi                : '5.2.5'
@@ -168,7 +168,7 @@ dependencies {
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: versions.springSecurity
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-client', version: versions.springSecurity
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-jose', version: versions.springSecurity
-    implementation group: 'org.springframework.security', name: 'spring-security-oauth2-core', version: versions.springSecurity
+    implementation group: 'org.springframework.security', name: 'spring-security-core', version: versions.springSecurity
     implementation group: 'org.springframework.security', name: 'spring-security-config', version: versions.springSecurity
 
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.14'
