@@ -178,7 +178,7 @@ dependencies {
     implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.14.0'
     implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
-    implementation group: 'commons-validator', name: 'commons-validator', version: '1.8.0'
+    implementation group: 'commons-validator', name: 'commons-validator', version: '1.9.0'
     implementation group: 'org.ehcache', name: 'ehcache', version: '3.10.8'
 
     implementation group:'org.hibernate', name: 'hibernate-core', version: versions.hibernate
