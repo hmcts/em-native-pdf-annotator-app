@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.em.npa.repository.EntityAuditEventRepository;
 import uk.gov.hmcts.reform.em.npa.rest.errors.EntityAuditEventException;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 
 /**
  * Async Entity Audit Event writer.
@@ -35,7 +34,7 @@ public class AsyncEntityAuditEventWriter {
      * Writes audit events to DB asynchronously in a new thread.
      */
     @Async
-    public void writeAuditEvent(Object target, EntityAuditAction action) {
+    public void writeAuditEvent(AbstractAuditingEntity target, EntityAuditAction action) {
         if (log.isDebugEnabled()) {
             log.debug("-------------- Post {} audit  --------------", action.value());
         }
@@ -55,40 +54,32 @@ public class AsyncEntityAuditEventWriter {
      * @return EntityAuditEvent
      */
     private EntityAuditEvent prepareAuditEntity(
-            final Object entity,
+            final AbstractAuditingEntity entity,
             EntityAuditAction action
     ) throws EntityAuditEventException {
         EntityAuditEvent auditedEntity = new EntityAuditEvent();
         Class<?> entityClass = entity.getClass(); // Retrieve entity class with reflection
         auditedEntity.setAction(action.value());
         auditedEntity.setEntityType(entityClass.getName());
-        Long entityId;
         String entityData;
-        log.trace("Getting Entity Id and Content");
+        log.trace("Getting Content");
         try {
-            Field privateLongField = entityClass.getDeclaredField("id");
-            privateLongField.setAccessible(true);
-            entityId = (Long) privateLongField.get(entity);
-            privateLongField.setAccessible(false);
             entityData = objectMapper.writeValueAsString(entity);
         } catch (IllegalArgumentException
-                | IllegalAccessException
-                | NoSuchFieldException
                 | SecurityException
                 | IOException e) {
             // instead of returning null, a custom exception is thrown, and it is caught in the writeAuditEvent method
             throw new EntityAuditEventException(e.getMessage());
         }
-        auditedEntity.setEntityId(entityId);
+        auditedEntity.setEntityId(entity.getId());
         auditedEntity.setEntityValueV2(entityData);
-        final AbstractAuditingEntity abstractAuditEntity = (AbstractAuditingEntity) entity;
         if (EntityAuditAction.CREATE.equals(action)) {
-            auditedEntity.setModifiedBy(abstractAuditEntity.getCreatedBy());
-            auditedEntity.setModifiedDate(abstractAuditEntity.getCreatedDate());
+            auditedEntity.setModifiedBy(entity.getCreatedBy());
+            auditedEntity.setModifiedDate(entity.getCreatedDate());
             auditedEntity.setCommitVersion(1);
         } else {
-            auditedEntity.setModifiedBy(abstractAuditEntity.getLastModifiedBy());
-            auditedEntity.setModifiedDate(abstractAuditEntity.getLastModifiedDate());
+            auditedEntity.setModifiedBy(entity.getLastModifiedBy());
+            auditedEntity.setModifiedDate(entity.getLastModifiedDate());
             calculateVersion(auditedEntity);
         }
         if (log.isTraceEnabled()) {

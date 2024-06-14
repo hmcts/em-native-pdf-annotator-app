@@ -7,7 +7,9 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.em.npa.domain.AbstractAuditingEntity;
 import uk.gov.hmcts.reform.em.npa.domain.EntityAuditEvent;
+import uk.gov.hmcts.reform.em.npa.domain.Rectangle;
 import uk.gov.hmcts.reform.em.npa.domain.Redaction;
 import uk.gov.hmcts.reform.em.npa.repository.EntityAuditEventRepository;
 
@@ -28,7 +30,7 @@ public class AsyncEntityAuditEventWriterTest {
 
     @Test
     public void testWriteAuditEventWithDebug() {
-        Object target = new Redaction();
+        AbstractAuditingEntity target = new Redaction();
 
         asyncEntityAuditEventWriter.writeAuditEvent(target, EntityAuditAction.CREATE);
 
@@ -38,7 +40,7 @@ public class AsyncEntityAuditEventWriterTest {
 
     @Test
     public void testWriteAuditEventModifyAuditAction() {
-        Object target = new Redaction();
+        AbstractAuditingEntity target = new Redaction();
 
         asyncEntityAuditEventWriter.writeAuditEvent(target, EntityAuditAction.UPDATE);
 
@@ -47,7 +49,7 @@ public class AsyncEntityAuditEventWriterTest {
 
     @Test
     public void testDeleteAuditEventModifyAuditAction() {
-        Object target = new Redaction();
+        AbstractAuditingEntity target = new Redaction();
 
         asyncEntityAuditEventWriter.writeAuditEvent(target, EntityAuditAction.DELETE);
 
@@ -56,8 +58,8 @@ public class AsyncEntityAuditEventWriterTest {
 
     @Test
     public void testWriteAuditEventException() {
-        asyncEntityAuditEventWriter.writeAuditEvent(new Object(), EntityAuditAction.CREATE);
+        asyncEntityAuditEventWriter.writeAuditEvent(new Rectangle(), EntityAuditAction.CREATE);
         Assertions.assertThrows(Exception.class, () ->
-                verify(asyncEntityAuditEventWriter).writeAuditEvent(new Object(), EntityAuditAction.CREATE));
+                verify(asyncEntityAuditEventWriter).writeAuditEvent(new Rectangle(), EntityAuditAction.CREATE));
     }
 }
