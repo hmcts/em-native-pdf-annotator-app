@@ -75,4 +75,6 @@ public abstract class AbstractAuditingEntity implements Serializable {
     public void setLastModifiedDate(Instant lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
+
+    public abstract Long getId();
 }
