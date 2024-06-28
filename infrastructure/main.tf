@@ -108,17 +108,17 @@ resource "azurerm_key_vault_secret" "local_app_insights_key" {
   key_vault_id = module.key_vault.key_vault_id
 }
 
- data "azurerm_key_vault_secret" "app_insights_connection_string" {
+data "azurerm_key_vault_secret" "app_insights_connection_string" {
   name         = "em-app-insights-connection-string"
   key_vault_id = data.azurerm_key_vault.shared_key_vault.id
 }
-  
+
 resource "azurerm_key_vault_secret" "local_app_insights_connection_string" {
   name         = "app-insights-connection-string"
   value        = data.azurerm_key_vault_secret.app_insights_connection_string.value
   key_vault_id = module.key_vault.key_vault_id
 }
-  
+
 data "azurerm_subnet" "postgres" {
   name                 = "core-infra-subnet-0-${var.env}"
   resource_group_name  = "core-infra-${var.env}"
@@ -141,8 +141,8 @@ module "db-v15" {
   admin_user_object_id = var.jenkins_AAD_objectId
   business_area        = "CFT"
   # The original subnet is full, this is required to use the new subnet for new databases
-  subnet_suffix        = "expanded"
-  pgsql_databases      = [
+  subnet_suffix = "expanded"
+  pgsql_databases = [
     {
       name : "npa"
     }
@@ -154,7 +154,7 @@ module "db-v15" {
     }
   ]
   //Below attributes needs to be overridden for Perftest & Prod
-  pgsql_sku            = var.pgsql_sku
-  pgsql_storage_mb     = var.pgsql_storage_mb
+  pgsql_sku                      = var.pgsql_sku
+  pgsql_storage_mb               = var.pgsql_storage_mb
   force_user_permissions_trigger = "1"
 }
