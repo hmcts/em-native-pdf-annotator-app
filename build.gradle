@@ -144,7 +144,7 @@ dependencies {
 
     implementation group: 'com.google.guava', name: 'guava', version: '33.2.1-jre'
 
-    implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.32'
+    implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.34'
     implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '3.0.2'
     implementation group: 'org.apache.pdfbox', name: 'pdfbox-io', version: '3.0.2'
     implementation group: 'org.apache.pdfbox', name: 'jbig2-imageio', version: '3.0.4'
