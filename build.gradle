@@ -243,21 +243,9 @@ dependencyManagement {
         dependencySet(group: 'xerces', version: '2.12.2') {
             entry 'xercesImpl'
         }
-
         //CVE-2020-13956
         dependencySet(group: 'org.apache.httpcomponents', version: '4.5.14') {
             entry 'fluent-hc'
-        }
-
-        dependencySet(group: 'com.fasterxml.jackson.core', version: '2.17.1') {
-            entry 'jackson-core'
-            entry 'jackson-databind'
-            entry 'jackson-annotations'
-        }
-         // CVE-2023-6378
-        dependencySet(group: 'ch.qos.logback', version: '1.5.6') {
-          entry 'logback-classic'
-          entry 'logback-core'
         }
     }
 }
