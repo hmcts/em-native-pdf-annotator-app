@@ -81,7 +81,7 @@ def versions = [
         springSecurity     : '6.3.1',
         log4JVersion       : '2.23.1',
         jupiter            : '5.10.3',
-        poi                : '5.2.5'
+        poi                : '5.3.0'
 ]
 
 sourceSets {
