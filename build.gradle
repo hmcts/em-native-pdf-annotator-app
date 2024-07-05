@@ -1,7 +1,7 @@
 
 buildscript {
     dependencies {
-        classpath("org.flywaydb:flyway-database-postgresql:10.15.0")
+        classpath("org.flywaydb:flyway-database-postgresql:10.15.2")
     }
 }
 
@@ -81,7 +81,7 @@ def versions = [
         springSecurity     : '6.3.1',
         log4JVersion       : '2.23.1',
         jupiter            : '5.10.3',
-        poi                : '5.2.5'
+        poi                : '5.3.0'
 ]
 
 sourceSets {
@@ -173,7 +173,7 @@ dependencies {
 
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.14'
     implementation group: 'org.flywaydb', name: 'flyway-core', version: '10.15.2'
-    runtimeOnly group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '10.15.0'
+    runtimeOnly group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '10.15.2'
 
     implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.14.0'
