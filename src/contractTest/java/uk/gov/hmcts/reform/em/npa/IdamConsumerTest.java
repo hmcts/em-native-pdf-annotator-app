@@ -36,7 +36,7 @@ public class IdamConsumerTest {
     private static final String IDAM_DETAILS_URL = "/o/userinfo";
     private static final String IDAM_OPENID_TOKEN_URL = "/o/token";
 
-    @Pact(provider = "Idam_api", consumer = "annotation_api")
+    @Pact(provider = "Idam_api", consumer = "em_npa_api")
     public RequestResponsePact executeGetIdamAccessTokenAndGet200(PactDslWithProvider builder) throws JSONException {
         String[] rolesArray = new String[1];
         rolesArray[0] = "citizen";
@@ -55,7 +55,7 @@ public class IdamConsumerTest {
 
         return builder
                 .given("a user exists", params)
-                .uponReceiving("Provider takes user/pwd and returns Access Token to Annotation API")
+                .uponReceiving("Provider takes user/pwd and returns Access Token to EM Native Pdf Annotator API")
                 .path(IDAM_OPENID_TOKEN_URL)
                 .method(HttpMethod.POST.toString())
                 .body("redirect_uri=http%3A%2F%2Fwww.dummy-pact-service.com%2Fcallback&client_id=pact"
@@ -95,7 +95,7 @@ public class IdamConsumerTest {
 
     }
 
-    @Pact(provider = "Idam_api", consumer = "annotation_api")
+    @Pact(provider = "Idam_api", consumer = "em_npa_api")
     public RequestResponsePact executeGetUserDetailsAndGet200(PactDslWithProvider builder) {
 
         Map<String, String> requestHeaders = Maps.newHashMap();
@@ -114,7 +114,7 @@ public class IdamConsumerTest {
 
         return builder
                 .given("I have obtained an access_token as a user", params)
-                .uponReceiving("Provider returns user info to Annotation API")
+                .uponReceiving("Provider returns user info to EM Native Pdf Annotator API")
                 .path(IDAM_DETAILS_URL)
                 .headers("Authorization", "Bearer eyJ0eXAiOiJKV1QiLCJraWQiOiJiL082T3ZWdjEre")
                 .method(HttpMethod.GET.toString())
