@@ -73,7 +73,7 @@ def versions = [
         serenity           : '3.4.2',
         serenityreporter   : '3.4.2',
         serenityRestAssured: '3.4.2',
-        pact_version       : '4.0.10',
+        pact_version       : '4.1.7',
         logging            : '6.1.5',
         fasterXmlJackson   : '2.17.2',
         hibernate          : '6.5.2.Final',
@@ -216,10 +216,13 @@ dependencies {
 
     testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.20.0'
 
-    contractTestImplementation group: 'au.com.dius', name: 'pact-jvm-consumer-junit', version: versions.pact_version, withoutPactExtras
-    contractTestImplementation group: 'au.com.dius', name: 'pact-jvm-consumer-junit5', version: versions.pact_version, withoutPactExtras
-    contractTestImplementation group: 'au.com.dius', name: 'pact-jvm-consumer-java8', version: versions.pact_version, withoutPactExtras
-    implementation group: 'au.com.dius', name: 'pact-jvm-consumer', version: versions.pact_version, withoutPactExtras
+    contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5',  version: versions.pact_version
+
+    contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5', version: versions.pact_version
+    contractTestImplementation group: 'au.com.dius.pact.provider', name: 'spring', version: versions.pact_version
+    contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5spring', version: versions.pact_version
+    contractTestImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+
 
     contractTestImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.jupiter
     contractTestRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.jupiter
@@ -379,16 +382,24 @@ task runAndPublishConsumerPactTests(type: Test){
 
 }
 
+runAndPublishConsumerPactTests.dependsOn contract
+runAndPublishConsumerPactTests.finalizedBy pactPublish
+
+task runProviderPactVerification(type: Test) {
+    logger.lifecycle("Runnning contract Tests")
+    useJUnitPlatform()
+    testClassesDirs = sourceSets.contractTest.output.classesDirs
+    classpath = sourceSets.contractTest.runtimeClasspath
+}
+
+runProviderPactVerification.dependsOn contract
+runProviderPactVerification.finalizedBy pactVerify
+
 task fortifyScan(type: JavaExec)  {
     mainClass.set("uk.gov.hmcts.fortifyclient.FortifyClientMainApp")
     classpath += sourceSets.test.runtimeClasspath
     jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
 }
-
-runAndPublishConsumerPactTests.dependsOn contract
-
-runAndPublishConsumerPactTests.finalizedBy pactPublish
-
 
 project.ext {
     pactVersion = getCheckedOutGitCommitHash()
