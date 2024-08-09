@@ -76,7 +76,7 @@ def versions = [
         pact_version       : '4.1.7',
         logging            : '6.1.5',
         fasterXmlJackson   : '2.17.2',
-        hibernate          : '6.5.2.Final',
+        hibernate          : '6.6.0.Final',
         mapstruct          : '1.5.5.Final',
         springSecurity     : '6.3.1',
         log4JVersion       : '2.23.1',
@@ -176,7 +176,7 @@ dependencies {
     runtimeOnly group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '10.17.0'
 
     implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
-    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.15.0'
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.16.0'
     implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
     implementation group: 'commons-validator', name: 'commons-validator', version: '1.9.0'
     implementation group: 'org.ehcache', name: 'ehcache', version: '3.10.8'
