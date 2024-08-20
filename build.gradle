@@ -250,6 +250,9 @@ dependencyManagement {
         dependencySet(group: 'org.apache.httpcomponents', version: '4.5.14') {
             entry 'fluent-hc'
         }
+        dependencySet(group: 'org.junit.platform', version: '1.11.0') {
+            entry 'junit-platform-commons'
+        }
     }
 }
 
