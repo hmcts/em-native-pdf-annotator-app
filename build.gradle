@@ -80,7 +80,7 @@ def versions = [
         mapstruct          : '1.6.0',
         springSecurity     : '6.3.2',
         log4JVersion       : '2.23.1',
-        jupiter            : '5.10.3',
+        jupiter            : '5.11.0',
         poi                : '5.3.0'
 ]
 
@@ -249,6 +249,9 @@ dependencyManagement {
         //CVE-2020-13956
         dependencySet(group: 'org.apache.httpcomponents', version: '4.5.14') {
             entry 'fluent-hc'
+        }
+        dependencySet(group: 'org.junit.platform', version: '1.11.0') {
+            entry 'junit-platform-commons'
         }
     }
 }
