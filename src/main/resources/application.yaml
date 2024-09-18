@@ -34,7 +34,7 @@ spring:
       client:
         provider:
           oidc:
-            issuer-uri: ${OPEN_ID_API_BASE_URI:https://idam-web-public.aat.platform.hmcts.net/o}
+            issuer-uri: ${OPEN_ID_API_BASE_URI:http://localhost:5062/o}
         registration:
           oidc:
             client-id: microservicekey-em-npa-app
@@ -84,17 +84,17 @@ info:
 auth:
   idam:
     client:
-      baseUrl: ${IDAM_API_BASE_URI:https://idam-api.aat.platform.hmcts.net}
+      baseUrl: ${IDAM_API_BASE_URI:http://localhost:5062}
   provider:
     service:
       client:
-        baseUrl: ${S2S_BASE_URI:http://rpe-service-auth-provider-aat.service.core-compute-aat.internal}
+        baseUrl: ${S2S_BASE_URI:http://localhost:8489}
 
 idam:
   api:
-    url: ${IDAM_API_BASE_URI:https://idam-api.aat.platform.hmcts.net}
+    url: ${IDAM_API_BASE_URI:http://localhost:5062}
   s2s-auth:
-    url: ${S2S_BASE_URI:http://rpe-service-auth-provider-aat.service.core-compute-aat.internal}
+    url: ${S2S_BASE_URI:http://localhost:8489}
     totp_secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
     microservice: em_npa_app
   s2s-authorised:
@@ -114,7 +114,7 @@ em-annotation-app:
   base-url: ${EM_ANNO_APP_URL:http://em-anno-aat.service.core-compute-aat.internal}
 
 document_management:
-  base-url: ${DM_STORE_APP_URL:http://dm-store-aat.service.core-compute-aat.internal}
+  base-url: ${DM_STORE_APP_URL:http://localhost:4603}
   docker_url: http://dm-store:8080
 
 case_document_am:

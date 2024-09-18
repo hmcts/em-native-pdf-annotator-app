@@ -519,12 +519,16 @@ bootWithCCD {
             environment key, value
         }
 
+        exec {
+            commandLine 'docker', 'compose', '-f', 'src/cftlib/resources/docker-compose-local.yml', '-p', 'cftlib', 'up', '-d'
+        }
     }
-    environment 'RSE_LIB_ADDITIONAL_DATABASES', 'emnpa'
+    environment 'RSE_LIB_ADDITIONAL_DATABASES', 'emnpa,evidence'
     environment 'DATA_STORE_S2S_AUTHORISED_SERVICES', 'ccd_gw,ccd_data,ccd_ps,aac_manage_case_assignment,ccd_case_document_am_api,am_role_assignment_service,hmc_cft_hearing_service,prl_citizen_frontend,xui_webapp'
     environment 'S2S_URL', 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
     environment 'CASE_DOCUMENT_AM_API_S2S_SECRET','${CASE_DOCUMENT_AM_API_S2S_SECRET}'
-    authMode = uk.gov.hmcts.rse.AuthMode.AAT
+    environment 'DOC_ASSEMBLY_SERVER_PORT', '8081'
+    authMode = uk.gov.hmcts.rse.AuthMode.Local
 }
 
 flyway {
