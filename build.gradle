@@ -80,7 +80,7 @@ def versions = [
         mapstruct          : '1.6.2',
         springSecurity     : '6.3.3',
         log4JVersion       : '2.24.0',
-        jupiter            : '5.11.0',
+        jupiter            : '5.11.1',
         poi                : '5.3.0'
 ]
 
@@ -250,7 +250,7 @@ dependencyManagement {
         dependencySet(group: 'org.apache.httpcomponents', version: '4.5.14') {
             entry 'fluent-hc'
         }
-        dependencySet(group: 'org.junit.platform', version: '1.11.0') {
+        dependencySet(group: 'org.junit.platform', version: '1.11.1') {
             entry 'junit-platform-commons'
         }
     }
