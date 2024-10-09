@@ -212,7 +212,7 @@ dependencies {
     testImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
     testImplementation group: 'net.serenity-bdd', name: 'serenity-single-page-report', version: versions.serenityreporter
 
-    testImplementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.8'
+    testImplementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.9'
     testImplementation group: 'ch.qos.logback', name: 'logback-core', version: '1.5.8'
 
     testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.4', classifier: 'all', {
