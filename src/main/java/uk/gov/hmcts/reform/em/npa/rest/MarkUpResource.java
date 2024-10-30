@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -134,7 +133,6 @@ public class MarkUpResource {
         @ApiResponse(responseCode = "200", description = "Success"),
         @ApiResponse(responseCode = "401", description = "Unauthorised"),
         @ApiResponse(responseCode = "403", description = "Forbidden"),})
-    @ConditionalOnProperty("endpoint-toggles.search-markups")
     @PostMapping("/markups/search")
     public ResponseEntity<RedactionSetDTO> createSearchMarkUps(@Valid @RequestBody RedactionSetDTO redactionSetDTO,
                                                             BindingResult result) {
