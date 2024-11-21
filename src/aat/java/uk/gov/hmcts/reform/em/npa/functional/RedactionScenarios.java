@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.em.npa.functional;
 
 import io.restassured.specification.RequestSpecification;
+import net.serenitybdd.annotations.WithTag;
+import net.serenitybdd.annotations.WithTags;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
-import net.thucydides.core.annotations.WithTag;
-import net.thucydides.core.annotations.WithTags;
 import org.json.JSONObject;
 import org.junit.Assume;
 import org.junit.Before;

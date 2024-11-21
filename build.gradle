@@ -70,9 +70,7 @@ repositories {
 def versions = [
         postgresql         : '42.7.4',
         h2                 : '1.4.199',
-        serenity           : '3.4.2',
-        serenityreporter   : '3.4.2',
-        serenityRestAssured: '3.4.2',
+        serenity           : '4.2.9',
         pact_version       : '4.1.7',
         logging            : '6.1.7',
         fasterXmlJackson   : '2.18.1',
@@ -207,11 +205,11 @@ dependencies {
     testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.jupiter
 
 
-    testImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenityRestAssured, withoutStuff
+    testImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity, withoutStuff
     testImplementation group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity, withoutStuff
     testImplementation group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
     testImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
-    testImplementation group: 'net.serenity-bdd', name: 'serenity-single-page-report', version: versions.serenityreporter
+    testImplementation group: 'net.serenity-bdd', name: 'serenity-single-page-report', version: versions.serenity
 
     testImplementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.12'
     testImplementation group: 'ch.qos.logback', name: 'logback-core', version: '1.5.12'
@@ -223,7 +221,7 @@ dependencies {
         exclude group: 'ch.qos.logback', module: 'logback-core'
     }
 
-    testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.20.3'
+    testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.20.4'
 
     contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5',  version: versions.pact_version
 
