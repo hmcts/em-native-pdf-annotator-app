@@ -2,13 +2,12 @@ package uk.gov.hmcts.reform.em.npa.functional;
 
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
+import net.serenitybdd.annotations.WithTag;
+import net.serenitybdd.annotations.WithTags;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
-import net.thucydides.core.annotations.WithTag;
-import net.thucydides.core.annotations.WithTags;
 import org.hamcrest.Matchers;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -41,9 +40,6 @@ public class MarkUpScenarios {
 
     @Value("${test.url}")
     private String testUrl;
-
-    @Value("${endpoint-toggles.search-markups}")
-    private boolean searchMarkupsEnabled;
 
     @Rule
     public RetryRule retryRule = new RetryRule(3);
@@ -128,7 +124,6 @@ public class MarkUpScenarios {
 
     @Test
     public void shouldReturn200WhenCreateSearchMarkUps() {
-        Assume.assumeTrue(searchMarkupsEnabled);
         final String documentId = UUID.randomUUID().toString();
         final ValidatableResponse response = createSearchMarkUps(documentId);
 
@@ -148,7 +143,6 @@ public class MarkUpScenarios {
 
     @Test
     public void shouldReturn422WhenCreateSearchMarkUpsWithoutMandatoryFields() {
-        Assume.assumeTrue(searchMarkupsEnabled);
         final String documentId = UUID.randomUUID().toString();
         final JSONObject jsonObject = testUtil.createSearchMarkUpsPayload(documentId);
 
@@ -170,7 +164,6 @@ public class MarkUpScenarios {
 
     @Test
     public void shouldReturn401WhenUnAuthenticatedUserCreateSearchMarkUps() {
-        Assume.assumeTrue(searchMarkupsEnabled);
         final String documentId = UUID.randomUUID().toString();
         final JSONObject jsonObject = testUtil.createSearchMarkUpsPayload(documentId);
 
