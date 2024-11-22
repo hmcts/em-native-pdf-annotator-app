@@ -41,7 +41,6 @@ public class IdamConsumerTest {
 
     @Pact(provider = "Idam_api", consumer = "em_npa_api")
     public RequestResponsePact executeGetIdamAccessTokenAndGet200(PactDslWithProvider builder) throws JSONException {
-        List<String> rolesList = List.of("citizen");
         Map<String, String> requestheaders = Maps.newHashMap();
         requestheaders.put("Content-Type", "application/x-www-form-urlencoded");
 
@@ -53,6 +52,8 @@ public class IdamConsumerTest {
         params.put("password", "Password123");
         params.put("forename", "emCaseOfficer");
         params.put("surname", "jar123");
+
+        List<String> rolesList = List.of("citizen");
         params.put("roles", rolesList);
 
         return builder
