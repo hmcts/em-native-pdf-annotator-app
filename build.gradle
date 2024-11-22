@@ -373,6 +373,9 @@ task smoke(type: Test) {
     environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }
 
+project.ext {
+    pactVersion = getCheckedOutGitCommitHash()
+}
 
 task contract(type: Test) {
     group = 'Delivery pipeline'
@@ -389,14 +392,25 @@ task runAndPublishConsumerPactTests(type: Test){
     logger.lifecycle("Runs pact Tests")
     testClassesDirs = sourceSets.contractTest.output.classesDirs
     classpath = sourceSets.contractTest.runtimeClasspath
-
 }
 
 runAndPublishConsumerPactTests.dependsOn contract
 runAndPublishConsumerPactTests.finalizedBy pactPublish
 
+pact {
+    publish {
+        pactDirectory = 'pacts'
+        pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
+        version = project.pactVersion
+    }
+}
+
+pactPublish {
+    pactPublish = project.pact.publish
+}
+
 task runProviderPactVerification(type: Test) {
-    logger.lifecycle("Runnning contract Tests")
+    logger.lifecycle("Running contract Tests")
     useJUnitPlatform()
     testClassesDirs = sourceSets.contractTest.output.classesDirs
     classpath = sourceSets.contractTest.runtimeClasspath
@@ -411,24 +425,12 @@ task fortifyScan(type: JavaExec)  {
     jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
 }
 
-project.ext {
-    pactVersion = getCheckedOutGitCommitHash()
-}
-
 static def getCheckedOutGitCommitHash() {
     'git rev-parse --verify --short HEAD'.execute().text.trim()
 }
 
 serenity {
     reports = ["single-page-html"]
-}
-
-pact {
-    publish {
-        pactDirectory = 'pacts'
-        pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'https://localhost:80'
-        version = project.pactVersion
-    }
 }
 
 compileJava.dependsOn processResources
