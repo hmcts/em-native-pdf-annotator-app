@@ -24,6 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -40,8 +41,7 @@ public class IdamConsumerTest {
 
     @Pact(provider = "Idam_api", consumer = "em_npa_api")
     public RequestResponsePact executeGetIdamAccessTokenAndGet200(PactDslWithProvider builder) throws JSONException {
-        String[] rolesArray = new String[1];
-        rolesArray[0] = "citizen";
+        List<String> rolesList = List.of("citizen");
         Map<String, String> requestheaders = Maps.newHashMap();
         requestheaders.put("Content-Type", "application/x-www-form-urlencoded");
 
@@ -53,7 +53,7 @@ public class IdamConsumerTest {
         params.put("password", "Password123");
         params.put("forename", "emCaseOfficer");
         params.put("surname", "jar123");
-        params.put("roles", rolesArray);
+        params.put("roles", rolesList);
 
         return builder
                 .given("a user exists", params)
