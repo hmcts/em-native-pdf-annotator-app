@@ -6,6 +6,7 @@ import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit5.PactConsumerTestExt;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
+import au.com.dius.pact.core.model.PactSpecVersion;
 import au.com.dius.pact.core.model.RequestResponsePact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import com.google.common.collect.Maps;
@@ -23,6 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -30,6 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @ExtendWith(PactConsumerTestExt.class)
+@PactTestFor(pactVersion = PactSpecVersion.V3)
 @ExtendWith(SpringExtension.class)
 public class IdamConsumerTest {
 
@@ -38,8 +41,6 @@ public class IdamConsumerTest {
 
     @Pact(provider = "Idam_api", consumer = "em_npa_api")
     public RequestResponsePact executeGetIdamAccessTokenAndGet200(PactDslWithProvider builder) throws JSONException {
-        String[] rolesArray = new String[1];
-        rolesArray[0] = "citizen";
         Map<String, String> requestheaders = Maps.newHashMap();
         requestheaders.put("Content-Type", "application/x-www-form-urlencoded");
 
@@ -51,7 +52,9 @@ public class IdamConsumerTest {
         params.put("password", "Password123");
         params.put("forename", "emCaseOfficer");
         params.put("surname", "jar123");
-        params.put("roles", rolesArray);
+
+        List<String> rolesList = List.of("citizen");
+        params.put("roles", rolesList);
 
         return builder
                 .given("a user exists", params)
