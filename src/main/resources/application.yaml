@@ -3,6 +3,9 @@ server:
 spring:
   application:
     name: EM Native PDF Annotator App
+  cloud:
+    compatibility-verifier:
+      enabled: false
   config:
     import: "optional:configtree:/mnt/secrets/em-npa/"
   jpa:
