@@ -1,7 +1,7 @@
 
 buildscript {
     dependencies {
-        classpath("org.flywaydb:flyway-database-postgresql:10.21.0")
+        classpath("org.flywaydb:flyway-database-postgresql:10.22.0")
     }
 }
 
@@ -14,13 +14,13 @@ plugins {
     id 'org.sonarqube' version '6.0.0.5145'
     id 'jacoco'
     id 'checkstyle'
-    id 'au.com.dius.pact' version '4.2.14'
+    id 'au.com.dius.pact' version '4.6.15'
     id 'org.owasp.dependencycheck' version '11.1.0'
     id 'info.solidsoft.pitest' version '1.15.0'
-    id 'com.github.hmcts.rse-cft-lib' version '0.19.1467'
-    id 'org.flywaydb.flyway' version '10.21.0'
+    id 'com.github.hmcts.rse-cft-lib' version '0.19.1471'
+    id 'org.flywaydb.flyway' version '10.22.0'
     id 'io.freefair.lombok' version '8.11'
-    id 'net.serenity-bdd.serenity-gradle-plugin' version '3.0.0'
+    id 'net.serenity-bdd.serenity-gradle-plugin' version '4.2.8'
 }
 
 apply plugin: 'java'
@@ -71,10 +71,10 @@ def versions = [
         postgresql         : '42.7.4',
         h2                 : '1.4.199',
         serenity           : '4.2.9',
-        pact_version       : '4.1.7',
+        pact_version       : '4.6.15',
         logging            : '6.1.7',
         fasterXmlJackson   : '2.18.1',
-        hibernate          : '6.6.2.Final',
+        hibernate          : '6.6.3.Final',
         mapstruct          : '1.6.3',
         springSecurity     : '6.4.1',
         log4JVersion       : '2.24.1',
@@ -171,8 +171,8 @@ dependencies {
     implementation group: 'org.springframework.security', name: 'spring-security-web', version: versions.springSecurity
 
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.14'
-    implementation group: 'org.flywaydb', name: 'flyway-core', version: '10.21.0'
-    runtimeOnly group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '10.21.0'
+    implementation group: 'org.flywaydb', name: 'flyway-core', version: '10.22.0'
+    runtimeOnly group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '10.22.0'
 
     implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.17.0'
@@ -373,6 +373,9 @@ task smoke(type: Test) {
     environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }
 
+project.ext {
+    pactVersion = getCheckedOutGitCommitHash()
+}
 
 task contract(type: Test) {
     group = 'Delivery pipeline'
@@ -389,14 +392,25 @@ task runAndPublishConsumerPactTests(type: Test){
     logger.lifecycle("Runs pact Tests")
     testClassesDirs = sourceSets.contractTest.output.classesDirs
     classpath = sourceSets.contractTest.runtimeClasspath
-
 }
 
 runAndPublishConsumerPactTests.dependsOn contract
 runAndPublishConsumerPactTests.finalizedBy pactPublish
 
+pact {
+    publish {
+        pactDirectory = 'pacts'
+        pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
+        version = project.pactVersion
+    }
+}
+
+pactPublish {
+    pactPublish = project.pact.publish
+}
+
 task runProviderPactVerification(type: Test) {
-    logger.lifecycle("Runnning contract Tests")
+    logger.lifecycle("Running contract Tests")
     useJUnitPlatform()
     testClassesDirs = sourceSets.contractTest.output.classesDirs
     classpath = sourceSets.contractTest.runtimeClasspath
@@ -411,24 +425,12 @@ task fortifyScan(type: JavaExec)  {
     jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
 }
 
-project.ext {
-    pactVersion = getCheckedOutGitCommitHash()
-}
-
 static def getCheckedOutGitCommitHash() {
     'git rev-parse --verify --short HEAD'.execute().text.trim()
 }
 
 serenity {
     reports = ["single-page-html"]
-}
-
-pact {
-    publish {
-        pactDirectory = 'pacts'
-        pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'https://localhost:80'
-        version = project.pactVersion
-    }
 }
 
 compileJava.dependsOn processResources

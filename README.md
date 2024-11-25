@@ -97,7 +97,7 @@ You can run contract or pact tests as follows:
 You can then publish your pact tests locally by first running the pact docker-compose:
 
 ```
-docker-compose -f docker-pactbroker-compose.yml up
+docker-compose -f docker-pactbroker-compose-local.yml up
 ```
 
 and then using it to publish your tests:
