@@ -4,7 +4,7 @@ locals {
   shared_vault_name = "${var.shared_product_name}-${local.local_env}"
   tags              = var.common_tags
   vaultName         = "${local.app_full_name}-${var.env}"
-  db_name = "${var.product}-${var.component}-postgres-db-flex"
+  db_name           = "${local.app_full_name}-postgres-db-v15"
 }
 
 provider "azurerm" {
@@ -137,7 +137,7 @@ module "db-v15" {
   product              = var.product
   component            = var.component
   common_tags          = var.common_tags
-  name                 = "${local.app_full_name}-postgres-db-v15"
+  name                 = local.db_name
   pgsql_version        = "15"
   admin_user_object_id = var.jenkins_AAD_objectId
   business_area        = "CFT"
