@@ -1,12 +1,10 @@
 package uk.gov.hmcts.reform.em.npa.service;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.ccd.document.am.feign.CaseDocumentClientApi;
@@ -18,11 +16,11 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
-public class CdamServiceTest {
+class CdamServiceTest {
 
     private CdamService cdamService;
 
@@ -34,14 +32,14 @@ public class CdamServiceTest {
 
     private static final UUID docStoreUUID = UUID.randomUUID();
 
-    @Before
+    @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
         cdamService = new CdamService(caseDocumentClientApi);
     }
 
     @Test
-    public void downloadFileCdam() throws Exception {
+    void downloadFileCdam() throws Exception {
 
         Document document = Document.builder().originalDocumentName("one-page.pdf").build();
         File mockFile = new File("src/test/resources/one-page.pdf");
@@ -59,13 +57,14 @@ public class CdamServiceTest {
         verify(caseDocumentClientApi, Mockito.atLeast(1)).getMetadataForDocument("xxx", "serviceAuth", docStoreUUID);
     }
 
-    @Test(expected = DocumentTaskProcessingException.class)
-    public void downloadFileCdamNullResponseBody() throws Exception {
+    @Test
+    void downloadFileCdamNullResponseBody() {
 
         ResponseEntity responseEntity = ResponseEntity.accepted().body(null);
         when(caseDocumentClientApi.getDocumentBinary("xxx", "serviceAuth", docStoreUUID)).thenReturn(responseEntity);
 
-        cdamService.downloadFile("xxx", "serviceAuth", docStoreUUID);
+        assertThrows(DocumentTaskProcessingException.class, () ->
+            cdamService.downloadFile("xxx", "serviceAuth", docStoreUUID));
 
     }
 

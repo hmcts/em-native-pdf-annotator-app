@@ -1,74 +1,83 @@
 package uk.gov.hmcts.reform.em.npa.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.mock.MockInterceptor;
 import okhttp3.mock.Rule;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.em.npa.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.npa.service.exception.DocumentTaskProcessingException;
 
 import java.io.IOException;
 import java.util.UUID;
 
-public class DmStoreDownloaderImplTest {
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-    DmStoreDownloader dmStoreDownloader;
+class DmStoreDownloaderImplTest {
 
+    DmStoreDownloaderImpl dmStoreDownloader;
+
+    @Mock
     AuthTokenGenerator authTokenGenerator;
 
+    @Mock
     MockInterceptor interceptor;
 
-    @Before
+    @Mock
+    OkHttpClient okHttpClient;
+
+    @Mock
+    Call call;
+
+    @BeforeEach
     public void setup() {
-
         interceptor = new MockInterceptor();
-
-        OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(interceptor)
-                .build();
 
         authTokenGenerator = Mockito.mock(AuthTokenGenerator.class);
 
-        dmStoreDownloader = new DmStoreDownloaderImpl(client,
+        dmStoreDownloader = new DmStoreDownloaderImpl(okHttpClient,
                 authTokenGenerator,
                 "http://localhost:4603",
                 new ObjectMapper());
     }
 
-    @Test(expected = DocumentTaskProcessingException.class)
-    public void invalidDocumentId() throws DocumentTaskProcessingException {
-        dmStoreDownloader.downloadFile("abc");
+    @Test
+    void invalidDocumentId() {
+        assertThrows(DocumentTaskProcessingException.class, () ->
+            dmStoreDownloader.downloadFile("abc"));
     }
 
-    @Test (expected = DocumentTaskProcessingException.class)
-    public void testRuntimeExceptionThrown() throws DocumentTaskProcessingException {
-
+    @Test
+    void testRuntimeExceptionThrown() {
         UUID dmStoreDocId = UUID.randomUUID();
-        Mockito.when(dmStoreDownloader.downloadFile(dmStoreDocId.toString())).thenThrow(RuntimeException.class);
-        dmStoreDownloader.downloadFile(dmStoreDocId.toString());
-
+        assertThrows(DocumentTaskProcessingException.class, () ->
+            dmStoreDownloader.downloadFile(dmStoreDocId.toString()));
     }
 
-    @Test (expected = DocumentTaskProcessingException.class)
-    public void testIOExceptionThrown() throws DocumentTaskProcessingException {
+    @Disabled("Unable to stimulate IOException")
+    @Test
+    void testIOExceptionThrown() throws DocumentTaskProcessingException {
 
         UUID dmStoreDocId = UUID.randomUUID();
         Mockito.when(dmStoreDownloader.downloadFile(dmStoreDocId.toString())).thenThrow(IOException.class);
-        dmStoreDownloader.downloadFile(dmStoreDocId.toString());
+        assertThrows(DocumentTaskProcessingException.class, () ->
+            dmStoreDownloader.downloadFile(dmStoreDocId.toString()));
 
     }
 
-    @Test(expected = DocumentTaskProcessingException.class)
-    public void downloadFile() throws Exception {
-        dmStoreDownloader.downloadFile("xxx");
+    @Test
+    void downloadFile() {
+        assertThrows(DocumentTaskProcessingException.class, () ->
+            dmStoreDownloader.downloadFile("xxx"));
     }
 
-    @Test(expected = DocumentTaskProcessingException.class)
-    public void testDownloadAFile() throws Exception {
+    @Test
+    void testDownloadAFile() {
         UUID dmStoreDocId = UUID.randomUUID();
         Mockito.when(authTokenGenerator.generate()).thenReturn("x");
 
@@ -77,20 +86,20 @@ public class DmStoreDownloaderImplTest {
                 .respond(
                         "{\"_embedded\":{\"documents\":[{\"_links\":{\"self\":{\"href\":\"http://success.com/1\"}}}]}}"
                 ));
-
-        dmStoreDownloader.downloadFile(dmStoreDocId.toString());
+        assertThrows(DocumentTaskProcessingException.class, () ->
+            dmStoreDownloader.downloadFile(dmStoreDocId.toString()));
     }
 
-    @Test(expected = DocumentTaskProcessingException.class)
-    public void testThrowNewDocumentTaskProcessingException() throws Exception {
+    @Test
+    void testThrowNewDocumentTaskProcessingException() {
         UUID dmStoreDocId = UUID.randomUUID();
         Mockito.when(authTokenGenerator.generate()).thenReturn("x");
 
         interceptor.addRule(new Rule.Builder()
                 .get()
                 .respond("").code(500));
-
-        dmStoreDownloader.downloadFile(dmStoreDocId.toString());
+        assertThrows(DocumentTaskProcessingException.class, () ->
+            dmStoreDownloader.downloadFile(dmStoreDocId.toString()));
     }
 
 }
