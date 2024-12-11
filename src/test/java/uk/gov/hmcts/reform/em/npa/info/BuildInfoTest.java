@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.em.npa.info;
 
 import org.hamcrest.CoreMatchers;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.info.Info;
 
 import java.util.Collections;
@@ -10,10 +10,10 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class BuildInfoTest {
+class BuildInfoTest {
 
     @Test
-    public void shouldAddBuildInfoToBuilder() throws Exception {
+    void shouldAddBuildInfoToBuilder() {
         BuildInfo buildInfo = new BuildInfo("name","env","project");
 
         Info.Builder builder = new Info.Builder();
