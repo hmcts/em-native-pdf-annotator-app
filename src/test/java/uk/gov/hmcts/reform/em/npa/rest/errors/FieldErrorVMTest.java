@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
 
-public class FieldErrorVMTest {
+class FieldErrorVMTest {
 
     FieldErrorVM fieldErrorVM = new FieldErrorVM("testObjectName", "testField", "testMessage");
 

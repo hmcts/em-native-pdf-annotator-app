@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.npa.config.security;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -18,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class SecurityUtilsTest {
 
@@ -51,7 +51,7 @@ class SecurityUtilsTest {
 
     @Test
     void getCurrentUserLoginNoAuthentication() {
-        Assert.assertFalse(securityUtils.getCurrentUserLogin().isPresent());
+        assertFalse(securityUtils.getCurrentUserLogin().isPresent());
     }
 
     @Test
@@ -60,7 +60,7 @@ class SecurityUtilsTest {
         Mockito.when(authentication.getPrincipal()).thenReturn(userDetails);
         Mockito.when(userDetails.getUsername()).thenReturn("aabb");
 
-        Assert.assertEquals("aabb",  securityUtils.getCurrentUserLogin().get());
+        assertEquals("aabb",  securityUtils.getCurrentUserLogin().get());
     }
 
     @Test
