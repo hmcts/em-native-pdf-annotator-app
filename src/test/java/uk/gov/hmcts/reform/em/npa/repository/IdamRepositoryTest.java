@@ -1,8 +1,7 @@
 package uk.gov.hmcts.reform.em.npa.repository;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -10,8 +9,10 @@ import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import static java.util.Arrays.asList;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class IdamRepositoryTest {
+class IdamRepositoryTest {
 
     @Mock
     private IdamClient idamClient;
@@ -21,14 +22,14 @@ public class IdamRepositoryTest {
     private static final  String FORE_NAME = "ABC";
     private static final  String SURNAME = "XYZ";
 
-    @Before
+    @BeforeEach
     public void setup() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         idamRepository = new IdamRepository(idamClient);
     }
 
     @Test
-    public void getUserDetailsTestSuccess() {
+    void getUserDetailsTestSuccess() {
 
         final UserInfo userInfo = UserInfo
                 .builder()
@@ -40,17 +41,15 @@ public class IdamRepositoryTest {
         Mockito.when(idamClient.getUserInfo(Mockito.anyString())).thenReturn(userInfo);
         String token = "randomValue";
 
-        Assert.assertEquals(FORE_NAME,  idamRepository.getUserInfo(token).getGivenName());
-        Assert.assertEquals(SURNAME,  idamRepository.getUserInfo(token).getFamilyName());
+        assertEquals(FORE_NAME,  idamRepository.getUserInfo(token).getGivenName());
+        assertEquals(SURNAME,  idamRepository.getUserInfo(token).getFamilyName());
     }
 
     @Test
-    public void getUserDetailsTestFailure() {
-
+    void getUserDetailsTestFailure() {
         String token = "randomValue";
 
-        Assert.assertNull(FORE_NAME,  idamRepository.getUserInfo(token));
+        assertNull(idamRepository.getUserInfo(token));
     }
-
 }
 
