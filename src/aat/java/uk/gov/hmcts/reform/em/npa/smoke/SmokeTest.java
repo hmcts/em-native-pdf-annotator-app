@@ -4,16 +4,17 @@ import net.serenitybdd.annotations.WithTag;
 import net.serenitybdd.annotations.WithTags;
 import net.serenitybdd.rest.SerenityRest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestPropertySource(value = "classpath:application.yml")
-@SpringBootTest
+@ExtendWith(SpringExtension.class)
 @WithTags({@WithTag("testType:Smoke")})
 class SmokeTest {
 
