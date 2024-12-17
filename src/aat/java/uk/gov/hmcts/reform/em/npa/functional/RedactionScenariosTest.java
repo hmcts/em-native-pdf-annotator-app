@@ -3,18 +3,17 @@ package uk.gov.hmcts.reform.em.npa.functional;
 import io.restassured.specification.RequestSpecification;
 import net.serenitybdd.annotations.WithTag;
 import net.serenitybdd.annotations.WithTags;
-import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
+import net.serenitybdd.junit5.SerenityJUnit5Extension;
 import org.json.JSONObject;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.document.am.model.UploadResponse;
 import uk.gov.hmcts.reform.em.EmTestConfig;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
@@ -22,21 +21,22 @@ import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionRequest;
 import uk.gov.hmcts.reform.em.npa.testutil.ExtendedCcdHelper;
 import uk.gov.hmcts.reform.em.npa.testutil.TestUtil;
 import uk.gov.hmcts.reform.em.npa.testutil.ToggleProperties;
-import uk.gov.hmcts.reform.em.test.retry.RetryRule;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @SpringBootTest(classes = {TestUtil.class, EmTestConfig.class, ExtendedCcdHelper.class})
 @TestPropertySource(value = "classpath:application.yml")
-@RunWith(SpringIntegrationSerenityRunner.class)
+@ExtendWith({SerenityJUnit5Extension.class, SpringExtension.class})
 @WithTags({@WithTag("testType:Functional")})
 @EnableConfigurationProperties(ToggleProperties.class)
-public class RedactionScenarios {
+class RedactionScenariosTest {
 
     @Value("${test.url}")
     private String testUrl;
@@ -50,16 +50,13 @@ public class RedactionScenarios {
     @Autowired
     private ToggleProperties toggleProperties;
 
-    @Rule
-    public RetryRule retryRule = new RetryRule(3);
-
     private static final UUID documentId = UUID.randomUUID();
     private static final UUID redactionId = UUID.randomUUID();
     private RequestSpecification request;
     private RequestSpecification cdamRequest;
     private RequestSpecification unAuthenticatedRequest;
 
-    @Before
+    @BeforeEach
     public void setupRequestSpecification() {
         request = testUtil
                 .authRequest()
@@ -78,8 +75,8 @@ public class RedactionScenarios {
     }
 
     @Test
-    public void shouldReturn200WhenRedactedPdfDocument() {
-        Assume.assumeFalse(toggleProperties.isCdamEnabled());
+    void shouldReturn200WhenRedactedPdfDocument() {
+        assumeFalse(toggleProperties.isCdamEnabled());
         final String newDocId = testUtil.uploadPdfDocumentAndReturnUrl();
         final RedactionRequest redactionRequest = new RedactionRequest();
         redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
@@ -97,8 +94,8 @@ public class RedactionScenarios {
     }
 
     @Test
-    public void shouldReturn200WhenRedactedPdfDocumentCdamEnabled() throws Exception {
-        Assume.assumeTrue(toggleProperties.isCdamEnabled());
+    void shouldReturn200WhenRedactedPdfDocumentCdamEnabled() throws Exception {
+        assumeTrue(toggleProperties.isCdamEnabled());
         UploadResponse uploadResponse = testUtil.uploadCdamDocument("redactionTestUser2@redactiontest.com",
             extendedCcdHelper.getEnvCcdCaseTypeId(), "PUBLICLAW");
 
@@ -130,8 +127,8 @@ public class RedactionScenarios {
     }
 
     @Test
-    public void shouldReturn400WhenRedactedPdfDocumentCdamEnabled() throws Exception {
-        Assume.assumeTrue(toggleProperties.isCdamEnabled());
+    void shouldReturn400WhenRedactedPdfDocumentCdamEnabled() throws Exception {
+        assumeTrue(toggleProperties.isCdamEnabled());
         UploadResponse uploadResponse = testUtil.uploadCdamDocument("redactionTestUser2@redactiontest.com",
             extendedCcdHelper.getEnvCcdCaseTypeId(), "PUBLICLAW");
 
@@ -163,8 +160,8 @@ public class RedactionScenarios {
     }
 
     @Test
-    public void shouldReturn200WhenRedactedImage() {
-        Assume.assumeFalse(toggleProperties.isCdamEnabled());
+    void shouldReturn200WhenRedactedImage() {
+        assumeFalse(toggleProperties.isCdamEnabled());
         final String newDocId = testUtil.uploadImageDocumentAndReturnUrl();
         final RedactionRequest redactionRequest = new RedactionRequest();
         redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
@@ -182,8 +179,8 @@ public class RedactionScenarios {
     }
 
     @Test
-    public void shouldReturn400WhenRedactedRichTextDocument() {
-        Assume.assumeFalse(toggleProperties.isCdamEnabled());
+    void shouldReturn400WhenRedactedRichTextDocument() {
+        assumeFalse(toggleProperties.isCdamEnabled());
         final String newDocId = testUtil.uploadRichTextDocumentAndReturnUrl();
         final RedactionRequest redactionRequest = new RedactionRequest();
         redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
@@ -198,8 +195,8 @@ public class RedactionScenarios {
     }
 
     @Test
-    public void shouldReturn400WhenRedactedFileNameIsMissing() {
-        Assume.assumeFalse(toggleProperties.isCdamEnabled());
+    void shouldReturn400WhenRedactedFileNameIsMissing() {
+        assumeFalse(toggleProperties.isCdamEnabled());
         final String newDocId = testUtil.uploadRichTextDocumentAndReturnUrl();
         final RedactionRequest redactionRequest = new RedactionRequest();
         redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
@@ -214,8 +211,8 @@ public class RedactionScenarios {
     }
 
     @Test
-    public void shouldReturn400WhenRedactedPdfDocumentWIthNonExistentDocumentId() {
-        Assume.assumeFalse(toggleProperties.isCdamEnabled());
+    void shouldReturn400WhenRedactedPdfDocumentWIthNonExistentDocumentId() {
+        assumeFalse(toggleProperties.isCdamEnabled());
         final UUID nonExistentDocId = UUID.randomUUID();
         final RedactionRequest redactionRequest = new RedactionRequest();
         redactionRequest.setDocumentId(nonExistentDocId);
@@ -233,8 +230,8 @@ public class RedactionScenarios {
     }
 
     @Test
-    public void shouldReturn401WhenRedactedPdfDocument() {
-        Assume.assumeFalse(toggleProperties.isCdamEnabled());
+    void shouldReturn401WhenRedactedPdfDocument() {
+        assumeFalse(toggleProperties.isCdamEnabled());
         final String newDocId = testUtil.uploadRichTextDocumentAndReturnUrl();
         final RedactionRequest redactionRequest = new RedactionRequest();
         redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
