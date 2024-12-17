@@ -2,20 +2,22 @@ package uk.gov.hmcts.reform.em.npa.smoke;
 
 import net.serenitybdd.annotations.WithTag;
 import net.serenitybdd.annotations.WithTags;
-import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
+import net.serenitybdd.junit5.SerenityJUnit5Extension;
 import net.serenitybdd.rest.SerenityRest;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 @TestPropertySource(value = "classpath:application.yml")
-@RunWith(SpringIntegrationSerenityRunner.class)
+@ExtendWith({SerenityJUnit5Extension.class, SpringExtension.class})
 @WithTags({@WithTag("testType:Smoke")})
-public class SmokeTest {
+class SmokeTest {
 
     private static final String MESSAGE = "Welcome to Native PDF Annotator API!";
 
@@ -23,7 +25,7 @@ public class SmokeTest {
     private String testUrl;
 
     @Test
-    public void testHealthEndpoint() {
+    void testHealthEndpoint() {
 
         SerenityRest.useRelaxedHTTPSValidation();
 
@@ -38,8 +40,8 @@ public class SmokeTest {
                         .body()
                         .as(Map.class);
 
-        Assert.assertEquals(1, responseMap.size());
-        Assert.assertEquals(MESSAGE, responseMap.get("message"));
+        assertEquals(1, responseMap.size());
+        assertEquals(MESSAGE, responseMap.get("message"));
 
     }
 }

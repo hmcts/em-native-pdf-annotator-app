@@ -7,7 +7,7 @@ buildscript {
 
 plugins {
     id 'application'
-    id 'io.spring.dependency-management' version '1.1.6'
+    id 'io.spring.dependency-management' version '1.1.7'
     id 'org.springframework.boot' version '3.4.0'
     id 'uk.gov.hmcts.java' version '0.12.63'
     id 'com.github.ben-manes.versions' version '0.51.0'
@@ -140,7 +140,7 @@ dependencies {
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '4.2.0'
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.2.0'
 
-    implementation group: 'com.google.guava', name: 'guava', version: '33.3.1-jre'
+    implementation group: 'com.google.guava', name: 'guava', version: '33.4.0-jre'
 
     implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.36'
     implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '3.0.3'
@@ -207,7 +207,7 @@ dependencies {
 
     testImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity, withoutStuff
     testImplementation group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity, withoutStuff
-    testImplementation group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
+    testImplementation group: 'net.serenity-bdd', name: 'serenity-junit5', version: versions.serenity
     testImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
     testImplementation group: 'net.serenity-bdd', name: 'serenity-single-page-report', version: versions.serenity
 
@@ -353,6 +353,7 @@ test {
 task functional(type: Test) {
     group = 'Delivery pipeline'
     description = 'Executes functional tests'
+    useJUnitPlatform()
     setTestClassesDirs(sourceSets.aat.output.classesDirs)
     setClasspath(sourceSets.aat.runtimeClasspath)
     include "uk/gov/hmcts/reform/em/npa/functional/**"
@@ -368,6 +369,7 @@ task smoke(type: Test) {
     description = 'Executes non-destructive smoke tests'
     setTestClassesDirs(sourceSets.aat.output.classesDirs)
     setClasspath(sourceSets.aat.runtimeClasspath)
+    useJUnitPlatform()
     include "uk/gov/hmcts/reform/em/npa/smoke/**"
 
     environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")

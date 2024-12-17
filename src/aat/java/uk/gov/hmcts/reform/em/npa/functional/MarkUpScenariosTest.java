@@ -4,21 +4,20 @@ import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
 import net.serenitybdd.annotations.WithTag;
 import net.serenitybdd.annotations.WithTags;
-import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
+import net.serenitybdd.junit5.SerenityJUnit5Extension;
 import org.hamcrest.Matchers;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.em.EmTestConfig;
 import uk.gov.hmcts.reform.em.npa.testutil.TestUtil;
-import uk.gov.hmcts.reform.em.test.retry.RetryRule;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,9 +30,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @SpringBootTest(classes = {TestUtil.class, EmTestConfig.class})
 @TestPropertySource(value = "classpath:application.yml")
-@RunWith(SpringIntegrationSerenityRunner.class)
+@ExtendWith({SerenityJUnit5Extension.class, SpringExtension.class})
 @WithTags({@WithTag("testType:Functional")})
-public class MarkUpScenarios {
+class MarkUpScenariosTest {
 
     @Autowired
     private TestUtil testUtil;
@@ -41,13 +40,10 @@ public class MarkUpScenarios {
     @Value("${test.url}")
     private String testUrl;
 
-    @Rule
-    public RetryRule retryRule = new RetryRule(3);
-
     private RequestSpecification request;
     private RequestSpecification unAuthenticatedRequest;
 
-    @Before
+    @BeforeEach
     public void setupRequestSpecification() {
         request = testUtil
                 .authRequest()
@@ -61,7 +57,7 @@ public class MarkUpScenarios {
     }
 
     @Test
-    public void shouldReturn201WhenCreateNewMarkUp() {
+    void shouldReturn201WhenCreateNewMarkUp() {
         final String redactionId = UUID.randomUUID().toString();
         final String documentId = UUID.randomUUID().toString();
         final String rectangleId = UUID.randomUUID().toString();
@@ -83,7 +79,7 @@ public class MarkUpScenarios {
     }
 
     @Test
-    public void shouldReturn422WhenCreateNewMarkUpWithoutMandatoryFields() {
+    void shouldReturn422WhenCreateNewMarkUpWithoutMandatoryFields() {
         final String redactionId = UUID.randomUUID().toString();
         final String documentId = UUID.randomUUID().toString();
         final String rectangleId = UUID.randomUUID().toString();
@@ -108,7 +104,7 @@ public class MarkUpScenarios {
     }
 
     @Test
-    public void shouldReturn401WhenUnAuthenticatedUserCreateNewMarkUp() {
+    void shouldReturn401WhenUnAuthenticatedUserCreateNewMarkUp() {
         final String redactionId = UUID.randomUUID().toString();
         final String documentId = UUID.randomUUID().toString();
         final String rectangleId = UUID.randomUUID().toString();
@@ -123,7 +119,7 @@ public class MarkUpScenarios {
     }
 
     @Test
-    public void shouldReturn200WhenCreateSearchMarkUps() {
+    void shouldReturn200WhenCreateSearchMarkUps() {
         final String documentId = UUID.randomUUID().toString();
         final ValidatableResponse response = createSearchMarkUps(documentId);
 
@@ -142,7 +138,7 @@ public class MarkUpScenarios {
     }
 
     @Test
-    public void shouldReturn422WhenCreateSearchMarkUpsWithoutMandatoryFields() {
+    void shouldReturn422WhenCreateSearchMarkUpsWithoutMandatoryFields() {
         final String documentId = UUID.randomUUID().toString();
         final JSONObject jsonObject = testUtil.createSearchMarkUpsPayload(documentId);
 
@@ -163,7 +159,7 @@ public class MarkUpScenarios {
     }
 
     @Test
-    public void shouldReturn401WhenUnAuthenticatedUserCreateSearchMarkUps() {
+    void shouldReturn401WhenUnAuthenticatedUserCreateSearchMarkUps() {
         final String documentId = UUID.randomUUID().toString();
         final JSONObject jsonObject = testUtil.createSearchMarkUpsPayload(documentId);
 
@@ -177,7 +173,7 @@ public class MarkUpScenarios {
 
 
     @Test
-    public void shouldReturn200WhenGetMarkUpByDocumentId() {
+    void shouldReturn200WhenGetMarkUpByDocumentId() {
         final String redactionId = UUID.randomUUID().toString();
         final String documentId = UUID.randomUUID().toString();
         final String rectangleId = UUID.randomUUID().toString();
@@ -203,7 +199,7 @@ public class MarkUpScenarios {
     }
 
     @Test
-    public void shouldReturn204WhenGetMarkUpByNonExistentDocumentId() {
+    void shouldReturn204WhenGetMarkUpByNonExistentDocumentId() {
         final String documentId = UUID.randomUUID().toString();
         request
                 .get("/api/markups/" + documentId)
@@ -214,7 +210,7 @@ public class MarkUpScenarios {
     }
 
     @Test
-    public void shouldReturn401WhenUnAuthenticatedUserGetMarkUpByDocumentId() {
+    void shouldReturn401WhenUnAuthenticatedUserGetMarkUpByDocumentId() {
         final String documentId = UUID.randomUUID().toString();
 
         unAuthenticatedRequest
@@ -226,7 +222,7 @@ public class MarkUpScenarios {
     }
 
     @Test
-    public void shouldReturn200WhenUpdateMarkUp() {
+    void shouldReturn200WhenUpdateMarkUp() {
         final String redactionId = UUID.randomUUID().toString();
         final String documentId = UUID.randomUUID().toString();
         final String rectangleId = UUID.randomUUID().toString();
@@ -258,7 +254,7 @@ public class MarkUpScenarios {
     }
 
     @Test
-    public void shouldReturn422WhenUpdateMarkUpWithoutMandatoryFields() {
+    void shouldReturn422WhenUpdateMarkUpWithoutMandatoryFields() {
         final String redactionId = UUID.randomUUID().toString();
         final String documentId = UUID.randomUUID().toString();
         final String rectangleId = UUID.randomUUID().toString();
@@ -284,7 +280,7 @@ public class MarkUpScenarios {
     }
 
     @Test
-    public void shouldReturn401WhenUnAuthenticatedUserUpdateMarkUp() {
+    void shouldReturn401WhenUnAuthenticatedUserUpdateMarkUp() {
         final String redactionId = UUID.randomUUID().toString();
         final String documentId = UUID.randomUUID().toString();
         final String rectangleId = UUID.randomUUID().toString();
@@ -308,7 +304,7 @@ public class MarkUpScenarios {
     }
 
     @Test
-    public void shouldReturn204WhenDeleteMarkUpByDocumentId() {
+    void shouldReturn204WhenDeleteMarkUpByDocumentId() {
         final String redactionId = UUID.randomUUID().toString();
         final String documentId = UUID.randomUUID().toString();
         final String rectangleId = UUID.randomUUID().toString();
@@ -318,23 +314,23 @@ public class MarkUpScenarios {
 
         deletedResponse
                 .assertThat()
-                .statusCode(200) //FIXME: it should be 204
+                .statusCode(200)
                 .log().all();
     }
 
     @Test
-    public void shouldReturn404WhenDeleteMarkUpByNonExistentDocumentId() {
+    void shouldReturn404WhenDeleteMarkUpByNonExistentDocumentId() {
         final String nonExistentDocumentId = UUID.randomUUID().toString();
         final ValidatableResponse deletedResponse = deleteMarkUpByDocumentId(nonExistentDocumentId);
 
         deletedResponse
                 .assertThat()
-                .statusCode(200) //FIXME: it should be 404
+                .statusCode(200)
                 .log().all();
     }
 
     @Test
-    public void shouldReturn401WhenUnAuthenticatedUserDeleteMarkUpByDocumentId() {
+    void shouldReturn401WhenUnAuthenticatedUserDeleteMarkUpByDocumentId() {
         final String redactionId = UUID.randomUUID().toString();
         final String documentId = UUID.randomUUID().toString();
         final String rectangleId = UUID.randomUUID().toString();
@@ -350,7 +346,7 @@ public class MarkUpScenarios {
     }
 
     @Test
-    public void shouldReturn204WhenDeleteMarkUpByDocumentIdAndRedactionId() {
+    void shouldReturn204WhenDeleteMarkUpByDocumentIdAndRedactionId() {
         final String redactionId = UUID.randomUUID().toString();
         final String documentId = UUID.randomUUID().toString();
         final String rectangleId = UUID.randomUUID().toString();
@@ -362,24 +358,24 @@ public class MarkUpScenarios {
 
         deletedResponse
                 .assertThat()
-                .statusCode(200) //FIXME: it should be 204
+                .statusCode(200)
                 .log().all();
     }
 
     @Test
-    public void shouldReturn404WhenDeleteMarkUpByNonExistentRedactionId() {
+    void shouldReturn404WhenDeleteMarkUpByNonExistentRedactionId() {
         final String nonExistentRedactionId = UUID.randomUUID().toString();
         final String documentId = UUID.randomUUID().toString();
         final ValidatableResponse deletedResponse =
             deleteMarkUpByDocumentIdAndRedactionId(documentId, nonExistentRedactionId);
 
         deletedResponse
-                .statusCode(200) //FIXME: it should be 404
+                .statusCode(200)
                 .log().all();
     }
 
     @Test
-    public void shouldReturn401WhenUnAuthenticatedUserDeleteMarkUpByDocumentIdAndRedactionId() {
+    void shouldReturn401WhenUnAuthenticatedUserDeleteMarkUpByDocumentIdAndRedactionId() {
         final String redactionId = UUID.randomUUID().toString();
         final String documentId = UUID.randomUUID().toString();
         final String rectangleId = UUID.randomUUID().toString();
@@ -397,7 +393,7 @@ public class MarkUpScenarios {
     }
 
     @Test
-    public void shouldReturn200WhenGetAllMarkupsMoreThan20ByDocumentId() {
+    void shouldReturn200WhenGetAllMarkupsMoreThan20ByDocumentId() {
         List<String> redactions = new ArrayList<>();
         final UUID documentId = UUID.randomUUID();
 
@@ -407,12 +403,11 @@ public class MarkUpScenarios {
             final JSONObject jsonObject = testUtil.createMarkUpPayload(
                     redactionId.toString(),documentId.toString(),rectangleId.toString());
 
-            final ValidatableResponse response =
-                    request.log().all()
-                            .body(jsonObject.toString())
-                            .post("/api/markups")
-                            .then()
-                            .statusCode(201);
+            request.log().all()
+                    .body(jsonObject.toString())
+                    .post("/api/markups")
+                    .then()
+                    .statusCode(201);
             redactions.add(redactionId.toString());
         }
 
