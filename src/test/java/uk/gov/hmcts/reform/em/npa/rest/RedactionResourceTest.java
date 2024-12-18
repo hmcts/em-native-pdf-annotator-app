@@ -1,10 +1,9 @@
 package uk.gov.hmcts.reform.em.npa.rest;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -12,7 +11,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.bind.WebDataBinder;
 import uk.gov.hmcts.reform.em.npa.Application;
 import uk.gov.hmcts.reform.em.npa.TestSecurityConfiguration;
@@ -32,12 +31,14 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
 @AutoConfigureMockMvc
 public class RedactionResourceTest {
@@ -55,9 +56,9 @@ public class RedactionResourceTest {
             ClassLoader.getSystemResource("layered.pdf").getPath()
     );
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
     }
 
     public static RedactionRequest createRequest() {
@@ -92,7 +93,7 @@ public class RedactionResourceTest {
     }
 
     @Test
-    public void shouldSaveRedactedDocument() {
+    void shouldSaveRedactedDocument() {
         RedactionRequest redactionRequest = createRequest();
         redactionRequest.setRedactedFileName("bespoke");
         HttpServletRequest request = mock(HttpServletRequest.class);
@@ -103,7 +104,7 @@ public class RedactionResourceTest {
                 .thenReturn(TEST_PDF_FILE);
 
         ResponseEntity response = redactionResource.save(request, redactionRequest);
-        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(200, response.getStatusCode().value());
 
         verify(redactionService, Mockito.atMost(1))
                 .redactFile("jwt", "s2sToken",redactionRequest);
@@ -112,7 +113,7 @@ public class RedactionResourceTest {
     }
 
     @Test
-    public void shouldFailSavingRedactedDocument() {
+    void shouldFailSavingRedactedDocument() {
         RedactionRequest redactionRequest = createRequest();
         HttpServletRequest request = mock(HttpServletRequest.class);
 
@@ -121,19 +122,19 @@ public class RedactionResourceTest {
                 .thenThrow(FileTypeException.class);
 
         ResponseEntity response = redactionResource.save(request, redactionRequest);
-        assertEquals(400, response.getStatusCodeValue());
+        assertEquals(400, response.getStatusCode().value());
 
         verify(redactionService, Mockito.atMost(1))
                 .redactFile("jwt", "s2sToken",redactionRequest);
     }
 
     @Test
-    public void testInitBinder() {
+    void testInitBinder() {
 
         WebDataBinder webDataBinder = new WebDataBinder(null);
 
-        Assert.assertNull(webDataBinder.getDisallowedFields());
+        assertNull(webDataBinder.getDisallowedFields());
         redactionResource.initBinder(webDataBinder);
-        Assert.assertTrue(Arrays.asList(webDataBinder.getDisallowedFields()).contains(Constants.IS_ADMIN));
+        assertTrue(Arrays.asList(webDataBinder.getDisallowedFields()).contains(Constants.IS_ADMIN));
     }
 }
