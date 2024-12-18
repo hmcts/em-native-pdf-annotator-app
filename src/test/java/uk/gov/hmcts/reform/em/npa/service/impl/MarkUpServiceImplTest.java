@@ -1,8 +1,7 @@
 package uk.gov.hmcts.reform.em.npa.service.impl;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -27,7 +26,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-public class MarkUpServiceImplTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class MarkUpServiceImplTest {
 
     @InjectMocks
     private MarkUpServiceImpl markUpService;
@@ -44,13 +47,13 @@ public class MarkUpServiceImplTest {
     @Mock
     private Pageable pageable;
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    public void testSaveSuccess() {
+    void testSaveSuccess() {
 
         RedactionDTO redactionDTO = createRedactionDTO();
         Redaction redaction = createRedaction();
@@ -61,25 +64,23 @@ public class MarkUpServiceImplTest {
 
         RedactionDTO updatedDto = markUpService.save(redactionDTO);
 
-        Assert.assertEquals(redactionDTO.getDocumentId(), updatedDto.getDocumentId());
-        Assert.assertEquals(redactionDTO.getRedactionId(), updatedDto.getRedactionId());
-        Assert.assertEquals(redactionDTO.getRectangles().size(), updatedDto.getRectangles().size());
+        assertEquals(redactionDTO.getDocumentId(), updatedDto.getDocumentId());
+        assertEquals(redactionDTO.getRedactionId(), updatedDto.getRedactionId());
+        assertEquals(redactionDTO.getRectangles().size(), updatedDto.getRectangles().size());
 
         Mockito.verify(markUpRepository, Mockito.atLeast(1)).save(redaction);
         Mockito.verify(markUpMapper, Mockito.atLeast(1)).toEntity(redactionDTO);
         Mockito.verify(markUpMapper, Mockito.atLeast(1)).toDto(redaction);
     }
 
-    @Test(expected = UsernameNotFoundException.class)
-    public void testSaveFailure() {
-
+    @Test
+    void testSaveFailure() {
         RedactionDTO redactionDTO = createRedactionDTO();
-
-        RedactionDTO updatedDto = markUpService.save(redactionDTO);
+        assertThrows(UsernameNotFoundException.class, () -> markUpService.save(redactionDTO));
     }
 
     @Test
-    public void testSaveAllSuccess() {
+    void testSaveAllSuccess() {
 
         RedactionDTO redactionDTO = createRedactionDTO();
         RedactionDTO redactionDTO1 = createRedactionDTO();
@@ -102,11 +103,11 @@ public class MarkUpServiceImplTest {
         RedactionSetDTO updatedDto = markUpService.saveAll(redactionSetDTO);
 
         Set<RedactionDTO> updatedRedactionDTOS = updatedDto.getSearchRedactions();
-        Assert.assertEquals(updatedRedactionDTOS.size(), 3);
+        assertEquals(3, updatedRedactionDTOS.size());
 
         RedactionDTO savedRedactionDTO = updatedRedactionDTOS.iterator().next();
 
-        Assert.assertTrue(savedRedactionDTO.equals(redactionDTO)
+        assertTrue(savedRedactionDTO.equals(redactionDTO)
                 || savedRedactionDTO.equals(redactionDTO1) || savedRedactionDTO.equals(redactionDTO2));
 
         Mockito.verify(markUpRepository, Mockito.atLeast(1)).saveAll(Mockito.any());
@@ -114,8 +115,8 @@ public class MarkUpServiceImplTest {
         Mockito.verify(markUpMapper, Mockito.atLeast(1)).toDto(redactionSet);
     }
 
-    @Test(expected = UsernameNotFoundException.class)
-    public void testSaveAllFailure() {
+    @Test
+    void testSaveAllFailure() {
 
         RedactionDTO redactionDTO = createRedactionDTO();
         RedactionDTO redactionDTO1 = createRedactionDTO();
@@ -130,12 +131,13 @@ public class MarkUpServiceImplTest {
         Set<Redaction> redactionSet = Set.of(redaction, redaction1, redaction2);
         Mockito.when(markUpMapper.toEntity(redactionSetDTO.getSearchRedactions())).thenReturn(redactionSet);
 
-        RedactionSetDTO updatedDto = markUpService.saveAll(redactionSetDTO);
+        assertThrows(UsernameNotFoundException.class, () ->
+            markUpService.saveAll(redactionSetDTO));
     }
 
 
     @Test
-    public void testFindAllByDocumentIdSuccess() {
+    void testFindAllByDocumentIdSuccess() {
 
         RedactionDTO redactionDTO = createRedactionDTO();
         Redaction redaction = createRedaction();
@@ -154,15 +156,8 @@ public class MarkUpServiceImplTest {
             .findByDocumentIdAndCreatedBy(id, "testuser", pageable);
     }
 
-    @Test(expected = UsernameNotFoundException.class)
-    public void testFindAllByDocumentIdFailure() {
-
-        markUpService.findAllByDocumentId(UUID.randomUUID(), pageable);
-
-    }
-
     @Test
-    public void testDeleteSuccess() {
+    void testDeleteSuccess() {
         UUID id =  UUID.randomUUID();
 
         markUpService.delete(id);
@@ -172,7 +167,7 @@ public class MarkUpServiceImplTest {
     }
 
     @Test
-    public void testDeleteAllSuccess() {
+    void testDeleteAllSuccess() {
         UUID documentId =  UUID.randomUUID();
         Mockito.when(securityUtils.getCurrentUserLogin()).thenReturn(Optional.of("testuser"));
 

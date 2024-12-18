@@ -1,8 +1,7 @@
 package uk.gov.hmcts.reform.em.npa.redaction;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 
@@ -14,7 +13,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
-public class PdfRedactionTest {
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class PdfRedactionTest {
     private static final File TEST_PDF_FILE = new File(
             ClassLoader.getSystemResource("layered.pdf").getPath()
     );
@@ -27,7 +29,7 @@ public class PdfRedactionTest {
 
     private List<RedactionDTO> redactions = new ArrayList<>();
 
-    @Before
+    @BeforeEach
     public void setup() {
         initRedactionDTOList();
     }
@@ -53,21 +55,22 @@ public class PdfRedactionTest {
     }
 
     @Test
-    public void pdfRedactionTest() throws IOException {
+    void pdfRedactionTest() throws IOException {
         File result = pdfRedaction.redactPdf(TEST_PDF_FILE, redactions);
-        Assert.assertTrue(result.getName().contains("Redacted-layered"));
-        Assert.assertTrue(result.getName().contains(".pdf"));
+        assertTrue(result.getName().contains("Redacted-layered"));
+        assertTrue(result.getName().contains(".pdf"));
     }
 
     @Test
-    public void pdfRedactionPasswordTest() throws IOException {
+    void pdfRedactionPasswordTest() throws IOException {
         File result = pdfRedaction.redactPdf(TEST_PDF_FILE_PASSWORD, redactions);
-        Assert.assertTrue(result.getName().contains("Redacted-passwordprotected"));
-        Assert.assertTrue(result.getName().contains(".pdf"));
+        assertTrue(result.getName().contains("Redacted-passwordprotected"));
+        assertTrue(result.getName().contains(".pdf"));
     }
 
-    @Test(expected = IOException.class)
-    public void pdfRedactionFailureTest() throws IOException {
-        pdfRedaction.redactPdf(new File("invalid_file"), redactions);
+    @Test
+    void pdfRedactionFailureTest() {
+        assertThrows(IOException.class, () ->
+            pdfRedaction.redactPdf(new File("invalid_file"), redactions));
     }
 }

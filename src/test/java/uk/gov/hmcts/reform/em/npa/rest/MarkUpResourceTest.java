@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.em.npa.rest;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -29,17 +29,18 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class MarkUpResourceTest {
+class MarkUpResourceTest {
 
     @InjectMocks
     private MarkUpResource markUpResource;
@@ -56,13 +57,13 @@ public class MarkUpResourceTest {
     @Mock
     private WebDataBinder binder;
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
     }
 
-    @Test(expected = ValidationErrorException.class)
-    public void createMarkUpFailure() throws URISyntaxException {
+    @Test
+    void createMarkUpFailure() {
 
         RedactionDTO redactionDTO = createRedactionDTO();
         String[] codes = {"1"};
@@ -78,12 +79,12 @@ public class MarkUpResourceTest {
         List<FieldError> errors = Arrays.asList(fieldError);
         when(result.hasErrors()).thenReturn(true);
         when(result.getFieldErrors()).thenReturn(errors);
-
-        ResponseEntity<RedactionDTO>  responseEntity = markUpResource.createMarkUp(redactionDTO, result);
+        assertThrows(ValidationErrorException.class, () ->
+            markUpResource.createMarkUp(redactionDTO, result));
     }
 
     @Test
-    public void createMarkUpSuccess() throws URISyntaxException {
+    void createMarkUpSuccess() throws URISyntaxException {
 
         RedactionDTO redactionDTO = createRedactionDTO();
 
@@ -99,8 +100,8 @@ public class MarkUpResourceTest {
         verify(markUpService, atLeast(1)).save(redactionDTO);
     }
 
-    @Test(expected = ValidationErrorException.class)
-    public void createMarkUpsFailure() {
+    @Test
+    void createMarkUpsFailure() {
         RedactionSetDTO redactionSetDTO = createRedactionSetDTO();
         String[] codes = {"1"};
         FieldError fieldError = new FieldError("testField", "field", null, true, codes, null, null);
@@ -108,11 +109,12 @@ public class MarkUpResourceTest {
         when(result.hasErrors()).thenReturn(true);
         when(result.getFieldErrors()).thenReturn(errors);
 
-        ResponseEntity<RedactionSetDTO>  responseEntity = markUpResource.createSearchMarkUps(redactionSetDTO, result);
+        assertThrows(ValidationErrorException.class, () ->
+            markUpResource.createSearchMarkUps(redactionSetDTO, result));
     }
 
     @Test
-    public void createMarkUpsSuccess() {
+    void createMarkUpsSuccess() {
         RedactionSetDTO redactionSetDTO = createRedactionSetDTO();
         when(markUpService.saveAll(any())).thenReturn(redactionSetDTO);
 
@@ -124,8 +126,8 @@ public class MarkUpResourceTest {
         verify(markUpService, atLeast(1)).saveAll(redactionSetDTO);
     }
 
-    @Test(expected = ValidationErrorException.class)
-    public void updateMarkUpFailure() throws URISyntaxException {
+    @Test
+    void updateMarkUpFailure() {
 
         RedactionDTO redactionDTO = createRedactionDTO();
         String[] codes = {"1"};
@@ -140,13 +142,13 @@ public class MarkUpResourceTest {
         List<FieldError> errors = Arrays.asList(fieldError);
         when(result.hasErrors()).thenReturn(true);
         when(result.getFieldErrors()).thenReturn(errors);
-
-        ResponseEntity<RedactionDTO>  responseEntity = markUpResource.updateMarkUp(redactionDTO, result);
+        assertThrows(ValidationErrorException.class, () ->
+            markUpResource.updateMarkUp(redactionDTO, result));
 
     }
 
     @Test
-    public void updateMarkUpSuccess() throws URISyntaxException {
+    void updateMarkUpSuccess() {
 
         RedactionDTO redactionDTO = createRedactionDTO();
 
@@ -163,31 +165,32 @@ public class MarkUpResourceTest {
     }
 
     @Test
-    public void testGetAllDocumentMarkUpsSuccess() {
+    void testGetAllDocumentMarkUpsSuccess() {
 
         UUID id =  UUID.randomUUID();
         List<RedactionDTO> redactions = Arrays.asList(createRedactionDTO());
         Page<RedactionDTO> redactionDTOS = new PageImpl<>(redactions);
 
         when(markUpService.findAllByDocumentId(id, Pageable.unpaged())).thenReturn(redactionDTOS);
-        ResponseEntity<List<RedactionDTO>> response = markUpResource.getAllDocumentMarkUps(id, pageable);
+        markUpResource.getAllDocumentMarkUps(id, pageable);
 
         verify(markUpService, atLeast(1)).findAllByDocumentId(id, Pageable.unpaged());
     }
 
-    @Test(expected = EmptyResponseException.class)
-    public void testGetAllDocumentMarkUpsFailure() {
+    @Test
+    void testGetAllDocumentMarkUpsFailure() {
 
         UUID id =  UUID.randomUUID();
 
         Page<RedactionDTO> redactionDTOS = new PageImpl<>(Collections.emptyList());
 
         when(markUpService.findAllByDocumentId(id, Pageable.unpaged())).thenReturn(redactionDTOS);
-        ResponseEntity<List<RedactionDTO>> response = markUpResource.getAllDocumentMarkUps(id, pageable);
+        assertThrows(EmptyResponseException.class, () ->
+            markUpResource.getAllDocumentMarkUps(id, pageable));
     }
 
     @Test
-    public void testDeleteMarkUpsSuccess() {
+    void testDeleteMarkUpsSuccess() {
 
         UUID documentId =  UUID.randomUUID();
         doNothing().when(markUpService).deleteAll(documentId);
@@ -199,7 +202,7 @@ public class MarkUpResourceTest {
     }
 
     @Test
-    public void testDeleteMarkUpSuccess() {
+    void testDeleteMarkUpSuccess() {
 
         UUID documentId =  UUID.randomUUID();
         UUID redactionId =  UUID.randomUUID();
@@ -212,7 +215,7 @@ public class MarkUpResourceTest {
     }
 
     @Test
-    public void testInitBinder() {
+    void testInitBinder() {
 
         WebDataBinder webDataBinder = new WebDataBinder(null);
 
