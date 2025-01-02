@@ -1,13 +1,13 @@
 package uk.gov.hmcts.reform.em.npa.rest.errors;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import uk.gov.hmcts.reform.em.npa.Application;
@@ -24,9 +24,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @see ExceptionTranslator
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
-public class ExceptionTranslatorIntTest {
+class ExceptionTranslatorIntTest {
 
     @Autowired
     private ExceptionTranslatorTestController controller;
@@ -39,7 +39,7 @@ public class ExceptionTranslatorIntTest {
 
     private MockMvc mockMvc;
 
-    @Before
+    @BeforeEach
     public void setup() {
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
             .setControllerAdvice(exceptionTranslator)
@@ -48,7 +48,7 @@ public class ExceptionTranslatorIntTest {
     }
 
     @Test
-    public void testConcurrencyFailure() throws Exception {
+    void testConcurrencyFailure() throws Exception {
         mockMvc.perform(get("/test/concurrency-failure"))
             .andExpect(status().isConflict())
             .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
@@ -56,7 +56,7 @@ public class ExceptionTranslatorIntTest {
     }
 
     @Test
-    public void testMethodArgumentReturn200WhenNoContent() throws Exception {
+    void testMethodArgumentReturn200WhenNoContent() throws Exception {
         mockMvc.perform(post("/test/method-argument")
                         .content("{ \"test\": \"test_content\" }")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -65,7 +65,7 @@ public class ExceptionTranslatorIntTest {
     }
 
     @Test
-    public void testMethodArgumentNotValid() throws Exception {
+    void testMethodArgumentNotValid() throws Exception {
         mockMvc.perform(post("/test/method-argument").content("{}").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
@@ -76,7 +76,7 @@ public class ExceptionTranslatorIntTest {
     }
 
     @Test
-    public void testParameterizedError() throws Exception {
+    void testParameterizedError() throws Exception {
         mockMvc.perform(get("/test/parameterized-error"))
             .andExpect(status().isBadRequest())
             .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
@@ -86,7 +86,7 @@ public class ExceptionTranslatorIntTest {
     }
 
     @Test
-    public void testParameterizedError2() throws Exception {
+    void testParameterizedError2() throws Exception {
         mockMvc.perform(get("/test/parameterized-error2"))
             .andExpect(status().isBadRequest())
             .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
@@ -96,7 +96,7 @@ public class ExceptionTranslatorIntTest {
     }
 
     @Test
-    public void testMissingServletRequestPartException() throws Exception {
+    void testMissingServletRequestPartException() throws Exception {
         mockMvc.perform(get("/test/missing-servlet-request-part"))
             .andExpect(status().isBadRequest())
             .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
@@ -104,7 +104,7 @@ public class ExceptionTranslatorIntTest {
     }
 
     @Test
-    public void testMissingServletRequestParameterException() throws Exception {
+    void testMissingServletRequestParameterException() throws Exception {
         mockMvc.perform(get("/test/missing-servlet-request-parameter"))
             .andExpect(status().isBadRequest())
             .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
@@ -112,7 +112,7 @@ public class ExceptionTranslatorIntTest {
     }
 
     @Test
-    public void testAccessDenied() throws Exception {
+    void testAccessDenied() throws Exception {
         mockMvc.perform(get("/test/access-denied"))
             .andExpect(status().isForbidden())
             .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
@@ -120,7 +120,7 @@ public class ExceptionTranslatorIntTest {
     }
 
     @Test
-    public void testUnauthorized() throws Exception {
+    void testUnauthorized() throws Exception {
         mockMvc.perform(get("/test/unauthorized"))
             .andExpect(status().isUnauthorized())
             .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
@@ -128,7 +128,7 @@ public class ExceptionTranslatorIntTest {
     }
 
     @Test
-    public void testMethodNotSupported() throws Exception {
+    void testMethodNotSupported() throws Exception {
         mockMvc.perform(post("/test/access-denied"))
             .andExpect(status().isMethodNotAllowed())
             .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
@@ -137,7 +137,7 @@ public class ExceptionTranslatorIntTest {
     }
 
     @Test
-    public void testExceptionWithResponseStatus() throws Exception {
+    void testExceptionWithResponseStatus() throws Exception {
         mockMvc.perform(get("/test/response-status"))
             .andExpect(status().isBadRequest())
             .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
@@ -146,7 +146,7 @@ public class ExceptionTranslatorIntTest {
     }
 
     @Test
-    public void testInternalServerError() throws Exception {
+    void testInternalServerError() throws Exception {
         mockMvc.perform(get("/test/internal-server-error"))
             .andExpect(status().isInternalServerError())
             .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
@@ -155,7 +155,7 @@ public class ExceptionTranslatorIntTest {
     }
 
     @Test
-    public void testNoSuchElementException() throws Exception {
+    void testNoSuchElementException() throws Exception {
         mockMvc.perform(get("/test/no-such-element"))
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
@@ -163,7 +163,7 @@ public class ExceptionTranslatorIntTest {
     }
 
     @Test
-    public void testBadRequestAlertException() throws Exception {
+    void testBadRequestAlertException() throws Exception {
         mockMvc.perform(get("/test/bad-request"))
                 .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
                 .andExpect(jsonPath("$.message").value(ErrorConstants.BAD_REQUEST));

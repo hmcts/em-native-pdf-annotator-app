@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.npa.info;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.info.Info;
 
@@ -8,7 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class BuildInfoTest {
 
@@ -34,6 +33,6 @@ class BuildInfoTest {
 
         Info info = builder.build();
 
-        assertThat(info.getDetails(), CoreMatchers.equalTo(map));
+        assertEquals(info.getDetails(), map);
     }
 }
