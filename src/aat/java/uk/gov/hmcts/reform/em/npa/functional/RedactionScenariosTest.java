@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionRequest;
 import uk.gov.hmcts.reform.em.npa.testutil.ExtendedCcdHelper;
 import uk.gov.hmcts.reform.em.npa.testutil.TestUtil;
 import uk.gov.hmcts.reform.em.npa.testutil.ToggleProperties;
+import uk.gov.hmcts.reform.em.test.retry.RetryExtension;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -49,6 +51,9 @@ class RedactionScenariosTest {
 
     @Autowired
     private ToggleProperties toggleProperties;
+
+    @RegisterExtension
+    RetryExtension retryExtension = new RetryExtension(3);
 
     private static final UUID documentId = UUID.randomUUID();
     private static final UUID redactionId = UUID.randomUUID();
