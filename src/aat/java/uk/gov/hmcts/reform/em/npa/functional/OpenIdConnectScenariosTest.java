@@ -7,6 +7,7 @@ import net.serenitybdd.junit5.SerenityJUnit5Extension;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,6 +16,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.em.EmTestConfig;
 import uk.gov.hmcts.reform.em.npa.testutil.TestUtil;
+import uk.gov.hmcts.reform.em.test.retry.RetryExtension;
 
 import java.util.UUID;
 
@@ -33,6 +35,9 @@ class OpenIdConnectScenariosTest {
 
     @Value("${test.url}")
     private String testUrl;
+
+    @RegisterExtension
+    RetryExtension retryExtension = new RetryExtension(3);
 
     @Test
     void testValidAuthenticationAndAuthorisation() {
