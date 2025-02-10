@@ -3,17 +3,11 @@ package uk.gov.hmcts.reform.em.npa.redaction;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.geom.Rectangle;
 import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfPage;
 import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.pdfcleanup.CleanUpProperties;
-import com.itextpdf.pdfcleanup.PdfCleanUpLocation;
-import com.itextpdf.pdfcleanup.PdfCleanUpTool;
-import com.itextpdf.pdfcleanup.util.CleanUpImageUtil;
+import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -22,7 +16,6 @@ import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -39,59 +32,52 @@ public class PdfRedaction {
      * @throws IOException in document process
      */
     public File redactPdf(File documentFile, List<RedactionDTO> redactionDTOList) throws IOException {
-        PDDocument pdDocument = Loader.loadPDF(documentFile);
-        final File newFile =
-                File.createTempFile(
-                        String.format("Redacted-%s", FilenameUtils.getBaseName(documentFile.getName())),
-                        ".pdf"
-                );
+        final File newFile = File.createTempFile(
+                String.format("Redacted-%s", FilenameUtils.getBaseName(documentFile.getName())),
+                ".pdf"
+        );
 
-        List<PdfCleanUpLocation> cleanUpLocations = new ArrayList<>();
+        try (PdfReader reader = new PdfReader(documentFile);
+             PdfWriter writer = new PdfWriter(newFile);
+             PdfDocument pdfDocument = new PdfDocument(reader, writer)) {
 
-        redactionDTOList.forEach(redactionDTO -> redactionDTO.getRectangles().forEach(rectangleDTO ->
-            cleanUpLocations.add(
-                new PdfCleanUpLocation(redactionDTO.getPage(),
-                    createRectangle(pdDocument, redactionDTO.getPage() - 1, rectangleDTO),
-                    ColorConstants.BLACK))));
+            for (RedactionDTO redactionDTO : redactionDTOList) {
+                PdfPage page = pdfDocument.getPage(redactionDTO.getPage());
+                PdfCanvas canvas = new PdfCanvas(page);
 
-        PdfReader reader = new PdfReader(documentFile);
-        reader.setUnethicalReading(true);
-        try (PdfDocument pdfDocument = new PdfDocument(reader, new PdfWriter(newFile))) {
-            PdfCleanUpTool cleaner = new PdfCleanUpTool(pdfDocument, cleanUpLocations, new CleanUpProperties());
-            cleaner.cleanUp();
-        } catch (CleanUpImageUtil.CleanupImageHandlingUtilException e) {
-            log.error("Saving redactions failed with error: {}", e.getMessage());
+                for (RectangleDTO rectangleDTO : redactionDTO.getRectangles()) {
+                    Rectangle rect = createRectangle(pdfDocument, redactionDTO.getPage(), rectangleDTO);
+
+                    canvas.saveState()
+                            .setFillColor(ColorConstants.BLACK)
+                            .rectangle(rect)
+                            .fill()
+                            .restoreState();
+                }
+            }
+
+        } catch (Exception e) {
+            log.error("Redaction failed with error: {}", e.getMessage());
+            throw new IOException("Failed to redact PDF", e);
         }
-        pdDocument.close();
+
         return newFile;
     }
 
-    /**
-     * Draw rectangles on pdf document to redact marked up content on page.
-     *
-     * @param document The pdf to be redacted
-     * @param pageNumber The page number in the PDF (zero indexed)
-     * @param rectangle Rectangle to be drawn onto the pdf document
-     * @throws IOException If it fails in document process
-     */
-    private Rectangle createRectangle(
-            PDDocument document,
-            int pageNumber,
-            RectangleDTO rectangle) {
-        PDPage page = document.getPage(pageNumber);
-        PDRectangle pageSize = page.getMediaBox();
-        pageSize.setLowerLeftX(page.getCropBox().getLowerLeftX() / 0.75f);
-        pageSize.setLowerLeftY(page.getCropBox().getLowerLeftY() / 0.75f);
-        pageSize.setUpperRightX(page.getCropBox().getUpperRightX() / 0.75f);
-        pageSize.setUpperRightY(page.getCropBox().getUpperRightY());
 
-        return new Rectangle(
-            pixelToPointConversion(pageSize.getLowerLeftX() + rectangle.getX()),
-            (pageSize.getHeight() - pixelToPointConversion(rectangle.getY()))
-                - pixelToPointConversion(rectangle.getHeight()),
-            pixelToPointConversion(rectangle.getWidth()),
-            pixelToPointConversion(rectangle.getHeight()));
+    private Rectangle createRectangle(PdfDocument pdfDocument, int pageNumber, RectangleDTO rectangleDTO) {
+        PdfPage page = pdfDocument.getPage(pageNumber);
+        Rectangle pageSize = page.getPageSize();
 
+        float x = pixelToPointConversion(rectangleDTO.getX());
+        float y = pixelToPointConversion(rectangleDTO.getY());
+        float width = pixelToPointConversion(rectangleDTO.getWidth());
+        float height = pixelToPointConversion(rectangleDTO.getHeight());
+
+        // Adjust y-coordinate (PDF coordinate system starts from bottom-left)
+        y = pageSize.getHeight() - y - height;
+
+        return new Rectangle(x, y, width, height);
     }
 
     /**
