@@ -70,7 +70,7 @@ repositories {
 def versions = [
         postgresql         : '42.7.5',
         h2                 : '1.4.199',
-        serenity           : '4.2.13',
+        serenity           : '4.2.16',
         pact_version       : '4.6.16',
         logging            : '6.1.7',
         fasterXmlJackson   : '2.18.2',
