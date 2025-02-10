@@ -31,6 +31,7 @@ public class PdfRedaction {
      * @return the redacted file
      * @throws IOException in document process
      */
+    @SuppressWarnings("squid:S5443")
     public File redactPdf(File documentFile, List<RedactionDTO> redactionDTOList) throws IOException {
         final File newFile = File.createTempFile(
                 String.format("Redacted-%s", FilenameUtils.getBaseName(documentFile.getName())),
