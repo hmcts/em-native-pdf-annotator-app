@@ -85,12 +85,21 @@ public class PdfRedaction {
         pageSize.setUpperRightX(page.getCropBox().getUpperRightX() / 0.75f);
         pageSize.setUpperRightY(page.getCropBox().getUpperRightY());
 
-        return new Rectangle(
+        var rec = new Rectangle(
             pixelToPointConversion(pageSize.getLowerLeftX() + rectangle.getX()),
             (pageSize.getHeight() - pixelToPointConversion(rectangle.getY()))
                 - pixelToPointConversion(rectangle.getHeight()),
             pixelToPointConversion(rectangle.getWidth()),
             pixelToPointConversion(rectangle.getHeight()));
+        log.debug("Pagesize height {}, width:{}, lowerLeftX:{}, LowerLeftY:{}, upperRightX:{}, upperRightY:{}",
+                pageSize.getHeight(),
+                pageSize.getWidth(),
+                pageSize.getLowerLeftX(),
+                pageSize.getLowerLeftY(),
+                pageSize.getUpperRightX(),
+                pageSize.getUpperRightY());
+        log.debug("x:{},y:{},width:{},height:{}", rec.getX(), rec.getY(), rec.getWidth(), rec.getHeight());
+        return rec;
 
     }
 
