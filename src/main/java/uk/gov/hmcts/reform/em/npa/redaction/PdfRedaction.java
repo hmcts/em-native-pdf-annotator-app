@@ -91,14 +91,17 @@ public class PdfRedaction {
                 - pixelToPointConversion(rectangle.getHeight()),
             pixelToPointConversion(rectangle.getWidth()),
             pixelToPointConversion(rectangle.getHeight()));
-        log.info("Pagesize height {}, width:{}, lowerLeftX:{}, LowerLeftY:{}, upperRightX:{}, upperRightY:{}",
+        log.info("Redaction rectangle,pagesize height {}, width:{}, "
+                        + "lowerLeftX:{}, LowerLeftY:{}, upperRightX:{}, upperRightY:{}",
                 pageSize.getHeight(),
                 pageSize.getWidth(),
                 pageSize.getLowerLeftX(),
                 pageSize.getLowerLeftY(),
                 pageSize.getUpperRightX(),
-                pageSize.getUpperRightY());
-        log.info("x:{},y:{},width:{},height:{}", rec.getX(), rec.getY(), rec.getWidth(), rec.getHeight());
+                pageSize.getUpperRightY()
+        );
+        log.info("Redaction rectangle,x:{},y:{},width:{},height:{}",
+                rec.getX(), rec.getY(), rec.getWidth(), rec.getHeight());
         return rec;
 
     }
