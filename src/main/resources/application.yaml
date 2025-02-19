@@ -146,7 +146,6 @@ dbMigration:
 logging:
   level:
     uk.gov.hmcts.reform.authorisation.filters: DEBUG
-    uk.gov.hmcts.reform.em.npa.redaction.PdfRedaction: ${PDF_REDACTION_LOG_LEVEL:INFO}
 
 task:
   env: ${TASK_ENV:documentTaskLock-local}
