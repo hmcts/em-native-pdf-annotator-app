@@ -49,10 +49,10 @@ public class PdfRedaction {
         List<PdfCleanUpLocation> cleanUpLocations = new ArrayList<>();
 
         redactionDTOList.forEach(redactionDTO -> redactionDTO.getRectangles().forEach(rectangleDTO ->
-            cleanUpLocations.add(
-                new PdfCleanUpLocation(redactionDTO.getPage(),
-                    createRectangle(pdDocument, redactionDTO.getPage() - 1, rectangleDTO),
-                    ColorConstants.BLACK))));
+                cleanUpLocations.add(
+                        new PdfCleanUpLocation(redactionDTO.getPage(),
+                                createRectangle(pdDocument, redactionDTO.getPage() - 1, rectangleDTO),
+                                ColorConstants.BLACK))));
 
         PdfReader reader = new PdfReader(documentFile);
         reader.setUnethicalReading(true);
@@ -86,11 +86,18 @@ public class PdfRedaction {
         pageSize.setUpperRightY(page.getCropBox().getUpperRightY());
 
         var rec = new Rectangle(
-            pixelToPointConversion(pageSize.getLowerLeftX() + rectangle.getX()),
-            (pageSize.getHeight() - pixelToPointConversion(rectangle.getY()))
-                - pixelToPointConversion(rectangle.getHeight()),
-            pixelToPointConversion(rectangle.getWidth()),
-            pixelToPointConversion(rectangle.getHeight()));
+                pixelToPointConversion(pageSize.getLowerLeftX() + rectangle.getX()),
+                (pageSize.getHeight() - pixelToPointConversion(rectangle.getY()))
+                        - pixelToPointConversion(rectangle.getHeight()),
+                pixelToPointConversion(rectangle.getWidth()),
+                pixelToPointConversion(rectangle.getHeight()));
+
+        PDRectangle pageSizeCropBox = page.getCropBox();
+        log.info("isPageHeight equal {}, Page CropBox height:{}, PageMediaBox height {},",
+                pageSizeCropBox.getHeight() == pageSize.getHeight(),
+                pageSizeCropBox.getHeight(),
+                pageSize.getHeight()
+        );
         log.info("Redaction rectangle,pagesize height {}, width:{}, "
                         + "lowerLeftX:{}, LowerLeftY:{}, upperRightX:{}, upperRightY:{}",
                 pageSize.getHeight(),
