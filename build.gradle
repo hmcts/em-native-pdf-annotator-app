@@ -78,7 +78,7 @@ def versions = [
         mapstruct          : '1.6.3',
         springSecurity     : '6.4.3',
         log4JVersion       : '2.24.3',
-        jupiter            : '5.11.4',
+        jupiter            : '5.12.0',
         poi                : '5.4.0'
 ]
 
@@ -203,6 +203,9 @@ dependencies {
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.jupiter
     testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.jupiter
 
+    aatImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.jupiter
+    aatRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.jupiter
+
 
     testImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity, withoutStuff
     testImplementation group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity, withoutStuff
@@ -256,8 +259,10 @@ dependencyManagement {
         dependencySet(group: 'org.apache.httpcomponents', version: '4.5.14') {
             entry 'fluent-hc'
         }
-        dependencySet(group: 'org.junit.platform', version: '1.11.4') {
+        dependencySet(group: 'org.junit.platform', version: '1.12.0') {
             entry 'junit-platform-commons'
+            entry 'junit-platform-engine'
+            entry 'junit-platform-launcher'
         }
     }
 }
