@@ -78,39 +78,31 @@ public class PdfRedaction {
             PDDocument document,
             int pageNumber,
             RectangleDTO rectangle) {
+
         PDPage page = document.getPage(pageNumber);
         PDRectangle pageSize = page.getMediaBox();
+        // when there is a rotation coordinate systems completely changes and they way rectangle is drawn changes
+        if (page.getRotation() != 0) {
+            var calculatedX = pixelToPointConversion(rectangle.getX());
+            var calculatedY = (pageSize.getWidth() - pixelToPointConversion(rectangle.getY()))
+                    - pixelToPointConversion(rectangle.getHeight());
+            return new Rectangle(
+                    calculatedY,
+                    pageSize.getHeight() - calculatedX - pixelToPointConversion(rectangle.getWidth()),
+                    pixelToPointConversion(rectangle.getHeight()),
+                    pixelToPointConversion(rectangle.getWidth()));
+        }
+
         pageSize.setLowerLeftX(page.getCropBox().getLowerLeftX() / 0.75f);
         pageSize.setLowerLeftY(page.getCropBox().getLowerLeftY() / 0.75f);
         pageSize.setUpperRightX(page.getCropBox().getUpperRightX() / 0.75f);
         pageSize.setUpperRightY(page.getCropBox().getUpperRightY());
-
-        var rec = new Rectangle(
+        return new Rectangle(
                 pixelToPointConversion(pageSize.getLowerLeftX() + rectangle.getX()),
                 (pageSize.getHeight() - pixelToPointConversion(rectangle.getY()))
                         - pixelToPointConversion(rectangle.getHeight()),
                 pixelToPointConversion(rectangle.getWidth()),
                 pixelToPointConversion(rectangle.getHeight()));
-
-        PDRectangle pageSizeCropBox = page.getCropBox();
-        log.info("isPageHeight equal {}, Page CropBox height:{}, PageMediaBox height {},",
-                pageSizeCropBox.getHeight() == pageSize.getHeight(),
-                pageSizeCropBox.getHeight(),
-                pageSize.getHeight()
-        );
-        log.info("Redaction rectangle,pagesize height {}, width:{}, "
-                        + "lowerLeftX:{}, LowerLeftY:{}, upperRightX:{}, upperRightY:{}",
-                pageSize.getHeight(),
-                pageSize.getWidth(),
-                pageSize.getLowerLeftX(),
-                pageSize.getLowerLeftY(),
-                pageSize.getUpperRightX(),
-                pageSize.getUpperRightY()
-        );
-        log.info("Redaction rectangle,x:{},y:{},width:{},height:{}",
-                rec.getX(), rec.getY(), rec.getWidth(), rec.getHeight());
-        return rec;
-
     }
 
     /**
