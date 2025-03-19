@@ -80,7 +80,7 @@ public class PdfRedaction {
             RectangleDTO rectangle) {
 
         PDPage page = document.getPage(pageNumber);
-        PDRectangle pageSize = page.getCropBox();
+        PDRectangle pageSize = page.getMediaBox();
 
         float x = pixelToPointConversion(rectangle.getX());
         float y = pixelToPointConversion(rectangle.getY());
