@@ -74,35 +74,30 @@ public class PdfRedaction {
      * @param rectangle Rectangle to be drawn onto the pdf document
      * @throws IOException If it fails in document process
      */
-    private Rectangle createRectangle(
+        private Rectangle createRectangle(
             PDDocument document,
             int pageNumber,
             RectangleDTO rectangle) {
 
         PDPage page = document.getPage(pageNumber);
-        PDRectangle pageSize = page.getMediaBox();
+        PDRectangle pageSize = page.getCropBox();
+
+
+        float x = pixelToPointConversion(rectangle.getX());
+        float y = pixelToPointConversion(rectangle.getY());
+        float width = pixelToPointConversion(rectangle.getWidth());
+        float height = pixelToPointConversion(rectangle.getHeight());
+
         // when there is a rotation coordinate systems completely changes and they way rectangle is drawn changes
         if (page.getRotation() != 0) {
-            var calculatedX = pixelToPointConversion(rectangle.getX());
-            var calculatedY = (pageSize.getWidth() - pixelToPointConversion(rectangle.getY()))
-                    - pixelToPointConversion(rectangle.getHeight());
-            return new Rectangle(
-                    calculatedY,
-                    pageSize.getHeight() - calculatedX - pixelToPointConversion(rectangle.getWidth()),
-                    pixelToPointConversion(rectangle.getHeight()),
-                    pixelToPointConversion(rectangle.getWidth()));
+            var calculatedX = pageSize.getHeight() - x - width;
+            var calculatedY = pageSize.getWidth() - y - height;
+            return new Rectangle(calculatedY, calculatedX, height, width);
         }
 
-        pageSize.setLowerLeftX(page.getCropBox().getLowerLeftX() / 0.75f);
-        pageSize.setLowerLeftY(page.getCropBox().getLowerLeftY() / 0.75f);
-        pageSize.setUpperRightX(page.getCropBox().getUpperRightX() / 0.75f);
-        pageSize.setUpperRightY(page.getCropBox().getUpperRightY());
-        return new Rectangle(
-                pixelToPointConversion(pageSize.getLowerLeftX() + rectangle.getX()),
-                (pageSize.getHeight() - pixelToPointConversion(rectangle.getY()))
-                        - pixelToPointConversion(rectangle.getHeight()),
-                pixelToPointConversion(rectangle.getWidth()),
-                pixelToPointConversion(rectangle.getHeight()));
+        float pdfX = pageSize.getLowerLeftX() + x;
+        float pdfY = pageSize.getUpperRightY() - y - height;
+        return new Rectangle(pdfX, pdfY, width, height);
     }
 
     /**
