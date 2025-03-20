@@ -74,14 +74,14 @@ public class PdfRedaction {
      * @param rectangle Rectangle to be drawn onto the pdf document
      * @throws IOException If it fails in document process
      */
-        private Rectangle createRectangle(
+    private Rectangle createRectangle(
             PDDocument document,
             int pageNumber,
-            RectangleDTO rectangle) {
+            RectangleDTO rectangle
+    ) {
 
         PDPage page = document.getPage(pageNumber);
         PDRectangle pageSize = page.getCropBox();
-
 
         float x = pixelToPointConversion(rectangle.getX());
         float y = pixelToPointConversion(rectangle.getY());
