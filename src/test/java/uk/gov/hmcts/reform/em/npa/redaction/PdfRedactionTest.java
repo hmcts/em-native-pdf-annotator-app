@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.em.npa.redaction;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
@@ -22,15 +25,16 @@ class PdfRedactionTest {
     );
 
     private static final File TEST_PDF_FILE_PASSWORD = new File(
-        ClassLoader.getSystemResource("passwordprotected.pdf").getPath()
+            ClassLoader.getSystemResource("passwordprotected.pdf").getPath()
     );
 
-    private PdfRedaction pdfRedaction = new PdfRedaction();
+    private final PdfRedaction pdfRedaction = new PdfRedaction();
 
     private List<RedactionDTO> redactions = new ArrayList<>();
 
     @BeforeEach
     public void setup() {
+        redactions = new ArrayList<>();
         initRedactionDTOList();
     }
 
@@ -71,6 +75,57 @@ class PdfRedactionTest {
     @Test
     void pdfRedactionFailureTest() {
         assertThrows(IOException.class, () ->
-            pdfRedaction.redactPdf(new File("invalid_file"), redactions));
+                pdfRedaction.redactPdf(new File("invalid_file"), redactions));
+    }
+
+    @Test
+    void shouldHandleEmptyRedactionList() throws IOException {
+        File result = pdfRedaction.redactPdf(TEST_PDF_FILE, Collections.emptyList());
+        assertTrue(result.exists());
+    }
+
+    @Test
+    void shouldHandleRedactionWithNoRectangles() throws IOException {
+        RedactionDTO redaction = new RedactionDTO();
+        redaction.setPage(1);
+        redaction.setRectangles(Collections.emptySet());
+
+        File result = pdfRedaction.redactPdf(TEST_PDF_FILE, List.of(redaction));
+        assertTrue(result.exists());
+    }
+
+    @Test
+    void shouldCreateRectangleCorrectlyForRotatedPage() throws IOException {
+        // Simulate a rotated page
+        File tempPdf = File.createTempFile("rotated", ".pdf");
+        try (PDDocument document = new PDDocument()) {
+            PDPage page = new PDPage(PDRectangle.A4);
+            page.setRotation(90); // trigger the rotated logic
+            document.addPage(page);
+            document.save(tempPdf);
+        }
+
+        RectangleDTO rectangle = new RectangleDTO();
+        rectangle.setX(50);
+        rectangle.setY(50);
+        rectangle.setHeight(100);
+        rectangle.setWidth(100);
+
+        RedactionDTO redaction = new RedactionDTO();
+        redaction.setPage(1);
+        redaction.setRectangles(Set.of(rectangle));
+
+        File result = pdfRedaction.redactPdf(tempPdf, List.of(redaction));
+        assertTrue(result.exists());
+    }
+
+    @Test
+    void shouldHandleRedactionWithNullRectangleSet() throws IOException {
+        RedactionDTO redaction = new RedactionDTO();
+        redaction.setPage(1);
+        redaction.setRectangles(null); // defensive check
+
+        File result = pdfRedaction.redactPdf(TEST_PDF_FILE, List.of(redaction));
+        assertTrue(result.exists());
     }
 }
