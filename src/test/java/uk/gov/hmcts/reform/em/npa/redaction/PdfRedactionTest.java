@@ -107,10 +107,10 @@ class PdfRedactionTest {
         }
 
         RectangleDTO rectangle = new RectangleDTO();
-        rectangle.setX(50);
-        rectangle.setY(50);
-        rectangle.setHeight(100);
-        rectangle.setWidth(100);
+        rectangle.setX(50.0);
+        rectangle.setY(50.0);
+        rectangle.setHeight(100.0);
+        rectangle.setWidth(100.0);
 
         RedactionDTO redaction = new RedactionDTO();
         redaction.setPage(1);
