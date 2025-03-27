@@ -140,7 +140,7 @@ dependencies {
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '4.2.1'
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.2.1'
 
-    implementation group: 'com.google.guava', name: 'guava', version: '33.4.5-jre'
+    implementation group: 'com.google.guava', name: 'guava', version: '33.4.6-jre'
 
     implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.36'
     implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '3.0.4'
@@ -295,8 +295,7 @@ def coverageExclusionList = [
     '**uk/gov/hmcts/reform/em/npa/rest/ResponseUtil*',
     '**uk/gov/hmcts/reform/em/npa/config/FlywayConfiguration*',
     '**uk/gov/hmcts/reform/em/npa/batch/RemoveLargeObjectsTasklet*',
-    '**uk/gov/hmcts/reform/em/npa/repository/LargeObjectRepository*',
-    '**uk/gov/hmcts/reform/em/npa/redaction/PdfRedaction*'
+    '**uk/gov/hmcts/reform/em/npa/repository/LargeObjectRepository*'
 ]
 
 checkstyle {
