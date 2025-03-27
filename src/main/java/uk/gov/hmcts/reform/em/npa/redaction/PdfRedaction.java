@@ -102,7 +102,7 @@ public class PdfRedaction {
                 height = temp;
             }
             case 180 -> {  // Top-right origin
-                pdfX = pageSize.getUpperRightX() - x - width;
+                pdfX = pageSize.getUpperRightX() - x;
                 pdfY = pageSize.getLowerLeftY() + y;
             }
             case 270 -> {  // Top-left origin
