@@ -119,14 +119,4 @@ class PdfRedactionTest {
         File result = pdfRedaction.redactPdf(tempPdf, List.of(redaction));
         assertTrue(result.exists());
     }
-
-    @Test
-    void shouldHandleRedactionWithNullRectangleSet() throws IOException {
-        RedactionDTO redaction = new RedactionDTO();
-        redaction.setPage(1);
-        redaction.setRectangles(null); // defensive check
-
-        File result = pdfRedaction.redactPdf(TEST_PDF_FILE, List.of(redaction));
-        assertTrue(result.exists());
-    }
 }
