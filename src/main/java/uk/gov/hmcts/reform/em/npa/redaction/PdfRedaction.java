@@ -90,8 +90,8 @@ public class PdfRedaction {
 
         int rotation = page.getRotation();
 
-        float pdfX, pdfY;
-
+        float pdfX;
+        float pdfY;
         switch (rotation) {
             case 90 -> {  // Bottom-right origin
                 pdfX = pageSize.getLowerLeftX() + y;
