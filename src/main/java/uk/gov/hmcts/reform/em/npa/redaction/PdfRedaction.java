@@ -107,7 +107,7 @@ public class PdfRedaction {
             }
             case 270 -> {  // Top-left origin
                 pdfX = pageSize.getHeight() - x - width;
-                pdfY = pageSize.getWidth() - y - height;
+                pdfY = pageSize.getUpperRightX() - y - height;
                 // Swap width and height due to 270° rotation
                 float temp = width;
                 width = height;
