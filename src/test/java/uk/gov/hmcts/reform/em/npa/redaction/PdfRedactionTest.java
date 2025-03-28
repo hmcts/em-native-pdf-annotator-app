@@ -62,6 +62,7 @@ class PdfRedactionTest {
             document.save(testPdfFile);
         }
     }
+
     public void initRedactionDTOList() {
         for (int i = 0; i < 5; i++) {
             redactions.add(createTestRedaction(i + 1, 100.00,100.00,100.00,100.00));
