@@ -88,16 +88,23 @@ public class PdfRedaction {
         float width = pixelToPointConversion(rectangle.getWidth());
         float height = pixelToPointConversion(rectangle.getHeight());
 
+        // Adjust for top-left origin
+        float adjustedY = pageSize.getUpperRightY() - y - height;
+        float adjustedX = pageSize.getLowerLeftX() + x;
+
         // when there is a rotation coordinate systems completely changes and they way rectangle is drawn changes
-        if (page.getRotation() != 0) {
-            var calculatedX = pageSize.getHeight() - x - width;
-            var calculatedY = pageSize.getWidth() - y - height;
-            return new Rectangle(calculatedY, calculatedX, height, width);
+        if (page.getRotation() == 90) {
+            float rotatedY = pageSize.getLowerLeftX() + y;
+            return new Rectangle(rotatedY, adjustedX, height, width);
+        } else if (page.getRotation() == 180) {
+            // TODO
+        }  else if (page.getRotation() == 270) {
+            float rotatedX = x; // TODO
+            float rotatedY = pageSize.getLowerLeftX() + pageSize.getWidth() - y - width;
+            return new Rectangle(rotatedY, pixelToPointConversion(200.00), height, width);
         }
 
-        float pdfX = pageSize.getLowerLeftX() + x;
-        float pdfY = pageSize.getUpperRightY() - y - height;
-        return new Rectangle(pdfX, pdfY, width, height);
+        return new Rectangle(adjustedX, adjustedY, width, height);
     }
 
     /**
