@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.em.npa.redaction;
 
+import com.itextpdf.forms.PdfAcroForm;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.geom.Rectangle;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.StampingProperties;
 import com.itextpdf.pdfcleanup.CleanUpProperties;
 import com.itextpdf.pdfcleanup.PdfCleanUpLocation;
 import com.itextpdf.pdfcleanup.PdfCleanUpTool;
@@ -24,6 +26,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 @Service
 public class PdfRedaction {
@@ -46,6 +50,7 @@ public class PdfRedaction {
                         ".pdf"
                 );
 
+
         List<PdfCleanUpLocation> cleanUpLocations = new ArrayList<>();
 
         redactionDTOList.forEach(redactionDTO -> redactionDTO.getRectangles().forEach(rectangleDTO ->
@@ -56,7 +61,16 @@ public class PdfRedaction {
 
         PdfReader reader = new PdfReader(documentFile);
         reader.setUnethicalReading(true);
-        try (PdfDocument pdfDocument = new PdfDocument(reader, new PdfWriter(newFile))) {
+
+        StampingProperties properties = new StampingProperties();
+        properties.useAppendMode();
+
+        try (PdfDocument pdfDocument = new PdfDocument(reader, new PdfWriter(newFile),properties)) {
+            PdfAcroForm pdfAcroForm = PdfAcroForm.getAcroForm(pdfDocument, false);
+
+            if (pdfAcroForm != null) {
+                pdfAcroForm.flattenFields();
+            }
             PdfCleanUpTool cleaner = new PdfCleanUpTool(pdfDocument, cleanUpLocations, new CleanUpProperties());
             cleaner.cleanUp();
         } catch (CleanUpImageUtil.CleanupImageHandlingUtilException e) {
