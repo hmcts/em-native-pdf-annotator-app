@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@SuppressWarnings("squid:S5443")
 public class PdfRedaction {
 
     private final Logger log = LoggerFactory.getLogger(PdfRedaction.class);
