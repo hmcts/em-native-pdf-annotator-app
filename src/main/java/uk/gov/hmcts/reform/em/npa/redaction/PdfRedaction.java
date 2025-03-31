@@ -5,6 +5,7 @@ import com.itextpdf.kernel.geom.Rectangle;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.StampingProperties;
 import com.itextpdf.pdfcleanup.CleanUpProperties;
 import com.itextpdf.pdfcleanup.PdfCleanUpLocation;
 import com.itextpdf.pdfcleanup.PdfCleanUpTool;
@@ -54,9 +55,15 @@ public class PdfRedaction {
                                 createRectangle(pdDocument, redactionDTO.getPage() - 1, rectangleDTO),
                                 ColorConstants.BLACK))));
 
-        PdfReader reader = new PdfReader(documentFile);
+        // Append mode requires a document without errors
+        final File repairedFile = repairPdf(documentFile);
+        PdfReader reader = new PdfReader(repairedFile);
         reader.setUnethicalReading(true);
-        try (PdfDocument pdfDocument = new PdfDocument(reader, new PdfWriter(newFile))) {
+
+        StampingProperties properties = new StampingProperties();
+        properties.useAppendMode();
+
+        try (PdfDocument pdfDocument = new PdfDocument(reader, new PdfWriter(newFile),properties)) {
             PdfCleanUpTool cleaner = new PdfCleanUpTool(pdfDocument, cleanUpLocations, new CleanUpProperties());
             cleaner.cleanUp();
         } catch (CleanUpImageUtil.CleanupImageHandlingUtilException e) {
@@ -132,4 +139,19 @@ public class PdfRedaction {
         return (float) (0.75 * value);
     }
 
+    private File repairPdf(File documentFile) throws IOException {
+        File repairedFile = File.createTempFile(
+                "Repaired-" + FilenameUtils.getBaseName(documentFile.getName()),
+                ".pdf"
+        );
+
+        try (PdfReader reader = new PdfReader(documentFile).setUnethicalReading(true);
+             PdfWriter writer = new PdfWriter(repairedFile);
+             PdfDocument pdfDoc = new PdfDocument(reader, writer)) {
+            // Simply opening and saving will repair the PDF
+            log.debug("Repaired PDF file: {}", pdfDoc.getPdfVersion());
+        }
+
+        return repairedFile;
+    }
 }
