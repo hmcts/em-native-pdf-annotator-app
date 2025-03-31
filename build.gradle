@@ -148,8 +148,7 @@ dependencies {
     implementation group: 'org.apache.pdfbox', name: 'jbig2-imageio', version: '3.0.4'
 
     implementation group: 'com.itextpdf', name: 'cleanup', version: '5.0.1'
-    implementation group: 'com.itextpdf', name: 'itext-core', version: '9.1.0'
-    implementation("com.itextpdf:itextpdf:5.5.13.4")
+    implementation group: 'com.itextpdf', name: 'bouncy-castle-adapter', version: '9.1.0'
 
     implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.12.0'
 
