@@ -76,6 +76,7 @@ public class RedactionResource {
         try {
             String auth = request.getHeader("Authorization");
             String serviceAuth = request.getHeader("ServiceAuthorization");
+            log.info("redactionRequest getRedactions---->", redactionRequest.getRedactions());
             File newlyRedactedFile = redactionService.redactFile(
                     auth, serviceAuth, redactionRequest);
 

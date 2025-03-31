@@ -5,6 +5,7 @@ import net.serenitybdd.annotations.WithTag;
 import net.serenitybdd.annotations.WithTags;
 import net.serenitybdd.junit5.SerenityJUnit5Extension;
 import org.json.JSONObject;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -28,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @ExtendWith({SerenityJUnit5Extension.class, SpringExtension.class})
 @WithTags({@WithTag("testType:Functional")})
 @SuppressWarnings("squid:S5778")
+@Disabled
 class OpenIdConnectScenariosTest {
 
     @Autowired

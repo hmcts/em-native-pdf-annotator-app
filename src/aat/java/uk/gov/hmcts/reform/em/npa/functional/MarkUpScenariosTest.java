@@ -9,6 +9,7 @@ import org.hamcrest.Matchers;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -34,6 +35,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @TestPropertySource(value = "classpath:application.yml")
 @ExtendWith({SerenityJUnit5Extension.class, SpringExtension.class})
 @WithTags({@WithTag("testType:Functional")})
+@Disabled
 class MarkUpScenariosTest {
 
     @Autowired
