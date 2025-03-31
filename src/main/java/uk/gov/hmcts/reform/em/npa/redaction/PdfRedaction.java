@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.npa.redaction;
 
-import com.itextpdf.forms.PdfAcroForm;
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.geom.Rectangle;
 import com.itextpdf.kernel.pdf.PdfDocument;
@@ -66,11 +65,6 @@ public class PdfRedaction {
         properties.useAppendMode();
 
         try (PdfDocument pdfDocument = new PdfDocument(reader, new PdfWriter(newFile),properties)) {
-            PdfAcroForm pdfAcroForm = PdfAcroForm.getAcroForm(pdfDocument, false);
-
-            if (pdfAcroForm != null) {
-                pdfAcroForm.flattenFields();
-            }
             PdfCleanUpTool cleaner = new PdfCleanUpTool(pdfDocument, cleanUpLocations, new CleanUpProperties());
             cleaner.cleanUp();
         } catch (CleanUpImageUtil.CleanupImageHandlingUtilException e) {
@@ -144,6 +138,67 @@ public class PdfRedaction {
      */
     private float pixelToPointConversion(double value) {
         return (float) (0.75 * value);
+    }
+
+
+    public static void main(String[] args) throws IOException {
+        PdfRedaction pdfRedaction = new PdfRedaction();
+
+
+
+        File file = new File(ClassLoader.getSystemResource("INC5698057_1709663246939596.pdf").getPath());
+
+
+        RedactionDTO redactionDTO = new RedactionDTO();
+
+
+        //height
+        //:
+        //30
+        //id
+        //:
+        //"5701f8bf-7ac3-4168-8dfd-f0830bcbd561"
+        //width
+        //:
+        //207
+        //x
+        //:
+        //22
+        //y
+        //:
+        //37
+
+        redactionDTO.setPage(1);
+        RectangleDTO rectangleDTO1 = new RectangleDTO();
+        rectangleDTO1.setX(0D);
+        rectangleDTO1.setY(0D);
+        rectangleDTO1.setWidth(300d);
+        rectangleDTO1.setHeight(100d);
+        rectangleDTO1.setId(UUID.randomUUID());
+
+        RectangleDTO rectangleDTO2 = new RectangleDTO();
+        rectangleDTO2.setX(400d);
+        rectangleDTO2.setY(600d);
+        rectangleDTO2.setWidth(200.83d);
+        rectangleDTO2.setHeight(10.67d);
+        rectangleDTO2.setId(UUID.randomUUID());
+
+
+
+        //92.0	241.83	505.0	980.0
+
+        redactionDTO.setRedactionId(UUID.fromString("f47839fa-ceeb-401a-9633-bed6e56899f0"));
+        redactionDTO.setDocumentId(UUID.fromString("0c6a5d23-6dcb-45cf-a579-54ef0d0696ed"));
+        redactionDTO.setRectangles(Set.of(rectangleDTO1, rectangleDTO2));
+
+        //  redactionDTO.setRectangles(Set.of(rectangleDTO1));
+//        height:27
+//        id:"e57af9d9-a4d0-4e39-a501-235bcbca3d1c"
+//        width: 231
+//        x:230
+//        y:297
+        var newfile = pdfRedaction.redactPdf(file, List.of(redactionDTO));
+        System.out.println(newfile.getAbsolutePath());
     }
 
 }
