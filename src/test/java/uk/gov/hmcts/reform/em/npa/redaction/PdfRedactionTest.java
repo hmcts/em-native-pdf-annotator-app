@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.npa.redaction;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
@@ -11,12 +12,14 @@ import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -29,34 +32,58 @@ class PdfRedactionTest {
             ClassLoader.getSystemResource("passwordprotected.pdf").getPath()
     );
 
-    private final PdfRedaction pdfRedaction = new PdfRedaction();
+    private PdfRedaction pdfRedaction;
 
     private List<RedactionDTO> redactions = new ArrayList<>();
 
+
+    private File testPdfFile;
+
     @BeforeEach
-    public void setup() {
+    public void setup() throws IOException {
         redactions = new ArrayList<>();
         initRedactionDTOList();
+        pdfRedaction = new PdfRedaction();
+        testPdfFile = File.createTempFile("TestPdf-", ".pdf");
+    }
+
+    @AfterEach
+    void tearDown() {
+        if (testPdfFile != null && testPdfFile.exists()) {
+            assertTrue(testPdfFile.delete());
+        }
+    }
+
+    private void createPdfWithRotation(int rotation) throws IOException {
+        try (PDDocument document = new PDDocument()) {
+            PDPage page = new PDPage(PDRectangle.A4);
+            page.setRotation(rotation);
+            document.addPage(page);
+            document.save(testPdfFile);
+        }
     }
 
     public void initRedactionDTOList() {
         for (int i = 0; i < 5; i++) {
-            RedactionDTO redaction = new RedactionDTO();
-            redaction.setRedactionId(UUID.randomUUID());
-            redaction.setDocumentId(UUID.randomUUID());
-            redaction.setPage(i + 1);
-
-            RectangleDTO rectangle = new RectangleDTO();
-            rectangle.setId(UUID.randomUUID());
-            rectangle.setX(100.00);
-            rectangle.setY(100.00);
-            rectangle.setHeight(100.00);
-            rectangle.setWidth(100.00);
-
-            redaction.setRectangles(new HashSet<>(Collections.singletonList(rectangle)));
-
-            redactions.add(redaction);
+            redactions.add(createTestRedaction(i + 1, 100.00,100.00,100.00,100.00));
         }
+    }
+
+    private RedactionDTO createTestRedaction(int pageNumber, double x, double y, double w, double h) {
+        RedactionDTO redaction = new RedactionDTO();
+        redaction.setRedactionId(UUID.randomUUID());
+        redaction.setDocumentId(UUID.randomUUID());
+        redaction.setPage(pageNumber);
+
+        RectangleDTO rect = new RectangleDTO();
+        rect.setId(UUID.randomUUID());
+        rect.setX(x);
+        rect.setY(y);
+        rect.setWidth(w);
+        rect.setHeight(h);
+
+        redaction.setRectangles(new HashSet<>(Collections.singletonList(rect)));
+        return redaction;
     }
 
     @Test
@@ -118,5 +145,66 @@ class PdfRedactionTest {
 
         File result = pdfRedaction.redactPdf(tempPdf, List.of(redaction));
         assertTrue(result.exists());
+    }
+
+    @Test
+    void redactPdf_90DegreeRotation_AppliesRedaction() throws IOException {
+        createPdfWithRotation(90);
+        RedactionDTO redaction = createTestRedaction(1, 100, 200, 50, 30);
+
+        File result = pdfRedaction.redactPdf(testPdfFile, List.of(redaction));
+
+        assertRedactionApplied(result);
+    }
+
+    @Test
+    void redactPdf_180DegreeRotation_AppliesRedaction() throws IOException {
+        createPdfWithRotation(180);
+        RedactionDTO redaction = createTestRedaction(1, 100, 200, 50, 30);
+
+        File result = pdfRedaction.redactPdf(testPdfFile, List.of(redaction));
+
+        assertRedactionApplied(result);
+    }
+
+    @Test
+    void redactPdf_270DegreeRotation_AppliesRedaction() throws IOException {
+        createPdfWithRotation(270);
+        RedactionDTO redaction = createTestRedaction(1, 100, 200, 50, 30);
+
+        File result = pdfRedaction.redactPdf(testPdfFile, List.of(redaction));
+
+        assertRedactionApplied(result);
+    }
+
+    private void assertRedactionApplied(File result) {
+        assertNotNull(result);
+        assertTrue(result.exists());
+        assertTrue(result.length() > 0, "Redacted file should not be empty");
+    }
+
+    @Test
+    void redactPdf_MultipleRotations_DifferentPages() throws IOException {
+        // Create PDF with pages having different rotations
+        try (PDDocument doc = new PDDocument()) {
+            PDPage page1 = new PDPage(PDRectangle.A4);
+            page1.setRotation(90);
+            doc.addPage(page1);
+
+            PDPage page2 = new PDPage(PDRectangle.A4);
+            page2.setRotation(180);
+            doc.addPage(page2);
+
+            doc.save(testPdfFile);
+        }
+
+        List<RedactionDTO> redactions = Arrays.asList(
+                createTestRedaction(1, 100, 200, 50, 30),
+                createTestRedaction(2, 150, 250, 75, 45)
+        );
+
+        File result = pdfRedaction.redactPdf(testPdfFile, redactions);
+
+        assertRedactionApplied(result);
     }
 }
