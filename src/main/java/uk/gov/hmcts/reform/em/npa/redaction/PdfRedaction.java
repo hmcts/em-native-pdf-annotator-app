@@ -9,7 +9,6 @@ import com.itextpdf.kernel.pdf.StampingProperties;
 import com.itextpdf.pdfcleanup.CleanUpProperties;
 import com.itextpdf.pdfcleanup.PdfCleanUpLocation;
 import com.itextpdf.pdfcleanup.PdfCleanUpTool;
-import com.itextpdf.pdfcleanup.util.CleanUpImageUtil;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -41,6 +40,14 @@ public class PdfRedaction {
      * @throws IOException in document process
      */
     public File redactPdf(File documentFile, List<RedactionDTO> redactionDTOList) throws IOException {
+        return redactPdf(documentFile, redactionDTOList, true);
+    }
+
+    private File redactPdf(
+            File documentFile,
+            List<RedactionDTO> redactionDTOList,
+            boolean retry
+    ) throws IOException {
         PDDocument pdDocument = Loader.loadPDF(documentFile);
         final File newFile =
                 File.createTempFile(
@@ -56,9 +63,8 @@ public class PdfRedaction {
                                 createRectangle(pdDocument, redactionDTO.getPage() - 1, rectangleDTO),
                                 ColorConstants.BLACK))));
 
-        // Append mode requires a document without errors
-        final File repairedFile = repairPdf(documentFile);
-        PdfReader reader = new PdfReader(repairedFile);
+
+        PdfReader reader = new PdfReader(documentFile);
         reader.setUnethicalReading(true);
 
         StampingProperties properties = new StampingProperties();
@@ -67,7 +73,13 @@ public class PdfRedaction {
         try (PdfDocument pdfDocument = new PdfDocument(reader, new PdfWriter(newFile),properties)) {
             PdfCleanUpTool cleaner = new PdfCleanUpTool(pdfDocument, cleanUpLocations, new CleanUpProperties());
             cleaner.cleanUp();
-        } catch (CleanUpImageUtil.CleanupImageHandlingUtilException e) {
+        } catch (Exception e) {
+            if (retry) {
+                // trying one more time - Append mode requires a document without errors
+                log.info("Saving redactions failed {}, retrying", e.getMessage());
+                final File repairedFile = repairPdf(documentFile);
+                redactPdf(repairedFile, redactionDTOList, false);
+            }
             log.error("Saving redactions failed with error: {}", e.getMessage());
         }
         pdDocument.close();
@@ -141,8 +153,9 @@ public class PdfRedaction {
     }
 
     private File repairPdf(File documentFile) throws IOException {
+        // need to remove random part
         File repairedFile = File.createTempFile(
-                "Repaired-" + FilenameUtils.getBaseName(documentFile.getName()),
+                 FilenameUtils.getBaseName(documentFile.getName()),
                 ".pdf"
         );
 
