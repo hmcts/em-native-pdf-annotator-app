@@ -24,6 +24,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PdfRedactionTest {
+    private static final File TEST_PDF_FILE_WITH_ERROR = new File(
+            ClassLoader.getSystemResource("annotationTemplate.pdf").getPath()
+    );
+
     private static final File TEST_PDF_FILE = new File(
             ClassLoader.getSystemResource("layered.pdf").getPath()
     );
@@ -119,6 +123,16 @@ class PdfRedactionTest {
         redaction.setRectangles(Collections.emptySet());
 
         File result = pdfRedaction.redactPdf(TEST_PDF_FILE, List.of(redaction));
+        assertTrue(result.exists());
+    }
+
+    @Test
+    void shouldDoRedactionWithRetry() throws IOException {
+        RedactionDTO redaction = new RedactionDTO();
+        redaction.setPage(1);
+        redaction.setRectangles(Collections.emptySet());
+
+        File result = pdfRedaction.redactPdf(TEST_PDF_FILE_WITH_ERROR, List.of(redaction));
         assertTrue(result.exists());
     }
 
