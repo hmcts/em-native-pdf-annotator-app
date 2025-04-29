@@ -45,7 +45,7 @@ public class NpaPactConsumerTest {
         );
     }
 
-    @Pact(consumer = "em_npa_consumer", provider = "em_npa_provider")
+    @Pact(consumer = "em_npa_api", provider = "native_pdf_annotator_api_provider")
     public V4Pact createMarkUpPact(au.com.dius.pact.consumer.dsl.PactBuilder builder) {
         return builder
                 .usingLegacyDsl()

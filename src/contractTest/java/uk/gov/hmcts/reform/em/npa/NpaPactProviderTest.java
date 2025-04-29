@@ -33,7 +33,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 
-@Provider("em_npa_provider")
+@Provider("native_pdf_annotator_api_provider")
 @PactBroker(scheme = "${PACT_BROKER_SCHEME:http}",
         host = "${PACT_BROKER_URL:localhost}",
         port = "${PACT_BROKER_PORT:80}",
