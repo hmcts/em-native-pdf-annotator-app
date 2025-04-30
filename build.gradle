@@ -380,7 +380,7 @@ task smoke(type: Test) {
 }
 
 project.ext {
-    pactVersion = getCheckedOutGitCommitHash()
+    pacticipantVersion = getCheckedOutGitCommitHash()
 }
 
 task contract(type: Test) {
@@ -394,20 +394,16 @@ task contract(type: Test) {
     environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }
 
-task runAndPublishConsumerPactTests(type: Test){
-    logger.lifecycle("Runs pact Tests")
-    testClassesDirs = sourceSets.contractTest.output.classesDirs
-    classpath = sourceSets.contractTest.runtimeClasspath
-}
-
-runAndPublishConsumerPactTests.dependsOn contract
-runAndPublishConsumerPactTests.finalizedBy pactPublish
-
 pact {
-    publish {
-        pactDirectory = 'pacts'
+    broker {
         pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
-        version = project.pactVersion
+    }
+    publish {
+        pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
+        pactDirectory = 'pacts'
+        tags = [System.getenv("PACT_BRANCH_NAME") ?: 'Dev']
+        version = project.pacticipantVersion
+        consumerBranch = [System.getenv("PACT_BRANCH_NAME") ?: 'Dev']
     }
 }
 
@@ -415,11 +411,27 @@ pactPublish {
     pactPublish = project.pact.publish
 }
 
-task runProviderPactVerification(type: Test) {
-    logger.lifecycle("Running contract Tests")
-    useJUnitPlatform()
+task runAndPublishConsumerPactTests(type: Test){
+    logger.lifecycle("Runs pact Tests")
     testClassesDirs = sourceSets.contractTest.output.classesDirs
     classpath = sourceSets.contractTest.runtimeClasspath
+    jvmArgs = ['--add-opens=java.base/java.lang=ALL-UNNAMED']
+}
+
+runAndPublishConsumerPactTests.dependsOn contract
+runAndPublishConsumerPactTests.finalizedBy pactPublish
+
+tasks.register('runProviderPactVerification', Test) {
+    logger.lifecycle("Runs provider pact Tests")
+    testClassesDirs = sourceSets.contractTest.output.classesDirs
+    classpath = sourceSets.contractTest.runtimeClasspath
+    jvmArgs = ['--add-opens=java.base/java.lang=ALL-UNNAMED']
+    if (project.hasProperty('pact.verifier.publishResults')) {
+        systemProperty 'pact.verifier.publishResults', project.property('pact.verifier.publishResults')
+    }
+
+    systemProperty 'pact.provider.version', project.pacticipantVersion
+
 }
 
 runProviderPactVerification.dependsOn contract
