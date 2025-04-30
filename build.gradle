@@ -394,16 +394,6 @@ task contract(type: Test) {
     environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }
 
-task runAndPublishConsumerPactTests(type: Test){
-    logger.lifecycle("Runs pact Tests")
-    testClassesDirs = sourceSets.contractTest.output.classesDirs
-    classpath = sourceSets.contractTest.runtimeClasspath
-    jvmArgs = ['--add-opens=java.base/java.lang=ALL-UNNAMED']
-}
-
-runAndPublishConsumerPactTests.dependsOn contract
-runAndPublishConsumerPactTests.finalizedBy pactPublish
-
 pact {
     broker {
         pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
@@ -421,6 +411,15 @@ pactPublish {
     pactPublish = project.pact.publish
 }
 
+task runAndPublishConsumerPactTests(type: Test){
+    logger.lifecycle("Runs pact Tests")
+    testClassesDirs = sourceSets.contractTest.output.classesDirs
+    classpath = sourceSets.contractTest.runtimeClasspath
+    jvmArgs = ['--add-opens=java.base/java.lang=ALL-UNNAMED']
+}
+
+runAndPublishConsumerPactTests.dependsOn contract
+runAndPublishConsumerPactTests.finalizedBy pactPublish
 
 tasks.register('runProviderPactVerification', Test) {
     logger.lifecycle("Runs provider pact Tests")
