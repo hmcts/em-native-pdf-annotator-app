@@ -8,6 +8,7 @@ import au.com.dius.pact.provider.junitsupport.IgnoreNoPactsToVerify;
 import au.com.dius.pact.provider.junitsupport.Provider;
 import au.com.dius.pact.provider.junitsupport.State;
 import au.com.dius.pact.provider.junitsupport.loader.PactBroker;
+import au.com.dius.pact.provider.junitsupport.loader.PactFolder;
 import au.com.dius.pact.provider.junitsupport.loader.VersionSelector;
 import au.com.dius.pact.provider.spring.junit5.MockMvcTestTarget;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +19,8 @@ import org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAu
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -26,18 +29,24 @@ import uk.gov.hmcts.reform.em.npa.service.MarkUpService;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 
 @Provider("native_pdf_annotator_api_provider")
-@PactBroker(scheme = "${PACT_BROKER_SCHEME:http}",
-        host = "${PACT_BROKER_URL:localhost}",
-        port = "${PACT_BROKER_PORT:80}",
-        consumerVersionSelectors = {@VersionSelector(tag = "master")})
+//Uncomment @PactFolder and comment the @PactBroker line to test local consumer.
+//using this, import au.com.dius.pact.provider.junitsupport.loader.PactFolder;
+@PactFolder("target/pacts")
+//@PactBroker(scheme = "${PACT_BROKER_SCHEME:http}",
+//        host = "${PACT_BROKER_URL:localhost}",
+//        port = "${PACT_BROKER_PORT:80}",
+//        consumerVersionSelectors = {@VersionSelector(tag = "master")})
+
 @IgnoreNoPactsToVerify
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(value = MarkUpResource.class,
@@ -99,5 +108,23 @@ public class NpaPactProviderTest {
         });
     }
 
+    @State("Markups exist for document f2cc4d79-d0f3-4b43-affe-535516370cdd")
+    public void setupMarkupsForDocument() {
+        RectangleDTO rectangle = new RectangleDTO();
+        rectangle.setId(RECTANGLE_ID);
+        rectangle.setX(X);
+        rectangle.setY(Y);
+        rectangle.setWidth(WIDTH);
+        rectangle.setHeight(HEIGHT);
+
+        RedactionDTO markup = new RedactionDTO();
+        markup.setRedactionId(REDACTION_ID);
+        markup.setDocumentId(DOCUMENT_ID); // Must match the ID in your pact
+        markup.setPage(1);
+        markup.setRectangles(Set.of(rectangle));
+
+        when(markUpService.findAllByDocumentId(eq(DOCUMENT_ID), any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(markup)));
+    }
 
 }
