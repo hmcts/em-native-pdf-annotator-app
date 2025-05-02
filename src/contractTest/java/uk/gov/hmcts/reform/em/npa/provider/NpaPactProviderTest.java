@@ -1,6 +1,6 @@
 
 
-package uk.gov.hmcts.reform.em.npa;
+package uk.gov.hmcts.reform.em.npa.provider;
 
 import au.com.dius.pact.provider.junit5.PactVerificationContext;
 import au.com.dius.pact.provider.junit5.PactVerificationInvocationContextProvider;
