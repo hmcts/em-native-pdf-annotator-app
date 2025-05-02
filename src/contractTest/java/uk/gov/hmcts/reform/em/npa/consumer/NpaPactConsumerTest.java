@@ -172,7 +172,7 @@ public class NpaPactConsumerTest {
     public V4Pact updateMarkUpPact(PactBuilder builder) {
         return builder
                 .usingLegacyDsl()
-                .given("A valid RedactionDTO with ID " + REDACTION_ID + " exists")
+                .given("A valid RedactionDTO with ID exists")
                 .uponReceiving("PUT request to update RedactionDTO")
                 .path("/api/markups")
                 .method("PUT")

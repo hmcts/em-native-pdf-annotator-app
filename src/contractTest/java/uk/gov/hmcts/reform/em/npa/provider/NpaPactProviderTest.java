@@ -126,7 +126,7 @@ public class NpaPactProviderTest {
     }
 
 
-    @State("A valid RedactionDTO with ID 4c34ba4a-585a-407d-aa78-3f86f3171cdd exists")
+    @State("A valid RedactionDTO with ID exists")
     public void setupExistingRedactionForUpdate() {
         when(markUpService.save(any(RedactionDTO.class))).thenAnswer(invocation -> {
             RedactionDTO request = invocation.getArgument(0);
