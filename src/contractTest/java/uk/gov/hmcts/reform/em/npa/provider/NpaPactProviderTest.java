@@ -125,4 +125,31 @@ public class NpaPactProviderTest {
                 .thenReturn(new PageImpl<>(List.of(markup)));
     }
 
+
+    @State("A valid RedactionDTO with ID 4c34ba4a-585a-407d-aa78-3f86f3171cdd exists")
+    public void setupExistingRedactionForUpdate() {
+        when(markUpService.save(any(RedactionDTO.class))).thenAnswer(invocation -> {
+            RedactionDTO request = invocation.getArgument(0);
+
+            // Verify the incoming ID matches our expected UUID
+            if (!REDACTION_ID.equals(request.getRedactionId())) {
+                throw new RuntimeException("Unexpected redaction ID");
+            }
+
+            RectangleDTO rectangle = new RectangleDTO();
+            rectangle.setId(request.getRectangles().iterator().next().getId());
+            rectangle.setX(X);
+            rectangle.setY(Y);
+            rectangle.setWidth(WIDTH);
+            rectangle.setHeight(HEIGHT);
+
+            RedactionDTO response = new RedactionDTO();
+            response.setRedactionId(request.getRedactionId());
+            response.setDocumentId(request.getDocumentId());
+            response.setPage(1);
+            response.setRectangles(Set.of(rectangle));
+
+            return response;
+        });
+    }
 }

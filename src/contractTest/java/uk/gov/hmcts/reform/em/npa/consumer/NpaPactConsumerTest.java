@@ -168,4 +168,76 @@ public class NpaPactConsumerTest {
                 .body("[0].rectangles[0].x", equalTo(10.5f));
     }
 
+    @Pact(consumer = "em_npa_api", provider = "native_pdf_annotator_api_provider")
+    public V4Pact updateMarkUpPact(PactBuilder builder) {
+        return builder
+                .usingLegacyDsl()
+                .given("A valid RedactionDTO with ID " + REDACTION_ID + " exists")
+                .uponReceiving("PUT request to update RedactionDTO")
+                .path("/api/markups")
+                .method("PUT")
+                .headers(getHeaders())
+                .body(LambdaDsl.newJsonBody(root -> {
+                    root.uuid("redactionId", REDACTION_ID);
+                    root.uuid("documentId", DOCUMENT_ID);
+                    root.integerType("page", 1);
+                    root.minArrayLike("rectangles", 1, rect -> {
+                        rect.uuid("id", RECTANGLE_ID);
+                        rect.numberType("x", 10.5);
+                        rect.numberType("y", 20.5);
+                        rect.numberType("width", 100.0);
+                        rect.numberType("height", 200.0);
+                    });
+                }).build())
+                .willRespondWith()
+                .status(200)
+                .headers(Map.of("Content-Type", MediaType.APPLICATION_JSON_VALUE))
+                .body(LambdaDsl.newJsonBody(root -> {
+                    root.uuid("redactionId", REDACTION_ID);
+                    root.uuid("documentId", DOCUMENT_ID);
+                    root.integerType("page", 1);
+                    root.minArrayLike("rectangles", 1, rect -> {
+                        rect.uuid("id", RECTANGLE_ID);
+                        rect.numberType("x", 10.5);
+                        rect.numberType("y", 20.5);
+                        rect.numberType("width", 100.0);
+                        rect.numberType("height", 200.0);
+                    });
+                }).build())
+                .toPact(V4Pact.class);
+    }
+
+    @Test
+    @PactTestFor(pactMethod = "updateMarkUpPact")
+    void testUpdateMarkUp(MockServer mockServer) {
+        String requestBody = String.format("""
+        {
+          "redactionId": "%s",
+          "documentId": "%s",
+          "page": 1,
+          "rectangles": [
+            {
+              "id": "%s",
+              "x": 10.5,
+              "y": 20.5,
+              "width": 100.0,
+              "height": 200.0
+            }
+          ]
+        }
+        """, REDACTION_ID, DOCUMENT_ID, RECTANGLE_ID);
+
+        SerenityRest
+                .given()
+                .headers(getHeaders())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(requestBody)
+                .put(mockServer.getUrl() + "/api/markups")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body("redactionId", equalTo(REDACTION_ID.toString()))
+                .body("documentId", equalTo(DOCUMENT_ID.toString()))
+                .body("rectangles[0].id", equalTo(RECTANGLE_ID.toString()))
+                .body("rectangles[0].x", equalTo(10.5f));
+    }
 }
