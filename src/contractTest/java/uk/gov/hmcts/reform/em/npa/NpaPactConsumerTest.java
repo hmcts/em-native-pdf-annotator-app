@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.npa;
 
 import au.com.dius.pact.consumer.MockServer;
 import au.com.dius.pact.consumer.dsl.LambdaDsl;
+import au.com.dius.pact.consumer.dsl.PactBuilder;
 import au.com.dius.pact.consumer.junit5.PactConsumerTestExt;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
 import au.com.dius.pact.core.model.V4Pact;
@@ -19,6 +20,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.Map;
 import java.util.UUID;
 
+import static au.com.dius.pact.consumer.dsl.LambdaDsl.newJsonArray;
 import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
@@ -33,9 +35,9 @@ public class NpaPactConsumerTest {
     public static final String SERVICE_AUTH_TOKEN = "Bearer someServiceAuthorizationToken";
 
     // Static UUIDs from provided list
-    private static final UUID REDACTION_ID = UUID.randomUUID();
-    private static final UUID DOCUMENT_ID = UUID.randomUUID();
-    private static final UUID RECTANGLE_ID = UUID.randomUUID();
+    private static final UUID REDACTION_ID = UUID.fromString("4c34ba4a-585a-407d-aa78-3f86f3171cdd");
+    private static final UUID DOCUMENT_ID = UUID.fromString("f2cc4d79-d0f3-4b43-affe-535516370cdd");
+    private static final UUID RECTANGLE_ID = UUID.fromString("c04b807f-8352-4bfc-95b5-cecd072b7aba");
 
     public Map<String, String> getHeaders() {
         return Map.of(
@@ -46,7 +48,7 @@ public class NpaPactConsumerTest {
     }
 
     @Pact(consumer = "em_npa_api", provider = "native_pdf_annotator_api_provider")
-    public V4Pact createMarkUpPact(au.com.dius.pact.consumer.dsl.PactBuilder builder) {
+    public V4Pact createMarkUpPact(PactBuilder builder) {
         return builder
                 .usingLegacyDsl()
                 .given("A valid RedactionDTO exists")
@@ -119,4 +121,51 @@ public class NpaPactConsumerTest {
                 .body("documentId", equalTo(DOCUMENT_ID.toString()))
                 .body("rectangles[0].id", equalTo(RECTANGLE_ID.toString()));
     }
+
+    @Pact(consumer = "em_npa_api", provider = "native_pdf_annotator_api_provider")
+    public V4Pact getMarkupsPact(PactBuilder builder) {
+        return builder
+                .usingLegacyDsl()
+                .given("Markups exist for document " + DOCUMENT_ID)
+                .uponReceiving("GET request for markups by document ID")
+                .path("/api/markups/" + DOCUMENT_ID)
+                .method("GET")
+                .headers(getHeaders())
+                .willRespondWith()
+                .status(200)
+                .headers(Map.of("Content-Type", MediaType.APPLICATION_JSON_VALUE))
+                .body(newJsonArray(array ->
+                        array.object(markup -> {
+                            markup.uuid("redactionId", REDACTION_ID);
+                            markup.uuid("documentId", DOCUMENT_ID);
+                            markup.integerType("page", 1);
+                            markup.array("rectangles", rectangles ->
+                                    rectangles.object(rect -> {
+                                        rect.uuid("id", RECTANGLE_ID);
+                                        rect.numberType("x", 10.5);
+                                        rect.numberType("y", 20.5);
+                                        rect.numberType("width", 100.0);
+                                        rect.numberType("height", 200.0);
+                                    })
+                            );
+                        }).build()
+                ).build())
+                .toPact(V4Pact.class);
+    }
+
+    @Test
+    @PactTestFor(pactMethod = "getMarkupsPact")
+    void testGetMarkupsByDocumentId(MockServer mockServer) {
+        SerenityRest
+                .given()
+                .headers(getHeaders())
+                .get(mockServer.getUrl() + "/api/markups/" + DOCUMENT_ID)
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .body("[0].redactionId", equalTo(REDACTION_ID.toString()))
+                .body("[0].documentId", equalTo(DOCUMENT_ID.toString()))
+                .body("[0].rectangles[0].id", equalTo(RECTANGLE_ID.toString()))
+                .body("[0].rectangles[0].x", equalTo(10.5f));
+    }
+
 }
