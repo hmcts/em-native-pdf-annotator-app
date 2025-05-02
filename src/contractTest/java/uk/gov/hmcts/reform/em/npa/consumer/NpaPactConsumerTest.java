@@ -93,21 +93,21 @@ public class NpaPactConsumerTest {
 
 
         String requestBody = String.format("""
-            {
-              "redactionId": "%s",
-              "documentId": "%s",
-              "page": 1,
-              "rectangles": [
                 {
-                  "id": "%s",
-                  "x": 10.5,
-                  "y": 20.5,
-                  "width": 100.0,
-                  "height": 200.0
+                  "redactionId": "%s",
+                  "documentId": "%s",
+                  "page": 1,
+                  "rectangles": [
+                    {
+                      "id": "%s",
+                      "x": 10.5,
+                      "y": 20.5,
+                      "width": 100.0,
+                      "height": 200.0
+                    }
+                  ]
                 }
-              ]
-            }
-            """, REDACTION_ID, DOCUMENT_ID, RECTANGLE_ID);
+                """, REDACTION_ID, DOCUMENT_ID, RECTANGLE_ID);
 
         SerenityRest
                 .given()
@@ -211,21 +211,21 @@ public class NpaPactConsumerTest {
     @PactTestFor(pactMethod = "updateMarkUpPact")
     void testUpdateMarkUp(MockServer mockServer) {
         String requestBody = String.format("""
-        {
-          "redactionId": "%s",
-          "documentId": "%s",
-          "page": 1,
-          "rectangles": [
-            {
-              "id": "%s",
-              "x": 10.5,
-              "y": 20.5,
-              "width": 100.0,
-              "height": 200.0
-            }
-          ]
-        }
-        """, REDACTION_ID, DOCUMENT_ID, RECTANGLE_ID);
+                {
+                  "redactionId": "%s",
+                  "documentId": "%s",
+                  "page": 1,
+                  "rectangles": [
+                    {
+                      "id": "%s",
+                      "x": 10.5,
+                      "y": 20.5,
+                      "width": 100.0,
+                      "height": 200.0
+                    }
+                  ]
+                }
+                """, REDACTION_ID, DOCUMENT_ID, RECTANGLE_ID);
 
         SerenityRest
                 .given()
