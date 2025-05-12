@@ -59,8 +59,6 @@ class CustomAuditEventRepositoryTest {
             new CustomAuditEventRepository(persistenceAuditEventRepository, auditEventConverter);
     }
 
-    // --- Tests for 'add' method ---
-
     @Test
     void addAuditEvent() {
         Map<String, Object> data = new HashMap<>();
