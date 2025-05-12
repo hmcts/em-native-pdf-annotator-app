@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionSetDTO;
 import uk.gov.hmcts.reform.em.npa.service.mapper.MarkUpMapper;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -48,12 +49,35 @@ class MarkUpServiceImplTest {
     private Pageable pageable;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
     void testSaveSuccess() {
+
+        RedactionDTO redactionDTO = createRedactionDTO();
+        redactionDTO.setRectangles(Collections.emptySet());
+        Redaction redaction = createRedaction();
+        redaction.setRectangles(Collections.emptySet());
+        Mockito.when(securityUtils.getCurrentUserLogin()).thenReturn(Optional.of("testuser"));
+        Mockito.when(markUpMapper.toEntity(redactionDTO)).thenReturn(redaction);
+        Mockito.when(markUpMapper.toDto(redaction)).thenReturn(redactionDTO);
+        Mockito.when(markUpRepository.save(redaction)).thenReturn(redaction);
+
+        RedactionDTO updatedDto = markUpService.save(redactionDTO);
+
+        assertEquals(redactionDTO.getDocumentId(), updatedDto.getDocumentId());
+        assertEquals(redactionDTO.getRedactionId(), updatedDto.getRedactionId());
+        assertEquals(redactionDTO.getRectangles().size(), updatedDto.getRectangles().size());
+
+        Mockito.verify(markUpRepository, Mockito.atLeast(1)).save(redaction);
+        Mockito.verify(markUpMapper, Mockito.atLeast(1)).toEntity(redactionDTO);
+        Mockito.verify(markUpMapper, Mockito.atLeast(1)).toDto(redaction);
+    }
+
+    @Test
+    void testSaveSuccessWithRectangles() {
 
         RedactionDTO redactionDTO = createRedactionDTO();
         Redaction redaction = createRedaction();
@@ -85,10 +109,12 @@ class MarkUpServiceImplTest {
         RedactionDTO redactionDTO = createRedactionDTO();
         RedactionDTO redactionDTO1 = createRedactionDTO();
         RedactionDTO redactionDTO2 = createRedactionDTO();
+        redactionDTO2.setRectangles(Collections.emptySet());
 
         Redaction redaction = createRedaction();
         Redaction redaction1 = createRedaction();
         Redaction redaction2 = createRedaction();
+        redaction2.setRectangles(Collections.emptySet());
 
         Set<RedactionDTO> redactionDTOS = Set.of(redactionDTO, redactionDTO1, redactionDTO2);
         RedactionSetDTO redactionSetDTO = new RedactionSetDTO(redactionDTOS);

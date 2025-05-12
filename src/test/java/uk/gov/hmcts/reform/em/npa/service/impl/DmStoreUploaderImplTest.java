@@ -223,10 +223,19 @@ class DmStoreUploaderImplTest {
     }
 
     @Test
-    void  testUploadDocumentFailure() {
+    void  testUploadDocumentFailureInvalidMime() {
 
         setUpFailure();
         assertThrows(DocumentTaskProcessingException.class, () ->
             dmStoreUploader.uploadDocument(new File("xyz.abc")));
+    }
+
+    @Test
+    void  testUploadDocumentFailureResponse() {
+
+        setUpFailure();
+        ClassLoader classLoader = getClass().getClassLoader();
+        assertThrows(DocumentTaskProcessingException.class, () ->
+            dmStoreUploader.uploadDocument(new File(classLoader.getResource(PDF_FILENAME).getFile())));
     }
 }

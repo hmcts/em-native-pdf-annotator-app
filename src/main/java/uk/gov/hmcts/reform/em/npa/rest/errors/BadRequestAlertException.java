@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.npa.rest.errors;
 
+import lombok.Getter;
 import org.zalando.problem.AbstractThrowableProblem;
 import org.zalando.problem.Status;
 
@@ -7,6 +8,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
+@Getter
 @SuppressWarnings("squid:S110")
 public class BadRequestAlertException extends AbstractThrowableProblem {
 
@@ -24,14 +26,6 @@ public class BadRequestAlertException extends AbstractThrowableProblem {
         super(type, defaultMessage, Status.BAD_REQUEST, null, null, null, getAlertParameters(entityName, errorKey));
         this.entityName = entityName;
         this.errorKey = errorKey;
-    }
-
-    public String getEntityName() {
-        return entityName;
-    }
-
-    public String getErrorKey() {
-        return errorKey;
     }
 
     private static Map<String, Object> getAlertParameters(String entityName, String errorKey) {
