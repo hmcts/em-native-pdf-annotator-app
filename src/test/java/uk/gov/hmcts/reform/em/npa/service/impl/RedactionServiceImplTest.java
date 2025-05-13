@@ -30,6 +30,8 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @SuppressWarnings("squid:S5778")
 class RedactionServiceImplTest {
@@ -55,12 +57,12 @@ class RedactionServiceImplTest {
     @Mock
     private CdamService cdamService;
 
-    private List<RedactionDTO> redactions = new ArrayList<>();
+    private final List<RedactionDTO> redactions = new ArrayList<>();
 
     private static final UUID docStoreUUID = UUID.randomUUID();
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
         redactionService.imageExtensionsList = Arrays.asList("png","jpeg");
         initRedactionDTOList();
@@ -89,61 +91,75 @@ class RedactionServiceImplTest {
     @Test
     void redactPdfFileTest() throws DocumentTaskProcessingException, IOException {
         File mockFile = new File("prosecution1.pdf");
-        Mockito.when(dmStoreDownloader.downloadFile(docStoreUUID.toString())).thenReturn(mockFile);
-        Mockito.when(pdfRedaction.redactPdf(mockFile, redactions)).thenReturn(mockFile);
+        when(dmStoreDownloader.downloadFile(docStoreUUID.toString())).thenReturn(mockFile);
+        when(pdfRedaction.redactPdf(mockFile, redactions)).thenReturn(mockFile);
 
         File result = redactionService.redactFile("jwt", "s2sToken", createRedactionRequest("caseId", docStoreUUID,
             redactions));
         assertEquals(result.getName(), mockFile.getName());
-        Mockito.verify(cdamService, Mockito.atLeast(0)).downloadFile("jwt", "s2sToken", docStoreUUID);
+        verify(cdamService, Mockito.atLeast(0)).downloadFile("jwt", "s2sToken", docStoreUUID);
     }
 
     @Test
     void redactPdfFileCdamTest() throws DocumentTaskProcessingException, IOException {
         File mockFile = new File("prosecution1.pdf");
-        Mockito.when(cdamService.downloadFile("jwt", "s2sToken", docStoreUUID)).thenReturn(mockFile);
-        Mockito.when(pdfRedaction.redactPdf(mockFile, redactions)).thenReturn(mockFile);
+        when(cdamService.downloadFile("jwt", "s2sToken", docStoreUUID)).thenReturn(mockFile);
+        when(pdfRedaction.redactPdf(mockFile, redactions)).thenReturn(mockFile);
         redactionService.cdamEnabled = true;
         RedactionRequest redactionRequest = createRedactionRequest("caseId", docStoreUUID, redactions);
 
         File result = redactionService.redactFile("jwt", "s2sToken", redactionRequest);
         assertEquals(result.getName(), mockFile.getName());
-        Mockito.verify(cdamService, Mockito.atLeast(1)).downloadFile("jwt", "s2sToken", docStoreUUID);
+        verify(cdamService, Mockito.atLeast(1)).downloadFile("jwt", "s2sToken", docStoreUUID);
     }
 
     @Test
     void redactImageFileTest() throws DocumentTaskProcessingException, IOException {
         File mockFile = new File("prosecution2.png");
-        Mockito.when(dmStoreDownloader.downloadFile(docStoreUUID.toString())).thenReturn(mockFile);
-        Mockito.when(imageRedaction.redactImage(mockFile, redactions.get(0).getRectangles())).thenReturn(mockFile);
+        when(dmStoreDownloader.downloadFile(docStoreUUID.toString())).thenReturn(mockFile);
+        when(imageRedaction.redactImage(mockFile, redactions.get(0).getRectangles())).thenReturn(mockFile);
 
         File result = redactionService.redactFile("jwt", "s2sToken",createRedactionRequest("caseId", docStoreUUID,
             redactions));
         assertEquals(result.getName(), mockFile.getName());
-        Mockito.verify(cdamService, Mockito.atLeast(0)).downloadFile("jwt", "s2sToken", docStoreUUID);
+        verify(cdamService, Mockito.atLeast(0)).downloadFile("jwt", "s2sToken", docStoreUUID);
     }
 
     @Test
     void redactInvalidFileTest() throws DocumentTaskProcessingException, IOException {
 
         File mockFile = new File("test.txt");
-        Mockito.when(dmStoreDownloader.downloadFile(docStoreUUID.toString())).thenReturn(mockFile);
+        when(dmStoreDownloader.downloadFile(docStoreUUID.toString())).thenReturn(mockFile);
 
         assertThrows(FileTypeException.class, () ->
             redactionService.redactFile("jwt", "s2sToken",
                 createRedactionRequest("caseId", docStoreUUID, redactions)));
-        Mockito.verify(cdamService, Mockito.atLeast(0)).downloadFile("jwt", "s2sToken", docStoreUUID);
+        verify(cdamService, Mockito.atLeast(0)).downloadFile("jwt", "s2sToken", docStoreUUID);
     }
 
     @Test
     void redactDocumentTaskProcessingErrorTest() throws DocumentTaskProcessingException, IOException {
 
-        Mockito.when(dmStoreDownloader.downloadFile(docStoreUUID.toString()))
+        when(dmStoreDownloader.downloadFile(docStoreUUID.toString()))
             .thenThrow(DocumentTaskProcessingException.class);
         assertThrows(RedactionProcessingException.class, () ->
             redactionService.redactFile("jwt", "s2sToken",
                 createRedactionRequest("caseId", docStoreUUID, redactions)));
-        Mockito.verify(cdamService, Mockito.atLeast(0)).downloadFile("jwt", "s2sToken", docStoreUUID);
+        verify(cdamService, Mockito.atLeast(0)).downloadFile("jwt", "s2sToken", docStoreUUID);
+    }
+
+    @Test
+    void redactIOExceptionTest() throws DocumentTaskProcessingException, IOException {
+
+        File mockFile = new File("prosecution2.png");
+        when(dmStoreDownloader.downloadFile(docStoreUUID.toString())).thenReturn(mockFile);
+        when(pdfRedaction.redactPdf(mockFile, redactions)).thenReturn(mockFile);
+        when(imageRedaction.redactImage(mockFile, redactions.get(0).getRectangles()))
+            .thenThrow(IOException.class);
+        assertThrows(FileTypeException.class, () ->
+            redactionService.redactFile("jwt", "s2sToken",
+                createRedactionRequest("caseId", docStoreUUID, redactions)));
+        verify(cdamService, Mockito.atLeast(0)).downloadFile("jwt", "s2sToken", docStoreUUID);
     }
 
     private RedactionRequest createRedactionRequest(String caseId, UUID docStoreUUID, List<RedactionDTO> redactions) {
