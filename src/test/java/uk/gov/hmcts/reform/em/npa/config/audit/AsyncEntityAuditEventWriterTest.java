@@ -32,7 +32,7 @@ class AsyncEntityAuditEventWriterTest {
     private AsyncEntityAuditEventWriter asyncEntityAuditEventWriter;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
