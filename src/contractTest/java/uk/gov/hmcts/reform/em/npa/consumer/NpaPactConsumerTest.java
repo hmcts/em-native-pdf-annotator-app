@@ -240,4 +240,36 @@ public class NpaPactConsumerTest {
                 .body("rectangles[0].id", equalTo(RECTANGLE_ID.toString()))
                 .body("rectangles[0].x", equalTo(10.5f));
     }
+
+
+    @Pact(consumer = "em_npa_api", provider = "native_pdf_annotator_api_provider")
+    public V4Pact deleteMarkupsPact(PactBuilder builder) {
+        return builder
+                .usingLegacyDsl()
+                .given("Markups exist for document " + DOCUMENT_ID)
+                .uponReceiving("DELETE request to remove all markups by document ID")
+                .path("/api/markups/" + DOCUMENT_ID)
+                .method("DELETE")
+                .headers(getHeaders())
+                .willRespondWith()
+                .status(200)
+                .matchHeader(
+                        "X-npaApp-alert",
+                        "A redaction is deleted with identifier " + DOCUMENT_ID)
+                .matchHeader(
+                        "X-npaApp-params",
+                        DOCUMENT_ID.toString())
+                .toPact(V4Pact.class);
+    }
+
+    @Test
+    @PactTestFor(pactMethod = "deleteMarkupsPact")
+    void testDeleteMarkupsByDocumentId(MockServer mockServer) {
+        SerenityRest
+                .given()
+                .headers(getHeaders())
+                .delete(mockServer.getUrl() + "/api/markups/" + DOCUMENT_ID)
+                .then()
+                .statusCode(HttpStatus.OK.value());
+    }
 }

@@ -34,6 +34,7 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 
@@ -125,6 +126,11 @@ public class NpaPactProviderTest {
                 .thenReturn(new PageImpl<>(List.of(markup)));
     }
 
+
+    @State("Markups exist for document f2cc4d79-d0f3-4b43-affe-535516370cdd and can be deleted")
+    public void setupDeleteMarkupsForDocument() {
+        doNothing().when(markUpService).deleteAll(DOCUMENT_ID);
+    }
 
     @State("A valid RedactionDTO with ID exists")
     public void setupExistingRedactionForUpdate() {
