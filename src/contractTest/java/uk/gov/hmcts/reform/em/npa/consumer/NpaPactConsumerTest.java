@@ -299,8 +299,8 @@ public class NpaPactConsumerTest {
         SerenityRest
                 .given()
                 .headers(getHeaders())
-                .delete(mockServer.getUrl() +
-                        "/api/markups/f2cc4d79-d0f3-4b43-affe-535516370cdd/4c34ba4a-585a-407d-aa78-3f86f3171cdd")
+                .delete(mockServer.getUrl()
+                        + "/api/markups/f2cc4d79-d0f3-4b43-affe-535516370cdd/4c34ba4a-585a-407d-aa78-3f86f3171cdd")
                 .then()
                 .statusCode(200);
     }
