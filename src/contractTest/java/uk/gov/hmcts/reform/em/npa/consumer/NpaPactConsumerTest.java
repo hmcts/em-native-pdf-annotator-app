@@ -246,7 +246,7 @@ public class NpaPactConsumerTest {
     public V4Pact deleteMarkupsPact(PactBuilder builder) {
         return builder
                 .usingLegacyDsl()
-                .given("Markups exist for document " + DOCUMENT_ID)
+                .given("Markups exist for document ID and can be deleted")
                 .uponReceiving("DELETE request to remove all markups by document ID")
                 .path("/api/markups/" + DOCUMENT_ID)
                 .method("DELETE")

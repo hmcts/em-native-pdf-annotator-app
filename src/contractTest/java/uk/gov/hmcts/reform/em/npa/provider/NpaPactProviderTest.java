@@ -127,7 +127,7 @@ public class NpaPactProviderTest {
     }
 
 
-    @State("Markups exist for document f2cc4d79-d0f3-4b43-affe-535516370cdd and can be deleted")
+    @State("Markups exist for document ID and can be deleted")
     public void setupDeleteMarkupsForDocument() {
         doNothing().when(markUpService).deleteAll(DOCUMENT_ID);
     }
