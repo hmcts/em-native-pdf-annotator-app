@@ -165,7 +165,6 @@ public class NpaPactProviderTest {
         });
     }
 
-
     @State("Valid redaction request exists")
     public void setupValidRedactionRequest() throws Exception {
         File mockFile = File.createTempFile("document-redacted", ".pdf");
@@ -176,5 +175,4 @@ public class NpaPactProviderTest {
                 any(RedactionRequest.class)
         )).thenReturn(mockFile);
     }
-
 }

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.npa.consumer;
 
-
 import au.com.dius.pact.consumer.MockServer;
 import au.com.dius.pact.consumer.dsl.LambdaDsl;
 import au.com.dius.pact.consumer.dsl.PactBuilder;
@@ -33,7 +32,6 @@ public class NpaPactRedactionConsumerTest {
     public static final String AUTH_TOKEN = "Bearer someAuthorizationToken";
     public static final String SERVICE_AUTH_TOKEN = "Bearer someServiceAuthorizationToken";
 
-    // Static UUIDs from provided list
     private static final UUID REDACTION_ID = UUID.fromString("4c34ba4a-585a-407d-aa78-3f86f3171cdd");
     private static final UUID DOCUMENT_ID = UUID.fromString("f2cc4d79-d0f3-4b43-affe-535516370cdd");
 
@@ -70,7 +68,6 @@ public class NpaPactRedactionConsumerTest {
                         "Content-Disposition", "attachment; filename=\"document-redacted.pdf\"",
                         "Content-Type", "application/pdf"
                 ))
-                // For binary response, you can use a minimal PDF header or just a byte array
                 .body(Arrays.toString(new byte[]{37, 80, 68, 70, 45})) // "%PDF-" in ASCII
                 .toPact(V4Pact.class);
     }
@@ -105,6 +102,4 @@ public class NpaPactRedactionConsumerTest {
                 .header("Content-Type", "application/pdf")
                 .body(notNullValue());
     }
-
-
 }
