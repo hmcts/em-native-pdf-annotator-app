@@ -277,7 +277,7 @@ public class NpaPactConsumerTest {
     public V4Pact deleteSingleMarkupPact(PactBuilder builder) {
         return builder
                 .usingLegacyDsl()
-                .given("A valid RedactionDTO with ID exists")
+                .given("A valid Redaction with document ID and redaction ID exists and can be deleted")
                 .uponReceiving("DELETE request to remove specific markup by document and redaction ID")
                 .path(String.format("/api/markups/%s/%s", DOCUMENT_ID, REDACTION_ID))
                 .method("DELETE")
