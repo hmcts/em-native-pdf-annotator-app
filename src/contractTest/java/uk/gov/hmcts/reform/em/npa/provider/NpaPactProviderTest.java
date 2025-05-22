@@ -132,6 +132,12 @@ public class NpaPactProviderTest {
         doNothing().when(markUpService).deleteAll(DOCUMENT_ID);
     }
 
+
+    @State("A valid Redaction with document ID and redaction ID exists and can be deleted")
+    public void setupDeleteSingleMarkup() {
+        doNothing().when(markUpService).delete(REDACTION_ID);
+    }
+
     @State("A valid RedactionDTO with ID exists")
     public void setupExistingRedactionForUpdate() {
         when(markUpService.save(any(RedactionDTO.class))).thenAnswer(invocation -> {
