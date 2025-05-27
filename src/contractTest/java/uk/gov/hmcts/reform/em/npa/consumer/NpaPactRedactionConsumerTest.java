@@ -43,7 +43,7 @@ public class NpaPactRedactionConsumerTest {
         );
     }
 
-    @Pact(consumer = "em_npa_api", provider = "native_pdf_annotator_api_provider")
+    @Pact(consumer = "em_npa_api", provider = "native_pdf_annotator_api_redaction_provider")
     public V4Pact burnMarkupsSuccessPact(PactBuilder builder) {
         return builder
                 .usingLegacyDsl()
