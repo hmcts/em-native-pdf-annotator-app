@@ -8,6 +8,7 @@ import au.com.dius.pact.provider.junitsupport.IgnoreNoPactsToVerify;
 import au.com.dius.pact.provider.junitsupport.Provider;
 import au.com.dius.pact.provider.junitsupport.State;
 import au.com.dius.pact.provider.junitsupport.loader.PactBroker;
+import au.com.dius.pact.provider.junitsupport.loader.PactFolder;
 import au.com.dius.pact.provider.junitsupport.loader.VersionSelector;
 import au.com.dius.pact.provider.spring.junit5.MockMvcTestTarget;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,18 +35,17 @@ import static org.mockito.Mockito.when;
 @Provider("native_pdf_annotator_api_redaction_provider")
 //Uncomment @PactFolder and comment the @PactBroker line to test local consumer.
 //using this, import au.com.dius.pact.provider.junitsupport.loader.PactFolder;
-//@PactFolder("target/pacts")
-@PactBroker(scheme = "${PACT_BROKER_SCHEME:http}",
-        host = "${PACT_BROKER_URL:localhost}",
-        port = "${PACT_BROKER_PORT:80}",
-        consumerVersionSelectors = {@VersionSelector(tag = "master")})
+@PactFolder("target/pacts")
+//@PactBroker(scheme = "${PACT_BROKER_SCHEME:http}",
+//        host = "${PACT_BROKER_URL:localhost}",
+//        port = "${PACT_BROKER_PORT:80}",
+//        consumerVersionSelectors = {@VersionSelector(tag = "master")})
 @IgnoreNoPactsToVerify
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(value = MarkUpResource.class,
         excludeAutoConfiguration = {SecurityAutoConfiguration.class, OAuth2ClientAutoConfiguration.class})
 @AutoConfigureMockMvc(addFilters = false)
 public class NpaPactRedactionProviderTest {
-
 
     @Autowired
     private MockMvc mockMvc;

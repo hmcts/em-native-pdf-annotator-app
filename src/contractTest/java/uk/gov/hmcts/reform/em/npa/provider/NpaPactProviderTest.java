@@ -25,12 +25,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.em.npa.rest.MarkUpResource;
 import uk.gov.hmcts.reform.em.npa.service.MarkUpService;
-import uk.gov.hmcts.reform.em.npa.service.RedactionService;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
-import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionRequest;
 
-import java.io.File;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -71,9 +68,6 @@ public class NpaPactProviderTest {
 
     @MockitoBean
     private MarkUpService markUpService;
-
-    @MockitoBean
-    private RedactionService redactionService;
 
     @TestTemplate
     @ExtendWith(PactVerificationInvocationContextProvider.class)
@@ -169,16 +163,5 @@ public class NpaPactProviderTest {
 
             return response;
         });
-    }
-
-    @State("Valid redaction request exists")
-    public void setupValidRedactionRequest() throws Exception {
-        File mockFile = File.createTempFile("document-redacted", ".pdf");
-        mockFile.deleteOnExit();
-        when(redactionService.redactFile(
-                any(String.class),
-                any(String.class),
-                any(RedactionRequest.class)
-        )).thenReturn(mockFile);
     }
 }
