@@ -8,6 +8,8 @@ import au.com.dius.pact.provider.junitsupport.IgnoreNoPactsToVerify;
 import au.com.dius.pact.provider.junitsupport.Provider;
 import au.com.dius.pact.provider.junitsupport.State;
 import au.com.dius.pact.provider.junitsupport.loader.PactBroker;
+import au.com.dius.pact.provider.junitsupport.loader.PactBrokerConsumerVersionSelectors;
+import au.com.dius.pact.provider.junitsupport.loader.SelectorBuilder;
 import au.com.dius.pact.provider.junitsupport.loader.VersionSelector;
 import au.com.dius.pact.provider.spring.junit5.MockMvcTestTarget;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,6 +54,11 @@ public class NpaPactRedactionProviderTest {
     @MockitoBean
     private RedactionService redactionService;
 
+    @PactBrokerConsumerVersionSelectors
+    public static SelectorBuilder consumerVersionSelectors() {
+        return new SelectorBuilder().tag("master");
+    }
+
     @TestTemplate
     @ExtendWith(PactVerificationInvocationContextProvider.class)
     void pactVerificationTestTemplate(PactVerificationContext context) {
@@ -59,7 +66,6 @@ public class NpaPactRedactionProviderTest {
             context.verifyInteraction();
         }
     }
-
     @BeforeEach
     void before(PactVerificationContext context) {
         System.getProperties().setProperty("pact.verifier.publishResults", "true");
