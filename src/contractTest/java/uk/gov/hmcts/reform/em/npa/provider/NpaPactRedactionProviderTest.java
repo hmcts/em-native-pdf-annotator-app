@@ -22,6 +22,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.em.npa.rest.MarkUpResource;
+import uk.gov.hmcts.reform.em.npa.service.MarkUpService;
 import uk.gov.hmcts.reform.em.npa.service.RedactionService;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionRequest;
 
@@ -51,6 +52,9 @@ public class NpaPactRedactionProviderTest {
 
     @MockitoBean
     private RedactionService redactionService;
+
+    @MockitoBean
+    private MarkUpService markUpService;
 
     @TestTemplate
     @ExtendWith(PactVerificationInvocationContextProvider.class)
