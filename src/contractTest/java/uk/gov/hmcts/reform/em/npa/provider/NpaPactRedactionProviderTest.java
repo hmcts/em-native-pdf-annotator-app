@@ -59,6 +59,7 @@ public class NpaPactRedactionProviderTest {
             context.verifyInteraction();
         }
     }
+
     @BeforeEach
     void before(PactVerificationContext context) {
         System.getProperties().setProperty("pact.verifier.publishResults", "true");
