@@ -15,7 +15,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
 
@@ -68,7 +67,6 @@ public class NpaPactRedactionConsumerTest {
                         "Content-Disposition", "attachment; filename=\"document-redacted.pdf\"",
                         "Content-Type", "application/pdf"
                 ))
-                .body(Arrays.toString(new byte[]{37, 80, 68, 70, 45})) // "%PDF-" in ASCII
                 .toPact(V4Pact.class);
     }
 

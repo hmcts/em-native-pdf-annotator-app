@@ -21,28 +21,28 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.reform.em.npa.rest.MarkUpResource;
+import uk.gov.hmcts.reform.em.npa.rest.RedactionResource;
 import uk.gov.hmcts.reform.em.npa.service.MarkUpService;
 import uk.gov.hmcts.reform.em.npa.service.RedactionService;
-import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionRequest;
 
 import java.io.File;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.when;
 
 
 @Provider("native_pdf_annotator_api_redaction_provider")
 //Uncomment @PactFolder and comment the @PactBroker line to test local consumer.
 //using this, import au.com.dius.pact.provider.junitsupport.loader.PactFolder;
-//@PactFolder("target/pacts")
+//@PactFolder("pacts")
 @PactBroker(scheme = "${PACT_BROKER_SCHEME:http}",
         host = "${PACT_BROKER_URL:localhost}",
         port = "${PACT_BROKER_PORT:80}",
         consumerVersionSelectors = {@VersionSelector(tag = "master")})
 @IgnoreNoPactsToVerify
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(value = MarkUpResource.class,
+@WebMvcTest(value = RedactionResource.class,
         excludeAutoConfiguration = {SecurityAutoConfiguration.class, OAuth2ClientAutoConfiguration.class})
 @AutoConfigureMockMvc(addFilters = false)
 public class NpaPactRedactionProviderTest {
@@ -55,6 +55,10 @@ public class NpaPactRedactionProviderTest {
 
     @MockitoBean
     private MarkUpService markUpService;
+
+    private static final File TEST_REDACTED_PDF_FILE = new File(
+            ClassLoader.getSystemResource("document-redacted.pdf").getPath()
+    );
 
     @TestTemplate
     @ExtendWith(PactVerificationInvocationContextProvider.class)
@@ -74,12 +78,15 @@ public class NpaPactRedactionProviderTest {
 
     @State("Valid redaction request exists")
     public void setupValidRedactionRequest() throws Exception {
-        File mockFile = File.createTempFile("document-redacted", ".pdf");
-        mockFile.deleteOnExit();
+
+        File mockFile = TEST_REDACTED_PDF_FILE;
+
         when(redactionService.redactFile(
                 any(String.class),
                 any(String.class),
-                any(RedactionRequest.class)
+                argThat(redactionRequest ->
+                        redactionRequest.getRedactions().size() >= 1 // or even just > 0
+                )
         )).thenReturn(mockFile);
     }
 }
