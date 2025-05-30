@@ -41,7 +41,7 @@ import static org.mockito.Mockito.when;
 @Provider("native_pdf_annotator_api_provider")
 //Uncomment @PactFolder and comment the @PactBroker line to test local consumer.
 //using this, import au.com.dius.pact.provider.junitsupport.loader.PactFolder;
-//@PactFolder("target/pacts")
+//@PactFolder("pacts")
 @PactBroker(scheme = "${PACT_BROKER_SCHEME:http}",
         host = "${PACT_BROKER_URL:localhost}",
         port = "${PACT_BROKER_PORT:80}",
