@@ -42,7 +42,7 @@ public class NpaPactRedactionConsumerTest {
         );
     }
 
-    @Pact(consumer = "em_npa_api", provider = "em_npa_redaction_api")
+    @Pact(consumer = "em_npa_redaction_api", provider = "em_npa_redaction_api")
     public V4Pact burnMarkupsSuccessPact(PactBuilder builder) {
         return builder
                 .usingLegacyDsl()
