@@ -32,7 +32,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.when;
 
 
-@Provider("native_pdf_annotator_api_redaction_provider")
+@Provider("em_npa_redaction_api")
 //Uncomment @PactFolder and comment the @PactBroker line to test local consumer.
 //using this, import au.com.dius.pact.provider.junitsupport.loader.PactFolder;
 //@PactFolder("pacts")
