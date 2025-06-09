@@ -78,7 +78,7 @@ def versions = [
         mapstruct          : '1.6.3',
         springSecurity     : '6.5.0',
         log4JVersion       : '2.24.3',
-        jupiter            : '5.13.0',
+        jupiter            : '5.13.1',
         poi                : '5.4.1'
 ]
 
@@ -259,7 +259,7 @@ dependencyManagement {
         dependencySet(group: 'org.apache.httpcomponents', version: '4.5.14') {
             entry 'fluent-hc'
         }
-        dependencySet(group: 'org.junit.platform', version: '1.13.0') {
+        dependencySet(group: 'org.junit.platform', version: '1.13.1') {
             entry 'junit-platform-commons'
             entry 'junit-platform-engine'
             entry 'junit-platform-launcher'
