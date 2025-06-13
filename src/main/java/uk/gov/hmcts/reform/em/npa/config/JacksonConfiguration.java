@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.npa.config;
 
-import com.fasterxml.jackson.datatype.hibernate5.jakarta.Hibernate5JakartaModule;
 import com.fasterxml.jackson.module.blackbird.BlackbirdModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,14 +8,6 @@ import org.zalando.problem.violations.ConstraintViolationProblemModule;
 
 @Configuration
 public class JacksonConfiguration {
-
-    /*
-     * Support for Hibernate types in Jackson.
-     */
-    @Bean
-    public Hibernate5JakartaModule hibernate5Module() {
-        return new Hibernate5JakartaModule();
-    }
 
     /*
      * Jackson Afterburner module to speed up serialization/deserialization.
