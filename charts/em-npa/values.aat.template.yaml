@@ -2,3 +2,37 @@ java:
   # Don't modify below here
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
+  environment:
+    RUN_DB_MIGRATION_ON_STARTUP: 'false'
+    IDAM_API_BASE_URI: https://idam-api.{{ .Values.global.environment }}.platform.hmcts.net
+    OPEN_ID_API_BASE_URI: https://idam-web-public.{{ .Values.global.environment }}.platform.hmcts.net/o
+    OIDC_ISSUER_BASE_URI: https://forgerock-am.service.core-compute-idam-{{ .Values.global.environment }}.internal:8443/openam/oauth2/hmcts
+    S2S_BASE_URI: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+    DM_STORE_APP_URL: http://dm-store-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+    EM_ANNO_APP_URL: http://em-anno-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+    CDAM_URL: http://ccd-case-document-am-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
+    S2S_NAMES_WHITELIST: ccd,em_gw,xui_webapp
+    ENABLE_CDAM: false
+
+    SPRING_DATASOURCE_PORT: 5432
+    SPRING_DATASOURCE_NAME: npa
+    SPRING_DATASOURCE_OPTIONS: "?sslmode=require"
+    SPRING_DATASOURCE_USERNAME: pgadmin
+    SPRING_DATASOURCE_HOST: em-npa-postgres-db-v15-{{ .Values.global.environment }}.postgres.database.azure.com
+    HIKARI_MAX_POOL_SIZE: 10
+    DB_CONNECTION_TIMEOUT: 5000
+
+    ENABLE_DB_MIGRATE: false
+    JSON_CONSOLE_PRETTY_PRINT: false
+    ENDPOINTS_HEALTH_SENSITIVE: false
+    ENDPOINTS_INFO_SENSITIVE: false
+    ENABLE_IDAM_HEALTH_CHECK: false
+    ENABLE_S2S_HEALTH_CHECK: false
+    ENABLE_DOCUMENT_TASK_ENDPOINT: false
+    SERVER_PORT: 8080
+    APPLICATIONINSIGHTS_INSTRUMENTATION_LOGGING_LEVEL: DEBUG
+
+    SHOW_SQL: true
+    LOGGING_LEVEL_ORG_HIBERNATE_SQL: DEBUG
+    SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: true
+    LOGGING_LEVEL_ORG_HIBERNATE_TYPE_DESCRIPTOR_SQL_BASICBINDER: TRACE
