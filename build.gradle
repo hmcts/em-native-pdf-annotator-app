@@ -172,9 +172,9 @@ dependencies {
     implementation group: 'commons-validator', name: 'commons-validator', version: '1.9.0'
     implementation group: 'org.ehcache', name: 'ehcache', version: '3.10.8'
 
-    implementation group:'org.hibernate', name: 'hibernate-core', version: versions.hibernate
-    implementation group:'org.hibernate', name: 'hibernate-jcache', version: versions.hibernate
-    implementation group:'org.hibernate', name: 'hibernate-envers', version: versions.hibernate
+    implementation group:'org.hibernate.orm', name: 'hibernate-core', version: versions.hibernate
+    implementation group:'org.hibernate.orm', name: 'hibernate-jcache', version: versions.hibernate
+    implementation group:'org.hibernate.orm', name: 'hibernate-envers', version: versions.hibernate
 
     implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.3.2'
     implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '3.0.4'
@@ -184,7 +184,7 @@ dependencies {
     implementation group: 'org.mapstruct', name: 'mapstruct', version: versions.mapstruct
 
     annotationProcessor group: 'org.mapstruct',name: 'mapstruct-processor', version: versions.mapstruct
-    annotationProcessor group:'org.hibernate', name: 'hibernate-jpamodelgen', version: versions.hibernate
+    annotationProcessor group:'org.hibernate.orm', name: 'hibernate-jpamodelgen', version: versions.hibernate
     annotationProcessor group:'org.springframework.boot', name: 'spring-boot-configuration-processor', withoutStuff
 
     testImplementation group:'org.springframework.boot', name: 'spring-boot-starter-test', withoutStuff
