@@ -215,7 +215,7 @@ dependencies {
         exclude group: 'ch.qos.logback', module: 'logback-core'
     }
 
-    testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.21.1'
+    testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.21.2'
 
     contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5',  version: versions.pact_version
 
