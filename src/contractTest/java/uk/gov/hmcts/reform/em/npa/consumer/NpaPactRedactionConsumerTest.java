@@ -24,7 +24,6 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Slf4j
 @ExtendWith(PactConsumerTestExt.class)
-@PactTestFor(pactVersion = PactSpecVersion.V3)
 @ExtendWith(SpringExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class NpaPactRedactionConsumerTest {
