@@ -97,9 +97,7 @@ public class IdamConsumerTest {
 
     private DslPart createUserInfoResponse() {
         return new PactDslJsonBody()
-                .stringType("uid", "1234-2345-3456-4567")
-                .closeArray();
-
+                .stringType("uid", "1234-2345-3456-4567");
     }
 
 }
