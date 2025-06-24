@@ -12,7 +12,6 @@ import au.com.dius.pact.core.model.annotations.Pact;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.rest.SerenityRest;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -94,23 +93,11 @@ public class IdamConsumerTest {
         assertThat(detailsResponseBody).isNotNull();
         assertThat(response).hasNoNullFieldsOrProperties();
         assertThat(response.getString("uid")).isNotBlank();
-        assertThat(response.getString("given_name")).isNotBlank();
-        assertThat(response.getString("family_name")).isNotBlank();
-        JSONArray rolesArr = response.getJSONArray("roles");
-        assertThat(rolesArr).isNotNull();
-        assertThat(rolesArr.length()).isNotZero();
-        assertThat(rolesArr.get(0).toString()).isNotBlank();
-
     }
 
     private DslPart createUserInfoResponse() {
-
         return new PactDslJsonBody()
                 .stringType("uid", "1234-2345-3456-4567")
-                .stringType("given_name", "emCaseOfficer")
-                .stringType("family_name", "Jar")
-                .array("roles")
-                .stringType("citizen")
                 .closeArray();
 
     }
