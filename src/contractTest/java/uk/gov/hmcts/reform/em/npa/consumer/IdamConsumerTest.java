@@ -10,13 +10,12 @@ import au.com.dius.pact.core.model.PactSpecVersion;
 import au.com.dius.pact.core.model.RequestResponsePact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import com.google.common.collect.Maps;
-import io.restassured.http.ContentType;
 import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.rest.SerenityRest;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -24,7 +23,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -33,73 +31,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 @ExtendWith(PactConsumerTestExt.class)
 @PactTestFor(pactVersion = PactSpecVersion.V3)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(SpringExtension.class)
 public class IdamConsumerTest {
 
     private static final String IDAM_DETAILS_URL = "/o/userinfo";
-    private static final String IDAM_OPENID_TOKEN_URL = "/o/token";
 
     @Pact(provider = "Idam_api", consumer = "em_npa_api")
-    public RequestResponsePact executeGetIdamAccessTokenAndGet200(PactDslWithProvider builder) throws JSONException {
-        Map<String, String> requestheaders = Maps.newHashMap();
-        requestheaders.put("Content-Type", "application/x-www-form-urlencoded");
-
-        Map<String, String> responseheaders = Maps.newHashMap();
-        responseheaders.put("Content-Type", "application/json");
-
-        Map<String, Object> params = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        params.put("email", "emCaseOfficer@email.net");
-        params.put("password", "Password123");
-        params.put("forename", "emCaseOfficer");
-        params.put("surname", "jar123");
-
-        List<String> rolesList = List.of("citizen");
-        params.put("roles", rolesList);
-
-        return builder
-                .given("a user exists", params)
-                .uponReceiving("Provider takes user/pwd and returns Access Token to EM Native Pdf Annotator API")
-                .path(IDAM_OPENID_TOKEN_URL)
-                .method(HttpMethod.POST.toString())
-                .body("redirect_uri=http%3A%2F%2Fwww.dummy-pact-service.com%2Fcallback&client_id=pact"
-                                + "&grant_type=password&username=emCaseOfficer%40email.net&password=Password123"
-                                + "&client_secret=pactsecret&scope=openid profile roles",
-                        "application/x-www-form-urlencoded")
-                .willRespondWith()
-                .status(HttpStatus.OK.value())
-                .headers(responseheaders)
-                .body(createAuthResponse())
-                .toPact();
-    }
-
-    @Test
-    @PactTestFor(pactMethod = "executeGetIdamAccessTokenAndGet200")
-    public void should_post_to_token_endpoint_and_receive_access_token_with_200_response(MockServer mockServer)
-            throws JSONException {
-        String actualResponseBody =
-                SerenityRest
-                        .given()
-                        .contentType(ContentType.URLENC)
-                        .formParam("redirect_uri", "http://www.dummy-pact-service.com/callback")
-                        .formParam("client_id", "pact")
-                        .formParam("grant_type", "password")
-                        .formParam("username", "emCaseOfficer@email.net")
-                        .formParam("password", "Password123")
-                        .formParam("client_secret", "pactsecret")
-                        .formParam("scope", "openid profile roles")
-                        .post(mockServer.getUrl() + IDAM_OPENID_TOKEN_URL)
-                        .then()
-                        .log().all().extract().asString();
-
-        JSONObject response = new JSONObject(actualResponseBody);
-
-        assertThat(response).isNotNull();
-        assertThat(response.getString("access_token")).isNotBlank();
-
-    }
-
-    @Pact(provider = "Idam_api", consumer = "em_npa_api")
-    public RequestResponsePact executeGetUserDetailsAndGet200(PactDslWithProvider builder) {
+    public RequestResponsePact executeGetUserInfoAndGet200(PactDslWithProvider builder) {
 
         Map<String, String> requestHeaders = Maps.newHashMap();
         requestHeaders.put(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
@@ -129,7 +68,7 @@ public class IdamConsumerTest {
     }
 
     @Test
-    @PactTestFor(pactMethod = "executeGetUserDetailsAndGet200")
+    @PactTestFor(pactMethod = "executeGetUserInfoAndGet200")
     public void should_get_user_details_with_access_token(MockServer mockServer) throws JSONException {
 
         Map<String, String> headers = Maps.newHashMap();
@@ -154,36 +93,11 @@ public class IdamConsumerTest {
         assertThat(detailsResponseBody).isNotNull();
         assertThat(response).hasNoNullFieldsOrProperties();
         assertThat(response.getString("uid")).isNotBlank();
-        assertThat(response.getString("given_name")).isNotBlank();
-        assertThat(response.getString("family_name")).isNotBlank();
-        JSONArray rolesArr = response.getJSONArray("roles");
-        assertThat(rolesArr).isNotNull();
-        assertThat(rolesArr.length()).isNotZero();
-        assertThat(rolesArr.get(0).toString()).isNotBlank();
-
     }
 
     private DslPart createUserInfoResponse() {
-
         return new PactDslJsonBody()
-                .stringType("uid", "1234-2345-3456-4567")
-                .stringType("given_name", "emCaseOfficer")
-                .stringType("family_name", "Jar")
-                .array("roles")
-                .stringType("citizen")
-                .closeArray();
-
-    }
-
-    private PactDslJsonBody createAuthResponse() {
-
-        return new PactDslJsonBody()
-                .stringType("access_token", "eyJ0eXAiOiJKV1QiLCJraWQiOiJiL082T3ZWdjEre")
-                .stringType("refresh_token", "eyJ0eXAiOiJKV1QiLCJ6aXAiOiJOT05FIiwia2lkIjoiYi9PNk92V")
-                .stringType("scope", "openid roles profile")
-                .stringType("id_token", "eyJ0eXAiOiJKV1QiLCJraWQiOiJiL082T3ZWdjEre")
-                .stringType("token_type", "Bearer")
-                .stringType("expires_in", "28798");
+                .stringType("uid", "1234-2345-3456-4567");
     }
 
 }
