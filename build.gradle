@@ -71,7 +71,7 @@ def versions = [
         mapstruct          : '1.6.3',
         springSecurity     : '6.5.0',
         log4JVersion       : '2.24.3',
-        jupiter            : '5.13.1',
+        jupiter            : '5.13.2',
         poi                : '5.4.1'
 ]
 
