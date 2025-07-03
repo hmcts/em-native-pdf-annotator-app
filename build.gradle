@@ -176,7 +176,7 @@ dependencies {
     implementation group:'org.hibernate.orm', name: 'hibernate-jcache', version: versions.hibernate
     implementation group:'org.hibernate.orm', name: 'hibernate-envers', version: versions.hibernate
 
-    implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.3.2'
+    implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.3.3'
     implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '3.0.4'
     implementation 'com.github.hmcts:ccd-case-document-am-client:1.59.2'
     implementation group: 'org.apache.tika', name: 'tika-core', version: '3.2.0'
