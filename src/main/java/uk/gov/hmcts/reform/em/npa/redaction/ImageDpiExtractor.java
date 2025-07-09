@@ -34,29 +34,12 @@ public class ImageDpiExtractor extends PDFStreamEngine {
 
                 Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
 
-                int imgWidthPx = image.getWidth();
-                int imgHeightPx = image.getHeight();
+                float dpiX = 72f / ctm.getScalingFactorX();
+                float dpiY = 72f / ctm.getScalingFactorY();
 
-                // Transform (0,0) and (imageWidth, imageHeight) to page space
-                Point2D.Float origin = transformPoint(ctm, 0, 0);
-                Point2D.Float xedge  = transformPoint(ctm, imgWidthPx, 0);
-                Point2D.Float yedge  = transformPoint(ctm, 0, imgHeightPx);
-
-                // Get displayed width and height in PDF user units (points)
-                float displayedWidthPts = (float) origin.distance(xedge);
-                float displayedHeightPts = (float) origin.distance(yedge);
-
-                float widthInches = displayedWidthPts / 72f;
-                float heightInches = displayedHeightPts / 72f;
-
-                float dpiX = imgWidthPx / widthInches;
-                float dpiY = imgHeightPx / heightInches;
-
-                log.info("Image: {} x {} px", imgWidthPx, imgHeightPx);
-                log.info("Displayed size: {} x {} pts ({} x {} in)",
-                        displayedWidthPts, displayedHeightPts, widthInches, heightInches);
                 log.info("DPI: {} x {}", dpiX, dpiY);
 
+                dpiInfos.add(new ImageDpiInfo(objectName.getName(), dpiX, dpiY));
             }
         } else {
             super.processOperator(operator, operands);
