@@ -103,11 +103,36 @@ public class PdfRedaction {
         PDPage page = document.getPage(pageNumber);
         PDRectangle pageSize = page.getCropBox();
 
-        float x = pixelToPointConversion(rectangle.getX());
-        float y = pixelToPointConversion(rectangle.getY());
-        float width = pixelToPointConversion(rectangle.getWidth());
-        float height = pixelToPointConversion(rectangle.getHeight());
+        // value from front end is the pixel value.
+        // dpi is the resolution (dots per inch) you determine for the PDF or image.
+        // 72 is the number of points per inch in PDF units.
+        // Extract DPI for the page (assuming first image or default 72 if not found)
+        // PDF does not store DPI for images directly.
+        // You must compare the image's pixel size to the size it is drawn on the page,
+        // (in points, where 1 point = 1/72 inch).
+        // As we need the actual DPI, we need to parse the content stream to find the
+        // transformation matrix for each image.
 
+        float dpiX = 72f;
+        float dpiY = 72f;
+        try {
+            // Use ImageDpiExtractor to get the actual DPI.
+            ImageDpiExtractor extractor = new ImageDpiExtractor();
+            List<ImageDpiInfo> infos = extractor.extractDpi(page);
+            // Fallback to 72 DPI if extraction fails.
+            if (!infos.isEmpty()) {
+                dpiX = infos.getFirst().dpiX > 0 ? infos.getFirst().dpiX : 72f;
+                dpiY = infos.getFirst().dpiY > 0 ? infos.getFirst().dpiY : 72f;
+            }
+        } catch (IOException e) {
+            log.warn("Could not extract DPI, defaulting to 72: {}", e.getMessage());
+        }
+
+        // Convert pixel values to points using the actual DPI.
+        float x = pixelToPointConversion(rectangle.getX(), dpiX);
+        float y = pixelToPointConversion(rectangle.getY(), dpiY);
+        float width = pixelToPointConversion(rectangle.getWidth(), dpiX);
+        float height = pixelToPointConversion(rectangle.getHeight(), dpiY);
         int rotation = page.getRotation();
 
         float pdfX;
@@ -148,8 +173,8 @@ public class PdfRedaction {
      * @param value Pixel value to be converted into Point value
      * @return Converted Point value
      */
-    private float pixelToPointConversion(double value) {
-        return (float) (0.75 * value);
+    private float pixelToPointConversion(double value, float dpi) {
+        return (float) (value * (72f / dpi));
     }
 
     private File repairPdf(File documentFile) throws IOException {
