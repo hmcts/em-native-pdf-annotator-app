@@ -174,7 +174,7 @@ public class PdfRedaction {
      * @return Converted Point value
      */
     private float pixelToPointConversion(double value, float dpi) {
-        return (float) (value * (72f / dpi) * 0.75);
+        return (float) (0.75 * value * (72f / dpi));
     }
 
     private File repairPdf(File documentFile) throws IOException {
