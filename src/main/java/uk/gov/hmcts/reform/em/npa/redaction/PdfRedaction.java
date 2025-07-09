@@ -121,8 +121,8 @@ public class PdfRedaction {
             List<ImageDpiInfo> infos = extractor.extractDpi(page);
             // Fallback to 72 DPI if extraction fails.
             if (!infos.isEmpty()) {
-                dpiX = infos.getFirst().dpiX > 0 ? infos.getFirst().dpiX : 72f;
-                dpiY = infos.getFirst().dpiY > 0 ? infos.getFirst().dpiY : 72f;
+                dpiX = infos.getFirst().dpiX() > 0 ? infos.getFirst().dpiX() : 72f;
+                dpiY = infos.getFirst().dpiY() > 0 ? infos.getFirst().dpiY() : 72f;
             }
         } catch (IOException e) {
             log.warn("Could not extract DPI, defaulting to 72: {}", e.getMessage());
