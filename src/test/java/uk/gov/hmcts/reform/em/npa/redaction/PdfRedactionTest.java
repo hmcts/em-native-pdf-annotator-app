@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.npa.redaction;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -94,8 +93,6 @@ class PdfRedactionTest {
     @Test
     void pdfRedactionTest() throws IOException {
         File result = pdfRedaction.redactPdf(TEST_PDF_FILE, redactions);
-        File destDir = new File("/Users/yogeshhullatti/Solirius/em-native-pdf-annotator-app/src/main/resources");
-        FileUtils.copyFileToDirectory(result, destDir);
         assertTrue(result.getName().contains("Redacted-layered"));
         assertTrue(result.getName().contains(".pdf"));
     }
@@ -170,7 +167,6 @@ class PdfRedactionTest {
         RedactionDTO redaction = createTestRedaction(1, 100, 200, 50, 30);
 
         File result = pdfRedaction.redactPdf(testPdfFile, List.of(redaction));
-
 
         assertRedactionApplied(result);
     }
