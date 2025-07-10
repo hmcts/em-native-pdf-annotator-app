@@ -6,6 +6,9 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 
@@ -22,6 +25,8 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class PdfRedactionTest {
     private static final File TEST_PDF_FILE_WITH_ERROR = new File(
@@ -36,6 +41,10 @@ class PdfRedactionTest {
             ClassLoader.getSystemResource("passwordprotected.pdf").getPath()
     );
 
+    @Mock
+    private ImageDpiExtractor imageDpiExtractor;
+
+    @InjectMocks
     private PdfRedaction pdfRedaction;
 
     private List<RedactionDTO> redactions = new ArrayList<>();
@@ -44,10 +53,10 @@ class PdfRedactionTest {
     private File testPdfFile;
 
     @BeforeEach
-    public void setup() throws IOException {
+    void setup() throws IOException {
+        MockitoAnnotations.openMocks(this);
         redactions = new ArrayList<>();
         initRedactionDTOList();
-        pdfRedaction = new PdfRedaction();
         testPdfFile = File.createTempFile("TestPdf-", ".pdf");
     }
 
@@ -168,6 +177,7 @@ class PdfRedactionTest {
 
         File result = pdfRedaction.redactPdf(testPdfFile, List.of(redaction));
 
+
         assertRedactionApplied(result);
     }
 
@@ -221,5 +231,14 @@ class PdfRedactionTest {
 
         assertRedactionApplied(result);
     }
-}
 
+    @Test
+    void shouldFallbackToDefaultDpiWhenIOExceptionOccurs() throws IOException {
+        PDPage page = mock(PDPage.class);
+        when(imageDpiExtractor.extractDpi(page)).thenThrow(new IOException("Error extracting DPI"));
+
+        File result = pdfRedaction.redactPdf(TEST_PDF_FILE, redactions);
+        assertTrue(result.getName().contains("Redacted-layered"));
+        assertTrue(result.getName().contains(".pdf"));
+    }
+}

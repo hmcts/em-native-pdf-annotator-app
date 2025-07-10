@@ -9,13 +9,14 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.util.Matrix;
+import org.springframework.stereotype.Component;
 
-import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
+@Component
 public class ImageDpiExtractor extends PDFStreamEngine {
 
     private final List<ImageDpiInfo> dpiInfos = new ArrayList<>();
@@ -50,12 +51,5 @@ public class ImageDpiExtractor extends PDFStreamEngine {
         dpiInfos.clear();
         processPage(page);
         return new ArrayList<>(dpiInfos);
-    }
-
-    // Helper function
-    private Point2D.Float transformPoint(Matrix m, float x, float y) {
-        float transformedX = m.getTranslateX() + x * m.getScaleX() + y * m.getShearX();
-        float transformedY = m.getTranslateY() + x * m.getShearY() + y * m.getScaleY();
-        return new Point2D.Float(transformedX, transformedY);
     }
 }

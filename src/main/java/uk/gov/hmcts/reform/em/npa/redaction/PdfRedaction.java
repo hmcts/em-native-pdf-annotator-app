@@ -31,6 +31,12 @@ public class PdfRedaction {
 
     private final Logger log = LoggerFactory.getLogger(PdfRedaction.class);
 
+    private ImageDpiExtractor extractor;
+
+    public PdfRedaction(ImageDpiExtractor extractor) {
+        this.extractor = extractor;
+    }
+
     /**
      * Applying Redaction to pdf file.
      *
@@ -117,7 +123,6 @@ public class PdfRedaction {
         float dpiY = 72f;
         try {
             // Use ImageDpiExtractor to get the actual DPI.
-            ImageDpiExtractor extractor = new ImageDpiExtractor();
             List<ImageDpiInfo> infos = extractor.extractDpi(page);
             // Fallback to 72 DPI if extraction fails.
             if (!infos.isEmpty()) {
