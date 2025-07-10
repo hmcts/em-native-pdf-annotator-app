@@ -6,8 +6,6 @@ import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.graphics.PDXObject;
-import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.util.Matrix;
 import org.springframework.stereotype.Component;
 
@@ -30,18 +28,16 @@ public class ImageDpiExtractor extends PDFStreamEngine {
 
         if ("Do".equals(operator.getName())) {
             COSName objectName = (COSName) operands.getFirst();
-            PDXObject xobject = getResources().getXObject(objectName);
-            if (xobject instanceof PDImageXObject image) {
 
-                Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
+            Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
 
-                float dpiX = 72f / ctm.getScalingFactorX();
-                float dpiY = 72f / ctm.getScalingFactorY();
+            float dpiX = 72f / ctm.getScalingFactorX();
+            float dpiY = 72f / ctm.getScalingFactorY();
 
-                log.info("DPI: {} x {}", dpiX, dpiY);
+            log.info("DPI: {} x {}", dpiX, dpiY);
 
-                dpiInfos.add(new ImageDpiInfo(objectName.getName(), dpiX, dpiY));
-            }
+            dpiInfos.add(new ImageDpiInfo(objectName.getName(), dpiX, dpiY));
+
         } else {
             super.processOperator(operator, operands);
         }
