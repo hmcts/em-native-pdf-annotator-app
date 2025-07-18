@@ -1,0 +1,51 @@
+package uk.gov.hmcts.reform.em.npa.redaction;
+
+import lombok.extern.slf4j.Slf4j;
+import org.apache.pdfbox.contentstream.PDFStreamEngine;
+import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.util.Matrix;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+@Slf4j
+@Component
+public class ImageDpiExtractor extends PDFStreamEngine {
+
+    private final List<ImageDpiInfo> dpiInfos = new ArrayList<>();
+
+    @Override
+    protected void processOperator(Operator operator, List<COSBase> operands) throws IOException {
+
+        // This code attempts to get the displayed size from the image's transformation matrix if available;
+        // otherwise, it defaults to the image's pixel size.
+        //The DPI is then calculated based on the ratio of pixel size to displayed size in points.
+
+        if ("Do".equals(operator.getName())) {
+            COSName objectName = (COSName) operands.getFirst();
+
+            Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
+
+            float dpiX = 72f / ctm.getScalingFactorX();
+            float dpiY = 72f / ctm.getScalingFactorY();
+
+            log.info("DPI: {} x {}", dpiX, dpiY);
+
+            dpiInfos.add(new ImageDpiInfo(objectName.getName(), dpiX, dpiY));
+
+        } else {
+            super.processOperator(operator, operands);
+        }
+    }
+
+    public List<ImageDpiInfo> extractDpi(PDPage page) throws IOException {
+        dpiInfos.clear();
+        processPage(page);
+        return new ArrayList<>(dpiInfos);
+    }
+}
