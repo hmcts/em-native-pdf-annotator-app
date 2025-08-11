@@ -67,7 +67,7 @@ def versions = [
         pact_version       : '4.6.17',
         logging            : '6.1.9',
         fasterXmlJackson   : '2.19.2',
-        hibernate          : '6.6.25.Final',
+        hibernate          : '7.1.0.Final',
         mapstruct          : '1.6.3',
         springSecurity     : '6.5.2',
         log4JVersion       : '2.25.1',
