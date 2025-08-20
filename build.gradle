@@ -21,7 +21,7 @@ plugins {
     id 'checkstyle'
     id 'au.com.dius.pact' version '4.6.17'
     id 'org.owasp.dependencycheck' version '12.1.3'
-    id 'info.solidsoft.pitest' version '1.15.0'
+    id 'info.solidsoft.pitest' version '1.19.0-rc.1'
     id 'com.github.hmcts.rse-cft-lib' version '0.19.1841'
     id 'org.flywaydb.flyway' version '11.11.1'
     id 'io.freefair.lombok' version '8.14.2'
@@ -393,6 +393,7 @@ tasks.register('runAndPublishConsumerPactTests', Test) {
     testClassesDirs = sourceSets.contractTest.output.classesDirs
     classpath = sourceSets.contractTest.runtimeClasspath
     jvmArgs = ['--add-opens=java.base/java.lang=ALL-UNNAMED']
+    useJUnitPlatform()
 }
 
 runAndPublishConsumerPactTests.dependsOn contract
@@ -403,6 +404,7 @@ tasks.register('runProviderPactVerification', Test) {
     testClassesDirs = sourceSets.contractTest.output.classesDirs
     classpath = sourceSets.contractTest.runtimeClasspath
     jvmArgs = ['--add-opens=java.base/java.lang=ALL-UNNAMED']
+    useJUnitPlatform()
     if (project.hasProperty('pact.verifier.publishResults')) {
         systemProperty 'pact.verifier.publishResults', project.property('pact.verifier.publishResults')
     }
