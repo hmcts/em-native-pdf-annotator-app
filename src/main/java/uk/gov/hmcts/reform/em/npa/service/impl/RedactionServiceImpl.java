@@ -5,10 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.em.npa.config.security.SecurityUtils;
 import uk.gov.hmcts.reform.em.npa.redaction.ImageRedaction;
 import uk.gov.hmcts.reform.em.npa.redaction.PdfRedaction;
-import uk.gov.hmcts.reform.em.npa.repository.MarkUpRepository;
 import uk.gov.hmcts.reform.em.npa.service.CdamService;
 import uk.gov.hmcts.reform.em.npa.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.npa.service.RedactionService;
@@ -26,12 +24,10 @@ public class RedactionServiceImpl implements RedactionService {
 
     private final Logger log = LoggerFactory.getLogger(RedactionServiceImpl.class);
 
-    private DmStoreDownloader dmStoreDownloader;
-    private PdfRedaction pdfRedaction;
-    private ImageRedaction imageRedaction;
-    private MarkUpRepository markUpRepository;
-    private SecurityUtils securityUtils;
-    private CdamService cdamService;
+    private final DmStoreDownloader dmStoreDownloader;
+    private final PdfRedaction pdfRedaction;
+    private final ImageRedaction imageRedaction;
+    private final CdamService cdamService;
 
     @Value("#{'${redaction.multipart.image-ext}'.split(',')}")
     List<String> imageExtensionsList;
@@ -43,15 +39,11 @@ public class RedactionServiceImpl implements RedactionService {
             DmStoreDownloader dmStoreDownloader,
             PdfRedaction pdfRedaction,
             ImageRedaction imageRedaction,
-            MarkUpRepository markUpRepository,
-            SecurityUtils securityUtils,
             CdamService cdamService
     ) {
         this.dmStoreDownloader = dmStoreDownloader;
         this.pdfRedaction = pdfRedaction;
         this.imageRedaction = imageRedaction;
-        this.markUpRepository = markUpRepository;
-        this.securityUtils = securityUtils;
         this.cdamService = cdamService;
     }
 
@@ -77,13 +69,11 @@ public class RedactionServiceImpl implements RedactionService {
                 log.debug("Applying redaction to Image Document");
                 updatedFile = imageRedaction.redactImage(
                         originalFile,
-                        redactionRequest.getRedactions().get(0).getRectangles()
+                        redactionRequest.getRedactions().getFirst().getRectangles()
                 );
             } else {
                 throw new FileTypeException("Redaction cannot be applied to the file type provided");
             }
-            //markUpRepository.deleteAllByDocumentIdAndCreatedBy(redactionRequest.getDocumentId(),
-            //securityUtils.getCurrentUserLogin().orElse(Constants.ANONYMOUS_USER));
             return updatedFile;
         } catch (DocumentTaskProcessingException e) {
             log.error(e.getMessage(), e);
