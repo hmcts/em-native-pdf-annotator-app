@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.npa.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.OkHttpClient;
@@ -57,8 +58,16 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
             if (response.isSuccessful()) {
                 JsonNode documentMetaData = objectMapper.readTree(response.body().byteStream());
 
-                log.info("Accessing binary of the DM document: {}",
-                    objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(documentMetaData));
+                log.atInfo()
+                    .setMessage("Accessing binary of the DM document: {}")
+                    .addArgument(() -> {
+                        try {
+                            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(documentMetaData);
+                        } catch (JsonProcessingException e) {
+                            return "Error serializing document metadata: " + e.getMessage();
+                        }
+                    })
+                    .log();
 
                 String documentBinaryUrl = new StringBuffer()
                                                 .append(dmStoreAppBaseUrl)
