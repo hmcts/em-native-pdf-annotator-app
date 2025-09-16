@@ -57,7 +57,7 @@ public class RedactionResourceTest {
     );
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 

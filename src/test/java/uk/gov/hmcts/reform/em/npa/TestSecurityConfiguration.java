@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.em.npa;
 
+import org.mockito.Mockito;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.oauth2.client.InMemoryOAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
@@ -27,11 +27,15 @@ public class TestSecurityConfiguration {
         this.clientRegistration = clientRegistration().build();
     }
 
-    @MockBean
-    ServiceAuthFilter serviceAuthFilter;
+    @Bean
+    public ServiceAuthFilter serviceAuthFilter() {
+        return Mockito.mock(ServiceAuthFilter.class);
+    }
 
-    @MockBean
-    JwtDecoder jwtDecoder;
+    @Bean
+    public JwtDecoder jwtDecoder() {
+        return Mockito.mock(JwtDecoder.class);
+    }
 
     @Bean
     ClientRegistrationRepository clientRegistrationRepository() {

@@ -23,7 +23,7 @@ class IdamRepositoryTest {
     private static final  String SURNAME = "XYZ";
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         MockitoAnnotations.openMocks(this);
         idamRepository = new IdamRepository(idamClient);
     }

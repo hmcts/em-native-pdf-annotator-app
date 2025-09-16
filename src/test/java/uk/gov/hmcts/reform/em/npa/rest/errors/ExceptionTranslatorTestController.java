@@ -28,6 +28,7 @@ public class ExceptionTranslatorTestController {
 
     @PostMapping("/test/method-argument")
     public void methodArgument(@Valid @RequestBody TestDTO testDTO) {
+        // test for method argument validation
     }
 
     @GetMapping("/test/parameterized-error")
@@ -45,10 +46,12 @@ public class ExceptionTranslatorTestController {
 
     @GetMapping("/test/missing-servlet-request-part")
     public void missingServletRequestPartException(@RequestPart String part) {
+        // test for missing servlet request part
     }
 
     @GetMapping("/test/missing-servlet-request-parameter")
     public void missingServletRequestParameterException(@RequestParam String param) {
+        // test for missing servlet request parameter
     }
 
     @GetMapping("/test/access-denied")
