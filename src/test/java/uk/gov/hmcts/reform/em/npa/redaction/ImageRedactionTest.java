@@ -26,7 +26,7 @@ class ImageRedactionTest {
     private Set<RectangleDTO> rectangles = new HashSet<>();
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         initRedactionDTOList();
     }
 

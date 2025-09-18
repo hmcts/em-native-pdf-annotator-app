@@ -33,7 +33,7 @@ class CdamServiceTest {
     private static final UUID docStoreUUID = UUID.randomUUID();
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         MockitoAnnotations.openMocks(this);
         cdamService = new CdamService(caseDocumentClientApi);
     }

@@ -58,7 +58,7 @@ class MarkUpResourceTest {
     private WebDataBinder binder;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 

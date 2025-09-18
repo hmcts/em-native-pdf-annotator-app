@@ -7,6 +7,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
+  main:
+#    To be removed once integration tests are moved to a separate package
+    allow-bean-definition-overriding: true
 
 azure:
   app_insights_key: ${APPINSIGHTS_INSTRUMENTATIONKEY:false}
