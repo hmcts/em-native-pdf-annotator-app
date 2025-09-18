@@ -10,9 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.Matchers.equalTo;
 
 @TestPropertySource(value = "classpath:application.yml")
 @ExtendWith({SerenityJUnit5Extension.class, SpringExtension.class})
@@ -29,19 +27,14 @@ class SmokeTest {
 
         SerenityRest.useRelaxedHTTPSValidation();
 
-        Map responseMap =
-                SerenityRest
-                        .given()
-                        .baseUri(testUrl)
-                        .get("/")
-                        .then()
-                        .statusCode(200)
-                        .extract()
-                        .body()
-                        .as(Map.class);
-
-        assertEquals(1, responseMap.size());
-        assertEquals(MESSAGE, responseMap.get("message"));
-
+        SerenityRest
+            .given()
+            .baseUri(testUrl)
+            .when()
+            .get("/")
+            .then()
+            .statusCode(200)
+            .body("message", equalTo(MESSAGE))
+            .body("$.size()", equalTo(1));
     }
 }
