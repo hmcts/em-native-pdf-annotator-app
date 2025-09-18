@@ -28,7 +28,7 @@ public class ImageRedaction {
         BufferedImage img = ImageIO.read(imageFile);
         Graphics2D graph = img.createGraphics();
 
-        rectangles.stream().forEach(redactionDTO -> {
+        rectangles.forEach(redactionDTO -> {
             graph.setColor(Color.BLACK);
             graph.fill(
                     new Rectangle2D.Double(

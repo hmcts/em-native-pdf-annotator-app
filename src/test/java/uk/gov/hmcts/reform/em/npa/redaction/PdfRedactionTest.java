@@ -6,6 +6,8 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 
@@ -44,7 +46,7 @@ class PdfRedactionTest {
     private File testPdfFile;
 
     @BeforeEach
-    public void setup() throws IOException {
+    void setup() throws IOException {
         redactions = new ArrayList<>();
         initRedactionDTOList();
         pdfRedaction = new PdfRedaction();
@@ -161,29 +163,10 @@ class PdfRedactionTest {
         assertTrue(result.exists());
     }
 
-    @Test
-    void redactPdf_90DegreeRotation_AppliesRedaction() throws IOException {
-        createPdfWithRotation(90);
-        RedactionDTO redaction = createTestRedaction(1, 100, 200, 50, 30);
-
-        File result = pdfRedaction.redactPdf(testPdfFile, List.of(redaction));
-
-        assertRedactionApplied(result);
-    }
-
-    @Test
-    void redactPdf_180DegreeRotation_AppliesRedaction() throws IOException {
-        createPdfWithRotation(180);
-        RedactionDTO redaction = createTestRedaction(1, 100, 200, 50, 30);
-
-        File result = pdfRedaction.redactPdf(testPdfFile, List.of(redaction));
-
-        assertRedactionApplied(result);
-    }
-
-    @Test
-    void redactPdf_270DegreeRotation_AppliesRedaction() throws IOException {
-        createPdfWithRotation(270);
+    @ParameterizedTest(name = "for {0} degree rotation")
+    @ValueSource(ints = {90, 180, 270})
+    void redactPdf_WithPageRotation_AppliesRedaction(int rotation) throws IOException {
+        createPdfWithRotation(rotation);
         RedactionDTO redaction = createTestRedaction(1, 100, 200, 50, 30);
 
         File result = pdfRedaction.redactPdf(testPdfFile, List.of(redaction));
@@ -212,12 +195,12 @@ class PdfRedactionTest {
             doc.save(testPdfFile);
         }
 
-        List<RedactionDTO> redactions = Arrays.asList(
+        List<RedactionDTO> redactionDTOS = Arrays.asList(
                 createTestRedaction(1, 100, 200, 50, 30),
                 createTestRedaction(2, 150, 250, 75, 45)
         );
 
-        File result = pdfRedaction.redactPdf(testPdfFile, redactions);
+        File result = pdfRedaction.redactPdf(testPdfFile, redactionDTOS);
 
         assertRedactionApplied(result);
     }

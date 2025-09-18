@@ -20,7 +20,6 @@ import org.zalando.problem.violations.ConstraintViolationProblem;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -30,6 +29,8 @@ import javax.annotation.Nullable;
  */
 @ControllerAdvice
 public class ExceptionTranslator implements ProblemHandling {
+
+    private static final String MESSAGE_FIELD = "message";
 
     /**
      * Post-process the Problem payload to add the message key for the front-end if needed.
@@ -55,18 +56,18 @@ public class ExceptionTranslator implements ProblemHandling {
             }
         }
 
-        if (problem instanceof ConstraintViolationProblem) {
+        if (problem instanceof ConstraintViolationProblem constraintViolationProblem) {
             builder
-                .with("violations", ((ConstraintViolationProblem) problem).getViolations())
-                .with("message", ErrorConstants.ERR_VALIDATION);
+                .with("violations", constraintViolationProblem.getViolations())
+                .with(MESSAGE_FIELD, ErrorConstants.ERR_VALIDATION);
         } else {
             builder
                 .withCause(((DefaultProblem) problem).getCause())
                 .withDetail(problem.getDetail())
                 .withInstance(problem.getInstance());
             problem.getParameters().forEach(builder::with);
-            if (!problem.getParameters().containsKey("message") && problem.getStatus() != null) {
-                builder.with("message", "error.http." + problem.getStatus().getStatusCode());
+            if (!problem.getParameters().containsKey(MESSAGE_FIELD) && problem.getStatus() != null) {
+                builder.with(MESSAGE_FIELD, "error.http." + problem.getStatus().getStatusCode());
             }
         }
         return new ResponseEntity<>(builder.build(), entity.getHeaders(), entity.getStatusCode());
@@ -80,13 +81,13 @@ public class ExceptionTranslator implements ProblemHandling {
         BindingResult result = ex.getBindingResult();
         List<FieldErrorVM> fieldErrors = result.getFieldErrors().stream()
             .map(f -> new FieldErrorVM(f.getObjectName(), f.getField(), f.getCode()))
-            .collect(Collectors.toList());
+            .toList();
 
         Problem problem = Problem.builder()
             .withType(ErrorConstants.CONSTRAINT_VIOLATION_TYPE)
             .withTitle("Method argument not valid")
             .withStatus(defaultConstraintViolationStatus())
-            .with("message", ErrorConstants.ERR_VALIDATION)
+            .with(MESSAGE_FIELD, ErrorConstants.ERR_VALIDATION)
             .with("fieldErrors", fieldErrors)
             .build();
         return create(ex, problem, request);
@@ -99,7 +100,7 @@ public class ExceptionTranslator implements ProblemHandling {
     ) {
         Problem problem = Problem.builder()
             .withStatus(Status.NOT_FOUND)
-            .with("message", ErrorConstants.ENTITY_NOT_FOUND_TYPE)
+            .with(MESSAGE_FIELD, ErrorConstants.ENTITY_NOT_FOUND_TYPE)
             .build();
         return create(ex, problem, request);
     }
@@ -111,7 +112,7 @@ public class ExceptionTranslator implements ProblemHandling {
     ) {
         Problem problem = Problem.builder()
                 .withStatus(Status.BAD_REQUEST)
-                .with("message", ErrorConstants.BAD_REQUEST)
+                .with(MESSAGE_FIELD, ErrorConstants.BAD_REQUEST)
                 .build();
         return create(ex, problem, request);
     }
@@ -123,7 +124,7 @@ public class ExceptionTranslator implements ProblemHandling {
     ) {
         Problem problem = Problem.builder()
             .withStatus(Status.CONFLICT)
-            .with("message", ErrorConstants.ERR_CONCURRENCY_FAILURE)
+            .with(MESSAGE_FIELD, ErrorConstants.ERR_CONCURRENCY_FAILURE)
             .build();
         return create(ex, problem, request);
     }
@@ -135,7 +136,7 @@ public class ExceptionTranslator implements ProblemHandling {
     ) {
         Problem problem = Problem.builder()
                 .withStatus(Status.FORBIDDEN)
-                .with("message", ErrorConstants.ERR_FORBIDDEN)
+                .with(MESSAGE_FIELD, ErrorConstants.ERR_FORBIDDEN)
                 .build();
         return create(ex, problem, request);
     }
@@ -147,7 +148,7 @@ public class ExceptionTranslator implements ProblemHandling {
     ) {
         Problem problem = Problem.builder()
                 .withStatus(Status.UNAUTHORIZED)
-                .with("message", ErrorConstants.ERR_UNAUTHORISED)
+                .with(MESSAGE_FIELD, ErrorConstants.ERR_UNAUTHORISED)
                 .build();
         return create(ex, problem, request);
     }
