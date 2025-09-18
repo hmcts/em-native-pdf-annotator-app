@@ -11,6 +11,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.collection.IsMapWithSize.aMapWithSize;
 
 @TestPropertySource(value = "classpath:application.yml")
 @ExtendWith({SerenityJUnit5Extension.class, SpringExtension.class})
@@ -34,7 +35,7 @@ class SmokeTest {
             .get("/")
             .then()
             .statusCode(200)
-            .body("message", equalTo(MESSAGE))
-            .body("$.size()", equalTo(1));
+            .body("$", aMapWithSize(1))
+            .body("message", equalTo(MESSAGE));
     }
 }
