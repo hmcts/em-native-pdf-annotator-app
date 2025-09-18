@@ -68,7 +68,7 @@ def versions = [
         fasterXmlJackson   : '2.20.0',
         hibernate          : '6.6.29.Final',
         mapstruct          : '1.6.3',
-        springSecurity     : '6.5.4',
+        springSecurity     : '6.5.5',
         log4JVersion       : '2.25.1',
         jupiter            : '5.13.4',
         poi                : '5.4.1'
@@ -127,7 +127,7 @@ dependencies {
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '4.3.0'
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.3.0'
 
-    implementation group: 'com.google.guava', name: 'guava', version: '33.4.8-jre'
+    implementation group: 'com.google.guava', name: 'guava', version: '33.5.0-jre'
 
     implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.42'
     implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '3.0.5'
