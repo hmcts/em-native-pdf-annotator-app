@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.em.npa.testutil;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -14,36 +14,40 @@ public class ExtendedCcdHelper {
     @Value("${test.url}")
     private String testUrl;
 
-    @Autowired
-    private CcdDataHelper ccdDataHelper;
+    private final CcdDataHelper ccdDataHelper;
 
     private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
-    public final String createCaseTemplate = "{\n"
-            + "    \"caseTitle\": null,\n"
-            + "    \"caseOwner\": null,\n"
-            + "    \"caseCreationDate\": null,\n"
-            + "    \"caseDescription\": null,\n"
-            + "    \"caseComments\": null,\n"
-            + "    \"caseDocuments\": [%s]\n"
-            + "  }";
-    public final String documentTemplate = "{\n"
-                    + "        \"value\": {\n"
-                    + "          \"documentName\": \"%s\",\n"
-                    + "          \"documentLink\": {\n"
-                    + "            \"document_url\": \"%s\",\n"
-                    + "            \"document_binary_url\": \"%s/binary\",\n"
-                    + "            \"document_filename\": \"%s\",\n"
-                    + "            \"document_hash\": \"%s\"\n"
-                    + "          }\n"
-                    + "        }\n"
-                    + "      }";
+    public static final String CREATE_CASE_TEMPLATE = """
+        {
+            "caseTitle": null,
+            "caseOwner": null,
+            "caseCreationDate": null,
+            "caseDescription": null,
+            "caseComments": null,
+            "caseDocuments": [%s]
+          }""";
+    public static final String DOCUMENT_TEMPLATE = """
+        {
+                "value": {
+                  "documentName": "%s",
+                  "documentLink": {
+                    "document_url": "%s",
+                    "document_binary_url": "%s/binary",
+                    "document_filename": "%s",
+                    "document_hash": "%s"
+                  }
+                }
+              }""";
 
-    private String redactionTestUser = "redactionTestUser2@redactiontest.com";
+    public ExtendedCcdHelper(CcdDataHelper ccdDataHelper) {
+        this.ccdDataHelper = ccdDataHelper;
+    }
 
-    public CaseDetails createCase(String documents) throws Exception {
+    public CaseDetails createCase(String documents) throws JsonProcessingException {
+        String redactionTestUser = "redactionTestUser2@redactiontest.com";
         return ccdDataHelper.createCase(redactionTestUser, "PUBLICLAW", getEnvCcdCaseTypeId(), "createCase",
-            objectMapper.readTree(String.format(createCaseTemplate, documents)));
+            objectMapper.readTree(String.format(CREATE_CASE_TEMPLATE, documents)));
     }
 
     public String getEnvCcdCaseTypeId() {
@@ -51,7 +55,7 @@ public class ExtendedCcdHelper {
     }
 
     public String getCcdDocumentJson(String documentName, String dmUrl, String fileName, String dochash) {
-        return String.format(documentTemplate, documentName, dmUrl, dmUrl, fileName, dochash);
+        return String.format(DOCUMENT_TEMPLATE, documentName, dmUrl, dmUrl, fileName, dochash);
     }
 }
 

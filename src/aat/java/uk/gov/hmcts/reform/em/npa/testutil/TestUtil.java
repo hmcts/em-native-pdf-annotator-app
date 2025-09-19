@@ -28,15 +28,14 @@ import uk.gov.hmcts.reform.em.test.s2s.S2sHelper;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -46,28 +45,22 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
     "uk.gov.hmcts.reform.document",
     "uk.gov.hmcts.reform.ccd.document.am.config"})
 @EnableAutoConfiguration
+// S1192: Using string literals for JSON/request field names intentionally to keep structure clear in tests.
+@SuppressWarnings("squid:S1192")
 public class TestUtil {
-
-    private String annotationSetId;
 
     private String idamAuth;
     private String s2sAuth;
 
-    @Autowired
-    private IdamHelper idamHelper;
+    private final IdamHelper idamHelper;
 
-    @Autowired
-    private S2sHelper s2sHelper;
+    private final S2sHelper s2sHelper;
 
-    @Autowired
-    @Qualifier("xuiS2sHelper")
-    private S2sHelper cdamS2sHelper;
+    private final S2sHelper cdamS2sHelper;
 
-    @Autowired
-    private DmHelper dmHelper;
+    private final DmHelper dmHelper;
 
-    @Autowired
-    private CdamHelper cdamHelper;
+    private final CdamHelper cdamHelper;
 
     @Value("${annotation.api.url}")
     private String emAnnotationUrl;
@@ -76,10 +69,20 @@ public class TestUtil {
     @Value("${document_management.docker_url}")
     private String dmDocumentApiUrl;
 
+    @Autowired
+    public TestUtil(IdamHelper idamHelper, S2sHelper s2sHelper, @Qualifier("xuiS2sHelper") S2sHelper cdamS2sHelper,
+                    DmHelper dmHelper, CdamHelper cdamHelper) {
+        this.idamHelper = idamHelper;
+        this.s2sHelper = s2sHelper;
+        this.cdamS2sHelper = cdamS2sHelper;
+        this.dmHelper = dmHelper;
+        this.cdamHelper = cdamHelper;
+    }
+
     @PostConstruct
     public void init() {
         idamHelper.createUser("redactionTestUser2@redactiontest.com",
-            Stream.of("caseworker", "caseworker-publiclaw", "ccd-import").collect(Collectors.toList()));
+            Stream.of("caseworker", "caseworker-publiclaw", "ccd-import").toList());
         SerenityRest.useRelaxedHTTPSValidation();
         idamAuth = idamHelper.authenticateUser("redactionTestUser2@redactiontest.com");
         s2sAuth = s2sHelper.getS2sToken();
@@ -106,9 +109,10 @@ public class TestUtil {
         return rectangleDTO;
     }
 
-    public File getDocumentBinary(String documentId) throws Exception {
-        Path tempPath = Paths.get(System.getProperty("java.io.tmpdir") + "/" + documentId + "-test.pdf");
+    public File getDocumentBinary(String documentId) throws IOException {
+        Path tempPath = Files.createTempFile(documentId + "-test-", ".pdf");
         Files.copy(dmHelper.getDocumentBinary(documentId), tempPath, StandardCopyOption.REPLACE_EXISTING);
+        tempPath.toFile().deleteOnExit();
         return tempPath.toFile();
     }
 
@@ -141,10 +145,10 @@ public class TestUtil {
         createAnnotations.put("rectangles", rectangles);
 
         Response response = authRequest()
-                .baseUri(emAnnotationUrl)
-                .contentType(APPLICATION_JSON_VALUE)
-                .body(createAnnotations)
-                .post("/api/annotations");
+            .baseUri(emAnnotationUrl)
+            .contentType(APPLICATION_JSON_VALUE)
+            .body(createAnnotations)
+            .post("/api/annotations");
 
         Assert.assertEquals(201, response.getStatusCode());
 
@@ -162,22 +166,21 @@ public class TestUtil {
         createAnnotationSet.put("id", annotationSetId);
 
         Response response = authRequest()
-                .baseUri(emAnnotationUrl)
-                .contentType(APPLICATION_JSON_VALUE)
-                .body(createAnnotationSet)
-                .post("/api/annotation-sets");
+            .baseUri(emAnnotationUrl)
+            .contentType(APPLICATION_JSON_VALUE)
+            .body(createAnnotationSet)
+            .post("/api/annotation-sets");
 
         Assert.assertEquals(201, response.getStatusCode());
 
-        this.annotationSetId = annotationSetId.toString();
-        return this.annotationSetId;
+        return annotationSetId.toString();
     }
 
-    public String uploadDocument(String pdfName) throws Exception {
+    public String uploadDocument(String pdfName) throws IOException {
         return dmHelper.uploadAndGetId(ClassLoader.getSystemResourceAsStream(pdfName), "application/pdf", pdfName);
     }
 
-    public String uploadDocument() throws Exception {
+    public String uploadDocument() throws IOException {
         return uploadDocument("annotationTemplate.pdf");
     }
 
@@ -192,7 +195,7 @@ public class TestUtil {
                     ? url.replaceAll(getDmApiUrl(), getDmDocumentApiUrl())
                     : url;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -218,11 +221,18 @@ public class TestUtil {
 
     public RequestSpecification authRequest() {
         return s2sAuthRequest()
-                .header("Authorization", idamAuth);
+            .header("Authorization", idamAuth);
     }
 
     public RequestSpecification cdamAuthRequest() {
         return cdamS2sAuthRequest()
+            .header("Authorization", idamAuth);
+    }
+
+    public RequestSpecification idamOnlyAuthRequest() {
+        return SerenityRest
+            .given()
+            .log().all()
             .header("Authorization", idamAuth);
     }
 
@@ -232,9 +242,9 @@ public class TestUtil {
 
     public RequestSpecification s2sAuthRequest() {
         return SerenityRest
-                .given()
-                .log().all()
-                .header("ServiceAuthorization", s2sAuth);
+            .given()
+            .log().all()
+            .header("ServiceAuthorization", s2sAuth);
     }
 
     public RequestSpecification cdamS2sAuthRequest() {
@@ -242,32 +252,6 @@ public class TestUtil {
             .given()
             .log().all()
             .header("ServiceAuthorization", cdamS2sHelper.getS2sToken());
-    }
-
-    public RequestSpecification emptyIdamAuthRequest() {
-        return s2sAuthRequest()
-                .header("Authorization", null);
-    }
-
-    public RequestSpecification emptyIdamAuthAndEmptyS2SAuth() {
-        return SerenityRest
-                .given()
-                .header("ServiceAuthorization", null)
-                .header("Authorization", null);
-    }
-
-    public RequestSpecification validAuthRequestWithEmptyS2SAuth() {
-        return emptyS2sAuthRequest().header("Authorization", idamAuth);
-    }
-
-    public RequestSpecification validS2SAuthWithEmptyIdamAuth() {
-
-        return s2sAuthRequest().header("Authorization", null);
-    }
-
-    private RequestSpecification emptyS2sAuthRequest() {
-
-        return SerenityRest.given().header("ServiceAuthorization", null);
     }
 
     public RequestSpecification invalidIdamAuthrequest() {
@@ -287,7 +271,7 @@ public class TestUtil {
 
     @NotNull
     public JSONObject createMarkUpPayload(final String redactionId, final String documentId,
-                                           final String rectangleId) {
+                                          final String rectangleId) {
         final JSONObject markup = new JSONObject();
         markup.put("redactionId", redactionId);
         markup.put("documentId", documentId);
@@ -319,9 +303,9 @@ public class TestUtil {
     }
 
     public UploadResponse uploadCdamDocument(
-            String username,
-            String caseTypeId,
-            String jurisdictionId
+        String username,
+        String caseTypeId,
+        String jurisdictionId
     ) throws IOException {
 
         final MultipartFile multipartFile = new MockMultipartFile(

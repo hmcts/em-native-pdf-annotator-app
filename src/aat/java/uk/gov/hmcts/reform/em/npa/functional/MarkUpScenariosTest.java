@@ -34,10 +34,11 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @TestPropertySource(value = "classpath:application.yml")
 @ExtendWith({SerenityJUnit5Extension.class, SpringExtension.class})
 @WithTags({@WithTag("testType:Functional")})
+// S1192: Using string literals for JSON/request field names intentionally to keep structure clear in tests.
+@SuppressWarnings("squid:S1192")
 class MarkUpScenariosTest {
 
-    @Autowired
-    private TestUtil testUtil;
+    private final TestUtil testUtil;
 
     @Value("${test.url}")
     private String testUrl;
@@ -47,6 +48,11 @@ class MarkUpScenariosTest {
 
     private RequestSpecification request;
     private RequestSpecification unAuthenticatedRequest;
+
+    @Autowired
+    public MarkUpScenariosTest(TestUtil testUtil) {
+        this.testUtil = testUtil;
+    }
 
     @BeforeEach
     public void setupRequestSpecification() {

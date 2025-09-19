@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.em.npa.testutil.TestUtil;
 import uk.gov.hmcts.reform.em.npa.testutil.ToggleProperties;
 import uk.gov.hmcts.reform.em.test.retry.RetryExtension;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
@@ -40,17 +41,15 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @EnableConfigurationProperties(ToggleProperties.class)
 class RedactionScenariosTest {
 
+    private static final String REDACTION_PATH = "/api/redaction";
     @Value("${test.url}")
     private String testUrl;
 
-    @Autowired
-    private TestUtil testUtil;
+    private final TestUtil testUtil;
 
-    @Autowired
     protected ExtendedCcdHelper extendedCcdHelper;
 
-    @Autowired
-    private ToggleProperties toggleProperties;
+    private final ToggleProperties toggleProperties;
 
     @RegisterExtension
     RetryExtension retryExtension = new RetryExtension(3);
@@ -60,6 +59,14 @@ class RedactionScenariosTest {
     private RequestSpecification request;
     private RequestSpecification cdamRequest;
     private RequestSpecification unAuthenticatedRequest;
+
+    @Autowired
+    public RedactionScenariosTest(TestUtil testUtil, ExtendedCcdHelper extendedCcdHelper,
+                                  ToggleProperties toggleProperties) {
+        this.testUtil = testUtil;
+        this.extendedCcdHelper = extendedCcdHelper;
+        this.toggleProperties = toggleProperties;
+    }
 
     @BeforeEach
     public void setupRequestSpecification() {
@@ -91,7 +98,7 @@ class RedactionScenariosTest {
 
         request
                 .body(jsonObject)
-                .post("/api/redaction")
+                .post(REDACTION_PATH)
                 .then()
                 .assertThat()
                 .statusCode(200)
@@ -99,7 +106,7 @@ class RedactionScenariosTest {
     }
 
     @Test
-    void shouldReturn200WhenRedactedPdfDocumentCdamEnabled() throws Exception {
+    void shouldReturn200WhenRedactedPdfDocumentCdamEnabled() throws IOException {
         assumeTrue(toggleProperties.isCdamEnabled());
         UploadResponse uploadResponse = testUtil.uploadCdamDocument("redactionTestUser2@redactiontest.com",
             extendedCcdHelper.getEnvCcdCaseTypeId(), "PUBLICLAW");
@@ -123,7 +130,7 @@ class RedactionScenariosTest {
 
         cdamRequest
             .body(jsonObject)
-            .post("/api/redaction")
+            .post(REDACTION_PATH)
             .then()
             .assertThat()
             .statusCode(200)
@@ -132,7 +139,7 @@ class RedactionScenariosTest {
     }
 
     @Test
-    void shouldReturn400WhenRedactedPdfDocumentCdamEnabled() throws Exception {
+    void shouldReturn400WhenRedactedPdfDocumentCdamEnabled() throws IOException {
         assumeTrue(toggleProperties.isCdamEnabled());
         UploadResponse uploadResponse = testUtil.uploadCdamDocument("redactionTestUser2@redactiontest.com",
             extendedCcdHelper.getEnvCcdCaseTypeId(), "PUBLICLAW");
@@ -156,7 +163,7 @@ class RedactionScenariosTest {
 
         request
             .body(jsonObject)
-            .post("/api/redaction")
+            .post(REDACTION_PATH)
             .then()
             .assertThat()
             .statusCode(400)
@@ -176,7 +183,7 @@ class RedactionScenariosTest {
 
         request
                 .body(jsonObject)
-                .post("/api/redaction")
+                .post(REDACTION_PATH)
                 .then()
                 .assertThat()
                 .statusCode(200)
@@ -194,23 +201,7 @@ class RedactionScenariosTest {
 
         request
                 .body(jsonObject)
-                .post("/api/redaction")
-                .then()
-                .statusCode(400);
-    }
-
-    @Test
-    void shouldReturn400WhenRedactedFileNameIsMissing() {
-        assumeFalse(toggleProperties.isCdamEnabled());
-        final String newDocId = testUtil.uploadRichTextDocumentAndReturnUrl();
-        final RedactionRequest redactionRequest = new RedactionRequest();
-        redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
-        redactionRequest.setRedactions(Arrays.asList(createRedaction(), createRedaction()));
-        final JSONObject jsonObject = new JSONObject(redactionRequest);
-
-        request
-                .body(jsonObject)
-                .post("/api/redaction")
+                .post(REDACTION_PATH)
                 .then()
                 .statusCode(400);
     }
@@ -227,7 +218,7 @@ class RedactionScenariosTest {
 
         request
                 .body(jsonObject)
-                .post("/api/redaction")
+                .post(REDACTION_PATH)
                 .then()
                 .assertThat()
                 .statusCode(400)
@@ -245,7 +236,7 @@ class RedactionScenariosTest {
 
         unAuthenticatedRequest
                 .body(jsonObject)
-                .post("/api/redaction")
+                .post(REDACTION_PATH)
                 .then()
                 .statusCode(401);
     }

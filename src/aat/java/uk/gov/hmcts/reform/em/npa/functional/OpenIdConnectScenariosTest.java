@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.npa.functional;
 
-import io.restassured.response.Response;
 import net.serenitybdd.annotations.WithTag;
 import net.serenitybdd.annotations.WithTags;
 import net.serenitybdd.junit5.SerenityJUnit5Extension;
@@ -20,24 +19,26 @@ import uk.gov.hmcts.reform.em.test.retry.RetryExtension;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 @SpringBootTest(classes = {TestUtil.class, EmTestConfig.class})
 @TestPropertySource(value = "classpath:application.yml")
 @ExtendWith({SerenityJUnit5Extension.class, SpringExtension.class})
 @WithTags({@WithTag("testType:Functional")})
-@SuppressWarnings("squid:S5778")
 class OpenIdConnectScenariosTest {
 
-    @Autowired
-    private TestUtil testUtil;
+    private static final String MARKUPS_PATH = "/api/markups";
+
+    private final TestUtil testUtil;
 
     @Value("${test.url}")
     private String testUrl;
 
     @RegisterExtension
     RetryExtension retryExtension = new RetryExtension(3);
+
+    @Autowired
+    public OpenIdConnectScenariosTest(TestUtil testUtil) {
+        this.testUtil = testUtil;
+    }
 
     @Test
     void testValidAuthenticationAndAuthorisation() {
@@ -49,73 +50,71 @@ class OpenIdConnectScenariosTest {
         final JSONObject jsonObject = testUtil.createMarkUpPayload(redactionId, documentId, rectangleId);
 
         testUtil.authRequest()
-                .baseUri(testUrl)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(jsonObject.toString())
-                .post("/api/markups")
-                .then()
-                .statusCode(201);
+            .baseUri(testUrl)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(jsonObject.toString())
+            .post(MARKUPS_PATH)
+            .then()
+            .statusCode(201);
     }
 
     // Invalid S2SAuth
     @Test
     void testInvalidS2SAuth() {
-
-        Response response =
-                testUtil.invalidS2SAuth()
-                        .baseUri(testUrl)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .get("/api/markups/");
-
-        assertEquals(401, response.getStatusCode());
+        testUtil.invalidS2SAuth()
+            .baseUri(testUrl)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .get(MARKUPS_PATH)
+            .then()
+            .statusCode(401);
     }
 
     //Invalid  IdamAuth
     @Test
     void testWithInvalidIdamAuth() {
-
-        Response response =
-                testUtil.invalidIdamAuthrequest()
-                        .baseUri(testUrl)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .get("/api/markups/");
-
-        assertEquals(401, response.getStatusCode());
+        testUtil.invalidIdamAuthrequest()
+            .baseUri(testUrl)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .get(MARKUPS_PATH)
+            .then()
+            .statusCode(401);
     }
 
-    //Empty S2SAuth
+    // S2S Auth valid, but missing Idam Auth
     @Test
-    void testWithEmptyS2SAuth() {
-
-        assertThrows(NullPointerException.class, () -> testUtil
-                .validAuthRequestWithEmptyS2SAuth()
-                .baseUri(testUrl)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .get("/api/markups/"));
+    void testMissingIdamTokenShouldReturn401() {
+        testUtil.s2sAuthRequest()
+            .baseUri(testUrl)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .get(MARKUPS_PATH)
+            .then()
+            .statusCode(401);
     }
 
-    // Empty IdamAuth and Valid S2S Auth
+    // Idam Auth valid, but missing S2S Auth
     @Test
-    void testWithEmptyIdamAuthAndValidS2SAuth() {
-
-        Throwable exceptionThrown =
-                assertThrows(NullPointerException.class, () -> testUtil
-                        .validS2SAuthWithEmptyIdamAuth()
-                        .baseUri(testUrl)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .get("/api/markups/"));
-
-        assertEquals("Header value", exceptionThrown.getMessage());
+    void testMissingS2sTokenShouldReturn401() {
+        testUtil.idamOnlyAuthRequest()
+            .baseUri(testUrl)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .get(MARKUPS_PATH)
+            .then()
+            .statusCode(401);
     }
 
-    // Empty IdamAuth and Empty S2SAuth
+    // Both Idam and S2S Auth are missing
     @Test
-    void testIdamAuthAndS2SAuthAreEmpty() {
-
-        assertThrows(NullPointerException.class, () -> testUtil
-                .emptyIdamAuthAndEmptyS2SAuth()
-                .baseUri(testUrl)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .get("/api/markups/"));
+    void testMissingBothAuthTokensShouldReturn401() {
+        testUtil.unauthenticatedRequest()
+            .baseUri(testUrl)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .get(MARKUPS_PATH)
+            .then()
+            .statusCode(401);
     }
 }
