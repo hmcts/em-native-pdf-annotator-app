@@ -8,7 +8,8 @@ import au.com.dius.pact.provider.junitsupport.IgnoreNoPactsToVerify;
 import au.com.dius.pact.provider.junitsupport.Provider;
 import au.com.dius.pact.provider.junitsupport.State;
 import au.com.dius.pact.provider.junitsupport.loader.PactBroker;
-import au.com.dius.pact.provider.junitsupport.loader.VersionSelector;
+import au.com.dius.pact.provider.junitsupport.loader.PactBrokerConsumerVersionSelectors;
+import au.com.dius.pact.provider.junitsupport.loader.SelectorBuilder;
 import au.com.dius.pact.provider.spring.junit5.MockMvcTestTarget;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestTemplate;
@@ -32,13 +33,11 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.when;
 
 @Provider("em_npa_redaction_api")
-//Uncomment @PactFolder and comment the @PactBroker line to test local consumer.
-//using this, import au.com.dius.pact.provider.junitsupport.loader.PactFolder;
 //@PactFolder("pacts")
-@PactBroker(scheme = "${PACT_BROKER_SCHEME:http}",
-        host = "${PACT_BROKER_URL:localhost}",
-        port = "${PACT_BROKER_PORT:80}",
-        consumerVersionSelectors = {@VersionSelector(tag = "master")})
+@PactBroker(
+    url = "${PACT_BROKER_FULL_URL:http://localhost:80}",
+    providerBranch = "${pact.provider.branch}"
+)
 @IgnoreNoPactsToVerify
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(value = RedactionResource.class,
@@ -46,8 +45,7 @@ import static org.mockito.Mockito.when;
 @AutoConfigureMockMvc(addFilters = false)
 public class NpaPactRedactionProviderTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+    private final MockMvc mockMvc;
 
     @MockitoBean
     private RedactionService redactionService;
@@ -58,6 +56,11 @@ public class NpaPactRedactionProviderTest {
     private static final File TEST_REDACTED_PDF_FILE = new File(
             ClassLoader.getSystemResource("document-redacted.pdf").getPath()
     );
+
+    @Autowired
+    public NpaPactRedactionProviderTest(MockMvc mockMvc) {
+        this.mockMvc = mockMvc;
+    }
 
     @TestTemplate
     @ExtendWith(PactVerificationInvocationContextProvider.class)
@@ -75,8 +78,16 @@ public class NpaPactRedactionProviderTest {
         }
     }
 
+    @PactBrokerConsumerVersionSelectors
+    public static SelectorBuilder consumerVersionSelectors() {
+        return new SelectorBuilder()
+            .matchingBranch()
+            .mainBranch()
+            .deployedOrReleased();
+    }
+
     @State("Valid redaction request exists")
-    public void setupValidRedactionRequest() throws Exception {
+    public void setupValidRedactionRequest() {
 
         File mockFile = TEST_REDACTED_PDF_FILE;
 
@@ -84,7 +95,7 @@ public class NpaPactRedactionProviderTest {
                 any(String.class),
                 any(String.class),
                 argThat(redactionRequest ->
-                        redactionRequest.getRedactions().size() >= 1 // or even just > 0
+                    !redactionRequest.getRedactions().isEmpty() // or even just > 0
                 )
         )).thenReturn(mockFile);
     }
