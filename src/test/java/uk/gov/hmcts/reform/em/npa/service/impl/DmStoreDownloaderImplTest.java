@@ -2,8 +2,12 @@ package uk.gov.hmcts.reform.em.npa.service.impl;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import okhttp3.Call;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -37,6 +41,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -135,7 +141,7 @@ class DmStoreDownloaderImplTest {
     @Test
     void shouldThrowExceptionWhenMetadataRequestFails() throws IOException {
 
-        Response response = org.mockito.Mockito.mock(Response.class);
+        Response response = mock(Response.class);
         when(response.isSuccessful()).thenReturn(false);
         when(response.code()).thenReturn(404);
 
@@ -249,16 +255,57 @@ class DmStoreDownloaderImplTest {
         verify(okHttpClient, times(0)).newCall(any());
     }
 
+    @Test
+    void shouldLogErrorMessageOnJsonSerializationFailure() throws IOException, DocumentTaskProcessingException {
+        Logger logger = (Logger) LoggerFactory.getLogger(DmStoreDownloaderImpl.class);
+        ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+        listAppender.start();
+        logger.addAppender(listAppender);
+
+        ObjectMapper spyObjectMapper = spy(new ObjectMapper());
+        ObjectWriter mockWriter = mock(ObjectWriter.class);
+        when(spyObjectMapper.writerWithDefaultPrettyPrinter()).thenReturn(mockWriter);
+        when(mockWriter.writeValueAsString(any(JsonNode.class)))
+            .thenThrow(new JsonProcessingException("Test serialization error") {
+            });
+
+        dmStoreDownloader = new DmStoreDownloaderImpl(
+            okHttpClient,
+            authTokenGenerator,
+            DM_STORE_BASE_URL,
+            spyObjectMapper
+        );
+
+        Response metadataResponse = createSuccessfulResponse(METADATA_JSON);
+        Response binaryResponse = createSuccessfulResponse(BINARY_CONTENT);
+        when(mockCall.execute())
+            .thenReturn(metadataResponse)
+            .thenReturn(binaryResponse);
+
+        downloadedFile = dmStoreDownloader.downloadFile(DOC_ID);
+
+        assertNotNull(downloadedFile);
+        assertTrue(downloadedFile.exists());
+        assertEquals(BINARY_CONTENT, Files.readString(downloadedFile.toPath()));
+
+        boolean logFound = listAppender.list.stream()
+            .anyMatch(event -> event.getFormattedMessage()
+                .contains("Error serializing document metadata: Test serialization error"));
+        assertTrue(logFound, "Expected log message about serialization error was not found.");
+
+        logger.detachAppender(listAppender);
+    }
+
     private Response createSuccessfulResponse(String bodyContent) {
         ResponseBody responseBody = ResponseBody.create(
             bodyContent.getBytes(StandardCharsets.UTF_8),
             MediaType.parse("application/json")
         );
 
-        ResponseBody spyBody = org.mockito.Mockito.spy(responseBody);
+        ResponseBody spyBody = spy(responseBody);
         when(spyBody.byteStream()).thenReturn(new ByteArrayInputStream(bodyContent.getBytes(StandardCharsets.UTF_8)));
 
-        Response response = org.mockito.Mockito.mock(Response.class);
+        Response response = mock(Response.class);
         lenient().when(response.isSuccessful()).thenReturn(true);
         when(response.body()).thenReturn(spyBody);
 
