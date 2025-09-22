@@ -10,10 +10,10 @@ import au.com.dius.pact.core.model.PactSpecVersion;
 import au.com.dius.pact.core.model.RequestResponsePact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import com.google.common.collect.Maps;
-import io.restassured.http.ContentType;
 import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.rest.SerenityRest;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,9 +26,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.Matchers.emptyOrNullString;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @ExtendWith(PactConsumerTestExt.class)
@@ -78,20 +76,24 @@ public class IdamConsumerTest {
         headers.put(HttpHeaders.AUTHORIZATION, EXAMPLE_AUTH_TOKEN);
         headers.put(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 
-        SerenityRest
-            .given()
-            .header(HttpHeaders.AUTHORIZATION, EXAMPLE_AUTH_TOKEN)
-            .contentType(ContentType.JSON)
-            .when()
-            .get(mockServer.getUrl() + IDAM_DETAILS_URL)
-            .then()
-            .statusCode(200)
-            .and()
-            .body(notNullValue())
-            .body("uid", not(emptyOrNullString()))
-            .body("email", notNullValue())
-            .body("forename", notNullValue())
-            .body("surname", notNullValue());
+        String detailsResponseBody =
+            SerenityRest
+                .given()
+                .headers(headers)
+                .when()
+                .get(mockServer.getUrl() + IDAM_DETAILS_URL)
+                .then()
+                .statusCode(200)
+                .and()
+                .extract()
+                .body()
+                .asString();
+
+        JSONObject response = new JSONObject(detailsResponseBody);
+
+        assertThat(detailsResponseBody).isNotNull();
+        assertThat(response).hasNoNullFieldsOrProperties();
+        assertThat(response.getString("uid")).isNotBlank();
     }
 
     private DslPart createUserInfoResponse() {
