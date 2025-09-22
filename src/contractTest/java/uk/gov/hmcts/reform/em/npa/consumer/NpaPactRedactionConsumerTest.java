@@ -54,7 +54,6 @@ public class NpaPactRedactionConsumerTest {
                 .body(LambdaDsl.newJsonBody(root -> {
                     root.stringType("caseId", "123456789");
                     root.uuid("documentId", DOCUMENT_ID);
-                    root.stringType("redactedFileName", "document-redacted.pdf");
                     root.minArrayLike("redactions", 1, redaction -> {
                         redaction.uuid("redactionId", REDACTION_ID);
                         redaction.uuid("documentId", DOCUMENT_ID);
@@ -77,7 +76,6 @@ public class NpaPactRedactionConsumerTest {
             {
               "caseId": "123456789",
               "documentId": "%s",
-              "redactedFileName": "document-redacted.pdf",
               "redactions": [
                 {
                   "redactionId": "%s",
