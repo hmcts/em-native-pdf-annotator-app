@@ -8,7 +8,8 @@ import au.com.dius.pact.provider.junitsupport.IgnoreNoPactsToVerify;
 import au.com.dius.pact.provider.junitsupport.Provider;
 import au.com.dius.pact.provider.junitsupport.State;
 import au.com.dius.pact.provider.junitsupport.loader.PactBroker;
-import au.com.dius.pact.provider.junitsupport.loader.VersionSelector;
+import au.com.dius.pact.provider.junitsupport.loader.PactBrokerConsumerVersionSelectors;
+import au.com.dius.pact.provider.junitsupport.loader.SelectorBuilder;
 import au.com.dius.pact.provider.spring.junit5.MockMvcTestTarget;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestTemplate;
@@ -39,13 +40,11 @@ import static org.mockito.Mockito.when;
 
 
 @Provider("native_pdf_annotator_api_provider")
-//Uncomment @PactFolder and comment the @PactBroker line to test local consumer.
-//using this, import au.com.dius.pact.provider.junitsupport.loader.PactFolder;
 //@PactFolder("pacts")
-@PactBroker(scheme = "${PACT_BROKER_SCHEME:http}",
-        host = "${PACT_BROKER_URL:localhost}",
-        port = "${PACT_BROKER_PORT:80}",
-        consumerVersionSelectors = {@VersionSelector(tag = "master")})
+@PactBroker(
+    url = "${PACT_BROKER_FULL_URL:http://localhost:80}",
+    providerBranch = "${pact.provider.branch}"
+)
 @IgnoreNoPactsToVerify
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(value = MarkUpResource.class,
@@ -63,11 +62,17 @@ public class NpaPactProviderTest {
     private static final Double Y = 20.5;
     private static final Double WIDTH = 100.0;
     private static final Double HEIGHT = 200.0;
-    @Autowired
-    private MockMvc mockMvc;
+
+    private final MockMvc mockMvc;
 
     @MockitoBean
     private MarkUpService markUpService;
+
+    @Autowired
+    public NpaPactProviderTest(MockMvc mockMvc) {
+        this.mockMvc = mockMvc;
+    }
+
 
     @TestTemplate
     @ExtendWith(PactVerificationInvocationContextProvider.class)
@@ -83,6 +88,14 @@ public class NpaPactProviderTest {
         if (context != null) {
             context.setTarget(new MockMvcTestTarget(mockMvc));
         }
+    }
+
+    @PactBrokerConsumerVersionSelectors
+    public static SelectorBuilder consumerVersionSelectors() {
+        return new SelectorBuilder()
+            .matchingBranch()
+            .mainBranch()
+            .deployedOrReleased();
     }
 
     @State("A valid RedactionDTO exists")
@@ -145,7 +158,7 @@ public class NpaPactProviderTest {
 
             // Verify the incoming ID matches our expected UUID
             if (!REDACTION_ID.equals(request.getRedactionId())) {
-                throw new RuntimeException("Unexpected redaction ID");
+                throw new IllegalArgumentException("Unexpected redaction ID");
             }
 
             RectangleDTO rectangle = new RectangleDTO();
