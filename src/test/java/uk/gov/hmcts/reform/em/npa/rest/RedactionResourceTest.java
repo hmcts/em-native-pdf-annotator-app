@@ -86,7 +86,6 @@ public class RedactionResourceTest {
 
         redactionRequest.setCaseId("caseId");
         redactionRequest.setDocumentId(docId);
-        redactionRequest.setRedactedFileName(null);
         redactionRequest.setRedactions(redactions);
 
         return redactionRequest;
@@ -95,7 +94,6 @@ public class RedactionResourceTest {
     @Test
     void shouldSaveRedactedDocument() {
         RedactionRequest redactionRequest = createRequest();
-        redactionRequest.setRedactedFileName("bespoke");
         HttpServletRequest request = mock(HttpServletRequest.class);
 
         when(request.getHeader("Authorization")).thenReturn("jwt");
