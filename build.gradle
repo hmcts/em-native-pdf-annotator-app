@@ -70,7 +70,7 @@ def versions = [
         mapstruct          : '1.6.3',
         springSecurity     : '6.5.5',
         log4JVersion       : '2.25.2',
-        jupiter            : '5.14.0',
+        jupiter            : '6.0.0',
         poi                : '5.4.1'
 ]
 
@@ -199,8 +199,8 @@ dependencies {
     testImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
     testImplementation group: 'net.serenity-bdd', name: 'serenity-single-page-report', version: versions.serenity
 
-    testImplementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.18'
-    testImplementation group: 'ch.qos.logback', name: 'logback-core', version: '1.5.18'
+    testImplementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.19'
+    testImplementation group: 'ch.qos.logback', name: 'logback-core', version: '1.5.19'
 
     testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.10', classifier: 'all', {
         exclude group: 'commons-io', module: 'commons-io'
@@ -245,7 +245,7 @@ dependencyManagement {
         dependencySet(group: 'org.apache.httpcomponents', version: '4.5.14') {
             entry 'fluent-hc'
         }
-        dependencySet(group: 'org.junit.platform', version: '1.14.0') {
+        dependencySet(group: 'org.junit.platform', version: '6.0.0') {
             entry 'junit-platform-commons'
             entry 'junit-platform-engine'
             entry 'junit-platform-launcher'
