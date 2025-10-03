@@ -25,6 +25,8 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @ExtendWith(PactConsumerTestExt.class)
 @ExtendWith(SpringExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+// S1192: Using string literals for JSON/request field names intentionally to keep structure clear in tests.
+@SuppressWarnings("squid:S1192")
 public class NpaPactRedactionConsumerTest {
 
     public static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";

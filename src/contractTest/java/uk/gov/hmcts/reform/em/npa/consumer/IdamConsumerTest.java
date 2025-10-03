@@ -12,8 +12,6 @@ import au.com.dius.pact.core.model.annotations.Pact;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.rest.SerenityRest;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,7 +24,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.blankOrNullString;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
+
 
 @Slf4j
 @ExtendWith(PactConsumerTestExt.class)
@@ -36,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class IdamConsumerTest {
 
     private static final String IDAM_DETAILS_URL = "/o/userinfo";
+    private static final String EXAMPLE_AUTH_TOKEN = "Bearer eyJ0eXAiOiJKV1QiLCJraWQiOiJiL082T3ZWdjEre";
 
     @Pact(provider = "Idam_api", consumer = "em_npa_api")
     public RequestResponsePact executeGetUserInfoAndGet200(PactDslWithProvider builder) {
@@ -58,7 +60,7 @@ public class IdamConsumerTest {
                 .given("I have obtained an access_token as a user", params)
                 .uponReceiving("Provider returns user info to EM Native Pdf Annotator API")
                 .path(IDAM_DETAILS_URL)
-                .headers("Authorization", "Bearer eyJ0eXAiOiJKV1QiLCJraWQiOiJiL082T3ZWdjEre")
+                .headers("Authorization", EXAMPLE_AUTH_TOKEN)
                 .method(HttpMethod.GET.toString())
                 .willRespondWith()
                 .status(HttpStatus.OK.value())
@@ -69,30 +71,23 @@ public class IdamConsumerTest {
 
     @Test
     @PactTestFor(pactMethod = "executeGetUserInfoAndGet200")
-    public void should_get_user_details_with_access_token(MockServer mockServer) throws JSONException {
+    public void shouldGetUserDetailsWithAccessToken(MockServer mockServer) {
 
         Map<String, String> headers = Maps.newHashMap();
-        headers.put(HttpHeaders.AUTHORIZATION, "Bearer eyJ0eXAiOiJKV1QiLCJraWQiOiJiL082T3ZWdjEre");
+        headers.put(HttpHeaders.AUTHORIZATION, EXAMPLE_AUTH_TOKEN);
         headers.put(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 
-        String detailsResponseBody =
-                SerenityRest
-                        .given()
-                        .headers(headers)
-                        .when()
-                        .get(mockServer.getUrl() + IDAM_DETAILS_URL)
-                        .then()
-                        .statusCode(200)
-                        .and()
-                        .extract()
-                        .body()
-                        .asString();
-
-        JSONObject response = new JSONObject(detailsResponseBody);
-
-        assertThat(detailsResponseBody).isNotNull();
-        assertThat(response).hasNoNullFieldsOrProperties();
-        assertThat(response.getString("uid")).isNotBlank();
+        SerenityRest
+            .given()
+            .headers(headers)
+            .when()
+            .get(mockServer.getUrl() + IDAM_DETAILS_URL)
+            .then()
+            .statusCode(200)
+            .and()
+            .body("uid", notNullValue())
+            .and()
+            .body("uid", not(blankOrNullString()));
     }
 
     private DslPart createUserInfoResponse() {
