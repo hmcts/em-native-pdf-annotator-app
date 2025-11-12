@@ -54,7 +54,7 @@ On local machine with server up and running, link to swagger is as below
 
 ### API Endpoints
 A list of our endpoints can be found here
-> https://hmcts.github.io/reform-api-docs/swagger.html?url=https://hmcts.github.io/reform-api-docs/specs/rpa-native-pdf-annotator-app.json
+> https://hmcts.github.io/cnp-api-docs/swagger.html?url=https://hmcts.github.io/cnp-api-docs/specs/rpa-native-pdf-annotator-app.json
 
 ### Building the application
 
