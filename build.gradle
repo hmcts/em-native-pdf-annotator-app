@@ -13,16 +13,16 @@ buildscript {
 plugins {
     id 'application'
     id 'io.spring.dependency-management' version '1.1.7'
-    id 'org.springframework.boot' version '3.5.7'
+    id 'org.springframework.boot' version '3.5.8'
     id 'uk.gov.hmcts.java' version '0.12.67'
     id 'com.github.ben-manes.versions' version '0.53.0'
-    id 'org.sonarqube' version '7.0.1.6134'
+    id 'org.sonarqube' version '7.1.0.6387'
     id 'jacoco'
     id 'checkstyle'
     id 'au.com.dius.pact' version '4.6.18'
     id 'org.owasp.dependencycheck' version '12.1.6'
     id 'info.solidsoft.pitest' version '1.19.0-rc.2'
-    id 'com.github.hmcts.rse-cft-lib' version '0.19.1946'
+    id 'com.github.hmcts.rse-cft-lib' version '0.19.1954'
     id 'org.flywaydb.flyway' version '11.16.0'
     id 'io.freefair.lombok' version '9.1.0'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '4.3.2'
@@ -66,12 +66,12 @@ def versions = [
         pact_version       : '4.6.18',
         logging            : '6.1.9',
         fasterXmlJackson   : '2.20.1',
-        hibernate          : '6.6.37.Final',
+        hibernate          : '6.6.38.Final',
         mapstruct          : '1.6.3',
         springSecurity     : '6.5.7',
         log4JVersion       : '2.25.2',
         jupiter            : '6.0.1',
-        poi                : '5.5.0'
+        poi                : '5.5.1'
 ]
 
 sourceSets {
@@ -135,7 +135,7 @@ dependencies {
     implementation group: 'org.apache.pdfbox', name: 'jbig2-imageio', version: '3.0.4'
 
     implementation group: 'com.itextpdf', name: 'cleanup', version: '5.0.4'
-    implementation group: 'com.itextpdf', name: 'bouncy-castle-adapter', version: '9.3.0'
+    implementation group: 'com.itextpdf', name: 'bouncy-castle-adapter', version: '9.4.0'
 
     implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '5.3.2'
 
@@ -161,7 +161,7 @@ dependencies {
     runtimeOnly group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '11.16.0'
 
     implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
-    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.19.0'
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.20.0'
     implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.11.0'
     implementation group: 'commons-validator', name: 'commons-validator', version: '1.10.1'
     implementation group: 'org.ehcache', name: 'ehcache', version: '3.11.1'
@@ -286,7 +286,7 @@ def coverageExclusionList = [
 
 checkstyle {
     maxWarnings = 0
-    toolVersion = '12.1.2'
+    toolVersion = '12.2.0'
     // need to set configDir to rootDir otherwise submodule will use submodule/config/checkstyle
     getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
 }
