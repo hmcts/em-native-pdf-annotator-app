@@ -11,21 +11,28 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.apache.tika.Tika;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.em.npa.config.Constants;
+import uk.gov.hmcts.reform.em.npa.service.DeleteService;
 import uk.gov.hmcts.reform.em.npa.service.RedactionService;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionRequest;
 
 import java.io.File;
+import java.util.UUID;
 
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 
@@ -40,9 +47,13 @@ public class RedactionResource {
     private final Logger log = LoggerFactory.getLogger(RedactionResource.class);
 
     private RedactionService redactionService;
+    private final DeleteService deleteService;
+    @Value("${toggles.delete_enabled}")
+    private boolean deleteEnabled;
 
-    public RedactionResource(RedactionService redactionService) {
+    public RedactionResource(RedactionService redactionService, DeleteService deleteService) {
         this.redactionService = redactionService;
+        this.deleteService = deleteService;
     }
 
     @InitBinder
@@ -93,6 +104,41 @@ public class RedactionResource {
             return ResponseEntity
                     .badRequest()
                     .body(e.getMessage());
+        }
+    }
+
+    @Operation(
+        summary = "Delete all redactions for a document",
+        description = "Deletes all redactions associated with the provided DocumentId",
+        parameters = {
+            @Parameter(in = ParameterIn.HEADER, name = "authorization", schema = @Schema(type = "string"), required = true),
+            @Parameter(in = ParameterIn.HEADER, name = "serviceauthorization", schema = @Schema(type = "string"), required = true)
+        }
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "204", description = "Deleted"),
+        @ApiResponse(responseCode = "400", description = "Invalid request"),
+        @ApiResponse(responseCode = "401", description = "Unauthorised"),
+        @ApiResponse(responseCode = "403", description = "Forbidden"),
+        @ApiResponse(responseCode = "500", description = "Server Error")
+    })
+    @DeleteMapping("/redaction/document/{documentId}")
+    public ResponseEntity<Object> deleteByDocumentId(
+            @RequestHeader(value = "Authorization", required = true) String auth,
+            @RequestHeader(value = "ServiceAuthorization", required = true) String serviceAuth,
+            @PathVariable UUID documentId) {
+        try {
+            if (!deleteEnabled) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+            log.debug("REST request to delete all Redactions for documentId: {}", documentId);
+            deleteService.deleteByDocumentId(documentId);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            log.error("Failed to delete redactions with error: {}", e.getMessage());
+            return ResponseEntity
+                .badRequest()
+                .body(e.getMessage());
         }
     }
 }

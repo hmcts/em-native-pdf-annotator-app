@@ -10,6 +10,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.bind.WebDataBinder;
@@ -17,6 +18,7 @@ import uk.gov.hmcts.reform.em.npa.Application;
 import uk.gov.hmcts.reform.em.npa.TestSecurityConfiguration;
 import uk.gov.hmcts.reform.em.npa.config.Constants;
 import uk.gov.hmcts.reform.em.npa.service.RedactionService;
+import uk.gov.hmcts.reform.em.npa.service.DeleteService;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionRequest;
@@ -50,6 +52,9 @@ public class RedactionResourceTest {
     private RedactionService redactionService;
 
     @Mock
+    private DeleteService deleteService;
+
+    @Mock
     private WebDataBinder binder;
 
     private static final File TEST_PDF_FILE = new File(
@@ -59,6 +64,27 @@ public class RedactionResourceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+    }
+
+    @Test
+    void shouldReturnForbiddenWhenDeleteDisabled() {
+        UUID documentId = UUID.randomUUID();
+        ReflectionTestUtils.setField(redactionResource, "deleteEnabled", false);
+
+        ResponseEntity response = redactionResource.deleteByDocumentId("jwt", "s2s", documentId);
+
+        assertEquals(403, response.getStatusCode().value());
+    }
+
+    @Test
+    void shouldDeleteWhenEnabled() {
+        UUID documentId = UUID.randomUUID();
+        ReflectionTestUtils.setField(redactionResource, "deleteEnabled", true);
+
+        ResponseEntity response = redactionResource.deleteByDocumentId("jwt", "s2s", documentId);
+
+        assertEquals(204, response.getStatusCode().value());
+        verify(deleteService, Mockito.atMost(1)).deleteByDocumentId(documentId);
     }
 
     public static RedactionRequest createRequest() {
