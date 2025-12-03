@@ -111,8 +111,10 @@ public class RedactionResource {
         summary = "Delete all redactions for a document",
         description = "Deletes all redactions associated with the provided DocumentId",
         parameters = {
-            @Parameter(in = ParameterIn.HEADER, name = "authorization", schema = @Schema(type = "string"), required = true),
-            @Parameter(in = ParameterIn.HEADER, name = "serviceauthorization", schema = @Schema(type = "string"), required = true)
+            @Parameter(in = ParameterIn.HEADER, name = "authorization",
+                    schema = @Schema(type = "string"), required = true),
+            @Parameter(in = ParameterIn.HEADER, name = "serviceauthorization",
+                    schema = @Schema(type = "string"), required = true)
         }
     )
     @ApiResponses({
