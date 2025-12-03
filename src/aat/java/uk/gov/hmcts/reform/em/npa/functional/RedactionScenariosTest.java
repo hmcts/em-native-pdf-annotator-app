@@ -241,6 +241,47 @@ class RedactionScenariosTest {
                 .statusCode(401);
     }
 
+    @Test
+    void shouldDeleteAllRedactionsByDocumentId() {
+        final UUID docId = UUID.randomUUID();
+        RedactionDTO redactionDto1 = testUtil.createRedactionDTO(docId, UUID.randomUUID());
+        redactionDto1.setPage(1);
+        JSONObject jsonObjectRedaction1 = new JSONObject(redactionDto1);
+
+        request
+            .body(jsonObjectRedaction1)
+            .post("/api/markups")
+            .then()
+            .statusCode(201)
+            .body(notNullValue());
+
+        RedactionDTO redactionDto2 = testUtil.createRedactionDTO(docId, UUID.randomUUID());
+        redactionDto2.setPage(2);
+        JSONObject jsonObjectredactions2 = new JSONObject(redactionDto2);
+
+        request
+            .body(jsonObjectredactions2)
+            .post("/api/markups")
+            .then()
+            .statusCode(201)
+            .body(notNullValue());
+
+        request
+            .get("/api/markups/" + docId)
+            .then()
+            .statusCode(200);
+
+        request
+            .delete("/api/redaction/document/" + docId)
+            .then()
+            .statusCode(204);
+
+        request
+            .get("/api/markups/" + docId)
+            .then()
+            .statusCode(204);
+    }
+
     private RedactionDTO createRedaction() {
         final RedactionDTO redactionDTO = testUtil.createRedactionDTO(documentId, redactionId);
         redactionDTO.setPage(1);
