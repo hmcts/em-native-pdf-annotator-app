@@ -23,6 +23,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.em.npa.rest.RedactionResource;
+import uk.gov.hmcts.reform.em.npa.service.DeleteService;
 import uk.gov.hmcts.reform.em.npa.service.MarkUpService;
 import uk.gov.hmcts.reform.em.npa.service.RedactionService;
 
@@ -52,6 +53,9 @@ public class NpaPactRedactionProviderTest {
 
     @MockitoBean
     private MarkUpService markUpService;
+
+    @MockitoBean
+    private DeleteService deleteService;
 
     private static final File TEST_REDACTED_PDF_FILE = new File(
             ClassLoader.getSystemResource("document-redacted.pdf").getPath()
