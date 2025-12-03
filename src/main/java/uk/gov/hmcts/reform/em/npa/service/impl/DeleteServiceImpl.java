@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.em.npa.service.DeleteService;
 
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class DeleteServiceImpl implements DeleteService {
@@ -27,6 +28,12 @@ public class DeleteServiceImpl implements DeleteService {
         log.debug("Deleting all redactions for documentId: {}", documentId);
         var redactions = redactionRepository.findByDocumentId(documentId);
         if (Objects.nonNull(redactions) && !redactions.isEmpty()) {
+            log.debug("Found {} redactions for document {}: {}",
+                redactions.size(),
+                documentId,
+                redactions.stream()
+                        .filter(r -> r.getRedactionId() != null)
+                        .map(r -> r.getRedactionId().toString()).collect(Collectors.joining(", ")));
             redactionRepository.deleteAll(redactions);
         } else {
             log.debug("No redactions found for document {}", documentId);
