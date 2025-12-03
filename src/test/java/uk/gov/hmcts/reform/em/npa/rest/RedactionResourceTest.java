@@ -3,19 +3,14 @@ package uk.gov.hmcts.reform.em.npa.rest;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.bind.WebDataBinder;
-import uk.gov.hmcts.reform.em.npa.Application;
-import uk.gov.hmcts.reform.em.npa.TestSecurityConfiguration;
 import uk.gov.hmcts.reform.em.npa.config.Constants;
 import uk.gov.hmcts.reform.em.npa.service.DeleteService;
 import uk.gov.hmcts.reform.em.npa.service.RedactionService;
@@ -35,14 +30,12 @@ import java.util.UUID;
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
-@AutoConfigureMockMvc
 public class RedactionResourceTest {
 
     @InjectMocks
@@ -91,9 +84,8 @@ public class RedactionResourceTest {
     void shouldReturnBadRequestWhenDeleteThrows() {
         UUID documentId = UUID.randomUUID();
         ReflectionTestUtils.setField(redactionResource, "deleteEnabled", true);
-
-        Mockito.doThrow(new RuntimeException("boom"))
-            .when(deleteService).deleteByDocumentId(documentId);
+        BDDMockito.willThrow(new RuntimeException("dummy error"))
+            .given(deleteService).deleteByDocumentId(any(UUID.class));
 
         ResponseEntity response = redactionResource.deleteByDocumentId("jwt", "s2s", documentId);
 
