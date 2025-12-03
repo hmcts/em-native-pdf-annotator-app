@@ -87,6 +87,20 @@ public class RedactionResourceTest {
         verify(deleteService, Mockito.atMost(1)).deleteByDocumentId(documentId);
     }
 
+    @Test
+    void shouldReturnBadRequestWhenDeleteThrows() {
+        UUID documentId = UUID.randomUUID();
+        ReflectionTestUtils.setField(redactionResource, "deleteEnabled", true);
+
+        Mockito.doThrow(new RuntimeException("boom"))
+            .when(deleteService).deleteByDocumentId(documentId);
+
+        ResponseEntity response = redactionResource.deleteByDocumentId("jwt", "s2s", documentId);
+
+        assertEquals(400, response.getStatusCode().value());
+        verify(deleteService, Mockito.atMost(1)).deleteByDocumentId(documentId);
+    }
+
     public static RedactionRequest createRequest() {
         RedactionRequest redactionRequest = new RedactionRequest();
         UUID docId = UUID.randomUUID();
