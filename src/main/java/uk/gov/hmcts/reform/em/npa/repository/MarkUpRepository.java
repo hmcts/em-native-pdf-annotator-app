@@ -33,4 +33,7 @@ public interface MarkUpRepository extends JpaRepository<Redaction, Long> {
 
     List<Redaction> findByDocumentId(UUID documentId);
 
+    @Query("SELECT r.id FROM Redaction r WHERE r.documentId = :documentId")
+    List<Long> findRedactionDbIdsByDocumentId(@Param("documentId") UUID documentId);
+
 }

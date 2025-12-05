@@ -133,8 +133,11 @@ public class RedactionResource {
             if (!deleteEnabled) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
+            final long startMs = System.currentTimeMillis();
             log.debug("REST request to delete all Redactions for documentId: {}", documentId);
             deleteService.deleteByDocumentId(documentId);
+            long elapsedMs = System.currentTimeMillis() - startMs;
+            log.info("Delete redactions completed for document {} in {} ms", documentId, elapsedMs);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
             log.error("Failed to delete redactions with error: {}", e.getMessage());
