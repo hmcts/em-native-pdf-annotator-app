@@ -7,7 +7,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import uk.gov.hmcts.reform.em.npa.domain.Redaction;
-import uk.gov.hmcts.reform.em.npa.repository.RedactionRepository;
+import uk.gov.hmcts.reform.em.npa.repository.MarkUpRepository;
 
 import java.util.Collections;
 import java.util.List;
@@ -23,7 +23,7 @@ class DeleteServiceImplTest {
     private DeleteServiceImpl deleteService;
 
     @Mock
-    private RedactionRepository redactionRepository;
+    private MarkUpRepository markUpRepository;
 
     @BeforeEach
     void setUp() {
@@ -34,20 +34,20 @@ class DeleteServiceImplTest {
     void deleteByDocumentIdDeletesWhenFound() {
         UUID documentId = UUID.randomUUID();
         Redaction r = new Redaction();
-        when(redactionRepository.findByDocumentId(documentId)).thenReturn(List.of(r));
+        when(markUpRepository.findByDocumentId(documentId)).thenReturn(List.of(r));
 
         deleteService.deleteByDocumentId(documentId);
 
-        verify(redactionRepository, Mockito.atMost(1)).deleteAll(List.of(r));
+        verify(markUpRepository, Mockito.atMost(1)).deleteAll(List.of(r));
     }
 
     @Test
     void deleteByDocumentIdNoopWhenEmpty() {
         UUID documentId = UUID.randomUUID();
-        when(redactionRepository.findByDocumentId(documentId)).thenReturn(Collections.emptyList());
+        when(markUpRepository.findByDocumentId(documentId)).thenReturn(Collections.emptyList());
 
         deleteService.deleteByDocumentId(documentId);
 
-        verify(redactionRepository, never()).deleteAll(Mockito.anyList());
+        verify(markUpRepository, never()).deleteAll(Mockito.anyList());
     }
 }

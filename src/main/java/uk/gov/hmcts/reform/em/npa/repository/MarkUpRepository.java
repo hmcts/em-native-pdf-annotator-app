@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.npa.domain.Redaction;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -29,4 +30,7 @@ public interface MarkUpRepository extends JpaRepository<Redaction, Long> {
     void deleteAllByDocumentIdAndCreatedBy(@Param("documentId") UUID documentId, @Param("createdBy") String createdBy);
 
     void deleteByRedactionId(UUID redactionId);
+
+    List<Redaction> findByDocumentId(UUID documentId);
+
 }

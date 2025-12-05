@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.hmcts.reform.em.npa.repository.RedactionRepository;
+import uk.gov.hmcts.reform.em.npa.repository.MarkUpRepository;
 import uk.gov.hmcts.reform.em.npa.service.DeleteService;
 
 import java.util.Objects;
@@ -16,17 +16,17 @@ public class DeleteServiceImpl implements DeleteService {
 
     private static final Logger log = LoggerFactory.getLogger(DeleteServiceImpl.class);
 
-    private final RedactionRepository redactionRepository;
+    private final MarkUpRepository markUpRepository;
 
-    public DeleteServiceImpl(RedactionRepository redactionRepository) {
-        this.redactionRepository = redactionRepository;
+    public DeleteServiceImpl(MarkUpRepository markUpRepository) {
+        this.markUpRepository = markUpRepository;
     }
 
     @Override
     @Transactional
     public void deleteByDocumentId(UUID documentId) {
         log.debug("Deleting all redactions for documentId: {}", documentId);
-        var redactions = redactionRepository.findByDocumentId(documentId);
+        var redactions = markUpRepository.findByDocumentId(documentId);
         if (Objects.nonNull(redactions) && !redactions.isEmpty()) {
             log.debug("Found {} redactions for document {}: {}",
                 redactions.size(),
@@ -34,7 +34,7 @@ public class DeleteServiceImpl implements DeleteService {
                 redactions.stream()
                         .filter(r -> r.getRedactionId() != null)
                         .map(r -> r.getRedactionId().toString()).collect(Collectors.joining(", ")));
-            redactionRepository.deleteAll(redactions);
+            markUpRepository.deleteAll(redactions);
         } else {
             log.debug("No redactions found for document {}", documentId);
         }
