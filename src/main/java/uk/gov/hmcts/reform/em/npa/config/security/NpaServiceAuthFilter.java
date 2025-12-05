@@ -56,12 +56,10 @@ public class NpaServiceAuthFilter extends OncePerRequestFilter {
 
             boolean isDeleteEndpoint = request.getRequestURI().contains("/api/redaction/document/")
                 && "DELETE".equalsIgnoreCase(request.getMethod());
-            LOG.info("service {} for endpoint: {} method: {}, isDeleteEndpoint:{}, deleteAuthorisedServices:{}",
-                    serviceName, request.getRequestURI(),
-                    request.getMethod(), isDeleteEndpoint, deleteAuthorisedServices);
+
             if (isDeleteEndpoint && !deleteAuthorisedServices.contains(service)) {
-                LOG.info("service forbidden {} for DELETE endpoint: {} method: {}",
-                        serviceName, request.getRequestURI(), request.getMethod());
+                LOG.info("service forbidden {} for DELETE endpoint: {} method: {}, deleteAuthorisedServices: {}",
+                        serviceName, request.getRequestURI(), request.getMethod(), deleteAuthorisedServices);
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }
