@@ -1,20 +1,22 @@
 package uk.gov.hmcts.reform.em.npa.config.security;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
+import org.springframework.web.filter.OncePerRequestFilter;
 import uk.gov.hmcts.reform.authorisation.exceptions.InvalidTokenException;
 import uk.gov.hmcts.reform.authorisation.exceptions.ServiceException;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 
+import java.io.IOException;
 import java.util.List;
 
-public class NpaServiceAuthFilter extends AbstractPreAuthenticatedProcessingFilter {
+public class NpaServiceAuthFilter extends OncePerRequestFilter {
 
     public static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
-
-    public static final String NOT_APPLICABLE = "N/A";
 
     private static final Logger LOG = LoggerFactory.getLogger(NpaServiceAuthFilter.class);
 
@@ -37,40 +39,40 @@ public class NpaServiceAuthFilter extends AbstractPreAuthenticatedProcessingFilt
     }
 
     @Override
-    protected Object getPreAuthenticatedPrincipal(HttpServletRequest request) {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+        
         try {
             String bearerToken = extractBearerToken(request);
             String serviceName = authTokenValidator.getServiceName(bearerToken);
             String service = serviceName == null ? null : serviceName.toLowerCase();
 
             if (service == null || !authorisedServices.contains(service)) {
-                LOG.info("service forbidden {} for endpoint: {} method: {} ",
+                LOG.info("service forbidden {} for endpoint: {} method: {}",
                         serviceName, request.getRequestURI(), request.getMethod());
-                return null;
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
             }
 
             boolean isDeleteEndpoint = request.getRequestURI().contains("/api/redaction/document/")
                 && "DELETE".equalsIgnoreCase(request.getMethod());
 
             if (isDeleteEndpoint && !deleteAuthorisedServices.contains(service)) {
-                LOG.info("service forbidden {} for DELETE endpoint: {} method: {} ",
+                LOG.info("service forbidden {} for DELETE endpoint: {} method: {}",
                         serviceName, request.getRequestURI(), request.getMethod());
-                return null;
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
             }
 
             LOG.debug("service authorized {} for endpoint: {} method: {}",
                     serviceName, request.getRequestURI(), request.getMethod());
-            return serviceName;
+            
+            filterChain.doFilter(request, response);
 
         } catch (InvalidTokenException | ServiceException exception) {
             LOG.warn("Unsuccessful service authentication", exception);
-            return null;
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
-    }
-
-    @Override
-    protected Object getPreAuthenticatedCredentials(HttpServletRequest request) {
-        return NOT_APPLICABLE;
     }
 
     private String extractBearerToken(HttpServletRequest request) {
