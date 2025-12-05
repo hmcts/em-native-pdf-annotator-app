@@ -17,9 +17,8 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtDecoders;
 import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
-import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
-import uk.gov.hmcts.reform.authorisation.filters.ServiceAuthFilter;
+import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 
 
 @Configuration
@@ -30,10 +29,10 @@ public class SecurityConfiguration {
     @Value("${spring.security.oauth2.client.provider.oidc.issuer-uri}")
     private String issuerUri;
 
-    private final ServiceAuthFilter serviceAuthFilter;
+    private final NpaServiceAuthFilter npaServiceAuthFilter;
 
-    public SecurityConfiguration(final ServiceAuthFilter serviceAuthFilter) {
-        this.serviceAuthFilter = serviceAuthFilter;
+    public SecurityConfiguration(final NpaServiceAuthFilter npaServiceAuthFilter) {
+        this.npaServiceAuthFilter = npaServiceAuthFilter;
     }
 
     @Bean
@@ -55,7 +54,7 @@ public class SecurityConfiguration {
         http.csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
-                .addFilterBefore(serviceAuthFilter, BearerTokenAuthenticationFilter.class)
+                .addFilterBefore(npaServiceAuthFilter, AnonymousAuthenticationFilter.class)
                 .sessionManagement(httpSecuritySessionManagementConfigurer ->
                     httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
