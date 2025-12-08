@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionRequest;
 import uk.gov.hmcts.reform.em.npa.service.exception.FileTypeException;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -29,9 +30,11 @@ import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -60,13 +63,14 @@ public class RedactionResourceTest {
     }
 
     @Test
-    void shouldReturnForbiddenWhenDeleteDisabled() {
+    void shouldThrowAccessDeniedWhenDeleteDisabled() {
         UUID documentId = UUID.randomUUID();
         ReflectionTestUtils.setField(redactionResource, "deleteEnabled", false);
 
-        ResponseEntity response = redactionResource.deleteByDocumentId("jwt", "s2s", documentId);
+        assertThrows(AccessDeniedException.class, () ->
+            redactionResource.deleteByDocumentId("jwt", "s2s", documentId));
 
-        assertEquals(403, response.getStatusCode().value());
+        verify(deleteService, never()).deleteByDocumentId(any());
     }
 
     @Test
@@ -74,23 +78,23 @@ public class RedactionResourceTest {
         UUID documentId = UUID.randomUUID();
         ReflectionTestUtils.setField(redactionResource, "deleteEnabled", true);
 
-        ResponseEntity response = redactionResource.deleteByDocumentId("jwt", "s2s", documentId);
+        ResponseEntity<Void> response = redactionResource.deleteByDocumentId("jwt", "s2s", documentId);
 
         assertEquals(204, response.getStatusCode().value());
-        verify(deleteService, Mockito.atMost(1)).deleteByDocumentId(documentId);
+        verify(deleteService).deleteByDocumentId(documentId);
     }
 
     @Test
-    void shouldReturnBadRequestWhenDeleteThrows() {
+    void shouldPropagateExceptionWhenDeleteThrows() {
         UUID documentId = UUID.randomUUID();
         ReflectionTestUtils.setField(redactionResource, "deleteEnabled", true);
         BDDMockito.willThrow(new RuntimeException("dummy error"))
             .given(deleteService).deleteByDocumentId(any(UUID.class));
 
-        ResponseEntity response = redactionResource.deleteByDocumentId("jwt", "s2s", documentId);
+        assertThrows(RuntimeException.class, () ->
+            redactionResource.deleteByDocumentId("jwt", "s2s", documentId));
 
-        assertEquals(400, response.getStatusCode().value());
-        verify(deleteService, Mockito.atMost(1)).deleteByDocumentId(documentId);
+        verify(deleteService).deleteByDocumentId(documentId);
     }
 
     public static RedactionRequest createRequest() {

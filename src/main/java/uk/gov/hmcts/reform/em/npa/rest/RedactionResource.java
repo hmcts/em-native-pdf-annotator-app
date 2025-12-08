@@ -14,8 +14,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -125,25 +125,18 @@ public class RedactionResource {
         @ApiResponse(responseCode = "500", description = "Server Error")
     })
     @DeleteMapping("/redaction/document/{documentId}")
-    public ResponseEntity<Object> deleteByDocumentId(
+    public ResponseEntity<Void> deleteByDocumentId(
             @RequestHeader(value = "Authorization", required = true) String auth,
             @RequestHeader(value = "ServiceAuthorization", required = true) String serviceAuth,
             @PathVariable UUID documentId) {
-        try {
-            if (!deleteEnabled) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-            }
-            final long startMs = System.currentTimeMillis();
-            log.debug("REST request to delete all Redactions for documentId: {}", documentId);
-            deleteService.deleteByDocumentId(documentId);
-            long elapsedMs = System.currentTimeMillis() - startMs;
-            log.info("Delete redactions completed for document {} in {} ms", documentId, elapsedMs);
-            return ResponseEntity.noContent().build();
-        } catch (Exception e) {
-            log.error("Failed to delete redactions with error: {}", e.getMessage());
-            return ResponseEntity
-                .badRequest()
-                .body(e.getMessage());
+        if (!deleteEnabled) {
+            throw new AccessDeniedException("Delete endpoint is disabled");
         }
+        final long startMs = System.currentTimeMillis();
+        log.debug("REST request to delete all Redactions for documentId: {}", documentId);
+        deleteService.deleteByDocumentId(documentId);
+        long elapsedMs = System.currentTimeMillis() - startMs;
+        log.info("Delete redactions completed for document {} in {} ms", documentId, elapsedMs);
+        return ResponseEntity.noContent().build();
     }
 }
