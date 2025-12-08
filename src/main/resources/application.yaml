@@ -102,6 +102,7 @@ idam:
     microservice: em_npa_app
   s2s-authorised:
     services: ${S2S_NAMES_WHITELIST:ccd,em_gw,xui_webapp}
+    can-delete-services: ${S2S_NAMES_DELETE_WHITELIST:dm_store}
 
 azure:
   app_insights_key: ${APPINSIGHTS_INSTRUMENTATIONKEY:true}
@@ -129,6 +130,7 @@ redaction:
 
 toggles:
   cdam_enabled: ${ENABLE_CDAM:false}
+  delete_enabled: ${ENABLE_DELETE_ENDPOINT:false}
 
 springdoc:
   packagesToScan: uk.gov.hmcts.reform.em.npa.rest
