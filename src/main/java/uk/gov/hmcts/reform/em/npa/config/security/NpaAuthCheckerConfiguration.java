@@ -17,7 +17,7 @@ public class NpaAuthCheckerConfiguration {
     @Value("#{'${idam.s2s-authorised.services}'.split(',')}")
     private List<String> authorisedServices;
 
-    @Value("#{'${idam.s2s-authorised.can-delete-services}'.split(',')}")
+    @Value("#{'${idam.s2s-authorised.delete-endpoint-services}'.split(',')}")
     private List<String> deleteAuthorisedServices;
 
     @Bean
