@@ -66,7 +66,7 @@ class OpenIdConnectScenariosTest {
             .baseUri(testUrl)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
-            .get(MARKUPS_PATH + "/" + documentId)
+            .get(MARKUPS_PATH)
             .then()
             .statusCode(401);
     }
@@ -74,12 +74,11 @@ class OpenIdConnectScenariosTest {
     //Invalid  IdamAuth
     @Test
     void testWithInvalidIdamAuth() {
-        final String documentId = UUID.randomUUID().toString();
         testUtil.invalidIdamAuthrequest()
             .baseUri(testUrl)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
-            .get(MARKUPS_PATH + "/" + documentId)
+            .get(MARKUPS_PATH)
             .then()
             .statusCode(401);
     }
@@ -87,12 +86,11 @@ class OpenIdConnectScenariosTest {
     // S2S Auth valid, but missing Idam Auth
     @Test
     void testMissingIdamTokenShouldReturn401() {
-        final String documentId = UUID.randomUUID().toString();
         testUtil.s2sAuthRequest()
             .baseUri(testUrl)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
-            .get(MARKUPS_PATH + "/" + documentId)
+            .get(MARKUPS_PATH)
             .then()
             .statusCode(401);
     }
@@ -100,12 +98,11 @@ class OpenIdConnectScenariosTest {
     // Idam Auth valid, but missing S2S Auth
     @Test
     void testMissingS2sTokenShouldReturn401() {
-        final String documentId = UUID.randomUUID().toString();
         testUtil.idamOnlyAuthRequest()
             .baseUri(testUrl)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
-            .get(MARKUPS_PATH + "/" + documentId)
+            .get(MARKUPS_PATH)
             .then()
             .statusCode(401);
     }
