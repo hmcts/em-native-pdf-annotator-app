@@ -3,19 +3,17 @@ package uk.gov.hmcts.reform.em.npa.rest;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.bind.WebDataBinder;
-import uk.gov.hmcts.reform.em.npa.Application;
-import uk.gov.hmcts.reform.em.npa.TestSecurityConfiguration;
 import uk.gov.hmcts.reform.em.npa.config.Constants;
+import uk.gov.hmcts.reform.em.npa.service.DeleteService;
 import uk.gov.hmcts.reform.em.npa.service.RedactionService;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
@@ -32,15 +30,15 @@ import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
-@AutoConfigureMockMvc
 public class RedactionResourceTest {
 
     @InjectMocks
@@ -48,6 +46,9 @@ public class RedactionResourceTest {
 
     @Mock
     private RedactionService redactionService;
+
+    @Mock
+    private DeleteService deleteService;
 
     @Mock
     private WebDataBinder binder;
@@ -59,6 +60,41 @@ public class RedactionResourceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+    }
+
+    @Test
+    void shouldThrowAccessDeniedWhenDeleteDisabled() {
+        UUID documentId = UUID.randomUUID();
+        ReflectionTestUtils.setField(redactionResource, "deleteEnabled", false);
+
+        assertThrows(AccessDeniedException.class, () ->
+            redactionResource.deleteByDocumentId("jwt", "s2s", documentId));
+
+        verify(deleteService, never()).deleteByDocumentId(any());
+    }
+
+    @Test
+    void shouldDeleteWhenEnabled() {
+        UUID documentId = UUID.randomUUID();
+        ReflectionTestUtils.setField(redactionResource, "deleteEnabled", true);
+
+        ResponseEntity<Void> response = redactionResource.deleteByDocumentId("jwt", "s2s", documentId);
+
+        assertEquals(204, response.getStatusCode().value());
+        verify(deleteService).deleteByDocumentId(documentId);
+    }
+
+    @Test
+    void shouldPropagateExceptionWhenDeleteThrows() {
+        UUID documentId = UUID.randomUUID();
+        ReflectionTestUtils.setField(redactionResource, "deleteEnabled", true);
+        BDDMockito.willThrow(new RuntimeException("dummy error"))
+            .given(deleteService).deleteByDocumentId(any(UUID.class));
+
+        assertThrows(RuntimeException.class, () ->
+            redactionResource.deleteByDocumentId("jwt", "s2s", documentId));
+
+        verify(deleteService).deleteByDocumentId(documentId);
     }
 
     public static RedactionRequest createRequest() {

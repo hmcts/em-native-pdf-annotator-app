@@ -16,7 +16,8 @@ java:
     RUN_DB_MIGRATION_ON_STARTUP: true
     LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_EM_NPA: DEBUG
     ENTITY_VALUE_COPY_ENABLED: true
-
+    ENABLE_DELETE_ENDPOINT: true
+    S2S_NAMES_DELETE_WHITELIST: dm_store,em_gw
   postgresql:
     enabled: true
 

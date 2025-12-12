@@ -61,6 +61,7 @@ class OpenIdConnectScenariosTest {
     // Invalid S2SAuth
     @Test
     void testInvalidS2SAuth() {
+        final String documentId = UUID.randomUUID().toString();
         testUtil.invalidS2SAuth()
             .baseUri(testUrl)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
