@@ -12,6 +12,7 @@ import org.apache.tika.Tika;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.StopWatch;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -132,11 +133,12 @@ public class RedactionResource {
         if (!deleteEnabled) {
             throw new AccessDeniedException("Delete endpoint is disabled");
         }
-        final long startMs = System.currentTimeMillis();
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
         log.debug("REST request to delete all Redactions for documentId: {}", documentId);
         deleteService.deleteByDocumentId(documentId);
-        long elapsedMs = System.currentTimeMillis() - startMs;
-        log.info("Delete redactions completed for document {} in {} ms", documentId, elapsedMs);
+        stopWatch.stop();
+        log.info("Delete redactions completed for document {} in {} ms", documentId, stopWatch.getTotalTimeMillis());
         return ResponseEntity.noContent().build();
     }
 }

@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.npa.service.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StopWatch;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.em.npa.domain.Rectangle;
 import uk.gov.hmcts.reform.em.npa.domain.Redaction;
@@ -10,9 +11,11 @@ import uk.gov.hmcts.reform.em.npa.repository.EntityAuditEventRepository;
 import uk.gov.hmcts.reform.em.npa.repository.MarkUpRepository;
 import uk.gov.hmcts.reform.em.npa.service.DeleteService;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.StringJoiner;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class DeleteServiceImpl implements DeleteService {
@@ -34,20 +37,28 @@ public class DeleteServiceImpl implements DeleteService {
         log.debug("Deleting all redactions for documentId: {}", documentId);
         var redactions = markUpRepository.findByDocumentId(documentId);
         if (Objects.nonNull(redactions) && !redactions.isEmpty()) {
-            final long startMs = System.currentTimeMillis();
-            log.info("Deletion timing - start for document {}", documentId);
-            var rectangleIds = redactions.stream()
-                .filter(Objects::nonNull)
-                .flatMap(r -> r.getRectangles().stream())
-                .map(Rectangle::getId)
-                .filter(Objects::nonNull);
+            StopWatch stopWatch = new StopWatch();
+            stopWatch.start();
 
-            var redactionDbIds = redactions.stream()
-                .map(Redaction::getId)
-                .filter(Objects::nonNull);
+            List<Long> allAuditIds = new ArrayList<>();
+            StringJoiner redactionUuids = new StringJoiner(", ");
 
-            var allAuditIds = java.util.stream.Stream.concat(rectangleIds, redactionDbIds)
-                .toList();
+            for (Redaction redaction : redactions) {
+                if (redaction == null) {
+                    continue;
+                }
+                if (redaction.getId() != null) {
+                    allAuditIds.add(redaction.getId());
+                }
+                if (redaction.getRedactionId() != null) {
+                    redactionUuids.add(redaction.getRedactionId().toString());
+                }
+                for (Rectangle rectangle : redaction.getRectangles()) {
+                    if (rectangle.getId() != null) {
+                        allAuditIds.add(rectangle.getId());
+                    }
+                }
+            }
 
             if (!allAuditIds.isEmpty()) {
                 int totalAudits = entityAuditEventRepository.deleteByEntityIdIn(allAuditIds);
@@ -58,14 +69,10 @@ public class DeleteServiceImpl implements DeleteService {
             }
 
             log.debug("Found {} redactions for document {}: {}",
-                redactions.size(),
-                documentId,
-                redactions.stream()
-                        .filter(r -> r.getRedactionId() != null)
-                        .map(r -> r.getRedactionId().toString()).collect(Collectors.joining(", ")));
+                redactions.size(), documentId, redactionUuids);
             markUpRepository.deleteAll(redactions);
-            long elapsedMs = System.currentTimeMillis() - startMs;
-            log.info("Deletion timing - completed for document {} in {} ms", documentId, elapsedMs);
+            stopWatch.stop();
+            log.info("Deletion completed for document {} in {} ms", documentId, stopWatch.getTotalTimeMillis());
         } else {
             log.debug("No redactions found for document {}", documentId);
         }
