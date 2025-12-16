@@ -44,17 +44,17 @@ public class DeleteServiceImpl implements DeleteService {
             StringJoiner redactionUuids = new StringJoiner(", ");
 
             for (Redaction redaction : redactions) {
-                if (redaction == null) {
+                if (Objects.isNull(redaction)) {
                     continue;
                 }
-                if (redaction.getId() != null) {
+                if (Objects.nonNull(redaction.getId())) {
                     allAuditIds.add(redaction.getId());
                 }
-                if (redaction.getRedactionId() != null) {
+                if (Objects.nonNull(redaction.getRedactionId())) {
                     redactionUuids.add(redaction.getRedactionId().toString());
                 }
                 for (Rectangle rectangle : redaction.getRectangles()) {
-                    if (rectangle.getId() != null) {
+                    if (Objects.nonNull(rectangle.getId())) {
                         allAuditIds.add(rectangle.getId());
                     }
                 }

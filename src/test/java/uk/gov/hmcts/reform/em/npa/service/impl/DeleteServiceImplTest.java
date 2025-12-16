@@ -6,6 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import uk.gov.hmcts.reform.em.npa.domain.Rectangle;
 import uk.gov.hmcts.reform.em.npa.domain.Redaction;
 import uk.gov.hmcts.reform.em.npa.repository.EntityAuditEventRepository;
 import uk.gov.hmcts.reform.em.npa.repository.MarkUpRepository;
@@ -38,7 +39,7 @@ class DeleteServiceImplTest {
     void deleteByDocumentIdDeletesWhenFound() {
         Redaction r = new Redaction();
         r.setId(1L);
-        uk.gov.hmcts.reform.em.npa.domain.Rectangle rect = new uk.gov.hmcts.reform.em.npa.domain.Rectangle();
+        Rectangle rect = new uk.gov.hmcts.reform.em.npa.domain.Rectangle();
         rect.setId(10L);
         r.getRectangles().add(rect);
         UUID documentId = UUID.randomUUID();
