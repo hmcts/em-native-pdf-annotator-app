@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.em.npa.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import uk.gov.hmcts.reform.em.npa.domain.EntityAuditEvent;
@@ -29,4 +30,8 @@ public interface EntityAuditEventRepository extends JpaRepository<EntityAuditEve
         + "a.entityId = :entityId and a.commitVersion < :commitVersion)")
     EntityAuditEvent findOneByEntityTypeAndEntityIdAndCommitVersion(@Param("type") String type, @Param("entityId")
             Long entityId, @Param("commitVersion") Integer commitVersion);
+
+    @Modifying
+    @Query("DELETE FROM EntityAuditEvent e WHERE e.entityId IN :ids")
+    int deleteByEntityIdIn(@Param("ids") List<Long> ids);
 }
