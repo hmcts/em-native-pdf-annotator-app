@@ -11,7 +11,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.apache.tika.Tika;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.em.npa.config.Constants;
-import uk.gov.hmcts.reform.em.npa.service.DeleteService;
 import uk.gov.hmcts.reform.em.npa.service.RedactionService;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionRequest;
 
@@ -42,13 +40,9 @@ public class RedactionResource {
     private final Logger log = LoggerFactory.getLogger(RedactionResource.class);
 
     private RedactionService redactionService;
-    private final DeleteService deleteService;
-    @Value("${toggles.delete_enabled}")
-    private boolean deleteEnabled;
 
-    public RedactionResource(RedactionService redactionService, DeleteService deleteService) {
+    public RedactionResource(RedactionService redactionService) {
         this.redactionService = redactionService;
-        this.deleteService = deleteService;
     }
 
     @InitBinder

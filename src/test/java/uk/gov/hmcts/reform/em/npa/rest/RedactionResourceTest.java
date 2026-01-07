@@ -40,8 +40,6 @@ public class RedactionResourceTest {
     @Mock
     private RedactionService redactionService;
 
-    
-
     @Mock
     private WebDataBinder binder;
 
