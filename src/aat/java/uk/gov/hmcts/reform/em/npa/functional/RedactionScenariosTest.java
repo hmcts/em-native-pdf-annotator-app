@@ -241,8 +241,6 @@ class RedactionScenariosTest {
                 .statusCode(401);
     }
 
-    
-
     private RedactionDTO createRedaction() {
         final RedactionDTO redactionDTO = testUtil.createRedactionDTO(documentId, redactionId);
         redactionDTO.setPage(1);
