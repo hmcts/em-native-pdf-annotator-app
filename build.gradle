@@ -22,7 +22,7 @@ plugins {
     id 'au.com.dius.pact' version '4.6.19'
     id 'org.owasp.dependencycheck' version '12.1.6'
     id 'info.solidsoft.pitest' version '1.19.0-rc.2'
-    id 'com.github.hmcts.rse-cft-lib' version '0.19.1960'
+    id 'com.github.hmcts.rse-cft-lib' version '0.19.1964'
     id 'org.flywaydb.flyway' version '11.20.0'
     id 'io.freefair.lombok' version '9.1.0'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '5.0.1-FINAL'
@@ -62,7 +62,7 @@ application {
 def versions = [
         postgresql         : '42.7.8',
         h2                 : '1.4.199',
-        serenity           : '4.3.4',
+        serenity           : '5.0.2',
         pact_version       : '4.6.19',
         logging            : '7.0.0',
         fasterXmlJackson   : '2.20.1',
@@ -70,7 +70,7 @@ def versions = [
         mapstruct          : '1.6.3',
         springSecurity     : '6.5.7',
         log4JVersion       : '2.25.3',
-        jupiter            : '6.0.1',
+        jupiter            : '6.0.2',
         poi                : '5.5.1'
 ]
 
@@ -147,7 +147,7 @@ dependencies {
 
     implementation group: 'org.zalando', name: 'problem-spring-web', version: '0.29.1'
     implementation group: 'org.zalando', name: 'jackson-datatype-problem', version: '0.27.1'
-    implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.8.14'
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.8.15'
 
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: versions.springSecurity
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-client', version: versions.springSecurity
@@ -199,8 +199,8 @@ dependencies {
     testImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
     testImplementation group: 'net.serenity-bdd', name: 'serenity-single-page-report', version: versions.serenity
 
-    testImplementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.22'
-    testImplementation group: 'ch.qos.logback', name: 'logback-core', version: '1.5.22'
+    testImplementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.24'
+    testImplementation group: 'ch.qos.logback', name: 'logback-core', version: '1.5.24'
 
     testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.10', classifier: 'all', {
         exclude group: 'commons-io', module: 'commons-io'
@@ -245,7 +245,7 @@ dependencyManagement {
         dependencySet(group: 'org.apache.httpcomponents', version: '4.5.14') {
             entry 'fluent-hc'
         }
-        dependencySet(group: 'org.junit.platform', version: '6.0.1') {
+        dependencySet(group: 'org.junit.platform', version: '6.0.2') {
             entry 'junit-platform-commons'
             entry 'junit-platform-engine'
             entry 'junit-platform-launcher'
