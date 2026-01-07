@@ -64,7 +64,7 @@ def versions = [
         h2                 : '1.4.199',
         serenity           : '5.0.2',
         pact_version       : '4.6.19',
-        logging            : '6.1.9',
+        logging            : '7.0.0',
         fasterXmlJackson   : '2.20.1',
         hibernate          : '6.6.40.Final',
         mapstruct          : '1.6.3',
