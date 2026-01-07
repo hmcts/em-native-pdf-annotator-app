@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.em.npa.config.Constants;
@@ -300,8 +301,8 @@ public class MarkUpResource {
     })
     @DeleteMapping("/markups/document/{documentId}")
     public ResponseEntity<Void> deleteByDocumentId(
-            @org.springframework.web.bind.annotation.RequestHeader(value = "Authorization") String auth,
-            @org.springframework.web.bind.annotation.RequestHeader(value = "ServiceAuthorization") String serviceAuth,
+            @RequestHeader(value = "Authorization") String auth,
+            @RequestHeader(value = "ServiceAuthorization") String serviceAuth,
             @PathVariable UUID documentId) {
         if (!deleteEnabled) {
             throw new AccessDeniedException("Delete endpoint is disabled");
