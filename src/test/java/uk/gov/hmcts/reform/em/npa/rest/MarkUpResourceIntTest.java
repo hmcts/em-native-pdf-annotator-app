@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
-class RedactionResourceIntTest {
+class MarkUpResourceIntTest {
 
     @Autowired
     private MarkUpResource markUpResource;
