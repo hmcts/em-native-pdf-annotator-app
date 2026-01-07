@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class RedactionResourceIntTest {
 
     @Autowired
-    private RedactionResource redactionResource;
+    private MarkUpResource markUpResource;
 
     @MockBean
     private DeleteService deleteService;
@@ -51,7 +51,7 @@ class RedactionResourceIntTest {
 
     @BeforeEach
     void setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(redactionResource)
+        mockMvc = MockMvcBuilders.standaloneSetup(markUpResource)
             .setControllerAdvice(exceptionTranslator)
             .setMessageConverters(jacksonMessageConverter)
             .build();
@@ -59,10 +59,10 @@ class RedactionResourceIntTest {
 
     @Test
     void shouldReturn204WhenDeleteSucceeds() throws Exception {
-        ReflectionTestUtils.setField(redactionResource, "deleteEnabled", true);
+        ReflectionTestUtils.setField(markUpResource, "deleteEnabled", true);
         UUID documentId = UUID.randomUUID();
 
-        mockMvc.perform(delete("/api/redaction/document/{documentId}", documentId)
+        mockMvc.perform(delete("/api/markups/document/{documentId}", documentId)
                 .header("Authorization", "Bearer jwt")
                 .header("ServiceAuthorization", "Bearer s2s"))
             .andExpect(status().isNoContent());
@@ -72,10 +72,10 @@ class RedactionResourceIntTest {
 
     @Test
     void shouldReturn403WhenDeleteDisabled() throws Exception {
-        ReflectionTestUtils.setField(redactionResource, "deleteEnabled", false);
+        ReflectionTestUtils.setField(markUpResource, "deleteEnabled", false);
         UUID documentId = UUID.randomUUID();
 
-        mockMvc.perform(delete("/api/redaction/document/{documentId}", documentId)
+        mockMvc.perform(delete("/api/markups/document/{documentId}", documentId)
                 .header("Authorization", "Bearer jwt")
                 .header("ServiceAuthorization", "Bearer s2s"))
             .andExpect(status().isForbidden())
@@ -86,9 +86,9 @@ class RedactionResourceIntTest {
 
     @Test
     void shouldReturn400WhenInvalidUuidFormat() throws Exception {
-        ReflectionTestUtils.setField(redactionResource, "deleteEnabled", true);
+        ReflectionTestUtils.setField(markUpResource, "deleteEnabled", true);
 
-        mockMvc.perform(delete("/api/redaction/document/{documentId}", "invalid-uuid")
+        mockMvc.perform(delete("/api/markups/document/{documentId}", "invalid-uuid")
                 .header("Authorization", "Bearer jwt")
                 .header("ServiceAuthorization", "Bearer s2s"))
             .andExpect(status().isBadRequest());
@@ -98,11 +98,11 @@ class RedactionResourceIntTest {
 
     @Test
     void shouldReturn500WhenDeleteThrowsRuntimeException() throws Exception {
-        ReflectionTestUtils.setField(redactionResource, "deleteEnabled", true);
+        ReflectionTestUtils.setField(markUpResource, "deleteEnabled", true);
         UUID documentId = UUID.randomUUID();
         doThrow(new RuntimeException("Database error")).when(deleteService).deleteByDocumentId(any());
 
-        mockMvc.perform(delete("/api/redaction/document/{documentId}", documentId)
+        mockMvc.perform(delete("/api/markups/document/{documentId}", documentId)
                 .header("Authorization", "Bearer jwt")
                 .header("ServiceAuthorization", "Bearer s2s"))
             .andExpect(status().isInternalServerError())
@@ -113,11 +113,11 @@ class RedactionResourceIntTest {
 
     @Test
     void shouldReturn204WhenNoRecordsToDelete() throws Exception {
-        ReflectionTestUtils.setField(redactionResource, "deleteEnabled", true);
+        ReflectionTestUtils.setField(markUpResource, "deleteEnabled", true);
         UUID documentId = UUID.randomUUID();
         // deleteService.deleteByDocumentId does nothing (no records found) - default mock behavior
 
-        mockMvc.perform(delete("/api/redaction/document/{documentId}", documentId)
+        mockMvc.perform(delete("/api/markups/document/{documentId}", documentId)
                 .header("Authorization", "Bearer jwt")
                 .header("ServiceAuthorization", "Bearer s2s"))
             .andExpect(status().isNoContent());

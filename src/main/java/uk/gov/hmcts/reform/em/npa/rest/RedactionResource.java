@@ -16,15 +16,10 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.util.StopWatch;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.em.npa.config.Constants;
@@ -33,7 +28,6 @@ import uk.gov.hmcts.reform.em.npa.service.RedactionService;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionRequest;
 
 import java.io.File;
-import java.util.UUID;
 
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 
@@ -106,39 +100,5 @@ public class RedactionResource {
                     .badRequest()
                     .body(e.getMessage());
         }
-    }
-
-    @Operation(
-        summary = "Delete all redactions for a document",
-        description = "Deletes all redactions associated with the provided DocumentId",
-        parameters = {
-            @Parameter(in = ParameterIn.HEADER, name = "authorization",
-                    schema = @Schema(type = "string"), required = true),
-            @Parameter(in = ParameterIn.HEADER, name = "serviceauthorization",
-                    schema = @Schema(type = "string"), required = true)
-        }
-    )
-    @ApiResponses({
-        @ApiResponse(responseCode = "204", description = "Deleted"),
-        @ApiResponse(responseCode = "400", description = "Invalid request"),
-        @ApiResponse(responseCode = "401", description = "Unauthorised"),
-        @ApiResponse(responseCode = "403", description = "Forbidden"),
-        @ApiResponse(responseCode = "500", description = "Server Error")
-    })
-    @DeleteMapping("/redaction/document/{documentId}")
-    public ResponseEntity<Void> deleteByDocumentId(
-            @RequestHeader(value = "Authorization", required = true) String auth,
-            @RequestHeader(value = "ServiceAuthorization", required = true) String serviceAuth,
-            @PathVariable UUID documentId) {
-        if (!deleteEnabled) {
-            throw new AccessDeniedException("Delete endpoint is disabled");
-        }
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
-        log.debug("REST request to delete all Redactions for documentId: {}", documentId);
-        deleteService.deleteByDocumentId(documentId);
-        stopWatch.stop();
-        log.info("Delete redactions completed for document {} in {} ms", documentId, stopWatch.getTotalTimeMillis());
-        return ResponseEntity.noContent().build();
     }
 }
