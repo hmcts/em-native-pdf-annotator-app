@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.em.npa.domain.Redaction;
 import uk.gov.hmcts.reform.em.npa.repository.EntityAuditEventRepository;
 import uk.gov.hmcts.reform.em.npa.repository.MarkUpRepository;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -60,5 +61,67 @@ class DeleteServiceImplTest {
         deleteService.deleteByDocumentId(documentId);
 
         verify(markUpRepository, never()).deleteAll(Mockito.anyList());
+    }
+
+    @Test
+    void deleteByDocumentIdSkipsNullRedactions() {
+        UUID documentId = UUID.randomUUID();
+
+        // redactions list contains a null and a valid redaction
+        List<Redaction> redactions = new ArrayList<>();
+        redactions.add(null);
+        Redaction r = new Redaction();
+        r.setId(2L);
+        Rectangle rect = new Rectangle();
+        rect.setId(20L);
+        r.getRectangles().add(rect);
+        redactions.add(r);
+
+        when(markUpRepository.findByDocumentId(documentId)).thenReturn(redactions);
+        when(entityAuditEventRepository.deleteByEntityIdIn(Mockito.anyList())).thenReturn(2);
+
+        deleteService.deleteByDocumentId(documentId);
+
+        // ensure we proceeded to deleteAll (no exception due to null entry)
+        verify(markUpRepository).deleteAll(redactions);
+    }
+
+    @Test
+    void deleteByDocumentIdHandlesNullRedactionDbId() {
+        UUID documentId = UUID.randomUUID();
+
+        Redaction r = new Redaction();
+        // r.setId(null) -> ensure code handles null id
+        Rectangle rect = new Rectangle();
+        rect.setId(30L);
+        r.getRectangles().add(rect);
+
+        when(markUpRepository.findByDocumentId(documentId)).thenReturn(List.of(r));
+        when(entityAuditEventRepository.deleteByEntityIdIn(Mockito.anyList())).thenReturn(1);
+
+        deleteService.deleteByDocumentId(documentId);
+
+        verify(markUpRepository).deleteAll(List.of(r));
+        verify(entityAuditEventRepository).deleteByEntityIdIn(Mockito.anyList());
+    }
+
+    @Test
+    void deleteByDocumentIdCoversNonNullRedactionBusinessId() {
+        UUID documentId = UUID.randomUUID();
+
+        Redaction r = new Redaction();
+        r.setId(3L); // DB id present
+        r.setRedactionId(UUID.randomUUID()); // business id present (used only for debug logging)
+        Rectangle rect = new Rectangle();
+        rect.setId(40L);
+        r.getRectangles().add(rect);
+
+        when(markUpRepository.findByDocumentId(documentId)).thenReturn(List.of(r));
+        when(entityAuditEventRepository.deleteByEntityIdIn(Mockito.anyList())).thenReturn(2);
+
+        deleteService.deleteByDocumentId(documentId);
+
+        verify(entityAuditEventRepository).deleteByEntityIdIn(Mockito.anyList());
+        verify(markUpRepository).deleteAll(List.of(r));
     }
 }
