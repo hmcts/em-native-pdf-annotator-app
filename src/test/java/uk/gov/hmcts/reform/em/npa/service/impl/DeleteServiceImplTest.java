@@ -65,8 +65,6 @@ class DeleteServiceImplTest {
 
     @Test
     void deleteByDocumentIdSkipsNullRedactions() {
-        UUID documentId = UUID.randomUUID();
-
         // redactions list contains a null and a valid redaction
         List<Redaction> redactions = new ArrayList<>();
         redactions.add(null);
@@ -76,7 +74,7 @@ class DeleteServiceImplTest {
         rect.setId(20L);
         r.getRectangles().add(rect);
         redactions.add(r);
-
+        UUID documentId = UUID.randomUUID();
         when(markUpRepository.findByDocumentId(documentId)).thenReturn(redactions);
         when(entityAuditEventRepository.deleteByEntityIdIn(Mockito.anyList())).thenReturn(2);
 
@@ -88,14 +86,13 @@ class DeleteServiceImplTest {
 
     @Test
     void deleteByDocumentIdHandlesNullRedactionDbId() {
-        UUID documentId = UUID.randomUUID();
 
         Redaction r = new Redaction();
         // r.setId(null) -> ensure code handles null id
         Rectangle rect = new Rectangle();
         rect.setId(30L);
         r.getRectangles().add(rect);
-
+        UUID documentId = UUID.randomUUID();
         when(markUpRepository.findByDocumentId(documentId)).thenReturn(List.of(r));
         when(entityAuditEventRepository.deleteByEntityIdIn(Mockito.anyList())).thenReturn(1);
 
@@ -107,7 +104,6 @@ class DeleteServiceImplTest {
 
     @Test
     void deleteByDocumentIdCoversNonNullRedactionBusinessId() {
-        UUID documentId = UUID.randomUUID();
 
         Redaction r = new Redaction();
         r.setId(3L); // DB id present
@@ -115,6 +111,7 @@ class DeleteServiceImplTest {
         Rectangle rect = new Rectangle();
         rect.setId(40L);
         r.getRectangles().add(rect);
+        UUID documentId = UUID.randomUUID();
 
         when(markUpRepository.findByDocumentId(documentId)).thenReturn(List.of(r));
         when(entityAuditEventRepository.deleteByEntityIdIn(Mockito.anyList())).thenReturn(2);
