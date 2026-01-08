@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.em.npa.service.DeleteService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 import java.util.UUID;
 
 @Service
@@ -44,25 +43,7 @@ public class DeleteServiceImpl implements DeleteService {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
-        List<Long> allAuditIds = new ArrayList<>();
-        StringJoiner redactionUuids = new StringJoiner(", ");
-
-        for (Redaction redaction : redactions) {
-            if (Objects.isNull(redaction)) {
-                continue;
-            }
-            if (Objects.nonNull(redaction.getId())) {
-                allAuditIds.add(redaction.getId());
-            }
-            if (Objects.nonNull(redaction.getRedactionId())) {
-                redactionUuids.add(redaction.getRedactionId().toString());
-            }
-            for (Rectangle rectangle : redaction.getRectangles()) {
-                if (Objects.nonNull(rectangle.getId())) {
-                    allAuditIds.add(rectangle.getId());
-                }
-            }
-        }
+        List<Long> allAuditIds = extractAllAuditIds(redactions);
 
         if (!allAuditIds.isEmpty()) {
             int totalAudits = entityAuditEventRepository.deleteByEntityIdIn(allAuditIds);
@@ -72,10 +53,28 @@ public class DeleteServiceImpl implements DeleteService {
             log.info("No rectangle or redaction audit events found for document {}", documentId);
         }
 
-        log.debug("Found {} redactions for document {}: {}",
-                redactions.size(), documentId, redactionUuids);
+        log.debug("Found {} redactions for document {}",
+                redactions.size(), documentId);
         markUpRepository.deleteAll(redactions);
         stopWatch.stop();
         log.info("Deletion completed for document {} in {} ms", documentId, stopWatch.getTotalTimeMillis());
+    }
+
+    private List<Long> extractAllAuditIds(List<Redaction> redactions) {
+        List<Long> allAuditIds = new ArrayList<>();
+        for (Redaction redaction : redactions) {
+            if (Objects.isNull(redaction)) {
+                continue;
+            }
+            if (Objects.nonNull(redaction.getId())) {
+                allAuditIds.add(redaction.getId());
+            }
+            for (Rectangle rectangle : redaction.getRectangles()) {
+                if (Objects.nonNull(rectangle.getId())) {
+                    allAuditIds.add(rectangle.getId());
+                }
+            }
+        }
+        return allAuditIds;
     }
 }
