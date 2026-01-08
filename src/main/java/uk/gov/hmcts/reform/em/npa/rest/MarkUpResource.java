@@ -10,11 +10,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.em.npa.config.Constants;
@@ -31,6 +34,7 @@ import uk.gov.hmcts.reform.em.npa.rest.errors.EmptyResponseException;
 import uk.gov.hmcts.reform.em.npa.rest.errors.ValidationErrorException;
 import uk.gov.hmcts.reform.em.npa.rest.util.HeaderUtil;
 import uk.gov.hmcts.reform.em.npa.rest.util.PaginationUtil;
+import uk.gov.hmcts.reform.em.npa.service.DeleteService;
 import uk.gov.hmcts.reform.em.npa.service.MarkUpService;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionSetDTO;
@@ -56,9 +60,14 @@ public class MarkUpResource {
     private static final String STRING_FORMAT = "%s - %s";
 
     private MarkUpService markUpService;
+    private final DeleteService deleteService;
 
-    public MarkUpResource(MarkUpService markUpService) {
+    @Value("${toggles.delete_enabled}")
+    private boolean deleteEnabled;
+
+    public MarkUpResource(MarkUpService markUpService, DeleteService deleteService) {
         this.markUpService = markUpService;
+        this.deleteService = deleteService;
     }
 
     @InitBinder
@@ -268,6 +277,39 @@ public class MarkUpResource {
                 .ok()
                 .headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, documentId.toString()))
                 .build();
+    }
+
+    /**
+     * DELETE /markups/document/{documentId} : delete all markups and related audit events for a document.
+     */
+    @Operation(
+        summary = "Delete all redactions for a document",
+        description = "Deletes all redactions associated with the provided DocumentId",
+        parameters = {
+            @Parameter(in = ParameterIn.HEADER, name = "authorization",
+                schema = @Schema(type = "string"), required = true),
+            @Parameter(in = ParameterIn.HEADER, name = "serviceauthorization",
+                schema = @Schema(type = "string"), required = true)
+        }
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "204", description = "Deleted"),
+        @ApiResponse(responseCode = "400", description = "Invalid request"),
+        @ApiResponse(responseCode = "401", description = "Unauthorised"),
+        @ApiResponse(responseCode = "403", description = "Forbidden"),
+        @ApiResponse(responseCode = "500", description = "Server Error")
+    })
+    @DeleteMapping("/markups/document/{documentId}")
+    public ResponseEntity<Void> deleteByDocumentId(
+            @RequestHeader(value = "Authorization") String auth,
+            @RequestHeader(value = "ServiceAuthorization") String serviceAuth,
+            @PathVariable UUID documentId) {
+        if (!deleteEnabled) {
+            throw new AccessDeniedException("Delete endpoint is disabled");
+        }
+        log.debug("REST request to delete all Redactions for documentId: {}", documentId);
+        deleteService.deleteByDocumentId(documentId);
+        return ResponseEntity.noContent().build();
     }
 
     /**
