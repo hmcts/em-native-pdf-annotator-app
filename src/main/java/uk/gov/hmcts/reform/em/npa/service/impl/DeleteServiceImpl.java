@@ -36,46 +36,46 @@ public class DeleteServiceImpl implements DeleteService {
     public void deleteByDocumentId(UUID documentId) {
         log.debug("Deleting all redactions for documentId: {}", documentId);
         var redactions = markUpRepository.findByDocumentId(documentId);
-        if (Objects.nonNull(redactions) && !redactions.isEmpty()) {
-            StopWatch stopWatch = new StopWatch();
-            stopWatch.start();
-
-            List<Long> allAuditIds = new ArrayList<>();
-            StringJoiner redactionUuids = new StringJoiner(", ");
-
-            for (Redaction redaction : redactions) {
-                if (Objects.isNull(redaction)) {
-                    continue;
-                }
-                if (Objects.nonNull(redaction.getId())) {
-                    allAuditIds.add(redaction.getId());
-                }
-                if (Objects.nonNull(redaction.getRedactionId())) {
-                    redactionUuids.add(redaction.getRedactionId().toString());
-                }
-                for (Rectangle rectangle : redaction.getRectangles()) {
-                    if (Objects.nonNull(rectangle.getId())) {
-                        allAuditIds.add(rectangle.getId());
-                    }
-                }
-            }
-
-            if (!allAuditIds.isEmpty()) {
-                int totalAudits = entityAuditEventRepository.deleteByEntityIdIn(allAuditIds);
-                log.debug("Deleted {} audit events (rectangles + redactions) for document {}",
-                    totalAudits, documentId);
-            } else {
-                log.info("No rectangle or redaction audit events found for document {}", documentId);
-            }
-
-            log.debug("Found {} redactions for document {}: {}",
-                redactions.size(), documentId, redactionUuids);
-            markUpRepository.deleteAll(redactions);
-            stopWatch.stop();
-            log.info("Deletion completed for document {} in {} ms", documentId, stopWatch.getTotalTimeMillis());
-        } else {
+        if (Objects.isNull(redactions) || redactions.isEmpty()) {
             log.debug("No redactions found for document {}", documentId);
+            return;
         }
 
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+
+        List<Long> allAuditIds = new ArrayList<>();
+        StringJoiner redactionUuids = new StringJoiner(", ");
+
+        for (Redaction redaction : redactions) {
+            if (Objects.isNull(redaction)) {
+                continue;
+            }
+            if (Objects.nonNull(redaction.getId())) {
+                allAuditIds.add(redaction.getId());
+            }
+            if (Objects.nonNull(redaction.getRedactionId())) {
+                redactionUuids.add(redaction.getRedactionId().toString());
+            }
+            for (Rectangle rectangle : redaction.getRectangles()) {
+                if (Objects.nonNull(rectangle.getId())) {
+                    allAuditIds.add(rectangle.getId());
+                }
+            }
+        }
+
+        if (!allAuditIds.isEmpty()) {
+            int totalAudits = entityAuditEventRepository.deleteByEntityIdIn(allAuditIds);
+            log.debug("Deleted {} audit events (rectangles + redactions) for document {}",
+                    totalAudits, documentId);
+        } else {
+            log.info("No rectangle or redaction audit events found for document {}", documentId);
+        }
+
+        log.debug("Found {} redactions for document {}: {}",
+                redactions.size(), documentId, redactionUuids);
+        markUpRepository.deleteAll(redactions);
+        stopWatch.stop();
+        log.info("Deletion completed for document {} in {} ms", documentId, stopWatch.getTotalTimeMillis());
     }
 }

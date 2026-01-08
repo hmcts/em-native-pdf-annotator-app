@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.em.npa.service.impl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -16,6 +17,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -118,7 +120,29 @@ class DeleteServiceImplTest {
 
         deleteService.deleteByDocumentId(documentId);
 
-        verify(entityAuditEventRepository).deleteByEntityIdIn(Mockito.anyList());
+        ArgumentCaptor<List<Long>> idsCaptor = ArgumentCaptor.forClass(List.class);
+        verify(entityAuditEventRepository).deleteByEntityIdIn(idsCaptor.capture());
+        // Expect rectangle id and redaction DB id collected
+        assertEquals(2, idsCaptor.getValue().size());
+        verify(markUpRepository).deleteAll(List.of(r));
+    }
+
+    @Test
+    void deleteByDocumentIdSkipsAuditDeleteWhenNoIdsPresent() {
+        // Given a redaction with no rectangle ids and no DB id
+        Redaction r = new Redaction();
+        Rectangle rect = new Rectangle();
+        // both ids null
+        r.getRectangles().add(rect);
+        UUID documentId = UUID.randomUUID();
+
+        when(markUpRepository.findByDocumentId(documentId)).thenReturn(List.of(r));
+
+        // When
+        deleteService.deleteByDocumentId(documentId);
+
+        // Then: audit delete should be skipped when allAuditIds is empty
+        verify(entityAuditEventRepository, never()).deleteByEntityIdIn(Mockito.anyList());
         verify(markUpRepository).deleteAll(List.of(r));
     }
 }
