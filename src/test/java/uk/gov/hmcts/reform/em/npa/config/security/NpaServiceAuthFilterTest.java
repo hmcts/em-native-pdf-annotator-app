@@ -77,7 +77,7 @@ class NpaServiceAuthFilterTest {
     @DisplayName("XUI calling DELETE endpoint should return 401")
     void shouldReturn401WhenNotAuthorizedForDelete() throws ServletException, IOException {
         request.addHeader("ServiceAuthorization", "Bearer validToken");
-        request.setRequestURI("/api/redaction/document/123e4567-e89b-12d3-a456-426614174000");
+        request.setRequestURI("/api/markups/document/123e4567-e89b-12d3-a456-426614174000");
         request.setMethod("DELETE");
         when(authTokenValidator.getServiceName("Bearer validToken")).thenReturn(XUI_WEBAPP);
 
@@ -91,7 +91,7 @@ class NpaServiceAuthFilterTest {
     @DisplayName("DM-Store calling DELETE endpoint should be successful")
     void shouldAllowDmStoreForDeleteEndpoint() throws ServletException, IOException {
         request.addHeader("ServiceAuthorization", "Bearer validToken");
-        request.setRequestURI("/api/redaction/document/123e4567-e89b-12d3-a456-426614174000");
+        request.setRequestURI("/api/markups/document/123e4567-e89b-12d3-a456-426614174000");
         request.setMethod("DELETE");
         when(authTokenValidator.getServiceName("Bearer validToken")).thenReturn(DM_STORE);
 

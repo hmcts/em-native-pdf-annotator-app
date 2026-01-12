@@ -3,18 +3,12 @@ package uk.gov.hmcts.reform.em.npa.rest;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.bind.WebDataBinder;
-import uk.gov.hmcts.reform.em.npa.Application;
-import uk.gov.hmcts.reform.em.npa.TestSecurityConfiguration;
 import uk.gov.hmcts.reform.em.npa.config.Constants;
 import uk.gov.hmcts.reform.em.npa.service.RedactionService;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
@@ -38,9 +32,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
-@AutoConfigureMockMvc
 public class RedactionResourceTest {
 
     @InjectMocks
@@ -60,6 +51,8 @@ public class RedactionResourceTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
     }
+
+    
 
     public static RedactionRequest createRequest() {
         RedactionRequest redactionRequest = new RedactionRequest();
