@@ -25,6 +25,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.em.npa.rest.MarkUpResource;
+import uk.gov.hmcts.reform.em.npa.service.DeleteService;
 import uk.gov.hmcts.reform.em.npa.service.MarkUpService;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
@@ -68,11 +69,13 @@ public class NpaPactProviderTest {
     @MockitoBean
     private MarkUpService markUpService;
 
+    @MockitoBean
+    private DeleteService deleteService;
+
     @Autowired
     public NpaPactProviderTest(MockMvc mockMvc) {
         this.mockMvc = mockMvc;
     }
-
 
     @TestTemplate
     @ExtendWith(PactVerificationInvocationContextProvider.class)

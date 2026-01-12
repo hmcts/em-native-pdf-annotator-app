@@ -54,6 +54,48 @@ class MarkUpScenariosTest {
         this.testUtil = testUtil;
     }
 
+    @Test
+    void shouldDeleteAllRedactionsByDocumentId() {
+        final UUID docId = UUID.randomUUID();
+
+        // Create two markups for the same document
+        final String redactionId1 = UUID.randomUUID().toString();
+        final String rectangleId1 = UUID.randomUUID().toString();
+        request
+            .body(testUtil.createMarkUpPayload(redactionId1, docId.toString(), rectangleId1).toString())
+            .post("/api/markups")
+            .then()
+            .statusCode(201)
+            .body(notNullValue());
+
+        final String redactionId2 = UUID.randomUUID().toString();
+        final String rectangleId2 = UUID.randomUUID().toString();
+        request
+            .body(testUtil.createMarkUpPayload(redactionId2, docId.toString(), rectangleId2).toString())
+            .post("/api/markups")
+            .then()
+            .statusCode(201)
+            .body(notNullValue());
+
+        // Ensure they exist
+        request
+            .get("/api/markups/" + docId)
+            .then()
+            .statusCode(200);
+
+        // Call new delete endpoint
+        request
+            .delete("/api/markups/document/" + docId)
+            .then()
+            .statusCode(204);
+
+        // Verify nothing remains
+        request
+            .get("/api/markups/" + docId)
+            .then()
+            .statusCode(204);
+    }
+
     @BeforeEach
     public void setupRequestSpecification() {
         request = testUtil
