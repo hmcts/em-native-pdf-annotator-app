@@ -10,12 +10,15 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.WebDataBinder;
 import uk.gov.hmcts.reform.em.npa.config.Constants;
 import uk.gov.hmcts.reform.em.npa.rest.errors.EmptyResponseException;
 import uk.gov.hmcts.reform.em.npa.rest.errors.ValidationErrorException;
+import uk.gov.hmcts.reform.em.npa.service.DeleteService;
 import uk.gov.hmcts.reform.em.npa.service.MarkUpService;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RectangleDTO;
 import uk.gov.hmcts.reform.em.npa.service.dto.redaction.RedactionDTO;
@@ -49,6 +52,9 @@ class MarkUpResourceTest {
     private MarkUpService markUpService;
 
     @Mock
+    private DeleteService deleteService;
+
+    @Mock
     private BindingResult result;
 
     @Mock
@@ -60,6 +66,42 @@ class MarkUpResourceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+    }
+
+    @Test
+    void shouldThrowAccessDeniedWhenDeleteDisabled() {
+        UUID documentId = UUID.randomUUID();
+        ReflectionTestUtils.setField(markUpResource, "deleteEnabled", false);
+
+        org.junit.jupiter.api.Assertions.assertThrows(AccessDeniedException.class, () ->
+            markUpResource.deleteByDocumentId("jwt", "s2s", documentId));
+
+        org.mockito.Mockito.verify(deleteService, org.mockito.Mockito.never())
+                .deleteByDocumentId(org.mockito.ArgumentMatchers.any());
+    }
+
+    @Test
+    void shouldDeleteWhenEnabled() {
+        UUID documentId = UUID.randomUUID();
+        ReflectionTestUtils.setField(markUpResource, "deleteEnabled", true);
+
+        ResponseEntity<Void> response = markUpResource.deleteByDocumentId("jwt", "s2s", documentId);
+
+        org.junit.jupiter.api.Assertions.assertEquals(204, response.getStatusCode().value());
+        org.mockito.Mockito.verify(deleteService).deleteByDocumentId(documentId);
+    }
+
+    @Test
+    void shouldPropagateExceptionWhenDeleteThrows() {
+        UUID documentId = UUID.randomUUID();
+        ReflectionTestUtils.setField(markUpResource, "deleteEnabled", true);
+        org.mockito.BDDMockito.willThrow(new RuntimeException("dummy error"))
+            .given(deleteService).deleteByDocumentId(org.mockito.ArgumentMatchers.any(UUID.class));
+
+        org.junit.jupiter.api.Assertions.assertThrows(RuntimeException.class, () ->
+            markUpResource.deleteByDocumentId("jwt", "s2s", documentId));
+
+        org.mockito.Mockito.verify(deleteService).deleteByDocumentId(documentId);
     }
 
     @Test

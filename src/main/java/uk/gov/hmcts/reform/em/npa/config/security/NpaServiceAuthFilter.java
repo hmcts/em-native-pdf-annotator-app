@@ -56,7 +56,7 @@ public class NpaServiceAuthFilter extends OncePerRequestFilter {
                 return;
             }
 
-            boolean isDeleteEndpoint = request.getRequestURI().contains("/api/redaction/document/")
+            boolean isDeleteEndpoint = request.getRequestURI().contains("/api/markups/document/")
                     && "DELETE".equalsIgnoreCase(request.getMethod());
 
             if (isDeleteEndpoint && !deleteAuthorisedServices.contains(service)) {
