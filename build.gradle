@@ -84,9 +84,7 @@ sourceSets {
     integrationTest {
         java {
             compileClasspath += main.output
-            compileClasspath += test.output
             runtimeClasspath += main.output
-            runtimeClasspath += test.output
         }
         resources {
             srcDir 'src/test/resources'
@@ -103,9 +101,6 @@ sourceSets {
 configurations {
     aatImplementation.extendsFrom(testImplementation)
     aatRuntime.extendsFrom(testRuntimeOnly)
-
-    integrationTestImplementation.extendsFrom(testImplementation)
-    integrationTestRuntimeOnly.extendsFrom(testRuntimeOnly)
 }
 
 dependencyCheck {
@@ -312,6 +307,8 @@ checkstyleMain.shouldRunAfter(compileJava)
 test.shouldRunAfter(checkstyleTest)
 
 jacocoTestReport {
+    dependsOn test, integration
+    executionData(test, integration)
     executionData(test)
 
     reports {
