@@ -307,8 +307,8 @@ checkstyleMain.shouldRunAfter(compileJava)
 test.shouldRunAfter(checkstyleTest)
 
 jacocoTestReport {
-    dependsOn test, integration
-    executionData(test, integration)
+    dependsOn test, integrationTest
+    executionData(test, integrationTest)
     executionData(test)
 
     reports {
