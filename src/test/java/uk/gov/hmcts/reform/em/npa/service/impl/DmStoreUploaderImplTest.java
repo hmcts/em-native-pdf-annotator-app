@@ -2,240 +2,340 @@ package uk.gov.hmcts.reform.em.npa.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import okhttp3.Interceptor;
-import okhttp3.MediaType;
+import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Protocol;
+import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import org.apache.pdfbox.io.IOUtils;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.em.npa.Application;
-import uk.gov.hmcts.reform.em.npa.TestSecurityConfiguration;
+import org.junit.jupiter.api.io.TempDir;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.em.npa.config.Constants;
 import uk.gov.hmcts.reform.em.npa.config.security.SecurityUtils;
-import uk.gov.hmcts.reform.em.npa.service.DmStoreUploader;
 import uk.gov.hmcts.reform.em.npa.service.exception.DocumentTaskProcessingException;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {Application.class, TestSecurityConfiguration.class})
+@ExtendWith(MockitoExtension.class)
 class DmStoreUploaderImplTest {
 
-    private static final String PDF_FILENAME = "annotationTemplate.pdf";
+    @Mock
+    private OkHttpClient okHttpClient;
 
-    DmStoreUploader dmStoreUploader;
+    @Mock
+    private AuthTokenGenerator authTokenGenerator;
 
-    @Autowired
+    @Mock
     private SecurityUtils securityUtils;
 
-    private static Response interceptSuccess(Interceptor.Chain chain) throws IOException {
+    @Mock
+    private Call call;
 
-        if (chain.request().url().toString().endsWith("/binary")) {
-            InputStream file = ClassLoader.getSystemResourceAsStream(PDF_FILENAME);
+    @Mock
+    private ResponseBody responseBody;
 
-            return new Response.Builder()
-                .body(ResponseBody.create(IOUtils.toByteArray(file), MediaType.get("application/pdf")))
-                .request(chain.request())
-                .message("")
-                .code(200)
-                .protocol(Protocol.HTTP_2)
-                .build();
-        } else {
-            return new Response.Builder()
-                .body(ResponseBody.create(
-                    """
-                      {
-                      
-                      "_embedded": {
-                      
-                        "documents": [
-                      
-                          {
-                      
-                            "modifiedOn": "2020-04-23T14:37:02+0000",
-                      
-                            "size": 19496,
-                      
-                            "createdBy": "7f0fd7bf-48c0-4462-9056-38c1190e391f",
-                      
-                            "_links": {
-                      
-                              "thumbnail": {
-                      
-                                "href": "http://localhost:4603/documents/0e38e3ad-171f-4d27-bf54-e41f2ed744eb/thumbnail"
-                      
-                              },
-                      
-                              "binary": {
-                      
-                                "href": "http://localhost:4603/documents/0e38e3ad-171f-4d27-bf54-e41f2ed744eb/binary"
-                      
-                              },
-                      
-                              "self": {
-                      
-                                "href": "http://localhost:4603/documents/0e38e3ad-171f-4d27-bf54-e41f2ed744eb"
-                      
-                              }
-                      
-                            },
-                      
-                            "_embedded": {
-                      
-                              "allDocumentVersions": {
-                      
-                                "_embedded": {
-                      
-                                  "documentVersions": [
-                      
-                                    {
-                      
-                                      "size": 19496,
-                      
-                                      "createdBy": "7f0fd7bf-48c0-4462-9056-38c1190e391f",
-                      
-                                      "_links": {
-                      
-                                        "thumbnail": {
-                      
-                                          "href": "http://localhost:4603/documents/0e38e3ad-171f-4d27-bf54-e41f2ed744eb/versions/da13dae7-f2bc-4a43-937c-83a255f2f72f/thumbnail"
-                      
-                        },
-                      
-                        "document": {
-                      
-                          "href": "http://localhost:4603/documents/0e38e3ad-171f-4d27-bf54-e41f2ed744eb"
-                      
-                        },
-                      
-                        "binary": {
-                      
-                          "href": "http://localhost:4603/documents/0e38e3ad-171f-4d27-bf54-e41f2ed744eb/versions/da13dae7-f2bc-4a43-937c-83a255f2f72f/binary"
-                      
-                                        },
-                      
-                                        "self": {
-                      
-                                          "href": "http://localhost:4603/documents/0e38e3ad-171f-4d27-bf54-e41f2ed744eb/versions/da13dae7-f2bc-4a43-937c-83a255f2f72f"
-                      
-                                            }
-                      
-                                          },
-                      
-                                          "originalDocumentName": "stitched9163237694642183694.pdf",
-                      
-                                          "mimeType": "application/pdf",
-                      
-                                          "createdOn": "2020-04-23T14:37:02+0000"
-                      
-                                        }
-                      
-                                      ]
-                      
-                                    }
-                      
-                                  }
-                      
-                                },
-                      
-                                "lastModifiedBy": "7f0fd7bf-48c0-4462-9056-38c1190e391f",
-                      
-                                "originalDocumentName": "stitched9163237694642183694.pdf",
-                      
-                                "mimeType": "application/pdf",
-                      
-                                "classification": "PUBLIC",
-                      
-                                "createdOn": "2020-04-23T14:37:02+0000"
-                      
-                              }
-                      
-                            ]
-                      
-                          }
-                      
-                        }""", MediaType.get("application/json")))
-                .request(chain.request())
-                .message("")
-                .code(200)
-                .protocol(Protocol.HTTP_2)
-                .build();
-        }
+    private ObjectMapper objectMapper;
 
+    private DmStoreUploaderImpl dmStoreUploader;
+
+    private static final String DM_STORE_BASE_URL = "http://dm-store:8080";
+    private static final String AUTH_TOKEN = "Bearer test-token";
+    private static final String USER_ID = "test-user-123";
+
+    @TempDir
+    Path tempDir;
+
+    @BeforeEach
+    void setUp() {
+        objectMapper = new ObjectMapper();
+        dmStoreUploader = new DmStoreUploaderImpl(
+            okHttpClient,
+            authTokenGenerator,
+            DM_STORE_BASE_URL,
+            securityUtils,
+            objectMapper
+        );
     }
 
-    private static Response interceptFailure(Interceptor.Chain chain) throws IOException {
+    private void setupDefaultMocks() {
+        when(authTokenGenerator.generate()).thenReturn(AUTH_TOKEN);
+        when(securityUtils.getCurrentUserLogin()).thenReturn(Optional.of(USER_ID));
+    }
 
-        InputStream file = ClassLoader.getSystemResourceAsStream(PDF_FILENAME);
+    @Test
+    void shouldUploadDocumentSuccessfully() throws Exception {
+        setupDefaultMocks();
+        File testFile = createTestFile("test.pdf", "PDF content");
+        String responseJson = """
+            {
+              "_embedded": {
+                "documents": [
+                  {
+                    "_links": {
+                      "self": {
+                        "href": "http://dm-store:8080/documents/doc-123"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+            """;
 
-        return new Response.Builder()
-            .body(ResponseBody.create(IOUtils.toByteArray(file), MediaType.get("application/pdf")))
-            .request(chain.request())
-            .message("")
+        Response response = new Response.Builder()
+            .request(new Request.Builder().url(DM_STORE_BASE_URL + "/documents").build())
+            .protocol(Protocol.HTTP_1_1)
+            .code(200)
+            .message("OK")
+            .body(ResponseBody.create(responseJson, okhttp3.MediaType.get("application/json")))
+            .build();
+
+        when(okHttpClient.newCall(any(Request.class))).thenReturn(call);
+        when(call.execute()).thenReturn(response);
+
+        JsonNode result = dmStoreUploader.uploadDocument(testFile);
+
+        assertThat(result).isNotNull();
+        assertThat(result.at("/_embedded/documents/0/_links/self/href").asText())
+            .isEqualTo("http://dm-store:8080/documents/doc-123");
+
+        ArgumentCaptor<Request> requestCaptor = ArgumentCaptor.forClass(Request.class);
+        verify(okHttpClient).newCall(requestCaptor.capture());
+
+        Request capturedRequest = requestCaptor.getValue();
+        assertThat(capturedRequest.url().toString()).isEqualTo(DM_STORE_BASE_URL + "/documents");
+        assertThat(capturedRequest.method()).isEqualTo("POST");
+        assertThat(capturedRequest.header("user-id")).isEqualTo(USER_ID);
+        assertThat(capturedRequest.header("user-roles")).isEqualTo("caseworker");
+        assertThat(capturedRequest.header("ServiceAuthorization")).isEqualTo(AUTH_TOKEN);
+    }
+
+    @Test
+    void shouldUploadDocumentWithAnonymousUserWhenNoUserLogin() throws Exception {
+        when(authTokenGenerator.generate()).thenReturn(AUTH_TOKEN);
+        when(securityUtils.getCurrentUserLogin()).thenReturn(Optional.empty());
+
+        File testFile = createTestFile("test.pdf", "PDF content");
+        String responseJson = """
+            {
+              "_embedded": {
+                "documents": []
+              }
+            }
+            """;
+
+        Response response = new Response.Builder()
+            .request(new Request.Builder().url(DM_STORE_BASE_URL + "/documents").build())
+            .protocol(Protocol.HTTP_1_1)
+            .code(200)
+            .message("OK")
+            .body(ResponseBody.create(responseJson, okhttp3.MediaType.get("application/json")))
+            .build();
+
+        when(okHttpClient.newCall(any(Request.class))).thenReturn(call);
+        when(call.execute()).thenReturn(response);
+
+        dmStoreUploader.uploadDocument(testFile);
+
+        ArgumentCaptor<Request> requestCaptor = ArgumentCaptor.forClass(Request.class);
+        verify(okHttpClient).newCall(requestCaptor.capture());
+
+        Request capturedRequest = requestCaptor.getValue();
+        assertThat(capturedRequest.header("user-id")).isEqualTo(Constants.ANONYMOUS_USER);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenResponseIsNotSuccessful() throws Exception {
+        setupDefaultMocks();
+        File testFile = createTestFile("test.pdf", "PDF content");
+
+        Response response = new Response.Builder()
+            .request(new Request.Builder().url(DM_STORE_BASE_URL + "/documents").build())
+            .protocol(Protocol.HTTP_1_1)
+            .code(500)
+            .message("Internal Server Error")
+            .body(ResponseBody.create("Error", okhttp3.MediaType.get("text/plain")))
+            .build();
+
+        when(okHttpClient.newCall(any(Request.class))).thenReturn(call);
+        when(call.execute()).thenReturn(response);
+
+        assertThatThrownBy(() -> dmStoreUploader.uploadDocument(testFile))
+            .isInstanceOf(DocumentTaskProcessingException.class)
+            .hasMessageContaining("Couldn't upload the file. Response code: 500");
+    }
+
+    @Test
+    void shouldThrowExceptionWhenResponseIs404() throws Exception {
+        setupDefaultMocks();
+        File testFile = createTestFile("test.pdf", "PDF content");
+
+        Response response = new Response.Builder()
+            .request(new Request.Builder().url(DM_STORE_BASE_URL + "/documents").build())
+            .protocol(Protocol.HTTP_1_1)
             .code(404)
-            .protocol(Protocol.HTTP_2)
-            .build();
-    }
-
-
-    private void setUpSuccess() {
-        OkHttpClient http = new OkHttpClient
-            .Builder()
-            .addInterceptor(DmStoreUploaderImplTest::interceptSuccess)
+            .message("Not Found")
+            .body(ResponseBody.create("Not Found", okhttp3.MediaType.get("text/plain")))
             .build();
 
-        dmStoreUploader = new DmStoreUploaderImpl(http, () -> "auth", "https://someurl.com",
-            securityUtils, new ObjectMapper());
-    }
+        when(okHttpClient.newCall(any(Request.class))).thenReturn(call);
+        when(call.execute()).thenReturn(response);
 
-    private void setUpFailure() {
-        OkHttpClient http = new OkHttpClient
-            .Builder()
-            .addInterceptor(DmStoreUploaderImplTest::interceptFailure)
-            .build();
-
-        dmStoreUploader = new DmStoreUploaderImpl(http, () -> "auth", "https://someurl.com",
-            securityUtils, new ObjectMapper());
+        assertThatThrownBy(() -> dmStoreUploader.uploadDocument(testFile))
+            .isInstanceOf(DocumentTaskProcessingException.class)
+            .hasMessageContaining("Couldn't upload the file. Response code: 404");
     }
 
     @Test
-    void  testUploadDocumentSuccess() throws Exception {
+    void shouldThrowExceptionWhenIOExceptionOccurs() throws Exception {
+        setupDefaultMocks();
+        File testFile = createTestFile("test.pdf", "PDF content");
 
-        setUpSuccess();
-        ClassLoader classLoader = getClass().getClassLoader();
-        JsonNode response = dmStoreUploader.uploadDocument(new File(classLoader.getResource(PDF_FILENAME).getFile()));
+        when(okHttpClient.newCall(any(Request.class))).thenReturn(call);
+        when(call.execute()).thenThrow(new IOException("Network error"));
 
-        assertNotNull(response);
-        String docUrl = response.at("/_embedded/documents").get(0).at("/_links/self/href").asText();
-        assertNotNull(docUrl);
-        assertEquals("http://localhost:4603/documents/0e38e3ad-171f-4d27-bf54-e41f2ed744eb", docUrl);
+        assertThatThrownBy(() -> dmStoreUploader.uploadDocument(testFile))
+            .isInstanceOf(DocumentTaskProcessingException.class)
+            .hasMessageContaining("Couldn't upload the file:  Network error")
+            .hasCauseInstanceOf(IOException.class);
     }
 
     @Test
-    void  testUploadDocumentFailureInvalidMime() {
+    void shouldThrowExceptionWhenRuntimeExceptionOccurs() throws Exception {
+        setupDefaultMocks();
+        File testFile = createTestFile("test.pdf", "PDF content");
 
-        setUpFailure();
-        assertThrows(DocumentTaskProcessingException.class, () ->
-            dmStoreUploader.uploadDocument(new File("xyz.abc")));
+        when(okHttpClient.newCall(any(Request.class))).thenReturn(call);
+        when(call.execute()).thenThrow(new RuntimeException("Unexpected error"));
+
+        assertThatThrownBy(() -> dmStoreUploader.uploadDocument(testFile))
+            .isInstanceOf(DocumentTaskProcessingException.class)
+            .hasMessageContaining("Couldn't upload the file:  Unexpected error")
+            .hasCauseInstanceOf(RuntimeException.class);
     }
 
     @Test
-    void  testUploadDocumentFailureResponse() {
+    void shouldThrowExceptionWhenFileDoesNotExist() {
+        File nonExistentFile = new File("/non/existent/file.pdf");
 
-        setUpFailure();
-        ClassLoader classLoader = getClass().getClassLoader();
-        assertThrows(DocumentTaskProcessingException.class, () ->
-            dmStoreUploader.uploadDocument(new File(classLoader.getResource(PDF_FILENAME).getFile())));
+        assertThatThrownBy(() -> dmStoreUploader.uploadDocument(nonExistentFile))
+            .isInstanceOf(DocumentTaskProcessingException.class)
+            .hasMessageContaining("Couldn't upload the file:");
+    }
+
+    @Test
+    void shouldDetectCorrectMimeTypeForPdfFile() throws Exception {
+        setupDefaultMocks();
+        File pdfFile = createTestFile("test.pdf", "%PDF-1.4 test content");
+        String responseJson = """
+            {
+              "_embedded": {
+                "documents": []
+              }
+            }
+            """;
+
+        Response response = new Response.Builder()
+            .request(new Request.Builder().url(DM_STORE_BASE_URL + "/documents").build())
+            .protocol(Protocol.HTTP_1_1)
+            .code(200)
+            .message("OK")
+            .body(ResponseBody.create(responseJson, okhttp3.MediaType.get("application/json")))
+            .build();
+
+        when(okHttpClient.newCall(any(Request.class))).thenReturn(call);
+        when(call.execute()).thenReturn(response);
+
+        dmStoreUploader.uploadDocument(pdfFile);
+
+        ArgumentCaptor<Request> requestCaptor = ArgumentCaptor.forClass(Request.class);
+        verify(okHttpClient).newCall(requestCaptor.capture());
+
+        Request capturedRequest = requestCaptor.getValue();
+        assertThat(capturedRequest.body()).isNotNull();
+        assertThat(capturedRequest.body().contentType()).isNotNull();
+    }
+
+    @Test
+    void shouldDetectCorrectMimeTypeForTextFile() throws Exception {
+        setupDefaultMocks();
+        File textFile = createTestFile("test.txt", "Plain text content");
+        String responseJson = """
+            {
+              "_embedded": {
+                "documents": []
+              }
+            }
+            """;
+
+        Response response = new Response.Builder()
+            .request(new Request.Builder().url(DM_STORE_BASE_URL + "/documents").build())
+            .protocol(Protocol.HTTP_1_1)
+            .code(200)
+            .message("OK")
+            .body(ResponseBody.create(responseJson, okhttp3.MediaType.get("application/json")))
+            .build();
+
+        when(okHttpClient.newCall(any(Request.class))).thenReturn(call);
+        when(call.execute()).thenReturn(response);
+
+        dmStoreUploader.uploadDocument(textFile);
+
+        verify(okHttpClient).newCall(any(Request.class));
+    }
+
+    @Test
+    void shouldIncludeClassificationInRequest() throws Exception {
+        setupDefaultMocks();
+        File testFile = createTestFile("test.pdf", "PDF content");
+        String responseJson = """
+            {
+              "_embedded": {
+                "documents": []
+              }
+            }
+            """;
+
+        Response response = new Response.Builder()
+            .request(new Request.Builder().url(DM_STORE_BASE_URL + "/documents").build())
+            .protocol(Protocol.HTTP_1_1)
+            .code(200)
+            .message("OK")
+            .body(ResponseBody.create(responseJson, okhttp3.MediaType.get("application/json")))
+            .build();
+
+        when(okHttpClient.newCall(any(Request.class))).thenReturn(call);
+        when(call.execute()).thenReturn(response);
+
+        dmStoreUploader.uploadDocument(testFile);
+
+        ArgumentCaptor<Request> requestCaptor = ArgumentCaptor.forClass(Request.class);
+        verify(okHttpClient).newCall(requestCaptor.capture());
+
+        Request capturedRequest = requestCaptor.getValue();
+        assertThat(capturedRequest.body()).isNotNull();
+        assertThat(capturedRequest.body().contentType().toString()).contains("multipart/form-data");
+    }
+
+    private File createTestFile(String filename, String content) throws IOException {
+        Path filePath = tempDir.resolve(filename);
+        Files.writeString(filePath, content);
+        return filePath.toFile();
     }
 }

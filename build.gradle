@@ -81,6 +81,15 @@ sourceSets {
             runtimeClasspath += main.output
         }
     }
+    integrationTest {
+        java {
+            compileClasspath += main.output
+            runtimeClasspath += main.output
+        }
+        resources {
+            srcDir 'src/test/resources'
+        }
+    }
     contractTest {
         java {
             compileClasspath += main.output
@@ -225,6 +234,9 @@ dependencies {
     contractTestImplementation sourceSets.main.runtimeClasspath
     contractTestImplementation sourceSets.test.runtimeClasspath
 
+    integrationTestImplementation sourceSets.main.runtimeClasspath
+    integrationTestImplementation sourceSets.test.runtimeClasspath
+
     contractTestImplementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.14'
     contractTestImplementation group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.14'
     contractTestImplementation group: 'org.apache.httpcomponents', name: 'fluent-hc', version: '4.5.14'
@@ -294,8 +306,22 @@ checkstyle {
 checkstyleMain.shouldRunAfter(compileJava)
 test.shouldRunAfter(checkstyleTest)
 
+test {
+    useJUnitPlatform()
+}
+
+tasks.register('integration', Test) {
+    group = 'Verification'
+    description = 'Runs integration tests'
+    useJUnitPlatform()
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    shouldRunAfter test
+}
+
 jacocoTestReport {
-    executionData(test)
+    dependsOn test, integration
+    executionData(test, integration)
 
     reports {
         xml.required = true
@@ -325,10 +351,6 @@ sonarqube {
 // https://github.com/gradle/gradle/issues/16791
 tasks.withType(JavaExec).configureEach {
     javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
-}
-
-test {
-    useJUnitPlatform()
 }
 
 tasks.register('functional', Test) {
