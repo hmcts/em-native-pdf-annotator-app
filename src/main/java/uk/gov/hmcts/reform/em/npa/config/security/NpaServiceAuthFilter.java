@@ -52,18 +52,20 @@ public class NpaServiceAuthFilter extends OncePerRequestFilter {
             boolean isDeleteEndpoint = request.getRequestURI().contains("/api/markups/document/")
                     && "DELETE".equalsIgnoreCase(request.getMethod());
 
-            if (isDeleteEndpoint && !deleteAuthorisedServices.contains(service)) {
-                LOG.info("Service forbidden {} for DELETE endpoint: {} method: {}, deleteAuthorisedServices: {}",
-                        serviceName, request.getRequestURI(), request.getMethod(), deleteAuthorisedServices);
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                return;
-            }
-
-            if (Objects.isNull(service) || !authorisedServices.contains(service)) {
-                LOG.info("Service forbidden {} for endpoint: {} method: {}",
-                        serviceName, request.getRequestURI(), request.getMethod());
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                return;
+            if (isDeleteEndpoint) {
+                if (!deleteAuthorisedServices.contains(service)) {
+                    LOG.info("Service forbidden {} for DELETE endpoint: {} method: {}, deleteAuthorisedServices: {}",
+                            serviceName, request.getRequestURI(), request.getMethod(), deleteAuthorisedServices);
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    return;
+                }
+            } else {
+                if (Objects.isNull(service) || !authorisedServices.contains(service)) {
+                    LOG.info("Service forbidden {} for endpoint: {} method: {}",
+                            serviceName, request.getRequestURI(), request.getMethod());
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    return;
+                }
             }
 
             LOG.debug("Service authorized {} for endpoint: {} method: {}",

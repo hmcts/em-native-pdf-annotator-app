@@ -26,9 +26,10 @@ class NpaServiceAuthFilterTest {
     private static final String EM_GW = "em_gw";
     private static final String DM_STORE = "dm_store";
     private static final String XUI_WEBAPP = "xui_webapp";
+    private static final String DELETE_ONLY_SERVICE = "delete_only_service";
 
     private final List<String> authorisedServices = List.of(XUI_WEBAPP, DM_STORE, EM_GW);
-    private final List<String> deleteAuthorisedServices = List.of(DM_STORE);
+    private final List<String> deleteAuthorisedServices = List.of(DM_STORE, DELETE_ONLY_SERVICE);
 
     private MockHttpServletRequest request;
     private MockHttpServletResponse response;
@@ -154,5 +155,47 @@ class NpaServiceAuthFilterTest {
     void shouldThrowExceptionWhenAuthorisedServicesNull() {
         Assertions.assertThrows(IllegalArgumentException.class, () ->
             new NpaServiceAuthFilter(authTokenValidator, null, deleteAuthorisedServices));
+    }
+
+    @Test
+    @DisplayName("DELETE-only service calling DELETE endpoint should be successful")
+    void shouldAllowDeleteOnlyServiceForDeleteEndpoint() throws ServletException, IOException {
+        request.addHeader("ServiceAuthorization", "Bearer validToken");
+        request.setRequestURI("/api/markups/document/123e4567-e89b-12d3-a456-426614174000");
+        request.setMethod("DELETE");
+        when(authTokenValidator.getServiceName("Bearer validToken")).thenReturn(DELETE_ONLY_SERVICE);
+
+        npaServiceAuthFilter.doFilterInternal(request, response, filterChain);
+
+        assertEquals(HttpServletResponse.SC_OK, response.getStatus());
+        verify(filterChain).doFilter(request, response);
+    }
+
+    @Test
+    @DisplayName("DELETE-only service calling GET endpoint should return 401")
+    void shouldReturn401WhenDeleteOnlyServiceCallsGetEndpoint() throws ServletException, IOException {
+        request.addHeader("ServiceAuthorization", "Bearer validToken");
+        request.setRequestURI("/api/markups");
+        request.setMethod("GET");
+        when(authTokenValidator.getServiceName("Bearer validToken")).thenReturn(DELETE_ONLY_SERVICE);
+
+        npaServiceAuthFilter.doFilterInternal(request, response, filterChain);
+
+        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
+        verify(filterChain, never()).doFilter(request, response);
+    }
+
+    @Test
+    @DisplayName("DELETE-only service calling POST endpoint should return 401")
+    void shouldReturn401WhenDeleteOnlyServiceCallsPostEndpoint() throws ServletException, IOException {
+        request.addHeader("ServiceAuthorization", "Bearer validToken");
+        request.setRequestURI("/api/markups");
+        request.setMethod("POST");
+        when(authTokenValidator.getServiceName("Bearer validToken")).thenReturn(DELETE_ONLY_SERVICE);
+
+        npaServiceAuthFilter.doFilterInternal(request, response, filterChain);
+
+        assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
+        verify(filterChain, never()).doFilter(request, response);
     }
 }
