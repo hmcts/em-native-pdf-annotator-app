@@ -33,7 +33,7 @@ public class DeleteServiceImpl implements DeleteService {
     @Override
     @Transactional
     public void deleteByDocumentId(UUID documentId) {
-        log.debug("Deleting all redactions for documentId: {}", documentId);
+        log.info("Deleting all redactions for documentId: {}", documentId);
         var redactions = markUpRepository.findByDocumentId(documentId);
         if (Objects.isNull(redactions) || redactions.isEmpty()) {
             log.debug("No redactions found for document {}", documentId);
