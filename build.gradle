@@ -25,7 +25,7 @@ plugins {
     id 'com.github.hmcts.rse-cft-lib' version '0.19.2009'
     id 'org.flywaydb.flyway' version '11.20.3'
     id 'io.freefair.lombok' version '9.2.0'
-    id 'net.serenity-bdd.serenity-gradle-plugin' version '5.1.0'
+    id 'net.serenity-bdd.serenity-gradle-plugin' version '5.2.2'
 }
 
 dependencyUpdates.resolutionStrategy {
@@ -62,11 +62,11 @@ application {
 def versions = [
         postgresql         : '42.7.9',
         h2                 : '1.4.199',
-        serenity           : '5.1.0',
+        serenity           : '5.2.2',
         pact_version       : '4.6.19',
         logging            : '7.0.0',
         fasterXmlJackson   : '2.21.0',
-        hibernate          : '6.6.41.Final',
+        hibernate          : '6.6.42.Final',
         mapstruct          : '1.6.3',
         springSecurity     : '6.5.7',
         log4JVersion       : '2.25.3',
@@ -208,8 +208,8 @@ dependencies {
     testImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
     testImplementation group: 'net.serenity-bdd', name: 'serenity-single-page-report', version: versions.serenity
 
-    testImplementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.26'
-    testImplementation group: 'ch.qos.logback', name: 'logback-core', version: '1.5.26'
+    testImplementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.27'
+    testImplementation group: 'ch.qos.logback', name: 'logback-core', version: '1.5.27'
 
     testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.10', classifier: 'all', {
         exclude group: 'commons-io', module: 'commons-io'
@@ -298,7 +298,7 @@ def coverageExclusionList = [
 
 checkstyle {
     maxWarnings = 0
-    toolVersion = '13.0.0'
+    toolVersion = '13.2.0'
     // need to set configDir to rootDir otherwise submodule will use submodule/config/checkstyle
     getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
 }
