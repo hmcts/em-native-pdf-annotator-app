@@ -14,7 +14,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: "postgres"
       ENABLE_AZURE_STORAGE_CONTAINER: "true"
       ENABLE_POSTGRES_BLOB_STORAGE: "false"
-      STORAGEACCOUNT_PRIMARY_CONNECTION_STRING: "UseDevelopmentStorage=true"
+      STORAGEACCOUNT_PRIMARY_CONNECTION_STRING: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azure-storage-emulator-azurite:10000/devstoreaccount1"
       STORAGE_CONTAINER_DOCUMENT_CONTAINER_NAME: "hmctstestcontainer"
       SPRING_PROFILES_ACTIVE: dev
       IDAM_TESTING_SUPPORT_ENABLED: "true"
@@ -40,7 +40,7 @@ services:
     image: mcr.microsoft.com/azure-storage/azurite
     ports:
       - 10000:10000
-    command: "azurite-blob --blobHost 0.0.0.0 --loose"
+    command: "azurite-blob --blobHost 0.0.0.0 --loose --skipApiVersionCheck"
     volumes:
       - dm-store-docker-azure-blob-data:/opt/azurite/folder
 volumes:
