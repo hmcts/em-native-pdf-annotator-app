@@ -2,6 +2,7 @@ spring:
   datasource:
     driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
     url: jdbc:tc:postgresql:11:///localhost?stringtype=unspecified
+    password: test-password
   flyway:
     enabled: false
   jpa:
@@ -10,9 +11,19 @@ spring:
   main:
 #    To be removed once integration tests are moved to a separate package
     allow-bean-definition-overriding: true
+  security:
+    oauth2:
+      client:
+        registration:
+          oidc:
+            client-secret: test-s2s-key
 
 azure:
   app_insights_key: ${APPINSIGHTS_INSTRUMENTATIONKEY:false}
   application-insights:
     instrumentation-key: ${APPINSIGHTS_INSTRUMENTATIONKEY:dummy}
+
+idam:
+  s2s-auth:
+    totp_secret: test-s2s-key
 
