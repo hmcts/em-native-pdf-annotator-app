@@ -566,6 +566,8 @@ bootRun {
                 environment key, value
             }
         }
+        environment 'SPRING_DATASOURCE_USERNAME', 'postgres'
+        environment 'SPRING_DATASOURCE_PASSWORD', 'postgres'
     }
 }
 
