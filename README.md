@@ -10,7 +10,7 @@ In addition, the Native PDF Annotator handles requests from the Media Viewer to 
 
 It uses:
 
-* Java17
+* Java21
 * Spring boot
 * Junit, Mockito and SpringBootTest
 * Gradle
@@ -28,20 +28,27 @@ cd em-native-pdf-annotator-app/
 ```
 
 #### Clean and build the application:
-
-Requires docker desktop running
-
 ```
 ./gradlew clean
 ./gradlew build
 ```
+To run just the unit tests:
+```
+./gradlew test
+```
+To run the integration tests:
+
+Requires docker desktop running
+
+```
+./gradlew integration
+```
 
 #### To run the application:
 
-VPN connection is required
+Requires docker desktop running
 
 ```
-az login
 ./gradlew bootWithCCD
 ```
 
@@ -84,24 +91,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ### Running contract or pact tests:
 
-You can run contract or pact tests as follows:
+For executing the pact consumer test run
 
-```
-./gradlew clean
-```
+```./gradlew contract```
 
-```
-./gradlew contract
-```
+The results of the  consumer test will be published to the pact folder in the root directory of the project.
 
-You can then publish your pact tests locally by first running the pact docker-compose:
+To run the provider pact tests, first comment the broker configuration
+in the NpaPactProviderTest and NpaPactRedactionProviderTest classes and uncomment the pact folder configuration,
+then run the below command to execute the provider pact tests locally.
 
-```
-docker-compose -f docker-pactbroker-compose-local.yml up
-```
-
-and then using it to publish your tests:
-
-```
-./gradlew pactPublish
-```
+```./gradlew providerContractTests```
