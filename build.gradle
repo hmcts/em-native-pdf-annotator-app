@@ -19,7 +19,7 @@ plugins {
     id 'org.sonarqube' version '7.2.2.6593'
     id 'jacoco'
     id 'checkstyle'
-    id 'au.com.dius.pact' version '4.6.19'
+    id 'au.com.dius.pact' version '4.6.20'
     id 'org.owasp.dependencycheck' version '12.1.6'
     id 'info.solidsoft.pitest' version '1.19.0-rc.3'
     id 'com.github.hmcts.rse-cft-lib' version '0.19.2009'
@@ -60,17 +60,17 @@ application {
 }
 
 def versions = [
-        postgresql         : '42.7.9',
+        postgresql         : '42.7.10',
         h2                 : '1.4.199',
         serenity           : '5.2.2',
-        pact_version       : '4.6.19',
-        logging            : '7.0.0',
+        pact_version       : '4.6.20',
+        logging            : '8.0.0',
         fasterXmlJackson   : '2.21.0',
         hibernate          : '6.6.42.Final',
         mapstruct          : '1.6.3',
-        springSecurity     : '6.5.7',
+        springSecurity     : '6.5.8',
         log4JVersion       : '2.25.3',
-        jupiter            : '6.0.2',
+        jupiter            : '6.0.3',
         poi                : '5.5.1'
 ]
 
@@ -208,8 +208,8 @@ dependencies {
     testImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
     testImplementation group: 'net.serenity-bdd', name: 'serenity-single-page-report', version: versions.serenity
 
-    testImplementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.27'
-    testImplementation group: 'ch.qos.logback', name: 'logback-core', version: '1.5.27'
+    testImplementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.32'
+    testImplementation group: 'ch.qos.logback', name: 'logback-core', version: '1.5.32'
 
     testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.10', classifier: 'all', {
         exclude group: 'commons-io', module: 'commons-io'
@@ -257,7 +257,7 @@ dependencyManagement {
         dependencySet(group: 'org.apache.httpcomponents', version: '4.5.14') {
             entry 'fluent-hc'
         }
-        dependencySet(group: 'org.junit.platform', version: '6.0.2') {
+        dependencySet(group: 'org.junit.platform', version: '6.0.3') {
             entry 'junit-platform-commons'
             entry 'junit-platform-engine'
             entry 'junit-platform-launcher'
@@ -566,6 +566,8 @@ bootRun {
                 environment key, value
             }
         }
+        environment 'SPRING_DATASOURCE_USERNAME', 'postgres'
+        environment 'SPRING_DATASOURCE_PASSWORD', 'postgres'
     }
 }
 

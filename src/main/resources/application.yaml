@@ -28,8 +28,8 @@ spring:
           use_jdbc_metadata_defaults: false
   datasource:
     url: jdbc:postgresql://${SPRING_DATASOURCE_HOST:localhost}:${SPRING_DATASOURCE_PORT:6432}/${SPRING_DATASOURCE_NAME:emnpa}${SPRING_DATASOURCE_OPTIONS:?ssl=disable}
-    username: ${SPRING_DATASOURCE_USERNAME:postgres}
-    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     type: com.zaxxer.hikari.HikariDataSource
     hikari:
       auto-commit: false
@@ -44,7 +44,7 @@ spring:
         registration:
           oidc:
             client-id: microservicekey-em-npa-app
-            client-secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
+            client-secret: ${S2S_KEY}
 
 management:
   endpoint:
@@ -101,7 +101,7 @@ idam:
     url: ${IDAM_API_BASE_URI:http://localhost:5062}
   s2s-auth:
     url: ${S2S_BASE_URI:http://localhost:8489}
-    totp_secret: ${S2S_KEY:AAAAAAAAAAAAAAAA}
+    totp_secret: ${S2S_KEY}
     microservice: em_npa_app
   s2s-authorised:
     services: ${S2S_NAMES_WHITELIST:ccd,em_gw,xui_webapp}
