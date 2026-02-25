@@ -599,7 +599,7 @@ bootWithCCD {
 
 
         execOps.exec {
-            commandLine 'docker', 'compose', '-f', 'src/cftlib/resources/docker-compose-local.yml', '-p', 'cftlib', 'up', '-d'
+            commandLine 'docker', 'compose', '-f', 'src/cftlib/resources/docker-compose-local.yml', '-p', 'cftlib-additional', 'up', '-d'
         }
     }
     environment 'RSE_LIB_ADDITIONAL_DATABASES', 'emnpa,evidence'
