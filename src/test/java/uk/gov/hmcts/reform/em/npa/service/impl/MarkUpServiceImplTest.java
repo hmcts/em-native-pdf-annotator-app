@@ -188,11 +188,20 @@ class MarkUpServiceImplTest {
     @Test
     void testDeleteSuccess() {
         UUID id =  UUID.randomUUID();
+        when(securityUtils.getCurrentUserLogin()).thenReturn(Optional.of("testuser"));
+        when(markUpRepository.deleteByRedactionIdAndCreatedBy(id, "testuser")).thenReturn(1L);
 
         markUpService.delete(id);
 
-        doNothing().when(markUpRepository).deleteByRedactionId(id);
-        verify(markUpRepository, Mockito.atLeast(1)).deleteByRedactionId(id);
+        verify(markUpRepository, Mockito.atLeast(1)).deleteByRedactionIdAndCreatedBy(id, "testuser");
+    }
+
+    @Test
+    void testDeleteFailureUserNotFound() {
+        UUID id =  UUID.randomUUID();
+        when(securityUtils.getCurrentUserLogin()).thenReturn(Optional.empty());
+
+        assertThrows(UsernameNotFoundException.class, () -> markUpService.delete(id));
     }
 
     @Test
