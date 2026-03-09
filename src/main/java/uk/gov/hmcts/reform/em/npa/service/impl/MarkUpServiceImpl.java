@@ -95,7 +95,15 @@ public class MarkUpServiceImpl implements MarkUpService {
     public void delete(UUID redactionId) {
 
         log.debug("Request to delete Redaction : {}", redactionId);
-        markUpRepository.deleteByRedactionId(redactionId);
+        String createdBy = securityUtils.getCurrentUserLogin()
+            .orElseThrow(() -> new UsernameNotFoundException(USER_NOT_FOUND));
+        long deleted = markUpRepository.deleteByRedactionIdAndCreatedBy(redactionId, createdBy);
+        if (deleted == 0) {
+            log.warn("Redaction {} not deleted. Either it does not exist or is not owned by user {}",
+                    redactionId,
+                    createdBy
+            );
+        }
     }
 
     @Override

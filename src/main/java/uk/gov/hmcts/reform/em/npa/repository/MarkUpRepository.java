@@ -29,7 +29,7 @@ public interface MarkUpRepository extends JpaRepository<Redaction, Long> {
     )
     void deleteAllByDocumentIdAndCreatedBy(@Param("documentId") UUID documentId, @Param("createdBy") String createdBy);
 
-    void deleteByRedactionId(UUID redactionId);
+    long deleteByRedactionIdAndCreatedBy(UUID redactionId, String createdBy);
 
     List<Redaction> findByDocumentId(UUID documentId);
 
