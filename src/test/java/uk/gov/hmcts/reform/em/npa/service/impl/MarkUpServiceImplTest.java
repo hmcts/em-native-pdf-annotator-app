@@ -205,6 +205,17 @@ class MarkUpServiceImplTest {
     }
 
     @Test
+    void testDeleteWhenRedactionNotFoundOrNotOwned() {
+        UUID id = UUID.randomUUID();
+        when(securityUtils.getCurrentUserLogin()).thenReturn(Optional.of("testuser"));
+        when(markUpRepository.deleteByRedactionIdAndCreatedBy(id, "testuser")).thenReturn(0L);
+
+        markUpService.delete(id);
+
+        verify(markUpRepository, Mockito.atLeast(1)).deleteByRedactionIdAndCreatedBy(id, "testuser");
+    }
+
+    @Test
     void testDeleteAllSuccess() {
         UUID documentId =  UUID.randomUUID();
         when(securityUtils.getCurrentUserLogin()).thenReturn(Optional.of("testuser"));
