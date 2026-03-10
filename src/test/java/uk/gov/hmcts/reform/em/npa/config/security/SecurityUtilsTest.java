@@ -11,7 +11,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import uk.gov.hmcts.reform.em.npa.repository.IdamRepository;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,8 +19,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class SecurityUtilsTest {
-
-    private IdamRepository idamRepository;
 
     @Mock
     private SecurityContext securityContext;
@@ -46,7 +43,7 @@ class SecurityUtilsTest {
         MockitoAnnotations.openMocks(this);
         SecurityContextHolder.setContext(securityContext);
         Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
-        securityUtils = new SecurityUtils(idamRepository);
+        securityUtils = new SecurityUtils();
     }
 
     @Test

@@ -19,6 +19,7 @@ import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
+import uk.gov.hmcts.reform.em.npa.repository.IdamRepository;
 
 
 @Configuration
@@ -50,7 +51,10 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(
+            HttpSecurity http,
+            CustomJwtAuthenticationConverter jwtAuthenticationConverter
+    ) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
@@ -60,7 +64,8 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
                         authorizationManagerRequestMatcherRegistry.requestMatchers("/api/**").authenticated())
                 .oauth2ResourceServer(httpSecurityOAuth2ResourceServerConfigurer ->
-                        httpSecurityOAuth2ResourceServerConfigurer.jwt(Customizer.withDefaults()))
+                        httpSecurityOAuth2ResourceServerConfigurer.jwt(jwtConfigurer ->
+                                jwtConfigurer.jwtAuthenticationConverter(jwtAuthenticationConverter)))
                 .oauth2Client(Customizer.withDefaults());
         return http.build();
     }
@@ -73,5 +78,10 @@ public class SecurityConfiguration {
         jwtDecoder.setJwtValidator(validator);
 
         return jwtDecoder;
+    }
+
+    @Bean
+    public CustomJwtAuthenticationConverter customJwtAuthenticationConverter(IdamRepository idamRepository) {
+        return new CustomJwtAuthenticationConverter(idamRepository);
     }
 }
