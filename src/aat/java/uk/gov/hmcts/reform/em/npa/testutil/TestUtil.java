@@ -90,7 +90,7 @@ public class TestUtil {
     }
 
     public String getInvalidRoleUserAuth() {
-        String email = "badUser" + UUID.randomUUID() + "@redactiontest.com";
+        String email = "invalidRoleUser@redactiontest.com";
         idamHelper.createUser(email, List.of("this-is-not-a-role"));
         return idamHelper.authenticateUser(email);
     }
