@@ -601,6 +601,9 @@ bootWithCCD {
         execOps.exec {
             commandLine 'docker', 'compose', '-f', 'src/cftlib/resources/docker-compose-local.yml', '-p', 'cftlib-additional', 'up', '-d'
         }
+
+        environment 'SPRING_DATASOURCE_USERNAME', 'postgres'
+        environment 'SPRING_DATASOURCE_PASSWORD', 'postgres'
     }
     environment 'RSE_LIB_ADDITIONAL_DATABASES', 'emnpa,evidence'
     environment 'DATA_STORE_S2S_AUTHORISED_SERVICES', 'ccd_gw,ccd_data,ccd_ps,aac_manage_case_assignment,ccd_case_document_am_api,am_role_assignment_service,hmc_cft_hearing_service,prl_citizen_frontend,xui_webapp'
