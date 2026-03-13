@@ -34,6 +34,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -86,6 +87,12 @@ public class TestUtil {
         SerenityRest.useRelaxedHTTPSValidation();
         idamAuth = idamHelper.authenticateUser("redactionTestUser2@redactiontest.com");
         s2sAuth = s2sHelper.getS2sToken();
+    }
+
+    public String getInvalidRoleUserAuth() {
+        String email = "invalidRoleUser@redactiontest.com";
+        idamHelper.createUser(email, List.of("this-is-not-a-role"));
+        return idamHelper.authenticateUser(email);
     }
 
     public RedactionDTO createRedactionDTO(UUID docId, UUID redactionId) {
@@ -268,6 +275,7 @@ public class TestUtil {
 
         return SerenityRest.given().header("ServiceAuthorization", "invalidS2SAuthorization");
     }
+
 
     @NotNull
     public JSONObject createMarkUpPayload(final String redactionId, final String documentId,

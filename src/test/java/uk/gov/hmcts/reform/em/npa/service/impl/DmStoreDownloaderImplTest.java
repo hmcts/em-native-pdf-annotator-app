@@ -25,6 +25,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.em.npa.service.exception.DocumentTaskProcessingException;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -32,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -57,6 +60,9 @@ class DmStoreDownloaderImplTest {
     private AuthTokenGenerator authTokenGenerator;
 
     @Mock
+    private IdamClient idamClient;
+
+    @Mock
     private Call mockCall;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -68,7 +74,9 @@ class DmStoreDownloaderImplTest {
 
     private static final String DM_STORE_BASE_URL = "http://localhost:4603";
     private static final String S2S_TOKEN = "s2s-token";
-    private static final String USER_ROLES = "caseworker";
+    private static final String USER_TOKEN = "Bearer some-user-token";
+    private static final String USER_ID = "user-id-123";
+    private static final String USER_ROLES = "caseworker,caseworker-publiclaw";
     private static final String DOC_ID = UUID.randomUUID().toString();
     private static final String METADATA_URL = DM_STORE_BASE_URL + "/documents/" + DOC_ID;
     private static final String BINARY_URL = METADATA_URL + "/binary";
@@ -84,12 +92,18 @@ class DmStoreDownloaderImplTest {
         dmStoreDownloader = new DmStoreDownloaderImpl(
             okHttpClient,
             authTokenGenerator,
+            idamClient,
             DM_STORE_BASE_URL,
             objectMapper
         );
 
-        when(authTokenGenerator.generate()).thenReturn(S2S_TOKEN);
+        lenient().when(authTokenGenerator.generate()).thenReturn(S2S_TOKEN);
         lenient().when(okHttpClient.newCall(any(Request.class))).thenReturn(mockCall);
+
+        UserInfo userInfo = mock(UserInfo.class);
+        lenient().when(userInfo.getUid()).thenReturn(USER_ID);
+        lenient().when(userInfo.getRoles()).thenReturn(List.of("caseworker", "caseworker-publiclaw"));
+        lenient().when(idamClient.getUserInfo(USER_TOKEN)).thenReturn(userInfo);
 
         // Set log level to DEBUG to cover debug logging statements
         Logger logger = (Logger) LoggerFactory.getLogger(DmStoreDownloaderImpl.class);
@@ -115,13 +129,14 @@ class DmStoreDownloaderImplTest {
             .thenReturn(metadataResponse)
             .thenReturn(binaryResponse);
 
-        downloadedFile = dmStoreDownloader.downloadFile(DOC_ID);
+        downloadedFile = dmStoreDownloader.downloadFile(DOC_ID, USER_TOKEN);
 
         assertNotNull(downloadedFile);
         assertTrue(downloadedFile.exists());
         assertTrue(downloadedFile.getName().endsWith(".pdf"));
         assertEquals(BINARY_CONTENT, Files.readString(downloadedFile.toPath()));
 
+        verify(idamClient, times(1)).getUserInfo(USER_TOKEN);
         verify(authTokenGenerator, times(2)).generate();
         verify(okHttpClient, times(2)).newCall(requestCaptor.capture());
         verify(mockCall, times(2)).execute();
@@ -129,14 +144,15 @@ class DmStoreDownloaderImplTest {
         Request metaRequest = requestCaptor.getAllValues().get(0);
         assertEquals(METADATA_URL, metaRequest.url().toString());
         assertEquals(S2S_TOKEN, metaRequest.header("ServiceAuthorization"));
+        assertEquals(USER_ID, metaRequest.header("user-id"));
         assertEquals(USER_ROLES, metaRequest.header("user-roles"));
 
         Request binaryRequest = requestCaptor.getAllValues().get(1);
         assertEquals(BINARY_URL, binaryRequest.url().toString());
         assertEquals(S2S_TOKEN, binaryRequest.header("ServiceAuthorization"));
+        assertEquals(USER_ID, binaryRequest.header("user-id"));
         assertEquals(USER_ROLES, binaryRequest.header("user-roles"));
     }
-
 
     @Test
     void shouldThrowExceptionWhenMetadataRequestFails() throws IOException {
@@ -149,7 +165,7 @@ class DmStoreDownloaderImplTest {
 
         DocumentTaskProcessingException exception = assertThrows(
             DocumentTaskProcessingException.class,
-            () -> dmStoreDownloader.downloadFile(DOC_ID)
+            () -> dmStoreDownloader.downloadFile(DOC_ID, USER_TOKEN)
         );
 
         assertThat(exception.getMessage()).contains("Could not access the binary. HTTP response: 404");
@@ -167,7 +183,7 @@ class DmStoreDownloaderImplTest {
 
         DocumentTaskProcessingException exception = assertThrows(
             DocumentTaskProcessingException.class,
-            () -> dmStoreDownloader.downloadFile(DOC_ID)
+            () -> dmStoreDownloader.downloadFile(DOC_ID, USER_TOKEN)
         );
 
         assertThat(exception.getMessage()).contains("Could not access the binary:");
@@ -182,7 +198,7 @@ class DmStoreDownloaderImplTest {
 
         DocumentTaskProcessingException exception = assertThrows(
             DocumentTaskProcessingException.class,
-            () -> dmStoreDownloader.downloadFile(DOC_ID)
+            () -> dmStoreDownloader.downloadFile(DOC_ID, USER_TOKEN)
         );
 
         assertThat(exception.getMessage()).contains("Could not access the binary: Network Error");
@@ -203,7 +219,7 @@ class DmStoreDownloaderImplTest {
 
         DocumentTaskProcessingException exception = assertThrows(
             DocumentTaskProcessingException.class,
-            () -> dmStoreDownloader.downloadFile(DOC_ID)
+            () -> dmStoreDownloader.downloadFile(DOC_ID, USER_TOKEN)
         );
 
         assertThat(exception.getMessage()).contains("Could not access the binary: Binary Network Error");
@@ -231,12 +247,28 @@ class DmStoreDownloaderImplTest {
 
         DocumentTaskProcessingException exception = assertThrows(
             DocumentTaskProcessingException.class,
-            () -> dmStoreDownloader.downloadFile(DOC_ID)
+            () -> dmStoreDownloader.downloadFile(DOC_ID, USER_TOKEN)
         );
 
         assertThat(exception.getMessage()).contains("Could not copy the file to a temp location");
         assertThat(exception.getCause()).isInstanceOf(IOException.class);
         assertThat(exception.getCause().getMessage()).isEqualTo("Disk full error simulation");
+    }
+
+    @Test
+    void shouldThrowExceptionWhenIdamClientThrowsException() {
+
+        RuntimeException runtimeException = new RuntimeException("Idam Error");
+        when(idamClient.getUserInfo(USER_TOKEN)).thenThrow(runtimeException);
+
+        DocumentTaskProcessingException exception = assertThrows(
+            DocumentTaskProcessingException.class,
+            () -> dmStoreDownloader.downloadFile(DOC_ID, USER_TOKEN)
+        );
+
+        assertThat(exception.getMessage()).contains("Could not access the binary: Idam Error");
+        assertThat(exception.getCause()).isSameAs(runtimeException);
+        verify(okHttpClient, times(0)).newCall(any());
     }
 
     @Test
@@ -247,12 +279,11 @@ class DmStoreDownloaderImplTest {
 
         DocumentTaskProcessingException exception = assertThrows(
             DocumentTaskProcessingException.class,
-            () -> dmStoreDownloader.downloadFile(DOC_ID)
+            () -> dmStoreDownloader.downloadFile(DOC_ID, USER_TOKEN)
         );
 
         assertThat(exception.getMessage()).contains("Could not access the binary: Auth Error");
         assertThat(exception.getCause()).isSameAs(runtimeException);
-        verify(okHttpClient, times(0)).newCall(any());
     }
 
     @Test
@@ -272,6 +303,7 @@ class DmStoreDownloaderImplTest {
         dmStoreDownloader = new DmStoreDownloaderImpl(
             okHttpClient,
             authTokenGenerator,
+            idamClient,
             DM_STORE_BASE_URL,
             spyObjectMapper
         );
@@ -282,7 +314,7 @@ class DmStoreDownloaderImplTest {
             .thenReturn(metadataResponse)
             .thenReturn(binaryResponse);
 
-        downloadedFile = dmStoreDownloader.downloadFile(DOC_ID);
+        downloadedFile = dmStoreDownloader.downloadFile(DOC_ID, USER_TOKEN);
 
         assertNotNull(downloadedFile);
         assertTrue(downloadedFile.exists());
