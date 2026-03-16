@@ -226,10 +226,10 @@ class RedactionScenariosTest {
     }
 
     @Test
-    void shouldReturn400WhenUserWithInvalidRoleRedactsDocument() {
+    void shouldReturn400WhenNonCaseworkerUserRedactsDocument() {
         assumeFalse(toggleProperties.isCdamEnabled());
 
-        String invalidRoleAuthToken = testUtil.getInvalidRoleUserAuth();
+        String invalidRoleAuthToken = testUtil.getNonCaseworkerUserAuth();
 
         final String newDocId = testUtil.uploadPdfDocumentAndReturnUrl();
         final RedactionRequest redactionRequest = new RedactionRequest();

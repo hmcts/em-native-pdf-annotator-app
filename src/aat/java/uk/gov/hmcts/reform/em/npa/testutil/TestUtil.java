@@ -89,9 +89,9 @@ public class TestUtil {
         s2sAuth = s2sHelper.getS2sToken();
     }
 
-    public String getInvalidRoleUserAuth() {
+    public String getNonCaseworkerUserAuth() {
         String email = "invalidRoleUser@redactiontest.com";
-        idamHelper.createUser(email, List.of("this-is-not-a-role"));
+        idamHelper.createUser(email, List.of("ccd-import"));
         return idamHelper.authenticateUser(email);
     }
 
