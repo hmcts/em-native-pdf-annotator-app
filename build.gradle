@@ -68,7 +68,7 @@ def versions = [
         fasterXmlJackson   : '2.21.1',
         hibernate          : '6.6.44.Final',
         mapstruct          : '1.6.3',
-        springSecurity     : '6.5.8',
+        springSecurity     : '6.5.9',
         log4JVersion       : '2.25.3',
         jupiter            : '6.0.3',
         poi                : '5.5.1'
@@ -568,8 +568,6 @@ bootRun {
                 environment key, value
             }
         }
-        environment 'SPRING_DATASOURCE_USERNAME', 'postgres'
-        environment 'SPRING_DATASOURCE_PASSWORD', 'postgres'
     }
 }
 
@@ -603,6 +601,9 @@ bootWithCCD {
         execOps.exec {
             commandLine 'docker', 'compose', '-f', 'src/cftlib/resources/docker-compose-local.yml', '-p', 'cftlib-additional', 'up', '-d'
         }
+
+        environment 'SPRING_DATASOURCE_USERNAME', 'postgres'
+        environment 'SPRING_DATASOURCE_PASSWORD', 'postgres'
     }
     environment 'RSE_LIB_ADDITIONAL_DATABASES', 'emnpa,evidence'
     environment 'DATA_STORE_S2S_AUTHORISED_SERVICES', 'ccd_gw,ccd_data,ccd_ps,aac_manage_case_assignment,ccd_case_document_am_api,am_role_assignment_service,hmc_cft_hearing_service,prl_citizen_frontend,xui_webapp'

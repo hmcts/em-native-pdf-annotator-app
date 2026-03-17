@@ -226,6 +226,31 @@ class RedactionScenariosTest {
     }
 
     @Test
+    void shouldReturn400WhenNonCaseworkerUserRedactsDocument() {
+        assumeFalse(toggleProperties.isCdamEnabled());
+
+        String invalidRoleAuthToken = testUtil.getNonCaseworkerUserAuth();
+
+        final String newDocId = testUtil.uploadPdfDocumentAndReturnUrl();
+        final RedactionRequest redactionRequest = new RedactionRequest();
+        redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
+
+        redactionRequest.setRedactions(Arrays.asList(createRedaction(), createRedaction()));
+        final JSONObject jsonObject = new JSONObject(redactionRequest);
+
+        testUtil.s2sAuthRequest()
+            .baseUri(testUrl)
+            .contentType(APPLICATION_JSON_VALUE)
+            .header("Authorization", invalidRoleAuthToken)
+            .body(jsonObject.toString())
+            .post(REDACTION_PATH)
+            .then()
+            .assertThat()
+            .statusCode(400)
+            .body(notNullValue());
+    }
+
+    @Test
     void shouldReturn401WhenRedactedPdfDocument() {
         assumeFalse(toggleProperties.isCdamEnabled());
         final String newDocId = testUtil.uploadRichTextDocumentAndReturnUrl();

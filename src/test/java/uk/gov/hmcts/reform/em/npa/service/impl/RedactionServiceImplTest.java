@@ -91,7 +91,7 @@ class RedactionServiceImplTest {
     @Test
     void redactPdfFileTest() throws DocumentTaskProcessingException, IOException {
         File mockFile = new File("prosecution1.pdf");
-        when(dmStoreDownloader.downloadFile(docStoreUUID.toString())).thenReturn(mockFile);
+        when(dmStoreDownloader.downloadFile(docStoreUUID.toString(), "jwt")).thenReturn(mockFile);
         when(pdfRedaction.redactPdf(mockFile, redactions)).thenReturn(mockFile);
 
         File result = redactionService.redactFile("jwt", "s2sToken", createRedactionRequest("caseId", docStoreUUID,
@@ -116,8 +116,8 @@ class RedactionServiceImplTest {
     @Test
     void redactImageFileTest() throws DocumentTaskProcessingException, IOException {
         File mockFile = new File("prosecution2.png");
-        when(dmStoreDownloader.downloadFile(docStoreUUID.toString())).thenReturn(mockFile);
-        when(imageRedaction.redactImage(mockFile, redactions.get(0).getRectangles())).thenReturn(mockFile);
+        when(dmStoreDownloader.downloadFile(docStoreUUID.toString(), "jwt")).thenReturn(mockFile);
+        when(imageRedaction.redactImage(mockFile, redactions.getFirst().getRectangles())).thenReturn(mockFile);
 
         File result = redactionService.redactFile("jwt", "s2sToken",createRedactionRequest("caseId", docStoreUUID,
             redactions));
@@ -129,7 +129,7 @@ class RedactionServiceImplTest {
     void redactInvalidFileTest() throws DocumentTaskProcessingException, IOException {
 
         File mockFile = new File("test.txt");
-        when(dmStoreDownloader.downloadFile(docStoreUUID.toString())).thenReturn(mockFile);
+        when(dmStoreDownloader.downloadFile(docStoreUUID.toString(), "jwt")).thenReturn(mockFile);
 
         assertThrows(FileTypeException.class, () ->
             redactionService.redactFile("jwt", "s2sToken",
@@ -140,7 +140,7 @@ class RedactionServiceImplTest {
     @Test
     void redactDocumentTaskProcessingErrorTest() throws DocumentTaskProcessingException, IOException {
 
-        when(dmStoreDownloader.downloadFile(docStoreUUID.toString()))
+        when(dmStoreDownloader.downloadFile(docStoreUUID.toString(), "jwt"))
             .thenThrow(DocumentTaskProcessingException.class);
         assertThrows(RedactionProcessingException.class, () ->
             redactionService.redactFile("jwt", "s2sToken",
@@ -152,9 +152,9 @@ class RedactionServiceImplTest {
     void redactIOExceptionTest() throws DocumentTaskProcessingException, IOException {
 
         File mockFile = new File("prosecution2.png");
-        when(dmStoreDownloader.downloadFile(docStoreUUID.toString())).thenReturn(mockFile);
+        when(dmStoreDownloader.downloadFile(docStoreUUID.toString(), "jwt")).thenReturn(mockFile);
         when(pdfRedaction.redactPdf(mockFile, redactions)).thenReturn(mockFile);
-        when(imageRedaction.redactImage(mockFile, redactions.get(0).getRectangles()))
+        when(imageRedaction.redactImage(mockFile, redactions.getFirst().getRectangles()))
             .thenThrow(IOException.class);
         assertThrows(FileTypeException.class, () ->
             redactionService.redactFile("jwt", "s2sToken",

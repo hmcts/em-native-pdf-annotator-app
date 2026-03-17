@@ -6,6 +6,6 @@ import java.io.File;
 
 public interface DmStoreDownloader {
 
-    File downloadFile(String id) throws DocumentTaskProcessingException;
+    File downloadFile(String id, String userToken) throws DocumentTaskProcessingException;
 
 }

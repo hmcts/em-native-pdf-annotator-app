@@ -36,10 +36,10 @@ public class RedactionServiceImpl implements RedactionService {
     boolean cdamEnabled;
 
     public RedactionServiceImpl(
-            DmStoreDownloader dmStoreDownloader,
-            PdfRedaction pdfRedaction,
-            ImageRedaction imageRedaction,
-            CdamService cdamService
+        DmStoreDownloader dmStoreDownloader,
+        PdfRedaction pdfRedaction,
+        ImageRedaction imageRedaction,
+        CdamService cdamService
     ) {
         this.dmStoreDownloader = dmStoreDownloader;
         this.pdfRedaction = pdfRedaction;
@@ -52,11 +52,11 @@ public class RedactionServiceImpl implements RedactionService {
         try {
             File originalFile;
             log.info("cdamEnabled is : {} for documentId : {} ", cdamEnabled,
-                    redactionRequest.getDocumentId());
+                redactionRequest.getDocumentId());
             if (cdamEnabled) {
                 originalFile = cdamService.downloadFile(auth, serviceAuth, redactionRequest.getDocumentId());
             } else {
-                originalFile = dmStoreDownloader.downloadFile(redactionRequest.getDocumentId().toString());
+                originalFile = dmStoreDownloader.downloadFile(redactionRequest.getDocumentId().toString(), auth);
             }
 
             String fileType = FilenameUtils.getExtension(originalFile.getName());
@@ -68,8 +68,8 @@ public class RedactionServiceImpl implements RedactionService {
             } else if (imageExtensionsList.contains(fileType.toLowerCase())) {
                 log.debug("Applying redaction to Image Document");
                 updatedFile = imageRedaction.redactImage(
-                        originalFile,
-                        redactionRequest.getRedactions().getFirst().getRectangles()
+                    originalFile,
+                    redactionRequest.getRedactions().getFirst().getRectangles()
                 );
             } else {
                 throw new FileTypeException("Redaction cannot be applied to the file type provided");
