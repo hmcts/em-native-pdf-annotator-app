@@ -15,12 +15,13 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.em.npa.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.npa.service.exception.DocumentTaskProcessingException;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-
 
 @Service
 @Transactional
@@ -32,6 +33,8 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
 
     private final AuthTokenGenerator authTokenGenerator;
 
+    private final IdamClient idamClient;
+
     private String dmStoreAppBaseUrl;
 
     private static final String DM_STORE_DOWNLOAD_ENDPOINT = "/documents/";
@@ -39,21 +42,27 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
     private final ObjectMapper objectMapper;
 
     public DmStoreDownloaderImpl(OkHttpClient okHttpClient, AuthTokenGenerator authTokenGenerator,
+                                 IdamClient idamClient,
                                  @Value("${document_management.base-url}") String dmStoreAppBaseUrl,
                                  ObjectMapper objectMapper) {
         this.okHttpClient = okHttpClient;
         this.authTokenGenerator = authTokenGenerator;
+        this.idamClient = idamClient;
         this.dmStoreAppBaseUrl = dmStoreAppBaseUrl;
         this.objectMapper = objectMapper;
     }
 
-
     @Override
-    public File downloadFile(String id) throws DocumentTaskProcessingException {
+    public File downloadFile(String id, String userToken) throws DocumentTaskProcessingException {
 
         try {
 
-            Response response = getDocumentStoreResponse(dmStoreAppBaseUrl + DM_STORE_DOWNLOAD_ENDPOINT + id);
+            UserInfo userInfo = idamClient.getUserInfo(userToken);
+            String userId = userInfo.getUid();
+            String userRoles = String.join(",", userInfo.getRoles());
+
+            Response response = getDocumentStoreResponse(
+                dmStoreAppBaseUrl + DM_STORE_DOWNLOAD_ENDPOINT + id, userId, userRoles);
 
             if (response.isSuccessful()) {
                 JsonNode documentMetaData = objectMapper.readTree(response.body().byteStream());
@@ -70,41 +79,42 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
                     .log();
 
                 String documentBinaryUrl = new StringBuffer()
-                                                .append(dmStoreAppBaseUrl)
-                                                    .append(DM_STORE_DOWNLOAD_ENDPOINT)
-                                                    .append(id)
-                                                    .append("/binary").toString();
+                    .append(dmStoreAppBaseUrl)
+                    .append(DM_STORE_DOWNLOAD_ENDPOINT)
+                    .append(id)
+                    .append("/binary").toString();
 
                 String originalDocumentName = documentMetaData.get("originalDocumentName").asText();
                 String fileType = FilenameUtils.getExtension(originalDocumentName);
 
                 log.info("Accessing documentBinaryUrl: {}", documentBinaryUrl);
 
-                Response binaryResponse = getDocumentStoreResponse(documentBinaryUrl);
+                Response binaryResponse = getDocumentStoreResponse(documentBinaryUrl, userId, userRoles);
 
                 return copyResponseToFile(binaryResponse, fileType);
 
             } else {
                 throw new DocumentTaskProcessingException(
-                        "Could not access the binary. HTTP response: " + response.code()
+                    "Could not access the binary. HTTP response: " + response.code()
                 );
             }
 
         } catch (RuntimeException | IOException e) {
             throw new DocumentTaskProcessingException(String.format(
-                    "Could not access the binary: %s", e.getMessage()),
-                    e
+                "Could not access the binary: %s", e.getMessage()),
+                e
             );
         }
 
     }
 
-    private Response getDocumentStoreResponse(String documentUri) throws IOException {
+    private Response getDocumentStoreResponse(String documentUri, String userId, String userRoles) throws IOException {
 
         log.info("getDocumentStoreResponse - URL: {}", documentUri);
 
         return okHttpClient.newCall(new Request.Builder()
-            .addHeader("user-roles", "caseworker")
+            .addHeader("user-id", userId)
+            .addHeader("user-roles", userRoles)
             .addHeader("ServiceAuthorization", authTokenGenerator.generate())
             .url(documentUri)
             .build()).execute();
