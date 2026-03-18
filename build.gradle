@@ -22,7 +22,7 @@ plugins {
     id 'au.com.dius.pact' version '4.6.20'
     id 'org.owasp.dependencycheck' version '12.1.6'
     id 'info.solidsoft.pitest' version '1.19.0-rc.3'
-    id 'com.github.hmcts.rse-cft-lib' version '0.19.2026'
+    id 'com.github.hmcts.rse-cft-lib' version '0.19.2027'
     id 'org.flywaydb.flyway' version '12.1.1'
     id 'io.freefair.lombok' version '9.2.0'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '5.3.7'
@@ -62,7 +62,7 @@ application {
 def versions = [
         postgresql         : '42.7.10',
         h2                 : '1.4.199',
-        serenity           : '5.3.5',
+        serenity           : '5.3.7',
         pact_version       : '4.6.20',
         logging            : '8.0.0',
         fasterXmlJackson   : '2.21.1',
