@@ -3,9 +3,8 @@ server:
 spring:
   application:
     name: EM Native PDF Annotator App
-  # cloud:
-  #   compatibility-verifier:
-  #     enabled: false
+  lifecycle:
+    timeout-per-shutdown-phase: ${TIMEOUT_SERVER_SHUTDOWN_PHASE:1m}
   config:
     import: "optional:configtree:/mnt/secrets/em-npa/"
   flyway:
