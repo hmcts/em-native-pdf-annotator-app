@@ -46,12 +46,20 @@ Requires docker desktop running
 
 #### To run the application:
 
-Requires docker desktop running
+Requires docker desktop running.
+
+You need to be logged in to Azure and have access to the ACR registry to pull the necessary containers for the application to run. 
+If you are not logged in, you can do so by running `az login` in your terminal.
+Followed by `az acr login --name hmctsprod` to log in to the ACR registry.
 
 ```
 ./gradlew bootWithCCD
 ```
 
+To run the project functional tests, first ensure you have run `./gradlew bootWithCCD` as in the above setup instructions, then run
+```
+./gradlew functional 
+```
 
 ### Swagger UI
 To view our REST API go to http://{HOST}/swagger-ui/index.html
@@ -62,28 +70,6 @@ On local machine with server up and running, link to swagger is as below
 ### API Endpoints
 A list of our endpoints can be found here
 > https://hmcts.github.io/cnp-api-docs/swagger.html?url=https://hmcts.github.io/cnp-api-docs/specs/em-native-pdf-annotator-app.json
-
-### Building the application
-
-The project uses [Gradle](https://gradle.org) as a build tool. It already contains
-`./gradlew` wrapper script, so there's no need to install gradle.
-
-To build the project execute the following command:
-
-```bash
-./gradlew build
-```
-
-To run the project unit tests execute the following command:
-
-```
-./gradlew test
-```
-
-To run the project functional tests, first ensure you have run `./gradlew bootWithCCD` as in the above setup instructions, then run
-```
-./gradlew functional 
-```
 
 ## License
 
