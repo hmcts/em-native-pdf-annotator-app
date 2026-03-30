@@ -69,7 +69,7 @@ def versions = [
         hibernate          : '6.6.45.Final',
         mapstruct          : '1.6.3',
         springSecurity     : '6.5.9',
-        log4JVersion       : '2.25.3',
+        log4JVersion       : '2.25.4',
         jupiter            : '6.0.3',
         poi                : '5.5.1'
 ]
