@@ -66,7 +66,7 @@ def versions = [
         pact_version       : '4.6.20',
         logging            : '8.0.0',
         fasterXmlJackson   : '2.21.2',
-        hibernate          : '6.6.46.Final',
+        hibernate          : '6.6.47.Final',
         mapstruct          : '1.6.3',
         springSecurity     : '6.5.9',
         log4JVersion       : '2.25.4',
@@ -133,8 +133,8 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
 
 
-    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '4.3.1'
-    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.3.1'
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '4.3.2'
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.3.2'
 
     implementation group: 'com.google.guava', name: 'guava', version: '33.5.0-jre'
 
