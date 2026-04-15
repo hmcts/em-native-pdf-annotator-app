@@ -136,7 +136,7 @@ dependencies {
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '4.3.2'
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.3.2'
 
-    implementation group: 'com.google.guava', name: 'guava', version: '33.5.0-jre'
+    implementation group: 'com.google.guava', name: 'guava', version: '33.6.0-jre'
 
     implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.44'
     implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '3.0.7'
