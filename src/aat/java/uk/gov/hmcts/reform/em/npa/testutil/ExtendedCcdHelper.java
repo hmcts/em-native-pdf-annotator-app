@@ -14,6 +14,9 @@ public class ExtendedCcdHelper {
     @Value("${test.url}")
     private String testUrl;
 
+    @Value("${test.user.password}")
+    private String testUserPassword;
+
     private final CcdDataHelper ccdDataHelper;
 
     private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
@@ -46,8 +49,13 @@ public class ExtendedCcdHelper {
 
     public CaseDetails createCase(String documents) throws JsonProcessingException {
         String redactionTestUser = "redactionTestUser2@redactiontest.com";
-        return ccdDataHelper.createCase(redactionTestUser, "PUBLICLAW", getEnvCcdCaseTypeId(), "createCase",
-            objectMapper.readTree(String.format(CREATE_CASE_TEMPLATE, documents)));
+        return ccdDataHelper.createCase(redactionTestUser,
+                testUserPassword,
+                "PUBLICLAW",
+                getEnvCcdCaseTypeId(),
+                "createCase",
+                objectMapper.readTree(String.format(CREATE_CASE_TEMPLATE, documents))
+        );
     }
 
     public String getEnvCcdCaseTypeId() {

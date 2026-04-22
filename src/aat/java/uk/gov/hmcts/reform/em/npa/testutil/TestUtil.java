@@ -63,6 +63,9 @@ public class TestUtil {
 
     private final CdamHelper cdamHelper;
 
+    @Value("${test.user.password}")
+    private String testUserPassword;
+
     @Value("${annotation.api.url}")
     private String emAnnotationUrl;
     @Value("${document_management.url}")
@@ -82,17 +85,17 @@ public class TestUtil {
 
     @PostConstruct
     public void init() {
-        idamHelper.createUser("redactionTestUser2@redactiontest.com",
+        idamHelper.createUser("redactionTestUser2@redactiontest.com", testUserPassword,
             Stream.of("caseworker", "caseworker-publiclaw", "ccd-import").toList());
         SerenityRest.useRelaxedHTTPSValidation();
-        idamAuth = idamHelper.authenticateUser("redactionTestUser2@redactiontest.com");
+        idamAuth = idamHelper.authenticateUser("redactionTestUser2@redactiontest.com", testUserPassword);
         s2sAuth = s2sHelper.getS2sToken();
     }
 
     public String getNonCaseworkerUserAuth() {
         String email = "invalidRoleUser@redactiontest.com";
-        idamHelper.createUser(email, List.of("ccd-import"));
-        return idamHelper.authenticateUser(email);
+        idamHelper.createUser(email, testUserPassword, List.of("ccd-import"));
+        return idamHelper.authenticateUser(email, testUserPassword);
     }
 
     public RedactionDTO createRedactionDTO(UUID docId, UUID redactionId) {
@@ -325,6 +328,6 @@ public class TestUtil {
         DocumentUploadRequest uploadRequest = new DocumentUploadRequest(Classification.PUBLIC.toString(), caseTypeId,
             jurisdictionId, Arrays.asList(multipartFile));
 
-        return cdamHelper.uploadDocuments(username, uploadRequest);
+        return cdamHelper.uploadDocuments(username, testUserPassword, uploadRequest);
     }
 }
