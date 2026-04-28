@@ -51,7 +51,7 @@ env.PACT_BROKER_FULL_URL = 'https://pact-broker.platform.hmcts.net'
 env.PACT_BROKER_URL = "pact-broker.platform.hmcts.net"
 env.PACT_BROKER_PORT = "443"
 env.PACT_BROKER_SCHEME = "https"
-
+env.TEST_USER_PASSWORD = 'S!' + UUID.randomUUID().toString().replace('-', '').take(20)
 def vaultOverrides = [
         'preview' : 'aat',
         'spreview': 'saat'
