@@ -42,30 +42,30 @@ public class SecurityConfiguration {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring().requestMatchers("/swagger-ui.html",
-                "/swagger-ui/**",
-                "/swagger-resources/**",
-                "/v3/**",
-                "/health",
-                "/health/liveness",
-                "/health/readiness",
-                "/status/health",
-                "/loggers/**",
-                "/");
+            "/swagger-ui/**",
+            "/swagger-resources/**",
+            "/v3/**",
+            "/health",
+            "/health/liveness",
+            "/health/readiness",
+            "/status/health",
+            "/loggers/**",
+            "/");
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
-                .formLogin(AbstractHttpConfigurer::disable)
-                .logout(AbstractHttpConfigurer::disable)
-                .addFilterBefore(npaServiceAuthFilter, AnonymousAuthenticationFilter.class)
-                .sessionManagement(httpSecuritySessionManagementConfigurer ->
-                        httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
-                        authorizationManagerRequestMatcherRegistry.requestMatchers("/api/**").authenticated())
-                .oauth2ResourceServer(httpSecurityOAuth2ResourceServerConfigurer ->
-                        httpSecurityOAuth2ResourceServerConfigurer.jwt(Customizer.withDefaults()))
-                .oauth2Client(Customizer.withDefaults());
+            .formLogin(AbstractHttpConfigurer::disable)
+            .logout(AbstractHttpConfigurer::disable)
+            .addFilterBefore(npaServiceAuthFilter, AnonymousAuthenticationFilter.class)
+            .sessionManagement(httpSecuritySessionManagementConfigurer ->
+                httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
+                authorizationManagerRequestMatcherRegistry.requestMatchers("/api/**").authenticated())
+            .oauth2ResourceServer(httpSecurityOAuth2ResourceServerConfigurer ->
+                httpSecurityOAuth2ResourceServerConfigurer.jwt(Customizer.withDefaults()))
+            .oauth2Client(Customizer.withDefaults());
         return http.build();
     }
 
@@ -82,7 +82,7 @@ public class SecurityConfiguration {
 
     OAuth2TokenValidator<Jwt> allowedIssuersValidator(List<String> allowedIssuers) {
         Set<String> allowedIssuerSet = Set.copyOf(allowedIssuers);
-    return new JwtClaimValidator<>("iss", iss -> Objects.nonNull(iss) && allowedIssuerSet.contains(iss));
+        return new JwtClaimValidator<>("iss", iss -> Objects.nonNull(iss) && allowedIssuerSet.contains(iss));
     }
 
 }
