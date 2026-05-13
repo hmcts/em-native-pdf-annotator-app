@@ -105,6 +105,9 @@ idam:
   s2s-authorised:
     services: ${S2S_NAMES_WHITELIST:ccd,em_gw,xui_webapp}
     delete-endpoint-services: ${S2S_NAMES_DELETE_WHITELIST:dm_store,em_gw}
+  security:
+    allowed-issuers:
+      - ${OIDC_ISSUER_HMCTS_ACCESS:http://localhost:5062/o}
 
 azure:
   app_insights_key: ${APPINSIGHTS_INSTRUMENTATIONKEY:true}
