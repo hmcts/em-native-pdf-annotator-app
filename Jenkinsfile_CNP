@@ -53,8 +53,8 @@ env.PACT_BROKER_PORT = "443"
 env.PACT_BROKER_SCHEME = "https"
 env.TEST_USER_PASSWORD = 'S!' + UUID.randomUUID().toString().replace('-', '').take(20)
 env.IDAM_SECURITY_ALLOWED_ISSUERS_0 = 'https://hmcts-access.aat.platform.hmcts.net/o'
-env.IDAM_SECURITY_ALLOWED_ISSUERS_1= 'https://idam-web-public.aat.platform.hmcts.net/o'
-env.IDAM_SECURITY_ALLOWED_ISSUERS_2= 'https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/realms/root/realms/hmcts'
+env.IDAM_SECURITY_ALLOWED_ISSUERS_1 = 'https://idam-web-public.aat.platform.hmcts.net/o'
+env.IDAM_SECURITY_ALLOWED_ISSUERS_2 = 'https://forgerock-am.service.core-compute-idam-aat2.internal:8443/openam/oauth2/realms/root/realms/hmcts'
 
 
 
