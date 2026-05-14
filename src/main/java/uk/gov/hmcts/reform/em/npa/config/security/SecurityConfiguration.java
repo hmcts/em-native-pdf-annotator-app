@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.em.npa.config.security;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,7 +25,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-@Slf4j
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
@@ -73,7 +71,6 @@ public class SecurityConfiguration {
 
     @Bean
     JwtDecoder jwtDecoder(IdamSecurityProperties securityProperties) {
-        log.info("jwtDecoder with securityProperties {}", securityProperties);
         NimbusJwtDecoder jwtDecoder = JwtDecoders.fromOidcIssuerLocation(issuerUri);
         OAuth2TokenValidator<Jwt> withTimestamp = new JwtTimestampValidator();
         jwtDecoder.setJwtValidator(new DelegatingOAuth2TokenValidator<>(
@@ -85,16 +82,7 @@ public class SecurityConfiguration {
 
     OAuth2TokenValidator<Jwt> allowedIssuersValidator(List<String> allowedIssuers) {
         Set<String> allowedIssuerSet = Set.copyOf(allowedIssuers);
-
-        return new JwtClaimValidator<>("iss", (Object iss) -> {
-            boolean isValid = Objects.nonNull(iss) && allowedIssuerSet.contains(iss.toString());
-
-            // TEMPORARY LOGGING
-            log.info("JWT Validation - Claim: 'iss', Value: '{}', Allowed: {}, Result: {}",
-                iss, allowedIssuerSet, isValid);
-
-            return isValid;
-        });
+        return new JwtClaimValidator<>("iss", iss -> Objects.nonNull(iss) && allowedIssuerSet.contains(iss));
     }
 
 }
