@@ -74,9 +74,11 @@ resource "azurerm_key_vault_secret" "POSTGRES-USER" {
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES-PASS" {
-  name         = "${var.component}-POSTGRES-PASS"
-  value        = module.db-v15.password
-  key_vault_id = module.key_vault.key_vault_id
+  name            = "${var.component}-POSTGRES-PASS"
+  value           = module.db-v15.password
+  key_vault_id    = module.key_vault.key_vault_id
+  content_type    = "text/plain"
+  expiration_date = timeadd(timestamp(), "8760h")
 }
 
 resource "azurerm_key_vault_secret" "POSTGRES_HOST" {
