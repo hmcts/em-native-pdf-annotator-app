@@ -5,5 +5,32 @@
         <packageUrl regex="true">^pkg:maven/org\.jetbrains\.kotlin/kotlin-stdlib@.*$</packageUrl>
         <cve>CVE-2020-29582</cve>
     </suppress>
+    <suppress until="2027-05-18Z">
+        <packageUrl regex="true">^pkg:maven/org\.eclipse\.angus/angus-activation@.*$</packageUrl>
+        <cve>CVE-2025-7962</cve>
+    </suppress>
+    <suppress until="2027-05-18Z">
+        <packageUrl regex="true">^pkg:maven/com\.itextpdf/cleanup@.*$</packageUrl>
+        <cve>CVE-2017-9096</cve>
+    </suppress>
+    <suppress until="2027-05-18Z">
+        <packageUrl regex="true">^pkg:maven/com\.itextpdf/cleanup@.*$</packageUrl>
+        <cve>CVE-2022-24196</cve>
+    </suppress>
+    <suppress until="2027-05-18Z">
+        <packageUrl regex="true">^pkg:maven/com\.itextpdf/cleanup@.*$</packageUrl>
+        <cve>CVE-2022-24197</cve>
+    </suppress>
+
+    <!-- CVE-2026-23907, CVE-2026-33929: Affect pdfbox-examples (ExtractEmbeddedFiles example only), not the core
+         pdfbox/pdfbox-io/jbig2-imageio libraries. Fix in pdfbox 3.0.8 not yet released. -->
+    <suppress until="2027-05-18Z">
+        <packageUrl regex="true">^pkg:maven/org\.apache\.pdfbox/(pdfbox|pdfbox-io|jbig2-imageio)@.*$</packageUrl>
+        <cve>CVE-2026-23907</cve>
+    </suppress>
+    <suppress until="2027-05-18Z">
+        <packageUrl regex="true">^pkg:maven/org\.apache\.pdfbox/(pdfbox|pdfbox-io|jbig2-imageio)@.*$</packageUrl>
+        <cve>CVE-2026-33929</cve>
+    </suppress>
 
 </suppressions>
