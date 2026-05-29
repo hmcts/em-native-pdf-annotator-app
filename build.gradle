@@ -65,7 +65,7 @@ def versions = [
         serenity           : '5.3.10',
         pact_version       : '4.7.1',
         logging            : '8.0.0',
-        fasterXmlJackson   : '2.21.3',
+        fasterXmlJackson   : '2.21.4',
         hibernate          : '6.6.51.Final',
         mapstruct          : '1.6.3',
         springSecurity     : '6.5.10',
