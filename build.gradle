@@ -253,6 +253,8 @@ dependencies {
 
 dependencyManagement {
     dependencies {
+        dependency 'org.jetbrains.kotlin:kotlin-stdlib:2.1.20'
+
         dependencySet(group: 'org.junit.platform', version: '6.1.0') {
             entry 'junit-platform-commons'
             entry 'junit-platform-engine'
