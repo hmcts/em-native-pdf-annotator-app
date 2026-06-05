@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.em.npa.config.security;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,13 +24,14 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration {
+
+    private static final Logger log = LoggerFactory.getLogger(SecurityConfiguration.class);
 
     @Value("${spring.security.oauth2.client.provider.oidc.issuer-uri}")
     private String issuerUri;
@@ -82,7 +85,16 @@ public class SecurityConfiguration {
 
     OAuth2TokenValidator<Jwt> allowedIssuersValidator(List<String> allowedIssuers) {
         Set<String> allowedIssuerSet = Set.copyOf(allowedIssuers);
-        return new JwtClaimValidator<>("iss", iss -> Objects.nonNull(iss) && allowedIssuerSet.contains(iss));
+
+        return new JwtClaimValidator<>("iss", iss -> isAllowedIssuer(iss, allowedIssuerSet));
+    }
+
+    private boolean isAllowedIssuer(Object iss, Set<String> allowedIssuerSet) {
+        if (iss instanceof String issuer && allowedIssuerSet.contains(issuer)) {
+            return true;
+        }
+        log.warn("JWT rejected: issuer not allowed. iss={}", iss);
+        return false;
     }
 
 }
