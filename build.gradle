@@ -6,7 +6,7 @@ import java.nio.charset.StandardCharsets
 
 buildscript {
     dependencies {
-        classpath("org.flywaydb:flyway-database-postgresql:12.7.0")
+        classpath("org.flywaydb:flyway-database-postgresql:12.8.0")
     }
 }
 
@@ -23,7 +23,7 @@ plugins {
     id 'org.owasp.dependencycheck' version '12.2.1'
     id 'info.solidsoft.pitest' version '1.19.0'
     id 'com.github.hmcts.rse-cft-lib' version '0.19.2178'
-    id 'org.flywaydb.flyway' version '12.7.0'
+    id 'org.flywaydb.flyway' version '12.8.0'
     id 'io.freefair.lombok' version '9.5.0'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '5.3.9'
 }
@@ -65,7 +65,7 @@ def versions = [
         serenity           : '5.3.10',
         pact_version       : '4.7.1',
         logging            : '8.0.0',
-        fasterXmlJackson   : '2.21.4',
+        fasterXmlJackson   : '2.22.0',
         hibernate          : '6.6.52.Final',
         mapstruct          : '1.6.3',
         springSecurity     : '6.5.10',
@@ -153,7 +153,7 @@ dependencies {
 
     implementation group:'com.fasterxml.jackson.datatype', name: 'jackson-datatype-json-org', version: versions.fasterXmlJackson
     implementation group:'com.fasterxml.jackson.module', name: 'jackson-module-blackbird', version: versions.fasterXmlJackson
-    implementation group:'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.21'
+    implementation group:'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.22'
 
 
     implementation group: 'org.zalando', name: 'problem-spring-web', version: '0.29.1'
@@ -168,8 +168,8 @@ dependencies {
     implementation group: 'org.springframework.security', name: 'spring-security-web', version: versions.springSecurity
 
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.14'
-    implementation group: 'org.flywaydb', name: 'flyway-core', version: '12.7.0'
-    runtimeOnly group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '12.7.0'
+    implementation group: 'org.flywaydb', name: 'flyway-core', version: '12.8.0'
+    runtimeOnly group: 'org.flywaydb', name: 'flyway-database-postgresql', version: '12.8.0'
 
     implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.20.0'
@@ -253,6 +253,8 @@ dependencies {
 
 dependencyManagement {
     dependencies {
+        dependency 'org.jetbrains.kotlin:kotlin-stdlib:2.1.20'
+
         dependencySet(group: 'org.junit.platform', version: '6.1.0') {
             entry 'junit-platform-commons'
             entry 'junit-platform-engine'
