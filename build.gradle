@@ -251,6 +251,8 @@ dependencies {
     cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
 }
 
+ext['spring-framework.version'] = '6.2.19'
+
 dependencyManagement {
     dependencies {
         dependency 'org.jetbrains.kotlin:kotlin-stdlib:2.4.0'
