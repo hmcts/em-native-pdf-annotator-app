@@ -66,7 +66,7 @@ def versions = [
         pact_version       : '4.7.1',
         logging            : '8.0.0',
         fasterXmlJackson   : '2.22.0',
-        hibernate          : '6.6.52.Final',
+        hibernate          : '6.6.53.Final',
         mapstruct          : '1.6.3',
         springSecurity     : '6.5.10',
         log4JVersion       : '2.26.0',
@@ -250,6 +250,10 @@ dependencies {
     aatImplementation group: 'org.apache.poi', name: 'poi-ooxml', version: versions.poi
     cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
 }
+
+
+//CVE-2026-41840, CVE-2026-41841, CVE-2026-41842, CVE-2026-41843, CVE-2026-41850, CVE-2026-41851
+ext['spring-framework.version'] = '6.2.19'
 
 dependencyManagement {
     dependencies {
