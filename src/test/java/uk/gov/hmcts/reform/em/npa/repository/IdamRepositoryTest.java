@@ -29,7 +29,7 @@ class IdamRepositoryTest {
     }
 
     @Test
-    void getUserDetailsTestSuccess() {
+    void getUserInfoTestSuccess() {
 
         final UserInfo userInfo = UserInfo
                 .builder()
@@ -46,10 +46,26 @@ class IdamRepositoryTest {
     }
 
     @Test
-    void getUserDetailsTestFailure() {
+    void getUserInfoTestFailure() {
         String token = "randomValue";
 
         assertNull(idamRepository.getUserInfo(token));
+    }
+
+    @Test
+    void getUserInfoWithBearerPrefixedTokenDoesNotDoublePrefixTest() {
+        final UserInfo userInfo = UserInfo
+                .builder()
+                .uid("100")
+                .givenName(FORE_NAME)
+                .familyName(SURNAME)
+                .roles(asList("Admin", "CaseWorker"))
+                .build();
+        String bearerToken = "Bearer someToken";
+        Mockito.when(idamClient.getUserInfo(bearerToken)).thenReturn(userInfo);
+
+        assertEquals(FORE_NAME, idamRepository.getUserInfo(bearerToken).getGivenName());
+        Mockito.verify(idamClient).getUserInfo(bearerToken);
     }
 }
 

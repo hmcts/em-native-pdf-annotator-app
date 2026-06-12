@@ -24,8 +24,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.em.npa.repository.IdamRepository;
 import uk.gov.hmcts.reform.em.npa.service.exception.DocumentTaskProcessingException;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.io.ByteArrayInputStream;
@@ -60,7 +60,7 @@ class DmStoreDownloaderImplTest {
     private AuthTokenGenerator authTokenGenerator;
 
     @Mock
-    private IdamClient idamClient;
+    private IdamRepository idamRepository;
 
     @Mock
     private Call mockCall;
@@ -92,7 +92,7 @@ class DmStoreDownloaderImplTest {
         dmStoreDownloader = new DmStoreDownloaderImpl(
             okHttpClient,
             authTokenGenerator,
-            idamClient,
+            idamRepository,
             DM_STORE_BASE_URL,
             objectMapper
         );
@@ -103,7 +103,7 @@ class DmStoreDownloaderImplTest {
         UserInfo userInfo = mock(UserInfo.class);
         lenient().when(userInfo.getUid()).thenReturn(USER_ID);
         lenient().when(userInfo.getRoles()).thenReturn(List.of("caseworker", "caseworker-publiclaw"));
-        lenient().when(idamClient.getUserInfo(USER_TOKEN)).thenReturn(userInfo);
+        lenient().when(idamRepository.getUserInfo(USER_TOKEN)).thenReturn(userInfo);
 
         // Set log level to DEBUG to cover debug logging statements
         Logger logger = (Logger) LoggerFactory.getLogger(DmStoreDownloaderImpl.class);
@@ -136,7 +136,7 @@ class DmStoreDownloaderImplTest {
         assertTrue(downloadedFile.getName().endsWith(".pdf"));
         assertEquals(BINARY_CONTENT, Files.readString(downloadedFile.toPath()));
 
-        verify(idamClient, times(1)).getUserInfo(USER_TOKEN);
+        verify(idamRepository, times(1)).getUserInfo(USER_TOKEN);
         verify(authTokenGenerator, times(2)).generate();
         verify(okHttpClient, times(2)).newCall(requestCaptor.capture());
         verify(mockCall, times(2)).execute();
@@ -256,10 +256,10 @@ class DmStoreDownloaderImplTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenIdamClientThrowsException() {
+    void shouldThrowExceptionWhenIdamRepositoryThrowsException() {
 
         RuntimeException runtimeException = new RuntimeException("Idam Error");
-        when(idamClient.getUserInfo(USER_TOKEN)).thenThrow(runtimeException);
+        when(idamRepository.getUserInfo(USER_TOKEN)).thenThrow(runtimeException);
 
         DocumentTaskProcessingException exception = assertThrows(
             DocumentTaskProcessingException.class,
@@ -303,7 +303,7 @@ class DmStoreDownloaderImplTest {
         dmStoreDownloader = new DmStoreDownloaderImpl(
             okHttpClient,
             authTokenGenerator,
-            idamClient,
+            idamRepository,
             DM_STORE_BASE_URL,
             spyObjectMapper
         );
