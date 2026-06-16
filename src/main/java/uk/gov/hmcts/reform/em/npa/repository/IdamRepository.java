@@ -15,6 +15,7 @@ public class IdamRepository {
     }
 
     public UserInfo getUserInfo(String jwtToken) {
-        return idamClient.getUserInfo("Bearer " + jwtToken);
+        String bearerToken = jwtToken.startsWith("Bearer ") ? jwtToken : "Bearer " + jwtToken;
+        return idamClient.getUserInfo(bearerToken);
     }
 }

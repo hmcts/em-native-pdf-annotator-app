@@ -13,9 +13,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.em.npa.repository.IdamRepository;
 import uk.gov.hmcts.reform.em.npa.service.DmStoreDownloader;
 import uk.gov.hmcts.reform.em.npa.service.exception.DocumentTaskProcessingException;
-import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import java.io.File;
@@ -33,7 +33,7 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
 
     private final AuthTokenGenerator authTokenGenerator;
 
-    private final IdamClient idamClient;
+    private final IdamRepository idamRepository;
 
     private String dmStoreAppBaseUrl;
 
@@ -42,12 +42,12 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
     private final ObjectMapper objectMapper;
 
     public DmStoreDownloaderImpl(OkHttpClient okHttpClient, AuthTokenGenerator authTokenGenerator,
-                                 IdamClient idamClient,
+                                 IdamRepository idamRepository,
                                  @Value("${document_management.base-url}") String dmStoreAppBaseUrl,
                                  ObjectMapper objectMapper) {
         this.okHttpClient = okHttpClient;
         this.authTokenGenerator = authTokenGenerator;
-        this.idamClient = idamClient;
+        this.idamRepository = idamRepository;
         this.dmStoreAppBaseUrl = dmStoreAppBaseUrl;
         this.objectMapper = objectMapper;
     }
@@ -57,7 +57,7 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
 
         try {
 
-            UserInfo userInfo = idamClient.getUserInfo(userToken);
+            UserInfo userInfo = idamRepository.getUserInfo(userToken);
             String userId = userInfo.getUid();
             String userRoles = String.join(",", userInfo.getRoles());
 
