@@ -63,7 +63,7 @@ def versions = [
         postgresql         : '42.7.11',
         h2                 : '1.4.199',
         serenity           : '5.3.10',
-        pact_version       : '4.7.2',
+        pact_version       : '4.7.3',
         logging            : '8.0.0',
         fasterXmlJackson   : '2.22.0',
         hibernate          : '6.6.53.Final',
