@@ -45,7 +45,7 @@ resource "azurerm_key_vault_secret" "local_s2s_key" {
 
 # Copy s2s key from shared to local vault
 module "key_vault" {
-  source                      = "git@github.com:hmcts/cnp-module-key-vault?ref=master"
+  source                      = "git@github.com:hmcts/cnp-module-key-vault?ref=DTSPO-31965/remove-jenkins-ptl-access"
   product                     = local.app_full_name
   env                         = var.env
   tenant_id                   = var.tenant_id
@@ -55,6 +55,7 @@ module "key_vault" {
   common_tags                 = var.common_tags
   managed_identity_object_ids = ["${data.azurerm_user_assigned_identity.rpa-shared-identity.principal_id}"]
   jenkins_object_id           = data.azurerm_user_assigned_identity.jenkins.principal_id
+  grant_preview_jenkins_access = var.env == "aat"
 }
 
 data "azurerm_user_assigned_identity" "jenkins" {
@@ -147,7 +148,7 @@ module "db-v15" {
   providers = {
     azurerm.postgres_network = azurerm.cft_vnet
   }
-  source                     = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
+  source                     = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=DTSPO-30107-additional-postgresadmins"
   env                        = var.env
   product                    = var.product
   component                  = var.component
