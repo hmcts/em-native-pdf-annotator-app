@@ -45,16 +45,16 @@ resource "azurerm_key_vault_secret" "local_s2s_key" {
 
 # Copy s2s key from shared to local vault
 module "key_vault" {
-  source                      = "git@github.com:hmcts/cnp-module-key-vault?ref=DTSPO-31965/remove-jenkins-ptl-access"
-  product                     = local.app_full_name
-  env                         = var.env
-  tenant_id                   = var.tenant_id
-  object_id                   = var.jenkins_AAD_objectId
-  resource_group_name         = "${local.app_full_name}-${var.env}"
-  product_group_object_id     = "5d9cd025-a293-4b97-a0e5-6f43efce02c0"
-  common_tags                 = var.common_tags
-  managed_identity_object_ids = ["${data.azurerm_user_assigned_identity.rpa-shared-identity.principal_id}"]
-  jenkins_object_id           = data.azurerm_user_assigned_identity.jenkins.principal_id
+  source                       = "git@github.com:hmcts/cnp-module-key-vault?ref=DTSPO-31965/remove-jenkins-ptl-access"
+  product                      = local.app_full_name
+  env                          = var.env
+  tenant_id                    = var.tenant_id
+  object_id                    = var.jenkins_AAD_objectId
+  resource_group_name          = "${local.app_full_name}-${var.env}"
+  product_group_object_id      = "5d9cd025-a293-4b97-a0e5-6f43efce02c0"
+  common_tags                  = var.common_tags
+  managed_identity_object_ids  = ["${data.azurerm_user_assigned_identity.rpa-shared-identity.principal_id}"]
+  jenkins_object_id            = data.azurerm_user_assigned_identity.jenkins.principal_id
   grant_preview_jenkins_access = var.env == "aat"
 }
 
@@ -148,7 +148,7 @@ module "db-v15" {
   providers = {
     azurerm.postgres_network = azurerm.cft_vnet
   }
-  source                     = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=DTSPO-30107-additional-postgres-admins"
+  source = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=DTSPO-30107-additional-postgres-admins"
 
   env                        = var.env
   product                    = var.product
