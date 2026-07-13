@@ -70,7 +70,7 @@ def versions = [
         mapstruct          : '1.6.3',
         springSecurity     : '6.5.11',
         log4JVersion       : '2.26.1',
-        jupiter            : '6.1.1',
+        jupiter            : '6.1.2',
         poi                : '5.5.1'
 ]
 
@@ -255,7 +255,7 @@ dependencyManagement {
     dependencies {
         dependency 'org.jetbrains.kotlin:kotlin-stdlib:2.4.0'
 
-        dependencySet(group: 'org.junit.platform', version: '6.1.1') {
+        dependencySet(group: 'org.junit.platform', version: '6.1.2') {
             entry 'junit-platform-commons'
             entry 'junit-platform-engine'
             entry 'junit-platform-launcher'
