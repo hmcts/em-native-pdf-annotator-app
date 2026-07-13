@@ -70,7 +70,7 @@ def versions = [
         mapstruct          : '1.6.3',
         springSecurity     : '6.5.11',
         log4JVersion       : '2.26.1',
-        jupiter            : '6.1.1',
+        jupiter            : '6.1.2',
         poi                : '5.5.1'
 ]
 
@@ -139,8 +139,10 @@ dependencies {
     implementation group: 'com.google.guava', name: 'guava', version: '33.6.0-jre'
 
     implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.46'
+
     implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '3.0.8'
-    implementation group: 'org.apache.pdfbox', name: 'pdfbox-io', version: '3.0.7'
+    implementation group: 'org.apache.pdfbox', name: 'pdfbox-io', version: '3.0.8'
+
     implementation group: 'org.apache.pdfbox', name: 'jbig2-imageio', version: '3.0.5'
 
     implementation group: 'com.itextpdf', name: 'cleanup', version: '5.0.7'
@@ -255,7 +257,7 @@ dependencyManagement {
     dependencies {
         dependency 'org.jetbrains.kotlin:kotlin-stdlib:2.4.0'
 
-        dependencySet(group: 'org.junit.platform', version: '6.1.1') {
+        dependencySet(group: 'org.junit.platform', version: '6.1.2') {
             entry 'junit-platform-commons'
             entry 'junit-platform-engine'
             entry 'junit-platform-launcher'
