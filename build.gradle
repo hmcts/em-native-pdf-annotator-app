@@ -62,7 +62,7 @@ application {
 def versions = [
         postgresql         : '42.7.13',
         h2                 : '1.4.199',
-        serenity           : '5.3.10',
+        serenity           : '5.3.11',
         pact_version       : '4.7.3',
         logging            : '8.0.0',
         fasterXmlJackson   : '2.22.1',
@@ -146,7 +146,7 @@ dependencies {
     implementation group: 'org.apache.pdfbox', name: 'jbig2-imageio', version: '3.0.5'
 
     implementation group: 'com.itextpdf', name: 'cleanup', version: '5.0.7'
-    implementation group: 'com.itextpdf', name: 'bouncy-castle-adapter', version: '9.6.0'
+    implementation group: 'com.itextpdf', name: 'bouncy-castle-adapter', version: '9.7.0'
 
     implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '5.4.0'
 
