@@ -14,7 +14,7 @@ properties([
         ]),
 ])
 
-@Library("Infrastructure@2.4.5") _
+@Library("Infrastructure@2.4.4") _
 
 def type = "java"
 def product = "em"
@@ -46,6 +46,7 @@ def vaultOverrides = [
 ]
 
 withParameterizedPipeline(type, product, component, params.ENVIRONMENT, 'sandbox') {
+    javaVersion = 25
     enableDbMigration('em-npa')
     enableDockerBuild()
     overrideVaultEnvironments(vaultOverrides)
