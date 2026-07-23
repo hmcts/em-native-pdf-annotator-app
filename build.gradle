@@ -116,16 +116,6 @@ configurations.configureEach {
     exclude group: 'org.codehaus.jettison', module: 'jettison'
 }
 
-configurations.all {
-    resolutionStrategy {
-        eachDependency { DependencyResolveDetails details ->
-            if (details.requested.group == 'net.bytebuddy') {
-                details.useVersion '1.17.0'
-            }
-        }
-    }
-}
-
 dependencies {
 
     def withoutStuff = {
