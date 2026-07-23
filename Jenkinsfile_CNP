@@ -58,7 +58,6 @@ def vaultOverrides = [
 ]
 
 withPipeline(type , product, component) {
-    javaVersion = 25
     enableDbMigration('em-npa')
     overrideVaultEnvironments(vaultOverrides)
     loadVaultSecrets(secrets)

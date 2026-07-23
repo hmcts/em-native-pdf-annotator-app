@@ -48,7 +48,6 @@ def vaultOverrides = [
 ]
 
 withNightlyPipeline(type , product, component) {
-    javaVersion = 25
     // Vars for Kubernetes
     env.TEST_IDAM_API_BASE_URI = 'https://idam-api.aat.platform.hmcts.net'
     env.OPEN_ID_API_BASE_URI = 'https://idam-web-public.aat.platform.hmcts.net/o'

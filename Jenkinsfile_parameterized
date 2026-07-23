@@ -46,7 +46,6 @@ def vaultOverrides = [
 ]
 
 withParameterizedPipeline(type, product, component, params.ENVIRONMENT, 'sandbox') {
-    javaVersion = 25
     enableDbMigration('em-npa')
     enableDockerBuild()
     overrideVaultEnvironments(vaultOverrides)
