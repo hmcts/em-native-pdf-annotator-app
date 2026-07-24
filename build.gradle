@@ -505,7 +505,8 @@ serenity {
 compileJava.dependsOn processResources
 
 pitest {
-
+    junit5PluginVersion = '1.2.1'
+    pitestVersion = '1.22.1'
     logger.lifecycle("Runs PIT  Tests")
     targetClasses = ['uk.gov.hmcts.reform.em.npa.*']
 
