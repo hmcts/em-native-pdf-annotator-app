@@ -22,7 +22,7 @@ plugins {
     id 'au.com.dius.pact' version '4.7.3'
     id 'org.owasp.dependencycheck' version '12.2.1'
     id 'info.solidsoft.pitest' version '1.19.0'
-    id 'com.github.hmcts.rse-cft-lib' version '0.19.2277'
+    id 'com.github.hmcts.rse-cft-lib' version '0.19.2284'
     id 'org.flywaydb.flyway' version '13.0.0'
     id 'io.freefair.lombok' version '9.5.0'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '5.3.9'
@@ -505,7 +505,8 @@ serenity {
 compileJava.dependsOn processResources
 
 pitest {
-
+    junit5PluginVersion = '1.2.1'
+    pitestVersion = '1.22.1'
     logger.lifecycle("Runs PIT  Tests")
     targetClasses = ['uk.gov.hmcts.reform.em.npa.*']
 
