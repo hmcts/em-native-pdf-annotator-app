@@ -44,7 +44,8 @@ import static org.mockito.Mockito.when;
 //@PactFolder("pacts")
 @PactBroker(
     url = "${PACT_BROKER_FULL_URL:http://localhost:80}",
-    providerBranch = "${pact.provider.branch}"
+    providerBranch = "${pact.provider.branch}",
+    enablePendingPacts = "${pactbroker.enablePending:true}"
 )
 @IgnoreNoPactsToVerify
 @ExtendWith(SpringExtension.class)
