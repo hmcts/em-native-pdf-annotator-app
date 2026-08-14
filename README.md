@@ -57,6 +57,17 @@ Followed by `az acr login --name hmctsprod` to log in to the ACR registry.
 ./gradlew bootWithCCD
 ```
 
+> **Known limitation:** `bootWithCCD` runs this application together with several other HMCTS CCD/CFT
+> services (CCD Data Store, WA Task Management API, Access Management, etc.) inside a single shared
+> JVM classloader. Since this application has been upgraded to Spring Boot 4.1.0 (Spring Framework 7),
+> while the other bundled services still run on Spring Boot 3.x (Spring Framework 6), the two are
+> binary-incompatible when loaded together and `bootWithCCD` will fail with errors such as
+> `IncompatibleClassChangeError: Class org.springframework.http.HttpHeaders does not implement the
+> requested interface org.springframework.util.MultiValueMap`. `rse-cft-lib` does not currently support
+> classloader isolation between services, so there is no code-level workaround in this repository.
+> This will be resolved once HMCTS upgrades the bundled CCD/CFT services to Spring Boot 4. Standalone
+> `./gradlew build` and `./gradlew bootRun` are unaffected and work correctly on Spring Boot 4.1.0.
+
 To run the project functional tests, first ensure you have run `./gradlew bootWithCCD` as in the above setup instructions, then run
 ```
 ./gradlew functional 
