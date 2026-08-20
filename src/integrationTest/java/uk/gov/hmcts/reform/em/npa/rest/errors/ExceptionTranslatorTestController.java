@@ -1,108 +1,43 @@
 package uk.gov.hmcts.reform.em.npa.rest.errors;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.context.annotation.Profile;
-import org.springframework.dao.ConcurrencyFailureException;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.NoSuchElementException;
 
 @RestController
 @Profile("exception-test-controller-enabled")
 public class ExceptionTranslatorTestController {
 
-    @GetMapping("/test/concurrency-failure")
-    public void concurrencyFailure() {
-        throw new ConcurrencyFailureException("test concurrency failure");
+    @GetMapping("/test/type-mismatch")
+    public void triggerTypeMismatch(@RequestParam("id") Long id) {
+
     }
 
-    @PostMapping("/test/method-argument")
-    public void methodArgument(@Valid @RequestBody TestDTO testDTO) {
-        // test for method argument validation
+    @GetMapping("/test/missing-param")
+    public void triggerMissingParam(@RequestParam("requiredParam") String param) {
+
     }
 
-    @GetMapping("/test/parameterized-error")
-    public void parameterizedError() {
-        throw new CustomParameterizedException("test parameterized error", "param0_value", "param1_value");
+    @PostMapping("/test/validation-failure")
+    public void triggerValidation(@RequestBody Object body) throws MethodArgumentNotValidException,
+            NoSuchMethodException {
+        // Programmatically construct Spring validation binding errors
+        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(body, "testDTO");
+        bindingResult.addError(new FieldError("testDTO", "fieldName", null,
+                false, new String[]{"NotNull"}, null, "Default validation error"));
+
+
+        java.lang.reflect.Method method = ExceptionTranslatorTestController.class
+                .getDeclaredMethod("triggerValidation", Object.class);
+        org.springframework.core.MethodParameter methodParameter =
+                new org.springframework.core.MethodParameter(method, 0);
+
+        throw new MethodArgumentNotValidException(methodParameter, bindingResult);
     }
-
-    @GetMapping("/test/parameterized-error2")
-    public void parameterizedError2() {
-        Map<String, Object> params = new HashMap<>();
-        params.put("foo", "foo_value");
-        params.put("bar", "bar_value");
-        throw new CustomParameterizedException("test parameterized error", params);
-    }
-
-    @GetMapping("/test/missing-servlet-request-part")
-    public void missingServletRequestPartException(@RequestPart String part) {
-        // test for missing servlet request part
-    }
-
-    @GetMapping("/test/missing-servlet-request-parameter")
-    public void missingServletRequestParameterException(@RequestParam String param) {
-        // test for missing servlet request parameter
-    }
-
-    @GetMapping("/test/access-denied")
-    public void accessdenied() {
-        throw new AccessDeniedException("test access denied!");
-    }
-
-    @GetMapping("/test/unauthorized")
-    public void unauthorized() {
-        throw new BadCredentialsException("test authentication failed!");
-    }
-
-    @GetMapping(path = "/test/response-status")
-    public void exceptionWithReponseStatus() {
-        throw new TestResponseStatusException();
-    }
-
-    @GetMapping("/test/internal-server-error")
-    public void internalServerError() {
-        throw new RuntimeException();
-    }
-
-    @GetMapping("/test/no-such-element")
-    public void noSuchElement() {
-        throw new NoSuchElementException();
-    }
-
-    @GetMapping("/test/bad-request")
-    public void badRequest() {
-        //Will need to change the arguments:
-        throw new BadRequestAlertException("test bad request error", "entityName", "bad-request");
-    }
-
-    public static class TestDTO {
-
-        @NotNull
-        private String test;
-
-        public String getTest() {
-            return test;
-        }
-
-        public void setTest(String test) {
-            this.test = test;
-        }
-    }
-
-    @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "test response status")
-    public static class TestResponseStatusException extends RuntimeException {
-    }
-
 }

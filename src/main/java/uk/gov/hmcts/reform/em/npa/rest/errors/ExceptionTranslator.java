@@ -1,155 +1,99 @@
 package uk.gov.hmcts.reform.em.npa.rest.errors;
 
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.dao.ConcurrencyFailureException;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.validation.BindingResult;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.context.request.NativeWebRequest;
-import org.zalando.problem.DefaultProblem;
-import org.zalando.problem.Problem;
-import org.zalando.problem.ProblemBuilder;
-import org.zalando.problem.Status;
-import org.zalando.problem.spring.web.advice.ProblemHandling;
-import org.zalando.problem.violations.ConstraintViolationProblem;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Locale;
 import java.util.Objects;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import java.util.stream.Collectors;
 
-/**
- * Controller advice to translate the server side exceptions to client-friendly json structures.
- * The error response follows RFC7807 - Problem Details for HTTP APIs (https://tools.ietf.org/html/rfc7807)
- */
-@ControllerAdvice
-public class ExceptionTranslator implements ProblemHandling {
+@RestControllerAdvice
+@Order(Ordered.HIGHEST_PRECEDENCE)
+public class ExceptionTranslator extends ResponseEntityExceptionHandler {
 
-    private static final String MESSAGE_FIELD = "message";
+    MessageSource messageSource;
 
-    /**
-     * Post-process the Problem payload to add the message key for the front-end if needed.
-     */
-    @Override
-    public ResponseEntity<Problem> process(@Nullable ResponseEntity<Problem> entity, NativeWebRequest request) {
-        if (entity == null) {
-            return entity;
-        }
-        Problem problem = entity.getBody();
-        if (!(problem instanceof ConstraintViolationProblem || problem instanceof DefaultProblem)) {
-            return entity;
-        }
-        ProblemBuilder builder = Problem.builder()
-            .withType(Problem.DEFAULT_TYPE.equals(problem.getType()) ? ErrorConstants.DEFAULT_TYPE : problem.getType())
-            .withStatus(problem.getStatus())
-            .withTitle(problem.getTitle());
+    @Autowired
+    public ExceptionTranslator(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
 
-        if (Objects.nonNull(request)) {
-            HttpServletRequest httpServletRequest = request.getNativeRequest(HttpServletRequest.class);
-            if (Objects.nonNull(httpServletRequest)) {
-                builder.with("path", httpServletRequest.getRequestURI());
-            }
-        }
-
-        if (problem instanceof ConstraintViolationProblem constraintViolationProblem) {
-            builder
-                .with("violations", constraintViolationProblem.getViolations())
-                .with(MESSAGE_FIELD, ErrorConstants.ERR_VALIDATION);
-        } else {
-            builder
-                .withCause(((DefaultProblem) problem).getCause())
-                .withDetail(problem.getDetail())
-                .withInstance(problem.getInstance());
-            problem.getParameters().forEach(builder::with);
-            if (!problem.getParameters().containsKey(MESSAGE_FIELD) && problem.getStatus() != null) {
-                builder.with(MESSAGE_FIELD, "error.http." + problem.getStatus().getStatusCode());
-            }
-        }
-        return new ResponseEntity<>(builder.build(), entity.getHeaders(), entity.getStatusCode());
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<Object> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex,
+                                                                            WebRequest request) {
+        return handleExceptionInternal(ex, null, new HttpHeaders(), HttpStatusCode.valueOf(400), request);
     }
 
     @Override
-    public ResponseEntity<Problem> handleMethodArgumentNotValid(
-            MethodArgumentNotValidException ex,
-            @Nonnull NativeWebRequest request
-    ) {
-        BindingResult result = ex.getBindingResult();
-        List<FieldErrorVM> fieldErrors = result.getFieldErrors().stream()
-            .map(f -> new FieldErrorVM(f.getObjectName(), f.getField(), f.getCode()))
-            .toList();
+    protected ResponseEntity handleMethodArgumentNotValid(
+            MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
 
-        Problem problem = Problem.builder()
-            .withType(ErrorConstants.CONSTRAINT_VIOLATION_TYPE)
-            .withTitle("Method argument not valid")
-            .withStatus(defaultConstraintViolationStatus())
-            .with(MESSAGE_FIELD, ErrorConstants.ERR_VALIDATION)
-            .with("fieldErrors", fieldErrors)
-            .build();
-        return create(ex, problem, request);
+        if (ex.hasFieldErrors()) {
+            String errorMessage = ex.getBindingResult().getFieldErrors().stream()
+                    .map(fieldError -> messageSource.getMessage(fieldError, Locale.UK))
+                    .collect(Collectors.joining(" AND "));
+            ProblemDetail problemDetail =
+                    ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(422), "Request validation failed");
+            problemDetail.setProperty("error", errorMessage);
+            return handleExceptionInternal(ex, problemDetail, headers, HttpStatusCode.valueOf(422), request);
+        }
+        return handleExceptionInternal(ex, null, new HttpHeaders(), HttpStatusCode.valueOf(422), request);
     }
 
-    @ExceptionHandler
-    public ResponseEntity<Problem> handleNoSuchElementException(
-            NoSuchElementException ex,
-            NativeWebRequest request
-    ) {
-        Problem problem = Problem.builder()
-            .withStatus(Status.NOT_FOUND)
-            .with(MESSAGE_FIELD, ErrorConstants.ENTITY_NOT_FOUND_TYPE)
-            .build();
-        return create(ex, problem, request);
+
+    @Override
+    protected ResponseEntity handleExceptionInternal(
+            Exception ex, @Nullable Object body, HttpHeaders headers, HttpStatusCode statusCode, WebRequest request) {
+
+        if (Objects.isNull(body)) {
+            ProblemDetail problemDetail;
+            if (ex instanceof ErrorResponse errorResponse) {
+                if (statusCode.equals(HttpStatus.INTERNAL_SERVER_ERROR)) {
+                    statusCode = errorResponse.getStatusCode();
+                }
+                problemDetail = ProblemDetail.forStatusAndDetail(statusCode, errorResponse.getDetailMessageCode());
+            } else {
+                problemDetail = ProblemDetail.forStatusAndDetail(statusCode, ex.getLocalizedMessage());
+            }
+
+            String rootCauseMessage = ExceptionUtils.getRootCauseMessage(ex);
+            problemDetail.setProperty("error", rootCauseMessage.substring(rootCauseMessage.indexOf(":") + 2));
+            body = problemDetail;
+        }
+
+        return ResponseEntity
+                .status(statusCode)
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(body);
     }
 
-    @ExceptionHandler
-    public ResponseEntity<Problem> handleBadRequestAlertException(
-            BadRequestAlertException ex,
-            NativeWebRequest request
-    ) {
-        Problem problem = Problem.builder()
-                .withStatus(Status.BAD_REQUEST)
-                .with(MESSAGE_FIELD, ErrorConstants.BAD_REQUEST)
-                .build();
-        return create(ex, problem, request);
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {
+        // Routes straight into your custom ProblemDetail layout with an HTTP 403 Forbidden status
+        return handleExceptionInternal(ex, null, new HttpHeaders(), HttpStatusCode.valueOf(403), request);
     }
 
-    @ExceptionHandler
-    public ResponseEntity<Problem> handleConcurrencyFailure(
-            ConcurrencyFailureException ex,
-            NativeWebRequest request
-    ) {
-        Problem problem = Problem.builder()
-            .withStatus(Status.CONFLICT)
-            .with(MESSAGE_FIELD, ErrorConstants.ERR_CONCURRENCY_FAILURE)
-            .build();
-        return create(ex, problem, request);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<Problem> handleAccessDenied(
-            AccessDeniedException ex,
-            NativeWebRequest request
-    ) {
-        Problem problem = Problem.builder()
-                .withStatus(Status.FORBIDDEN)
-                .with(MESSAGE_FIELD, ErrorConstants.ERR_FORBIDDEN)
-                .build();
-        return create(ex, problem, request);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<Problem> handleUnAuthorised(
-            BadCredentialsException ex,
-            NativeWebRequest request
-    ) {
-        Problem problem = Problem.builder()
-                .withStatus(Status.UNAUTHORIZED)
-                .with(MESSAGE_FIELD, ErrorConstants.ERR_UNAUTHORISED)
-                .build();
-        return create(ex, problem, request);
+    @ExceptionHandler(RuntimeException.class) // 👈 Explicitly target runtime exceptions to unblock MockMvc mapping
+    public ResponseEntity<Object> handleRuntimeException(RuntimeException ex, WebRequest request) {
+        return handleExceptionInternal(ex, null, new HttpHeaders(), HttpStatusCode.valueOf(500), request);
     }
 }

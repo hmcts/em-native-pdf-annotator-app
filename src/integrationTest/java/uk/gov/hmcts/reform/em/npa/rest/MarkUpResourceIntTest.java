@@ -5,9 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
@@ -38,14 +37,11 @@ class MarkUpResourceIntTest {
     @Autowired
     private MarkUpResource markUpResource;
 
-    @MockBean
+    @MockitoBean
     private DeleteService deleteService;
 
     @Autowired
     private ExceptionTranslator exceptionTranslator;
-
-    @Autowired
-    private MappingJackson2HttpMessageConverter jacksonMessageConverter;
 
     private MockMvc mockMvc;
 
@@ -53,7 +49,6 @@ class MarkUpResourceIntTest {
     void setup() {
         mockMvc = MockMvcBuilders.standaloneSetup(markUpResource)
             .setControllerAdvice(exceptionTranslator)
-            .setMessageConverters(jacksonMessageConverter)
             .build();
     }
 
@@ -79,7 +74,7 @@ class MarkUpResourceIntTest {
                 .header("Authorization", "Bearer jwt")
                 .header("ServiceAuthorization", "Bearer s2s"))
             .andExpect(status().isForbidden())
-            .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON));
 
         verify(deleteService, never()).deleteByDocumentId(any());
     }
@@ -106,7 +101,7 @@ class MarkUpResourceIntTest {
                 .header("Authorization", "Bearer jwt")
                 .header("ServiceAuthorization", "Bearer s2s"))
             .andExpect(status().isInternalServerError())
-            .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON));
 
         verify(deleteService).deleteByDocumentId(documentId);
     }
