@@ -543,5 +543,7 @@ class ExceptionTranslatorTest {
         assertThat(errorVM.getMessage()).isEqualTo("must be a well-formed email address");
     }
 
-    private static class DummyUser {}
+    private static class DummyUser {
+
+    }
 }
