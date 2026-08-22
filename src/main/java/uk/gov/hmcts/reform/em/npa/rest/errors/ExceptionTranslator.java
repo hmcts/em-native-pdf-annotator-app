@@ -19,6 +19,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -64,7 +65,7 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
         problemDetail.setProperty(FIELD_ERRORS, fieldErrors);
         problemDetail.setProperty(MESSAGE_FIELD, ErrorConstants.ERR_VALIDATION);
 
-        return new ResponseEntity<>(problemDetail, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(problemDetail, new HttpHeaders(), problemDetail.getStatus());
     }
 
     @Override
@@ -115,7 +116,7 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
 
         problemDetail.setProperty(MESSAGE_FIELD, ErrorConstants.ERR_BAD_REQUEST);
 
-        return new ResponseEntity<>(problemDetail, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(problemDetail, new HttpHeaders(), problemDetail.getStatus());
     }
 
     @Override
@@ -129,7 +130,7 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
 
         problemDetail.setProperty(MESSAGE_FIELD, ErrorConstants.ERR_BAD_REQUEST);
 
-        return new ResponseEntity<>(problemDetail, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(problemDetail, new HttpHeaders(), problemDetail.getStatus());
     }
 
     @ExceptionHandler(NoSuchElementException.class)
@@ -137,10 +138,10 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
             NoSuchElementException ex,
             NativeWebRequest request
     ) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(404), "");
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, "");
         problemDetail.setProperty(MESSAGE_FIELD, ErrorConstants.ENTITY_NOT_FOUND_TYPE);
 
-        return new ResponseEntity<>(problemDetail, new HttpHeaders(), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(problemDetail, new HttpHeaders(), problemDetail.getStatus());
     }
 
     @ExceptionHandler({BadRequestAlertException.class, BindException.class})
@@ -148,10 +149,10 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
             BadRequestAlertException ex,
             NativeWebRequest request
     ) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(400), "");
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "");
         problemDetail.setProperty(MESSAGE_FIELD, ErrorConstants.BAD_REQUEST);
 
-        return new ResponseEntity<>(problemDetail, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(problemDetail, new HttpHeaders(), problemDetail.getStatus());
     }
 
     @ExceptionHandler(ConcurrencyFailureException.class)
@@ -159,10 +160,10 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
             ConcurrencyFailureException ex,
             NativeWebRequest request
     ) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(409), "");
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "");
         problemDetail.setProperty(MESSAGE_FIELD, ErrorConstants.ERR_CONCURRENCY_FAILURE);
 
-        return new ResponseEntity<>(problemDetail, new HttpHeaders(), HttpStatus.CONFLICT);
+        return new ResponseEntity<>(problemDetail, new HttpHeaders(), problemDetail.getStatus());
     }
 
     @ExceptionHandler(AccessDeniedException.class)
@@ -170,10 +171,10 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
             AccessDeniedException ex,
             NativeWebRequest request
     ) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(403), "");
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, "");
         problemDetail.setProperty(MESSAGE_FIELD, ErrorConstants.ERR_FORBIDDEN);
 
-        return new ResponseEntity<>(problemDetail, new HttpHeaders(), HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(problemDetail, new HttpHeaders(), problemDetail.getStatus());
     }
 
     @ExceptionHandler(BadCredentialsException.class)
@@ -181,23 +182,38 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
             BadCredentialsException ex,
             NativeWebRequest request
     ) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(401), "");
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, "");
         problemDetail.setProperty(MESSAGE_FIELD, ErrorConstants.ERR_UNAUTHORISED);
 
-        return new ResponseEntity<>(problemDetail, new HttpHeaders(), HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(problemDetail, new HttpHeaders(), problemDetail.getStatus());
+    }
+
+    @ExceptionHandler(ValidationErrorException.class)
+    public ResponseEntity<Object> handleValidationError(ValidationErrorException ex, WebRequest request) {
+        ProblemDetail detail = ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage());
+        detail.setTitle("Unprocessable Entity");
+        detail.setType(ErrorConstants.DEFAULT_TYPE);
+
+        addCommonProperties(detail, request);
+        return ResponseEntity.status(detail.getStatus()).body(detail);
+    }
+
+    @ExceptionHandler(EmptyResponseException.class)
+    public ResponseEntity<Object> handleEmptyResponse(EmptyResponseException ex, WebRequest request) {
+        ProblemDetail detail = ProblemDetail.forStatusAndDetail(HttpStatus.NO_CONTENT, ex.getMessage());
+
+        addPathProperty(detail, request);
+        return ResponseEntity.status(detail.getStatus()).body(detail);
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Object> handleRuntimeException(RuntimeException ex, WebRequest request) {
+    public ResponseEntity<Object> handleUnexpectedRuntime(RuntimeException ex, WebRequest request) {
+        ProblemDetail detail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
+                "An unexpected internal server error occurred.");
+        detail.setTitle("Internal Server Error");
 
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
-                "An unexpected internal server error occurred."
-        );
-
-        problemDetail.setProperty(MESSAGE_FIELD, "error.http." + problemDetail.getStatus());
-        problemDetail.setTitle("Internal Server Error");
-
-        return new ResponseEntity<>(problemDetail, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+        addCommonProperties(detail, request);
+        return ResponseEntity.status(detail.getStatus()).body(detail);
     }
 
     @ExceptionHandler(CustomParameterizedException.class)
@@ -217,7 +233,7 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
             problemDetail.setProperty("params", ex.getParamMap());
         }
 
-        return new ResponseEntity<>(problemDetail, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(problemDetail, new HttpHeaders(), problemDetail.getStatus());
     }
 
 
@@ -228,11 +244,11 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
 
         ProblemDetail problemDetail = entity.getBody();
 
-        if (problemDetail.getProperties() == null || !problemDetail.getProperties().containsKey("message")) {
+        if (problemDetail.getProperties() == null || !problemDetail.getProperties().containsKey(MESSAGE_FIELD)) {
             if (entity.getStatusCode().value() == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
-                problemDetail.setProperty("message", "error.http.500");
+                problemDetail.setProperty(MESSAGE_FIELD, "error.http.500");
             } else {
-                problemDetail.setProperty("message", "error.http." + entity.getStatusCode().value());
+                problemDetail.setProperty(MESSAGE_FIELD, "error.http." + entity.getStatusCode().value());
             }
         }
 
@@ -242,5 +258,16 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
         }
 
         return new ResponseEntity<>(problemDetail, entity.getHeaders(), entity.getStatusCode());
+    }
+
+    private void addCommonProperties(ProblemDetail detail, WebRequest request) {
+        detail.setProperty(MESSAGE_FIELD, "error.http." + detail.getStatus());
+        addPathProperty(detail, request);
+    }
+
+    private void addPathProperty(ProblemDetail detail, WebRequest request) {
+        if (request instanceof ServletWebRequest servletRequest) {
+            detail.setProperty("path", servletRequest.getRequest().getRequestURI());
+        }
     }
 }

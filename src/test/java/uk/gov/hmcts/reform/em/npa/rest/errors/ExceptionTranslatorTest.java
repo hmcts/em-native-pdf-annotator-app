@@ -23,6 +23,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
@@ -41,6 +42,8 @@ class ExceptionTranslatorTest {
 
     private static final String MESSAGE_FIELD = "message";
 
+    private static final String PATH = "path";
+
     @Mock
     private NativeWebRequest request;
 
@@ -48,7 +51,7 @@ class ExceptionTranslatorTest {
     private WebRequest webRequest;
 
     @Mock
-    private NativeWebRequest nativeWebRequest;
+    private ServletWebRequest servletWebRequest;
 
     @Mock
     private HttpServletRequest httpServletRequest;
@@ -67,7 +70,7 @@ class ExceptionTranslatorTest {
         NoSuchElementException exception = new NoSuchElementException("Entity not found");
 
         ResponseEntity<Object> response = exceptionTranslator
-                .handleNoSuchElementException(exception, nativeWebRequest);
+                .handleNoSuchElementException(exception, request);
 
         assertThat(response.getStatusCode().value()).isEqualTo(HttpStatus.NOT_FOUND.value());
         assertThat(response.getBody()).isNotNull();
@@ -75,7 +78,7 @@ class ExceptionTranslatorTest {
         ProblemDetail problemDetail = (ProblemDetail) response.getBody();
 
         assertThat(problemDetail.getProperties())
-            .containsEntry("message", ErrorConstants.ENTITY_NOT_FOUND_TYPE);
+            .containsEntry(MESSAGE_FIELD, ErrorConstants.ENTITY_NOT_FOUND_TYPE);
     }
 
     @Test
@@ -87,14 +90,14 @@ class ExceptionTranslatorTest {
         );
 
         ResponseEntity<Object> response = exceptionTranslator
-                .handleBadRequestAlertException(exception, nativeWebRequest);
+                .handleBadRequestAlertException(exception, request);
 
         assertThat(response.getStatusCode().value()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody()).isNotNull();
 
         ProblemDetail problemDetail = (ProblemDetail) response.getBody();
         assertThat(problemDetail.getProperties())
-            .containsEntry("message", ErrorConstants.BAD_REQUEST);
+            .containsEntry(MESSAGE_FIELD, ErrorConstants.BAD_REQUEST);
     }
 
     @Test
@@ -102,14 +105,14 @@ class ExceptionTranslatorTest {
         ConcurrencyFailureException exception = new ConcurrencyFailureException("Concurrency failure");
 
         ResponseEntity<Object> response = exceptionTranslator
-                .handleConcurrencyFailure(exception, nativeWebRequest);
+                .handleConcurrencyFailure(exception, request);
 
         assertThat(response.getStatusCode().value()).isEqualTo(HttpStatus.CONFLICT.value());
         assertThat(response.getBody()).isNotNull();
 
         ProblemDetail problemDetail = (ProblemDetail) response.getBody();
         assertThat(problemDetail.getProperties())
-            .containsEntry("message", ErrorConstants.ERR_CONCURRENCY_FAILURE);
+            .containsEntry(MESSAGE_FIELD, ErrorConstants.ERR_CONCURRENCY_FAILURE);
     }
 
     @Test
@@ -117,14 +120,14 @@ class ExceptionTranslatorTest {
         AccessDeniedException exception = new AccessDeniedException("Access denied");
 
         ResponseEntity<Object> response = exceptionTranslator
-                .handleAccessDenied(exception, nativeWebRequest);
+                .handleAccessDenied(exception, request);
 
         assertThat(response.getStatusCode().value()).isEqualTo(HttpStatus.FORBIDDEN.value());
         assertThat(response.getBody()).isNotNull();
 
         ProblemDetail problemDetail = (ProblemDetail) response.getBody();
         assertThat(problemDetail.getProperties())
-            .containsEntry("message", ErrorConstants.ERR_FORBIDDEN);
+            .containsEntry(MESSAGE_FIELD, ErrorConstants.ERR_FORBIDDEN);
     }
 
     @Test
@@ -132,14 +135,14 @@ class ExceptionTranslatorTest {
         BadCredentialsException exception = new BadCredentialsException("Bad credentials");
 
         ResponseEntity<Object> response = exceptionTranslator
-                .handleUnAuthorised(exception, nativeWebRequest);
+                .handleUnAuthorised(exception, request);
 
         assertThat(response.getStatusCode().value()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
         assertThat(response.getBody()).isNotNull();
 
         ProblemDetail problemDetail = (ProblemDetail) response.getBody();
         assertThat(problemDetail.getProperties())
-            .containsEntry("message", ErrorConstants.ERR_UNAUTHORISED);
+            .containsEntry(MESSAGE_FIELD, ErrorConstants.ERR_UNAUTHORISED);
     }
 
     @Test
@@ -165,7 +168,7 @@ class ExceptionTranslatorTest {
         assertThat(problemDetail.getType()).isEqualTo(ErrorConstants.CONSTRAINT_VIOLATION_TYPE);
         assertThat(problemDetail.getTitle()).isEqualTo("Method argument not valid");
         assertThat(problemDetail.getProperties())
-            .containsEntry("message", ErrorConstants.ERR_VALIDATION);
+            .containsEntry(MESSAGE_FIELD, ErrorConstants.ERR_VALIDATION);
 
         List<FieldErrorVM> fieldErrors = (List<FieldErrorVM>) problemDetail.getProperties().get("fieldErrors");
         assertThat(fieldErrors).hasSize(2);
@@ -210,10 +213,10 @@ class ExceptionTranslatorTest {
         assertThat(result.getBody()).isNotNull();
         assertThat(result.getStatusCode().value()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(result.getBody().getProperties())
-            .containsEntry("message", ErrorConstants.ERR_VALIDATION)
+            .containsEntry(MESSAGE_FIELD, ErrorConstants.ERR_VALIDATION)
             .containsKey("violations")
-            .containsKey("path");
-        assertThat(result.getBody().getProperties().get("path")).isEqualTo("/test/path");
+            .containsKey(PATH);
+        assertThat(result.getBody().getProperties().get(PATH)).isEqualTo("/test/path");
     }
 
     @Test
@@ -238,8 +241,8 @@ class ExceptionTranslatorTest {
         assertThat(result.getBody().getDetail()).isEqualTo("Test detail");
         assertThat(result.getBody().getProperties())
             .containsEntry("customParam", "customValue")
-            .containsEntry("message", "error.http.500")
-            .containsEntry("path", "/test/path");
+            .containsEntry(MESSAGE_FIELD, "error.http.500")
+            .containsEntry(PATH, "/test/path");
     }
 
     @Test
@@ -269,7 +272,7 @@ class ExceptionTranslatorTest {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,"Test detail");
         problemDetail.setTitle("Test Problem");
         problemDetail.setType(URI.create("https://example.com/problem"));
-        problemDetail.setProperty("message", "custom.error.message");
+        problemDetail.setProperty(MESSAGE_FIELD, "custom.error.message");
 
         ResponseEntity<ProblemDetail> entity = ResponseEntity.badRequest().body(problemDetail);
 
@@ -279,7 +282,7 @@ class ExceptionTranslatorTest {
         assertThat(result.getBody()).isNotNull();
         assertThat(result.getStatusCode().value()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(result.getBody().getProperties())
-            .containsEntry("message", "custom.error.message");
+            .containsEntry(MESSAGE_FIELD, "custom.error.message");
     }
 
     @Test
@@ -293,7 +296,7 @@ class ExceptionTranslatorTest {
 
         assertThat(result).isNotNull();
         assertThat(result.getBody()).isNotNull();
-        assertThat(result.getBody().getProperties()).doesNotContainKey("path");
+        assertThat(result.getBody().getProperties()).doesNotContainKey(PATH);
     }
 
     @Test
@@ -309,7 +312,7 @@ class ExceptionTranslatorTest {
 
         assertThat(result).isNotNull();
         assertThat(result.getBody()).isNotNull();
-        assertThat(result.getBody().getProperties()).doesNotContainKey("path");
+        assertThat(result.getBody().getProperties()).doesNotContainKey(PATH);
     }
 
     @Test
@@ -385,7 +388,7 @@ class ExceptionTranslatorTest {
 
         RuntimeException exception = new RuntimeException("Database down");
 
-        ResponseEntity<Object> response = exceptionTranslator.handleRuntimeException(exception, webRequest);
+        ResponseEntity<Object> response = exceptionTranslator.handleUnexpectedRuntime(exception, webRequest);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
         assertThat(response.getBody()).isInstanceOf(ProblemDetail.class);
@@ -418,7 +421,7 @@ class ExceptionTranslatorTest {
         assertThat(problemDetail.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(errorMessage).isEqualTo(problemDetail.getDetail());
 
-        assertThat("test parameterized error").isEqualTo(problemDetail.getProperties().get("message"));
+        assertThat("test parameterized error").isEqualTo(problemDetail.getProperties().get(MESSAGE_FIELD));
         assertThat(errorParams).isEqualTo(problemDetail.getProperties().get("params"));
     }
 
@@ -512,7 +515,6 @@ class ExceptionTranslatorTest {
         when(violation.getPropertyPath()).thenReturn(mockPath);
         when(violation.getMessage()).thenReturn("must be a well-formed email address");
 
-        @SuppressWarnings("rawtypes")
         Class rootClass = DummyUser.class;
         when(violation.getRootBeanClass()).thenReturn(rootClass);
 
@@ -532,7 +534,6 @@ class ExceptionTranslatorTest {
         assertThat(problemDetail.getProperties())
                 .containsEntry(MESSAGE_FIELD, ErrorConstants.ERR_VALIDATION);
 
-        @SuppressWarnings("unchecked")
         List<FieldErrorVM> fieldErrors = (List<FieldErrorVM>) problemDetail.getProperties().get("fieldErrors");
 
         assertThat(fieldErrors).hasSize(1);
@@ -541,6 +542,80 @@ class ExceptionTranslatorTest {
         assertThat(errorVM.getObjectName()).isEqualTo("DummyUser");
         assertThat(errorVM.getField()).isEqualTo("email");
         assertThat(errorVM.getMessage()).isEqualTo("must be a well-formed email address");
+    }
+
+    @Test
+    void handleValidationError_ShouldReturnUnprocessableEntityWithDetails() {
+
+        ValidationErrorException exception = new ValidationErrorException("Invalid name field");
+        when(servletWebRequest.getRequest()).thenReturn(httpServletRequest);
+        when(httpServletRequest.getRequestURI()).thenReturn("/api/v1/items");
+
+        ResponseEntity<Object> response = exceptionTranslator.handleValidationError(exception, servletWebRequest);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
+
+        ProblemDetail body = (ProblemDetail) response.getBody();
+        assertThat(body).isNotNull();
+        assertThat(body.getStatus()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY.value());
+        assertThat(body.getTitle()).isEqualTo("Unprocessable Entity");
+        assertThat(body.getDetail()).isEqualTo("Invalid name field");
+        assertThat(body.getProperties()).containsEntry(MESSAGE_FIELD, "error.http.422");
+        assertThat(body.getProperties()).containsEntry(PATH, "/api/v1/items");
+    }
+
+    @Test
+    void handleEmptyResponse_ShouldReturnNoContentWithDetails() {
+
+        EmptyResponseException exception = new EmptyResponseException("Data empty");
+        when(servletWebRequest.getRequest()).thenReturn(httpServletRequest);
+        when(httpServletRequest.getRequestURI()).thenReturn("/api/v1/items");
+
+        ResponseEntity<Object> response = exceptionTranslator.handleEmptyResponse(exception, servletWebRequest);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+
+        ProblemDetail body = (ProblemDetail) response.getBody();
+        assertThat(body).isNotNull();
+        assertThat(body.getStatus()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(body.getDetail()).isEqualTo("Data empty");
+        assertThat(body.getProperties()).containsEntry(PATH, "/api/v1/items");
+        assertThat(body.getProperties()).doesNotContainKey(MESSAGE_FIELD);
+    }
+
+    @Test
+    void handleUnexpectedRuntime_ShouldReturnInternalServerErrorWithDetails() {
+
+        RuntimeException exception = new RuntimeException("Database down");
+        when(servletWebRequest.getRequest()).thenReturn(httpServletRequest);
+        when(httpServletRequest.getRequestURI()).thenReturn("/api/v1/items");
+
+        ResponseEntity<Object> response = exceptionTranslator.handleUnexpectedRuntime(exception, servletWebRequest);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+
+        ProblemDetail body = (ProblemDetail) response.getBody();
+        assertThat(body).isNotNull();
+        assertThat(body.getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(body.getTitle()).isEqualTo("Internal Server Error");
+        assertThat(body.getDetail()).isEqualTo("An unexpected internal server error occurred.");
+        assertThat(body.getProperties()).containsEntry(MESSAGE_FIELD, "error.http.500");
+        assertThat(body.getProperties()).containsEntry(PATH, "/api/v1/items");
+    }
+
+    @Test
+    void handleCommonProperties_ShouldNotCrash_WhenWebRequestIsGeneric() {
+
+        RuntimeException exception = new RuntimeException("Fallback testing");
+
+        ResponseEntity<Object> response = exceptionTranslator.handleUnexpectedRuntime(exception, null);
+
+        ProblemDetail body = (ProblemDetail) response.getBody();
+        assertThat(body).isNotNull();
+        assertThat(body.getProperties()).doesNotContainKey(PATH);
     }
 
     private static class DummyUser {
