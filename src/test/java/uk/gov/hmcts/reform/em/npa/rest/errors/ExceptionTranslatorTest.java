@@ -1,29 +1,37 @@
 package uk.gov.hmcts.reform.em.npa.rest.errors;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Path;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.ConcurrencyFailureException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.context.request.NativeWebRequest;
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
-import org.zalando.problem.violations.ConstraintViolationProblem;
-import org.zalando.problem.violations.Violation;
+import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -32,14 +40,25 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ExceptionTranslatorTest {
 
+    private static final String MESSAGE_FIELD = "message";
+
+    private static final String PATH = "path";
+
     @Mock
     private NativeWebRequest request;
+
+    @Mock
+    private WebRequest webRequest;
+
+    @Mock
+    private ServletWebRequest servletWebRequest;
 
     @Mock
     private HttpServletRequest httpServletRequest;
 
     @InjectMocks
     private ExceptionTranslator exceptionTranslator;
+
 
     private void setupRequestMocks() {
         when(request.getNativeRequest(HttpServletRequest.class)).thenReturn(httpServletRequest);
@@ -50,13 +69,16 @@ class ExceptionTranslatorTest {
     void shouldHandleNoSuchElementException() {
         NoSuchElementException exception = new NoSuchElementException("Entity not found");
 
-        ResponseEntity<Problem> response = exceptionTranslator.handleNoSuchElementException(exception, request);
+        ResponseEntity<Object> response = exceptionTranslator
+                .handleNoSuchElementException(exception, request);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(response.getStatusCode().value()).isEqualTo(HttpStatus.NOT_FOUND.value());
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getStatus()).isEqualTo(Status.NOT_FOUND);
-        assertThat(response.getBody().getParameters())
-            .containsEntry("message", ErrorConstants.ENTITY_NOT_FOUND_TYPE);
+
+        ProblemDetail problemDetail = (ProblemDetail) response.getBody();
+
+        assertThat(problemDetail.getProperties())
+            .containsEntry(MESSAGE_FIELD, ErrorConstants.ENTITY_NOT_FOUND_TYPE);
     }
 
     @Test
@@ -67,52 +89,60 @@ class ExceptionTranslatorTest {
             "errorKey"
         );
 
-        ResponseEntity<Problem> response = exceptionTranslator.handleBadRequestAlertException(exception, request);
+        ResponseEntity<Object> response = exceptionTranslator
+                .handleBadRequestAlertException(exception, request);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getStatusCode().value()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getStatus()).isEqualTo(Status.BAD_REQUEST);
-        assertThat(response.getBody().getParameters())
-            .containsEntry("message", ErrorConstants.BAD_REQUEST);
+
+        ProblemDetail problemDetail = (ProblemDetail) response.getBody();
+        assertThat(problemDetail.getProperties())
+            .containsEntry(MESSAGE_FIELD, ErrorConstants.BAD_REQUEST);
     }
 
     @Test
     void shouldHandleConcurrencyFailureException() {
         ConcurrencyFailureException exception = new ConcurrencyFailureException("Concurrency failure");
 
-        ResponseEntity<Problem> response = exceptionTranslator.handleConcurrencyFailure(exception, request);
+        ResponseEntity<Object> response = exceptionTranslator
+                .handleConcurrencyFailure(exception, request);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+        assertThat(response.getStatusCode().value()).isEqualTo(HttpStatus.CONFLICT.value());
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getStatus()).isEqualTo(Status.CONFLICT);
-        assertThat(response.getBody().getParameters())
-            .containsEntry("message", ErrorConstants.ERR_CONCURRENCY_FAILURE);
+
+        ProblemDetail problemDetail = (ProblemDetail) response.getBody();
+        assertThat(problemDetail.getProperties())
+            .containsEntry(MESSAGE_FIELD, ErrorConstants.ERR_CONCURRENCY_FAILURE);
     }
 
     @Test
     void shouldHandleAccessDeniedException() {
         AccessDeniedException exception = new AccessDeniedException("Access denied");
 
-        ResponseEntity<Problem> response = exceptionTranslator.handleAccessDenied(exception, request);
+        ResponseEntity<Object> response = exceptionTranslator
+                .handleAccessDenied(exception, request);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(response.getStatusCode().value()).isEqualTo(HttpStatus.FORBIDDEN.value());
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getStatus()).isEqualTo(Status.FORBIDDEN);
-        assertThat(response.getBody().getParameters())
-            .containsEntry("message", ErrorConstants.ERR_FORBIDDEN);
+
+        ProblemDetail problemDetail = (ProblemDetail) response.getBody();
+        assertThat(problemDetail.getProperties())
+            .containsEntry(MESSAGE_FIELD, ErrorConstants.ERR_FORBIDDEN);
     }
 
     @Test
     void shouldHandleBadCredentialsException() {
         BadCredentialsException exception = new BadCredentialsException("Bad credentials");
 
-        ResponseEntity<Problem> response = exceptionTranslator.handleUnAuthorised(exception, request);
+        ResponseEntity<Object> response = exceptionTranslator
+                .handleUnAuthorised(exception, request);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(response.getStatusCode().value()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getStatus()).isEqualTo(Status.UNAUTHORIZED);
-        assertThat(response.getBody().getParameters())
-            .containsEntry("message", ErrorConstants.ERR_UNAUTHORISED);
+
+        ProblemDetail problemDetail = (ProblemDetail) response.getBody();
+        assertThat(problemDetail.getProperties())
+            .containsEntry(MESSAGE_FIELD, ErrorConstants.ERR_UNAUTHORISED);
     }
 
     @Test
@@ -128,18 +158,19 @@ class ExceptionTranslatorTest {
         when(exception.getBindingResult()).thenReturn(bindingResult);
         when(bindingResult.getFieldErrors()).thenReturn(List.of(fieldError1, fieldError2));
 
-        ResponseEntity<Problem> response = exceptionTranslator.handleMethodArgumentNotValid(exception, request);
+        ResponseEntity<Object> response = exceptionTranslator
+                .handleMethodArgumentNotValid(exception, new HttpHeaders(), HttpStatus.BAD_REQUEST, webRequest);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getStatusCode().value()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getStatus()).isEqualTo(Status.BAD_REQUEST);
-        assertThat(response.getBody().getType()).isEqualTo(ErrorConstants.CONSTRAINT_VIOLATION_TYPE);
-        assertThat(response.getBody().getTitle()).isEqualTo("Method argument not valid");
-        assertThat(response.getBody().getParameters())
-            .containsEntry("message", ErrorConstants.ERR_VALIDATION);
-        
-        @SuppressWarnings("unchecked")
-        List<FieldErrorVM> fieldErrors = (List<FieldErrorVM>) response.getBody().getParameters().get("fieldErrors");
+        ProblemDetail problemDetail = (ProblemDetail) response.getBody();
+
+        assertThat(problemDetail.getType()).isEqualTo(ErrorConstants.CONSTRAINT_VIOLATION_TYPE);
+        assertThat(problemDetail.getTitle()).isEqualTo("Method argument not valid");
+        assertThat(problemDetail.getProperties())
+            .containsEntry(MESSAGE_FIELD, ErrorConstants.ERR_VALIDATION);
+
+        List<FieldErrorVM> fieldErrors = (List<FieldErrorVM>) problemDetail.getProperties().get("fieldErrors");
         assertThat(fieldErrors).hasSize(2);
         assertThat(fieldErrors.get(0).getField()).isEqualTo("field1");
         assertThat(fieldErrors.get(0).getMessage()).isEqualTo("NotNull");
@@ -149,9 +180,21 @@ class ExceptionTranslatorTest {
 
     @Test
     void shouldProcessNullEntity() {
-        ResponseEntity<Problem> result = exceptionTranslator.process(null, request);
+        ResponseEntity<ProblemDetail> result = exceptionTranslator.process(null, request);
 
         assertThat(result).isNull();
+    }
+
+    @Test
+    void shouldReturnEntityAsIsWhenBodyIsNull() {
+
+        ResponseEntity<ProblemDetail> nullBodyEntity = new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+
+        ResponseEntity<ProblemDetail> result = exceptionTranslator.process(nullBodyEntity, request);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getBody()).isNull();
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
     @Test
@@ -159,121 +202,122 @@ class ExceptionTranslatorTest {
         setupRequestMocks();
         Violation violation = new Violation("field", "must not be null");
         ConstraintViolationProblem problem = new ConstraintViolationProblem(
-            Status.BAD_REQUEST,
+                HttpStatus.BAD_REQUEST,
             List.of(violation)
         );
-        ResponseEntity<Problem> entity = ResponseEntity.badRequest().body(problem);
+        ResponseEntity<ProblemDetail> entity = ResponseEntity.badRequest().body(problem.getProblemDetail());
 
-        ResponseEntity<Problem> result = exceptionTranslator.process(entity, request);
+        ResponseEntity<ProblemDetail> result = exceptionTranslator.process(entity, request);
 
         assertThat(result).isNotNull();
         assertThat(result.getBody()).isNotNull();
-        assertThat(result.getBody().getParameters())
-            .containsEntry("message", ErrorConstants.ERR_VALIDATION)
+        assertThat(result.getStatusCode().value()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(result.getBody().getProperties())
+            .containsEntry(MESSAGE_FIELD, ErrorConstants.ERR_VALIDATION)
             .containsKey("violations")
-            .containsKey("path");
-        assertThat(result.getBody().getParameters().get("path")).isEqualTo("/test/path");
+            .containsKey(PATH);
+        assertThat(result.getBody().getProperties().get(PATH)).isEqualTo("/test/path");
     }
 
     @Test
     void shouldProcessDefaultProblem() {
         setupRequestMocks();
-        Problem problem = Problem.builder()
-            .withType(URI.create("https://example.com/problem"))
-            .withTitle("Test Problem")
-            .withStatus(Status.INTERNAL_SERVER_ERROR)
-            .withDetail("Test detail")
-            .with("customParam", "customValue")
-            .build();
-        ResponseEntity<Problem> entity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(problem);
 
-        ResponseEntity<Problem> result = exceptionTranslator.process(entity, request);
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,"Test detail");
+        problemDetail.setTitle("Test Problem");
+        problemDetail.setType(URI.create("https://example.com/problem"));
+        problemDetail.setProperty("customParam", "customValue");
+
+        ResponseEntity<ProblemDetail> entity =
+                ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(problemDetail);
+
+        ResponseEntity<ProblemDetail> result = exceptionTranslator.process(entity, request);
 
         assertThat(result).isNotNull();
         assertThat(result.getBody()).isNotNull();
         assertThat(result.getBody().getType()).isEqualTo(URI.create("https://example.com/problem"));
         assertThat(result.getBody().getTitle()).isEqualTo("Test Problem");
-        assertThat(result.getBody().getStatus()).isEqualTo(Status.INTERNAL_SERVER_ERROR);
+        assertThat(result.getStatusCode().value()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
         assertThat(result.getBody().getDetail()).isEqualTo("Test detail");
-        assertThat(result.getBody().getParameters())
+        assertThat(result.getBody().getProperties())
             .containsEntry("customParam", "customValue")
-            .containsEntry("message", "error.http.500")
-            .containsEntry("path", "/test/path");
+            .containsEntry(MESSAGE_FIELD, "error.http.500")
+            .containsEntry(PATH, "/test/path");
     }
 
     @Test
     void shouldProcessDefaultProblemWithDefaultType() {
         setupRequestMocks();
-        Problem problem = Problem.builder()
-            .withType(Problem.DEFAULT_TYPE)
-            .withTitle("Default Problem")
-            .withStatus(Status.BAD_REQUEST)
-            .build();
-        ResponseEntity<Problem> entity = ResponseEntity.badRequest().body(problem);
 
-        ResponseEntity<Problem> result = exceptionTranslator.process(entity, request);
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,"Test detail");
+        problemDetail.setTitle("Default Problem");
+        problemDetail.setType(URI.create("https://example.com/problem"));
+
+        ResponseEntity<ProblemDetail> entity = ResponseEntity.badRequest().body(problemDetail);
+
+        ResponseEntity<ProblemDetail> result = exceptionTranslator.process(entity, request);
 
         assertThat(result).isNotNull();
         assertThat(result.getBody()).isNotNull();
-        assertThat(result.getBody().getType()).isEqualTo(ErrorConstants.DEFAULT_TYPE);
+        assertThat(result.getBody().getType()).isEqualTo(URI.create("https://example.com/problem"));
+        assertThat(result.getBody().getTitle()).isEqualTo("Default Problem");
+        assertThat(result.getStatusCode().value()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
     }
 
     @Test
     void shouldProcessDefaultProblemWithExistingMessageParameter() {
         setupRequestMocks();
-        Problem problem = Problem.builder()
-            .withType(URI.create("https://example.com/problem"))
-            .withTitle("Test Problem")
-            .withStatus(Status.BAD_REQUEST)
-            .with("message", "custom.error.message")
-            .build();
-        ResponseEntity<Problem> entity = ResponseEntity.badRequest().body(problem);
 
-        ResponseEntity<Problem> result = exceptionTranslator.process(entity, request);
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,"Test detail");
+        problemDetail.setTitle("Test Problem");
+        problemDetail.setType(URI.create("https://example.com/problem"));
+        problemDetail.setProperty(MESSAGE_FIELD, "custom.error.message");
+
+        ResponseEntity<ProblemDetail> entity = ResponseEntity.badRequest().body(problemDetail);
+
+        ResponseEntity<ProblemDetail> result = exceptionTranslator.process(entity, request);
 
         assertThat(result).isNotNull();
         assertThat(result.getBody()).isNotNull();
-        assertThat(result.getBody().getParameters())
-            .containsEntry("message", "custom.error.message");
+        assertThat(result.getStatusCode().value()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(result.getBody().getProperties())
+            .containsEntry(MESSAGE_FIELD, "custom.error.message");
     }
 
     @Test
     void shouldProcessProblemWithNullRequest() {
-        Problem problem = Problem.builder()
-            .withType(URI.create("https://example.com/problem"))
-            .withTitle("Test Problem")
-            .withStatus(Status.BAD_REQUEST)
-            .build();
-        ResponseEntity<Problem> entity = ResponseEntity.badRequest().body(problem);
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,"Test detail");
+        problemDetail.setTitle("Test Problem");
+        problemDetail.setType(URI.create("https://example.com/problem"));
+        ResponseEntity<ProblemDetail> entity = ResponseEntity.badRequest().body(problemDetail);
 
-        ResponseEntity<Problem> result = exceptionTranslator.process(entity, null);
+        ResponseEntity<ProblemDetail> result = exceptionTranslator.process(entity, request);
 
         assertThat(result).isNotNull();
         assertThat(result.getBody()).isNotNull();
-        assertThat(result.getBody().getParameters()).doesNotContainKey("path");
+        assertThat(result.getBody().getProperties()).doesNotContainKey(PATH);
     }
 
     @Test
     void shouldProcessProblemWithNullHttpServletRequest() {
         when(request.getNativeRequest(HttpServletRequest.class)).thenReturn(null);
-        
-        Problem problem = Problem.builder()
-            .withType(URI.create("https://example.com/problem"))
-            .withTitle("Test Problem")
-            .withStatus(Status.BAD_REQUEST)
-            .build();
-        ResponseEntity<Problem> entity = ResponseEntity.badRequest().body(problem);
 
-        ResponseEntity<Problem> result = exceptionTranslator.process(entity, request);
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,"Test detail");
+        problemDetail.setTitle("Test Problem");
+        problemDetail.setType(URI.create("https://example.com/problem"));
+        ResponseEntity<ProblemDetail> entity = ResponseEntity.badRequest().body(problemDetail);
+
+        ResponseEntity<ProblemDetail> result = exceptionTranslator.process(entity, request);
 
         assertThat(result).isNotNull();
         assertThat(result.getBody()).isNotNull();
-        assertThat(result.getBody().getParameters()).doesNotContainKey("path");
+        assertThat(result.getBody().getProperties()).doesNotContainKey(PATH);
     }
 
     @Test
     void shouldNotProcessNonDefaultOrConstraintViolationProblem() {
-        Problem customProblem = new Problem() {
+        ProblemDetail customProblemDetail = new ProblemDetail() {
             @Override
             public URI getType() {
                 return URI.create("https://example.com/custom");
@@ -285,8 +329,8 @@ class ExceptionTranslatorTest {
             }
 
             @Override
-            public Status getStatus() {
-                return Status.BAD_REQUEST;
+            public int getStatus() {
+                return 400;
             }
 
             @Override
@@ -300,15 +344,281 @@ class ExceptionTranslatorTest {
             }
 
             @Override
-            public Map<String, Object> getParameters() {
+            public Map<String, Object> getProperties() {
                 return Map.of();
             }
         };
-        
-        ResponseEntity<Problem> entity = ResponseEntity.badRequest().body(customProblem);
 
-        ResponseEntity<Problem> result = exceptionTranslator.process(entity, request);
+        ResponseEntity<ProblemDetail> entity = ResponseEntity.badRequest().body(customProblemDetail);
+
+        ResponseEntity<ProblemDetail> result = exceptionTranslator.process(entity, request);
 
         assertThat(result).isEqualTo(entity);
+    }
+
+    @Test
+    void shouldReturnBadRequestProblemDetailWhenMissingServletRequestPartExceptionIsHandled() {
+
+        MissingServletRequestPartException exception = new MissingServletRequestPartException("file");
+
+        HttpHeaders inputHeaders = new HttpHeaders();
+        HttpStatusCode inputStatus = HttpStatus.BAD_REQUEST;
+
+        ResponseEntity<Object> response = exceptionTranslator.handleMissingServletRequestPart(
+                exception,
+                inputHeaders,
+                inputStatus,
+                webRequest
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).isInstanceOf(ProblemDetail.class);
+
+        ProblemDetail problemDetail = (ProblemDetail) response.getBody();
+        assertThat(problemDetail).isNotNull();
+
+        assertThat(problemDetail.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+        assertThat(problemDetail.getProperties())
+                .containsEntry(MESSAGE_FIELD, ErrorConstants.ERR_BAD_REQUEST);
+    }
+
+    @Test
+    void shouldReturnInternalServerErrorProblemDetailWhenRuntimeExceptionIsHandled() {
+
+        RuntimeException exception = new RuntimeException("Database down");
+
+        ResponseEntity<Object> response = exceptionTranslator.handleUnexpectedRuntime(exception, webRequest);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(response.getBody()).isInstanceOf(ProblemDetail.class);
+
+        ProblemDetail problemDetail = (ProblemDetail) response.getBody();
+        assertThat(problemDetail).isNotNull();
+        assertThat(problemDetail.getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(problemDetail.getTitle()).isEqualTo("Internal Server Error");
+        assertThat(problemDetail.getDetail()).isEqualTo("An unexpected internal server error occurred.");
+
+        assertThat(problemDetail.getProperties()).containsEntry(MESSAGE_FIELD, "error.http.500");
+    }
+
+    @Test
+    void shouldReturnProblemDetailWithParamsWhenExceptionHasParamMap() {
+
+        String errorMessage = "Invalid input details";
+        Map<String, Object> errorParams = Map.of("userId", 123);
+
+        CustomParameterizedException exception = mock(CustomParameterizedException.class);
+        when(exception.getMessage()).thenReturn(errorMessage);
+        when(exception.getParamMap()).thenReturn(errorParams);
+
+        ResponseEntity<Object> result = exceptionTranslator.handleCustomParameterizedException(exception, webRequest);
+
+        assertThat(result.getStatusCode().value()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(result.getBody()).isNotNull();
+
+        ProblemDetail problemDetail = (ProblemDetail) result.getBody();
+        assertThat(problemDetail.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(errorMessage).isEqualTo(problemDetail.getDetail());
+
+        assertThat("test parameterized error").isEqualTo(problemDetail.getProperties().get(MESSAGE_FIELD));
+        assertThat(errorParams).isEqualTo(problemDetail.getProperties().get("params"));
+    }
+
+    @Test
+    void shouldReturnProblemDetailWithoutParamsWhenExceptionParamMapIsNull() {
+
+        String errorMessage = "Error without parameters";
+
+        CustomParameterizedException exception = mock(CustomParameterizedException.class);
+        when(exception.getMessage()).thenReturn(errorMessage);
+        when(exception.getParamMap()).thenReturn(null);
+
+        ResponseEntity<Object> result = exceptionTranslator.handleCustomParameterizedException(exception, webRequest);
+
+        assertThat(result.getStatusCode().value()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(result.getBody()).isNotNull();
+
+        ProblemDetail problemDetail = (ProblemDetail) result.getBody();
+        assertThat(errorMessage).isEqualTo(problemDetail.getDetail());
+        assertThat(problemDetail.getProperties().get("params")).isNull();
+    }
+
+    @Test
+    void shouldReturnBadRequestProblemDetailWhenMissingServletRequestParameterExceptionIsHandled() {
+
+        MissingServletRequestParameterException exception =
+                new MissingServletRequestParameterException("userId", "Long");
+
+        HttpHeaders inputHeaders = new HttpHeaders();
+        HttpStatusCode inputStatus = HttpStatus.BAD_REQUEST;
+
+        ResponseEntity<Object> response = exceptionTranslator.handleMissingServletRequestParameter(
+                exception,
+                inputHeaders,
+                inputStatus,
+                webRequest
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).isInstanceOf(ProblemDetail.class);
+
+        ProblemDetail problemDetail = (ProblemDetail) response.getBody();
+        assertThat(problemDetail).isNotNull();
+
+        assertThat(problemDetail.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+        assertThat(problemDetail.getProperties())
+                .containsEntry(MESSAGE_FIELD, ErrorConstants.ERR_BAD_REQUEST);
+    }
+
+    @Test
+    void shouldReturnMethodNotSupportedProblemDetailWhenExceptionIsHandled() {
+
+        String failedMethod = "POST";
+        List<String> supportedMethods = List.of("GET", "PUT");
+        HttpRequestMethodNotSupportedException exception =
+                new HttpRequestMethodNotSupportedException(failedMethod, supportedMethods);
+
+        HttpHeaders inputHeaders = new HttpHeaders();
+        inputHeaders.add("Custom-Header", "TestValue");
+        HttpStatusCode inputStatus = HttpStatus.METHOD_NOT_ALLOWED; // HTTP 405
+
+        ResponseEntity<Object> response = exceptionTranslator.handleHttpRequestMethodNotSupported(
+                exception,
+                inputHeaders,
+                inputStatus,
+                webRequest
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.METHOD_NOT_ALLOWED);
+        assertThat(response.getHeaders().getFirst("Custom-Header")).isEqualTo("TestValue");
+        assertThat(response.getBody()).isInstanceOf(ProblemDetail.class);
+
+        ProblemDetail problemDetail = (ProblemDetail) response.getBody();
+        assertThat(problemDetail).isNotNull();
+        assertThat(problemDetail.getStatus()).isEqualTo(HttpStatus.METHOD_NOT_ALLOWED.value());
+
+        assertThat(problemDetail.getProperties())
+                .containsEntry(MESSAGE_FIELD, "error.http.405")
+                .containsEntry("detail", exception.getMessage());
+    }
+
+
+    @Test
+    void shouldReturnBadRequestWithFieldErrorsWhenConstraintViolationExceptionIsHandled() {
+
+        Path mockPath = mock(Path.class);
+        when(mockPath.toString()).thenReturn("createUser.userDTO.email");
+
+        ConstraintViolation<?> violation = mock(ConstraintViolation.class);
+        when(violation.getPropertyPath()).thenReturn(mockPath);
+        when(violation.getMessage()).thenReturn("must be a well-formed email address");
+
+        Class rootClass = DummyUser.class;
+        when(violation.getRootBeanClass()).thenReturn(rootClass);
+
+        ConstraintViolationException exception = new ConstraintViolationException(Set.of(violation));
+
+        ResponseEntity<Object> response = exceptionTranslator.handleConstraintViolationException(exception, webRequest);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).isInstanceOf(ProblemDetail.class);
+
+        ProblemDetail problemDetail = (ProblemDetail) response.getBody();
+        assertThat(problemDetail).isNotNull();
+        assertThat(problemDetail.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(problemDetail.getType()).isEqualTo(ErrorConstants.CONSTRAINT_VIOLATION_TYPE);
+        assertThat(problemDetail.getTitle()).isEqualTo("Constraint violation");
+
+        assertThat(problemDetail.getProperties())
+                .containsEntry(MESSAGE_FIELD, ErrorConstants.ERR_VALIDATION);
+
+        List<FieldErrorVM> fieldErrors = (List<FieldErrorVM>) problemDetail.getProperties().get("fieldErrors");
+
+        assertThat(fieldErrors).hasSize(1);
+        FieldErrorVM errorVM = fieldErrors.get(0);
+
+        assertThat(errorVM.getObjectName()).isEqualTo("DummyUser");
+        assertThat(errorVM.getField()).isEqualTo("email");
+        assertThat(errorVM.getMessage()).isEqualTo("must be a well-formed email address");
+    }
+
+    @Test
+    void handleValidationError_ShouldReturnUnprocessableEntityWithDetails() {
+
+        ValidationErrorException exception = new ValidationErrorException("Invalid name field");
+        when(servletWebRequest.getRequest()).thenReturn(httpServletRequest);
+        when(httpServletRequest.getRequestURI()).thenReturn("/api/v1/items");
+
+        ResponseEntity<Object> response = exceptionTranslator.handleValidationError(exception, servletWebRequest);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
+
+        ProblemDetail body = (ProblemDetail) response.getBody();
+        assertThat(body).isNotNull();
+        assertThat(body.getStatus()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY.value());
+        assertThat(body.getTitle()).isEqualTo("Unprocessable Entity");
+        assertThat(body.getDetail()).isEqualTo("Invalid name field");
+        assertThat(body.getProperties()).containsEntry(MESSAGE_FIELD, "error.http.422");
+        assertThat(body.getProperties()).containsEntry(PATH, "/api/v1/items");
+    }
+
+    @Test
+    void handleEmptyResponse_ShouldReturnNoContentWithDetails() {
+
+        EmptyResponseException exception = new EmptyResponseException("Data empty");
+        when(servletWebRequest.getRequest()).thenReturn(httpServletRequest);
+        when(httpServletRequest.getRequestURI()).thenReturn("/api/v1/items");
+
+        ResponseEntity<Object> response = exceptionTranslator.handleEmptyResponse(exception, servletWebRequest);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+
+        ProblemDetail body = (ProblemDetail) response.getBody();
+        assertThat(body).isNotNull();
+        assertThat(body.getStatus()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(body.getDetail()).isEqualTo("Data empty");
+        assertThat(body.getProperties()).containsEntry(PATH, "/api/v1/items");
+        assertThat(body.getProperties()).doesNotContainKey(MESSAGE_FIELD);
+    }
+
+    @Test
+    void handleUnexpectedRuntime_ShouldReturnInternalServerErrorWithDetails() {
+
+        RuntimeException exception = new RuntimeException("Database down");
+        when(servletWebRequest.getRequest()).thenReturn(httpServletRequest);
+        when(httpServletRequest.getRequestURI()).thenReturn("/api/v1/items");
+
+        ResponseEntity<Object> response = exceptionTranslator.handleUnexpectedRuntime(exception, servletWebRequest);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+
+        ProblemDetail body = (ProblemDetail) response.getBody();
+        assertThat(body).isNotNull();
+        assertThat(body.getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(body.getTitle()).isEqualTo("Internal Server Error");
+        assertThat(body.getDetail()).isEqualTo("An unexpected internal server error occurred.");
+        assertThat(body.getProperties()).containsEntry(MESSAGE_FIELD, "error.http.500");
+        assertThat(body.getProperties()).containsEntry(PATH, "/api/v1/items");
+    }
+
+    @Test
+    void handleCommonProperties_ShouldNotCrash_WhenWebRequestIsGeneric() {
+
+        RuntimeException exception = new RuntimeException("Fallback testing");
+
+        ResponseEntity<Object> response = exceptionTranslator.handleUnexpectedRuntime(exception, null);
+
+        ProblemDetail body = (ProblemDetail) response.getBody();
+        assertThat(body).isNotNull();
+        assertThat(body.getProperties()).doesNotContainKey(PATH);
+    }
+
+    private static class DummyUser {
+
     }
 }

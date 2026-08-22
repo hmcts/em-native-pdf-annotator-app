@@ -8,6 +8,7 @@ public final class ErrorConstants {
     public static final String ERR_VALIDATION = "error.validation";
     public static final String ERR_FORBIDDEN = "error.http.403";
     public static final String ERR_UNAUTHORISED = "error.http.401";
+    public static final String ERR_BAD_REQUEST = "error.http.400";
     public static final String PROBLEM_BASE_URL = "https://npa/problem";
     public static final String ENTITY_NOT_FOUND_TYPE = PROBLEM_BASE_URL + "/entity-not-found";
     public static final String BAD_REQUEST = PROBLEM_BASE_URL + "/bad-request";
