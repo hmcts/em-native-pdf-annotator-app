@@ -303,7 +303,10 @@ def coverageExclusionList = [
     '**uk/gov/hmcts/reform/em/npa/rest/ResponseUtil*',
     '**uk/gov/hmcts/reform/em/npa/config/FlywayConfiguration*',
     '**uk/gov/hmcts/reform/em/npa/batch/RemoveLargeObjectsTasklet*',
-    '**uk/gov/hmcts/reform/em/npa/repository/LargeObjectRepository*'
+    '**uk/gov/hmcts/reform/em/npa/repository/LargeObjectRepository*',
+    '**uk/gov/hmcts/reform/em/npa/rest/errors/ConstraintViolationProblem*',
+    '**uk/gov/hmcts/reform/em/npa/rest/errors/CustomParameterizedException*',
+    '**uk/gov/hmcts/reform/em/npa/rest/errors/BadRequestAlertException*'
 ]
 
 checkstyle {
@@ -508,12 +511,11 @@ pitest {
     targetClasses = ['uk.gov.hmcts.reform.em.npa.*']
 
     excludedClasses = [
+            'uk.gov.hmcts.reform.em.npa.appinsights.*' ,
             'uk.gov.hmcts.reform.em.npa.domain.*' ,
             'uk.gov.hmcts.reform.em.npa.info.*',
             'uk.gov.hmcts.reform.em.npa.Application.java',
-            'uk.gov.hmcts.reform.em.npa.rest.errors.ConstraintViolationProblem.java',
-            'uk.gov.hmcts.reform.em.npa.rest.errors.CustomParameterizedException.java',
-            'uk.gov.hmcts.reform.em.npa.rest.errors.BadRequestAlertException.java'
+            'uk.gov.hmcts.reform.em.npa.infrastructure.*'
 
     ]
     enableDefaultIncrementalAnalysis = true
