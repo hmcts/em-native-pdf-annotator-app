@@ -161,9 +161,6 @@ dependencies {
     implementation group:'com.fasterxml.jackson.module', name: 'jackson-module-blackbird', version: versions.fasterXmlJackson
     implementation group:'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.22'
 
-
-    implementation group: 'org.zalando', name: 'problem-spring-web', version: '0.29.1'
-    implementation group: 'org.zalando', name: 'jackson-datatype-problem', version: '0.27.1'
     implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '3.1.0'
 
     implementation group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server', version: versions.springSecurity
@@ -312,7 +309,9 @@ def coverageExclusionList = [
     '**uk/gov/hmcts/reform/em/npa/rest/ResponseUtil*',
     '**uk/gov/hmcts/reform/em/npa/config/FlywayConfiguration*',
     '**uk/gov/hmcts/reform/em/npa/batch/RemoveLargeObjectsTasklet*',
-    '**uk/gov/hmcts/reform/em/npa/repository/LargeObjectRepository*'
+    '**uk/gov/hmcts/reform/em/npa/repository/LargeObjectRepository*',
+    '**uk/gov/hmcts/reform/em/npa/rest/errors/CustomParameterizedException*',
+    '**uk/gov/hmcts/reform/em/npa/rest/errors/BadRequestAlertException*'
 ]
 
 checkstyle {

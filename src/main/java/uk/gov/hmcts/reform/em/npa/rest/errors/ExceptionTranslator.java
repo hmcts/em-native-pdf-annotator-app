@@ -1,155 +1,299 @@
 package uk.gov.hmcts.reform.em.npa.rest.errors;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.boot.context.properties.bind.BindException;
+import org.springframework.context.MessageSource;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.dao.ConcurrencyFailureException;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.NativeWebRequest;
-import org.zalando.problem.DefaultProblem;
-import org.zalando.problem.Problem;
-import org.zalando.problem.ProblemBuilder;
-import org.zalando.problem.Status;
-import org.zalando.problem.spring.web.advice.ProblemHandling;
-import org.zalando.problem.violations.ConstraintViolationProblem;
+import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Objects;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Controller advice to translate the server side exceptions to client-friendly json structures.
- * The error response follows RFC7807 - Problem Details for HTTP APIs (https://tools.ietf.org/html/rfc7807)
+ * The error response follows RFC7807
  */
-@ControllerAdvice
-public class ExceptionTranslator implements ProblemHandling {
+@RestControllerAdvice
+public class ExceptionTranslator extends ResponseEntityExceptionHandler {
 
     private static final String MESSAGE_FIELD = "message";
 
-    /**
-     * Post-process the Problem payload to add the message key for the front-end if needed.
-     */
-    @Override
-    public ResponseEntity<Problem> process(@Nullable ResponseEntity<Problem> entity, NativeWebRequest request) {
-        if (entity == null) {
-            return entity;
-        }
-        Problem problem = entity.getBody();
-        if (!(problem instanceof ConstraintViolationProblem || problem instanceof DefaultProblem)) {
-            return entity;
-        }
-        ProblemBuilder builder = Problem.builder()
-            .withType(Problem.DEFAULT_TYPE.equals(problem.getType()) ? ErrorConstants.DEFAULT_TYPE : problem.getType())
-            .withStatus(problem.getStatus())
-            .withTitle(problem.getTitle());
+    private static final String FIELD_ERRORS = "fieldErrors";
 
-        if (Objects.nonNull(request)) {
-            HttpServletRequest httpServletRequest = request.getNativeRequest(HttpServletRequest.class);
-            if (Objects.nonNull(httpServletRequest)) {
-                builder.with("path", httpServletRequest.getRequestURI());
-            }
-        }
+    MessageSource messageSource;
 
-        if (problem instanceof ConstraintViolationProblem constraintViolationProblem) {
-            builder
-                .with("violations", constraintViolationProblem.getViolations())
-                .with(MESSAGE_FIELD, ErrorConstants.ERR_VALIDATION);
-        } else {
-            builder
-                .withCause(((DefaultProblem) problem).getCause())
-                .withDetail(problem.getDetail())
-                .withInstance(problem.getInstance());
-            problem.getParameters().forEach(builder::with);
-            if (!problem.getParameters().containsKey(MESSAGE_FIELD) && problem.getStatus() != null) {
-                builder.with(MESSAGE_FIELD, "error.http." + problem.getStatus().getStatusCode());
-            }
-        }
-        return new ResponseEntity<>(builder.build(), entity.getHeaders(), entity.getStatusCode());
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Object> handleConstraintViolationException(
+            ConstraintViolationException ex, WebRequest request) {
+
+        List<FieldErrorVM> fieldErrors = ex.getConstraintViolations().stream()
+                .map(violation -> {
+
+                    String fieldPath = violation.getPropertyPath().toString();
+                    String fieldName = fieldPath.contains(".")
+                            ? fieldPath.substring(fieldPath.lastIndexOf('.') + 1)
+                            : fieldPath;
+
+                    return new FieldErrorVM(
+                            violation.getRootBeanClass().getSimpleName(),
+                            fieldName,
+                            violation.getMessage());
+                })
+                .toList();
+
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "");
+        problemDetail.setType(ErrorConstants.CONSTRAINT_VIOLATION_TYPE);
+        problemDetail.setTitle("Constraint violation");
+        problemDetail.setProperty(FIELD_ERRORS, fieldErrors);
+        problemDetail.setProperty(MESSAGE_FIELD, ErrorConstants.ERR_VALIDATION);
+
+        return new ResponseEntity<>(problemDetail, new HttpHeaders(), problemDetail.getStatus());
     }
 
     @Override
-    public ResponseEntity<Problem> handleMethodArgumentNotValid(
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex,
-            @Nonnull NativeWebRequest request
-    ) {
+            org.springframework.http.HttpHeaders headers,
+            org.springframework.http.HttpStatusCode status,
+            WebRequest request) {
+
         BindingResult result = ex.getBindingResult();
         List<FieldErrorVM> fieldErrors = result.getFieldErrors().stream()
-            .map(f -> new FieldErrorVM(f.getObjectName(), f.getField(), f.getCode()))
-            .toList();
+                .map(f -> new FieldErrorVM(f.getObjectName(), f.getField(), f.getCode()))
+                .toList();
 
-        Problem problem = Problem.builder()
-            .withType(ErrorConstants.CONSTRAINT_VIOLATION_TYPE)
-            .withTitle("Method argument not valid")
-            .withStatus(defaultConstraintViolationStatus())
-            .with(MESSAGE_FIELD, ErrorConstants.ERR_VALIDATION)
-            .with("fieldErrors", fieldErrors)
-            .build();
-        return create(ex, problem, request);
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, "");
+
+        problemDetail.setType(ErrorConstants.CONSTRAINT_VIOLATION_TYPE);
+        problemDetail.setTitle("Method argument not valid");
+        problemDetail.setProperty(FIELD_ERRORS, fieldErrors);
+        problemDetail.setProperty(MESSAGE_FIELD, ErrorConstants.ERR_VALIDATION);
+
+        return new ResponseEntity<>(problemDetail, headers, status);
     }
 
-    @ExceptionHandler
-    public ResponseEntity<Problem> handleNoSuchElementException(
+    @Override
+    protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
+            HttpRequestMethodNotSupportedException ex,
+            HttpHeaders headers,
+            HttpStatusCode status,
+            WebRequest request) {
+
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, "");
+
+        problemDetail.setProperty(MESSAGE_FIELD, "error.http.405");
+        problemDetail.setProperty("detail", ex.getMessage());
+
+        return new ResponseEntity<>(problemDetail, headers, status);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMissingServletRequestParameter(
+            MissingServletRequestParameterException ex,
+            HttpHeaders headers,
+            HttpStatusCode status,
+            WebRequest request) {
+
+        ProblemDetail problemDetail = ex.getBody();
+
+        problemDetail.setProperty(MESSAGE_FIELD, ErrorConstants.ERR_BAD_REQUEST);
+
+        return new ResponseEntity<>(problemDetail, new HttpHeaders(), problemDetail.getStatus());
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMissingServletRequestPart(
+            MissingServletRequestPartException ex,
+            HttpHeaders headers,
+            HttpStatusCode status,
+            WebRequest request) {
+
+        ProblemDetail problemDetail = ex.getBody();
+
+        problemDetail.setProperty(MESSAGE_FIELD, ErrorConstants.ERR_BAD_REQUEST);
+
+        return new ResponseEntity<>(problemDetail, new HttpHeaders(), problemDetail.getStatus());
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<Object> handleNoSuchElementException(
             NoSuchElementException ex,
             NativeWebRequest request
     ) {
-        Problem problem = Problem.builder()
-            .withStatus(Status.NOT_FOUND)
-            .with(MESSAGE_FIELD, ErrorConstants.ENTITY_NOT_FOUND_TYPE)
-            .build();
-        return create(ex, problem, request);
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, "");
+        problemDetail.setProperty(MESSAGE_FIELD, ErrorConstants.ENTITY_NOT_FOUND_TYPE);
+
+        return new ResponseEntity<>(problemDetail, new HttpHeaders(), problemDetail.getStatus());
     }
 
-    @ExceptionHandler
-    public ResponseEntity<Problem> handleBadRequestAlertException(
+    @ExceptionHandler({BadRequestAlertException.class, BindException.class})
+    public ResponseEntity<Object> handleBadRequestAlertException(
             BadRequestAlertException ex,
             NativeWebRequest request
     ) {
-        Problem problem = Problem.builder()
-                .withStatus(Status.BAD_REQUEST)
-                .with(MESSAGE_FIELD, ErrorConstants.BAD_REQUEST)
-                .build();
-        return create(ex, problem, request);
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "");
+        problemDetail.setProperty(MESSAGE_FIELD, ErrorConstants.BAD_REQUEST);
+
+        return new ResponseEntity<>(problemDetail, new HttpHeaders(), problemDetail.getStatus());
     }
 
-    @ExceptionHandler
-    public ResponseEntity<Problem> handleConcurrencyFailure(
+    @ExceptionHandler(ConcurrencyFailureException.class)
+    public ResponseEntity<Object> handleConcurrencyFailure(
             ConcurrencyFailureException ex,
             NativeWebRequest request
     ) {
-        Problem problem = Problem.builder()
-            .withStatus(Status.CONFLICT)
-            .with(MESSAGE_FIELD, ErrorConstants.ERR_CONCURRENCY_FAILURE)
-            .build();
-        return create(ex, problem, request);
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, "");
+        problemDetail.setProperty(MESSAGE_FIELD, ErrorConstants.ERR_CONCURRENCY_FAILURE);
+
+        return new ResponseEntity<>(problemDetail, new HttpHeaders(), problemDetail.getStatus());
     }
 
-    @ExceptionHandler
-    public ResponseEntity<Problem> handleAccessDenied(
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Object> handleAccessDenied(
             AccessDeniedException ex,
             NativeWebRequest request
     ) {
-        Problem problem = Problem.builder()
-                .withStatus(Status.FORBIDDEN)
-                .with(MESSAGE_FIELD, ErrorConstants.ERR_FORBIDDEN)
-                .build();
-        return create(ex, problem, request);
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, "");
+        problemDetail.setProperty(MESSAGE_FIELD, ErrorConstants.ERR_FORBIDDEN);
+
+        return new ResponseEntity<>(problemDetail, new HttpHeaders(), problemDetail.getStatus());
     }
 
-    @ExceptionHandler
-    public ResponseEntity<Problem> handleUnAuthorised(
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<Object> handleUnAuthorised(
             BadCredentialsException ex,
             NativeWebRequest request
     ) {
-        Problem problem = Problem.builder()
-                .withStatus(Status.UNAUTHORIZED)
-                .with(MESSAGE_FIELD, ErrorConstants.ERR_UNAUTHORISED)
-                .build();
-        return create(ex, problem, request);
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, "");
+        problemDetail.setProperty(MESSAGE_FIELD, ErrorConstants.ERR_UNAUTHORISED);
+
+        return new ResponseEntity<>(problemDetail, new HttpHeaders(), problemDetail.getStatus());
+    }
+
+    @ExceptionHandler(ValidationErrorException.class)
+    public ResponseEntity<Object> handleValidationError(ValidationErrorException ex, WebRequest request) {
+        ProblemDetail detail = ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage());
+        detail.setTitle("Unprocessable Entity");
+        detail.setType(ErrorConstants.DEFAULT_TYPE);
+
+        addCommonProperties(detail, request);
+        return ResponseEntity.status(detail.getStatus()).body(detail);
+    }
+
+    @ExceptionHandler(EmptyResponseException.class)
+    public ResponseEntity<Object> handleEmptyResponse(EmptyResponseException ex, WebRequest request) {
+        ProblemDetail detail = ProblemDetail.forStatusAndDetail(HttpStatus.NO_CONTENT, ex.getMessage());
+
+        addPathProperty(detail, request);
+        return ResponseEntity.status(detail.getStatus()).body(detail);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<Object> handleUnexpectedRuntime(RuntimeException ex, WebRequest request) {
+
+        // Dynamic look-up for library exceptions using @ResponseStatus
+        ResponseStatus responseStatus = AnnotatedElementUtils.findMergedAnnotation(
+                ex.getClass(),
+                ResponseStatus.class
+        );
+
+        // If a library exception HAS @ResponseStatus, extract and use its code!
+        if (responseStatus != null) {
+            HttpStatus libraryStatus = responseStatus.value();
+
+            ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                    libraryStatus,
+                    ex.getMessage()
+            );
+            if (StringUtils.isNotBlank(responseStatus.reason())) {
+                problemDetail.setTitle(responseStatus.reason());
+            }
+            addCommonProperties(problemDetail, request);
+            return ResponseEntity.status(problemDetail.getStatus()).body(problemDetail);
+        }
+
+        // Default 500 fallback logic for any completely untagged RuntimeException
+        ProblemDetail detail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
+                "An unexpected internal server error occurred.");
+        detail.setTitle("Internal Server Error");
+
+        addCommonProperties(detail, request);
+        return ResponseEntity.status(detail.getStatus()).body(detail);
+    }
+
+    @ExceptionHandler(CustomParameterizedException.class)
+    public ResponseEntity<Object> handleCustomParameterizedException(
+            CustomParameterizedException ex,
+            WebRequest request) {
+
+
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST,
+                ex.getMessage()
+        );
+
+        problemDetail.setProperty(MESSAGE_FIELD, "test parameterized error");
+
+        if (ex.getParamMap() != null) {
+            problemDetail.setProperty("params", ex.getParamMap());
+        }
+
+        return new ResponseEntity<>(problemDetail, new HttpHeaders(), problemDetail.getStatus());
+    }
+
+
+    public ResponseEntity<ProblemDetail> process(ResponseEntity<ProblemDetail> entity, NativeWebRequest request) {
+        if (entity == null || entity.getBody() == null) {
+            return entity;
+        }
+
+        ProblemDetail problemDetail = entity.getBody();
+
+        if (problemDetail.getProperties() == null || !problemDetail.getProperties().containsKey(MESSAGE_FIELD)) {
+            if (entity.getStatusCode().value() == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
+                problemDetail.setProperty(MESSAGE_FIELD, "error.http.500");
+            } else {
+                problemDetail.setProperty(MESSAGE_FIELD, "error.http." + entity.getStatusCode().value());
+            }
+        }
+
+        HttpServletRequest nativeRequest = request.getNativeRequest(HttpServletRequest.class);
+        if (nativeRequest != null) {
+            problemDetail.setProperty("path", nativeRequest.getRequestURI());
+        }
+
+        return new ResponseEntity<>(problemDetail, entity.getHeaders(), entity.getStatusCode());
+    }
+
+    private void addCommonProperties(ProblemDetail detail, WebRequest request) {
+        detail.setProperty(MESSAGE_FIELD, "error.http." + detail.getStatus());
+        addPathProperty(detail, request);
+    }
+
+    private void addPathProperty(ProblemDetail detail, WebRequest request) {
+        if (request instanceof ServletWebRequest servletRequest) {
+            detail.setProperty("path", servletRequest.getRequest().getRequestURI());
+        }
     }
 }

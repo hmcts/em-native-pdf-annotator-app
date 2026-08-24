@@ -5,6 +5,9 @@ spring:
     name: EM Native PDF Annotator App
   lifecycle:
     timeout-per-shutdown-phase: ${TIMEOUT_SERVER_SHUTDOWN_PHASE:1m}
+  mvc:
+    problemdetails:
+      enabled: true
   config:
     import: "optional:configtree:/mnt/secrets/em-npa/"
   flyway:
