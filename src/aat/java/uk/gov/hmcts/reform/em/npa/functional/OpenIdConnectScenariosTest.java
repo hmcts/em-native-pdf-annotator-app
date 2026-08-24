@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.em.npa.functional;
 import net.serenitybdd.annotations.WithTag;
 import net.serenitybdd.annotations.WithTags;
 import net.serenitybdd.junit5.SerenityJUnit5Extension;
-import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -17,6 +16,7 @@ import uk.gov.hmcts.reform.em.EmTestConfig;
 import uk.gov.hmcts.reform.em.npa.testutil.TestUtil;
 import uk.gov.hmcts.reform.em.test.retry.RetryExtension;
 
+import java.util.Map;
 import java.util.UUID;
 
 @SpringBootTest(classes = {TestUtil.class, EmTestConfig.class})
@@ -47,12 +47,12 @@ class OpenIdConnectScenariosTest {
         final String documentId = UUID.randomUUID().toString();
         final String rectangleId = UUID.randomUUID().toString();
 
-        final JSONObject jsonObject = testUtil.createMarkUpPayload(redactionId, documentId, rectangleId);
+        final Map<String, Object> payloadMap = testUtil.createMarkUpPayload(redactionId, documentId, rectangleId);
 
         testUtil.authRequest()
             .baseUri(testUrl)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .body(jsonObject.toString())
+            .body(payloadMap)
             .post(MARKUPS_PATH)
             .then()
             .statusCode(201);

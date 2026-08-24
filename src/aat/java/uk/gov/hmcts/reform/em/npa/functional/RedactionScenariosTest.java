@@ -4,7 +4,6 @@ import io.restassured.specification.RequestSpecification;
 import net.serenitybdd.annotations.WithTag;
 import net.serenitybdd.annotations.WithTags;
 import net.serenitybdd.junit5.SerenityJUnit5Extension;
-import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -94,10 +93,8 @@ class RedactionScenariosTest {
         redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
         redactionRequest.setRedactions(Arrays.asList(createRedaction(), createRedaction()));
 
-        final JSONObject jsonObject = new JSONObject(redactionRequest);
-
         request
-                .body(jsonObject)
+                .body(redactionRequest)
                 .post(REDACTION_PATH)
                 .then()
                 .assertThat()
@@ -126,10 +123,8 @@ class RedactionScenariosTest {
 
         redactionRequest.setRedactions(Arrays.asList(createCdamRedaction(docId), createCdamRedaction(docId)));
 
-        final JSONObject jsonObject = new JSONObject(redactionRequest);
-
         cdamRequest
-            .body(jsonObject)
+            .body(redactionRequest)
             .post(REDACTION_PATH)
             .then()
             .assertThat()
@@ -159,10 +154,8 @@ class RedactionScenariosTest {
 
         redactionRequest.setRedactions(Arrays.asList(createCdamRedaction(docId), createCdamRedaction(docId)));
 
-        final JSONObject jsonObject = new JSONObject(redactionRequest);
-
         request
-            .body(jsonObject)
+            .body(redactionRequest)
             .post(REDACTION_PATH)
             .then()
             .assertThat()
@@ -179,10 +172,8 @@ class RedactionScenariosTest {
         redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
         redactionRequest.setRedactions(Collections.singletonList(createRedaction()));
 
-        final JSONObject jsonObject = new JSONObject(redactionRequest);
-
         request
-                .body(jsonObject)
+                .body(redactionRequest)
                 .post(REDACTION_PATH)
                 .then()
                 .assertThat()
@@ -197,10 +188,9 @@ class RedactionScenariosTest {
         final RedactionRequest redactionRequest = new RedactionRequest();
         redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
         redactionRequest.setRedactions(Arrays.asList(createRedaction(), createRedaction()));
-        final JSONObject jsonObject = new JSONObject(redactionRequest);
 
         request
-                .body(jsonObject)
+                .body(redactionRequest)
                 .post(REDACTION_PATH)
                 .then()
                 .statusCode(400);
@@ -214,10 +204,8 @@ class RedactionScenariosTest {
         redactionRequest.setDocumentId(nonExistentDocId);
         redactionRequest.setRedactions(Arrays.asList(createRedaction(), createRedaction()));
 
-        final JSONObject jsonObject = new JSONObject(redactionRequest);
-
         request
-                .body(jsonObject)
+                .body(redactionRequest)
                 .post(REDACTION_PATH)
                 .then()
                 .assertThat()
@@ -236,13 +224,12 @@ class RedactionScenariosTest {
         redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
 
         redactionRequest.setRedactions(Arrays.asList(createRedaction(), createRedaction()));
-        final JSONObject jsonObject = new JSONObject(redactionRequest);
 
         testUtil.s2sAuthRequest()
             .baseUri(testUrl)
             .contentType(APPLICATION_JSON_VALUE)
             .header("Authorization", invalidRoleAuthToken)
-            .body(jsonObject.toString())
+            .body(redactionRequest)
             .post(REDACTION_PATH)
             .then()
             .assertThat()
@@ -257,10 +244,9 @@ class RedactionScenariosTest {
         final RedactionRequest redactionRequest = new RedactionRequest();
         redactionRequest.setDocumentId(UUID.fromString(newDocId.substring(newDocId.lastIndexOf('/') + 1)));
         redactionRequest.setRedactions(Arrays.asList(createRedaction(), createRedaction()));
-        final JSONObject jsonObject = new JSONObject(redactionRequest);
 
         unAuthenticatedRequest
-                .body(jsonObject)
+                .body(redactionRequest)
                 .post(REDACTION_PATH)
                 .then()
                 .statusCode(401);
@@ -269,10 +255,9 @@ class RedactionScenariosTest {
     private RedactionDTO createRedaction() {
         final RedactionDTO redactionDTO = testUtil.createRedactionDTO(documentId, redactionId);
         redactionDTO.setPage(1);
-        final JSONObject jsonObject = new JSONObject(redactionDTO);
 
         return request
-                .body(jsonObject)
+                .body(redactionDTO)
                 .post("/api/markups")
                 .then()
                 .statusCode(201)
@@ -284,10 +269,9 @@ class RedactionScenariosTest {
     private RedactionDTO createCdamRedaction(String documentId) {
         final RedactionDTO redactionDTO = testUtil.createRedactionDTO(UUID.fromString(documentId), redactionId);
         redactionDTO.setPage(1);
-        final JSONObject jsonObject = new JSONObject(redactionDTO);
 
         return cdamRequest
-            .body(jsonObject)
+            .body(redactionDTO)
             .post("/api/markups")
             .then()
             .statusCode(201)

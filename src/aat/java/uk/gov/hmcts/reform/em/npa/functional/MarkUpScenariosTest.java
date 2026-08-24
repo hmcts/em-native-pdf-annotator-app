@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.em.npa.functional;
 
+import io.restassured.common.mapper.TypeRef;
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
 import net.serenitybdd.annotations.WithTag;
@@ -7,7 +8,6 @@ import net.serenitybdd.annotations.WithTags;
 import net.serenitybdd.junit5.SerenityJUnit5Extension;
 import org.hamcrest.Matchers;
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.em.test.retry.RetryExtension;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -136,14 +137,14 @@ class MarkUpScenariosTest {
         final String redactionId = UUID.randomUUID().toString();
         final String documentId = UUID.randomUUID().toString();
         final String rectangleId = UUID.randomUUID().toString();
-        final JSONObject jsonObject = testUtil.createMarkUpPayload(redactionId, documentId, rectangleId);
+        final Map<String, Object> payloadMap = testUtil.createMarkUpPayload(redactionId, documentId, rectangleId);
 
-        jsonObject.remove("redactionId");
-        jsonObject.remove("documentId");
-        jsonObject.remove("page");
+        payloadMap.remove("redactionId");
+        payloadMap.remove("documentId");
+        payloadMap.remove("page");
 
         request
-                .body(jsonObject.toString())
+                .body(payloadMap)
                 .post("/api/markups")
                 .then()
                 .assertThat()
@@ -161,10 +162,10 @@ class MarkUpScenariosTest {
         final String redactionId = UUID.randomUUID().toString();
         final String documentId = UUID.randomUUID().toString();
         final String rectangleId = UUID.randomUUID().toString();
-        final JSONObject jsonObject = testUtil.createMarkUpPayload(redactionId, documentId, rectangleId);
+        final Map<String, Object> payloadMap = testUtil.createMarkUpPayload(redactionId, documentId, rectangleId);
 
         unAuthenticatedRequest
-                .body(jsonObject.toString())
+                .body(payloadMap)
                 .post("/api/markups")
                 .then()
                 .assertThat()
@@ -193,12 +194,12 @@ class MarkUpScenariosTest {
     @Test
     void shouldReturn422WhenCreateSearchMarkUpsWithoutMandatoryFields() {
         final String documentId = UUID.randomUUID().toString();
-        final JSONObject jsonObject = testUtil.createSearchMarkUpsPayload(documentId);
+        final Map<String, Object> payloadMap = testUtil.createSearchMarkUpsPayload(documentId);
 
-        jsonObject.remove("searchRedactions");
+        payloadMap.remove("searchRedactions");
 
         request
-                .body(jsonObject.toString())
+                .body(payloadMap)
                 .post("/api/markups/search")
                 .then()
                 .assertThat()
@@ -214,10 +215,10 @@ class MarkUpScenariosTest {
     @Test
     void shouldReturn401WhenUnAuthenticatedUserCreateSearchMarkUps() {
         final String documentId = UUID.randomUUID().toString();
-        final JSONObject jsonObject = testUtil.createSearchMarkUpsPayload(documentId);
+        final Map<String, Object> payloadMap = testUtil.createSearchMarkUpsPayload(documentId);
 
         unAuthenticatedRequest
-                .body(jsonObject.toString())
+                .body(payloadMap)
                 .post("/api/markups/search")
                 .then()
                 .assertThat()
@@ -231,7 +232,7 @@ class MarkUpScenariosTest {
         final String documentId = UUID.randomUUID().toString();
         final String rectangleId = UUID.randomUUID().toString();
         final ValidatableResponse response = createMarkUp(redactionId, documentId, rectangleId);
-        final String docId = extractJsonObjectFromResponse(response).getString("documentId");
+        final String docId = response.extract().path("documentId");
 
         request
                 .get("/api/markups/" + docId)
@@ -281,16 +282,16 @@ class MarkUpScenariosTest {
         final String rectangleId = UUID.randomUUID().toString();
         final ValidatableResponse response = createMarkUp(redactionId, documentId, rectangleId);
 
-        final JSONObject jsonObject = extractJsonObjectFromResponse(response);
+        final Map<String, Object> payloadMap = extractJsonObjectFromResponse(response);
         final String newRedactionId = UUID.randomUUID().toString();
         final String newDocumentId = UUID.randomUUID().toString();
 
-        jsonObject.put("redactionId", newRedactionId);
-        jsonObject.put("documentId", newDocumentId);
-        jsonObject.put("page", 2);
+        payloadMap.put("redactionId", newRedactionId);
+        payloadMap.put("documentId", newDocumentId);
+        payloadMap.put("page", 2);
 
         request
-                .body(jsonObject.toString())
+                .body(payloadMap)
                 .put("/api/markups")
                 .then()
                 .assertThat()
@@ -312,14 +313,14 @@ class MarkUpScenariosTest {
         final String documentId = UUID.randomUUID().toString();
         final String rectangleId = UUID.randomUUID().toString();
         final ValidatableResponse response = createMarkUp(redactionId, documentId, rectangleId);
-        final JSONObject jsonObject = extractJsonObjectFromResponse(response);
+        final Map<String, Object> payloadMap = extractJsonObjectFromResponse(response);
 
-        jsonObject.remove("redactionId");
-        jsonObject.remove("documentId");
-        jsonObject.remove("page");
+        payloadMap.remove("redactionId");
+        payloadMap.remove("documentId");
+        payloadMap.remove("page");
 
         request
-                .body(jsonObject.toString())
+                .body(payloadMap)
                 .put("/api/markups")
                 .then()
                 .assertThat()
@@ -339,16 +340,16 @@ class MarkUpScenariosTest {
         final String rectangleId = UUID.randomUUID().toString();
         final ValidatableResponse response = createMarkUp(redactionId, documentId, rectangleId);
 
-        final JSONObject jsonObject = extractJsonObjectFromResponse(response);
+        final Map<String, Object> payloadMap = extractJsonObjectFromResponse(response);
         final String newRedactionId = UUID.randomUUID().toString();
         final String newDocumentId = UUID.randomUUID().toString();
 
-        jsonObject.put("redactionId", newRedactionId);
-        jsonObject.put("documentId", newDocumentId);
-        jsonObject.put("page", 2);
+        payloadMap.put("redactionId", newRedactionId);
+        payloadMap.put("documentId", newDocumentId);
+        payloadMap.put("page", 2);
 
         unAuthenticatedRequest
-                .body(jsonObject.toString())
+                .body(payloadMap)
                 .put("/api/markups")
                 .then()
                 .assertThat()
@@ -362,7 +363,7 @@ class MarkUpScenariosTest {
         final String documentId = UUID.randomUUID().toString();
         final String rectangleId = UUID.randomUUID().toString();
         final ValidatableResponse response = createMarkUp(redactionId, documentId, rectangleId);
-        final String docId = extractJsonObjectFromResponse(response).getString("documentId");
+        final String docId = response.extract().path("documentId");
         final ValidatableResponse deletedResponse = deleteMarkUpByDocumentId(docId);
 
         deletedResponse
@@ -388,7 +389,7 @@ class MarkUpScenariosTest {
         final String documentId = UUID.randomUUID().toString();
         final String rectangleId = UUID.randomUUID().toString();
         final ValidatableResponse response = createMarkUp(redactionId, documentId, rectangleId);
-        final String docId = extractJsonObjectFromResponse(response).getString("documentId");
+        final String docId = response.extract().path("documentId");
 
         unAuthenticatedRequest
                 .delete("/api/markups/" + docId)
@@ -404,9 +405,9 @@ class MarkUpScenariosTest {
         final String documentId = UUID.randomUUID().toString();
         final String rectangleId = UUID.randomUUID().toString();
         final ValidatableResponse response = createMarkUp(redactionId, documentId, rectangleId);
-        final JSONObject jsonObject = extractJsonObjectFromResponse(response);
-        final String docId = jsonObject.getString("documentId");
-        final String redactId = jsonObject.getString("redactionId");
+        final Map<String, Object> payloadMap = extractJsonObjectFromResponse(response);
+        final String docId = payloadMap.get("documentId").toString();
+        final String redactId = payloadMap.get("redactionId").toString();
         final ValidatableResponse deletedResponse = deleteMarkUpByDocumentIdAndRedactionId(docId, redactId);
 
         deletedResponse
@@ -433,9 +434,9 @@ class MarkUpScenariosTest {
         final String documentId = UUID.randomUUID().toString();
         final String rectangleId = UUID.randomUUID().toString();
         final ValidatableResponse response = createMarkUp(redactionId, documentId, rectangleId);
-        final JSONObject jsonObject = extractJsonObjectFromResponse(response);
-        final String docId = jsonObject.getString("documentId");
-        final String redactId = jsonObject.getString("redactionId");
+        final Map<String, Object> payloadMap = extractJsonObjectFromResponse(response);
+        final String docId = payloadMap.get("documentId").toString();
+        final String redactId = payloadMap.get("redactionId").toString();
 
         unAuthenticatedRequest
                 .delete(String.format("/api/markups/%s/%s", docId, redactId))
@@ -453,11 +454,11 @@ class MarkUpScenariosTest {
         for (int i = 0; i < 30; i++) {
             final UUID redactionId = UUID.randomUUID();
             final UUID rectangleId = UUID.randomUUID();
-            final JSONObject jsonObject = testUtil.createMarkUpPayload(
+            final Map<String, Object> payloadMap = testUtil.createMarkUpPayload(
                     redactionId.toString(),documentId.toString(),rectangleId.toString());
 
             request.log().all()
-                    .body(jsonObject.toString())
+                    .body(payloadMap)
                     .post("/api/markups")
                     .then()
                     .statusCode(201);
@@ -475,10 +476,10 @@ class MarkUpScenariosTest {
     @NotNull
     private ValidatableResponse createMarkUp(final String redactionId, final String documentId,
                                              final String rectangleId) {
-        final JSONObject jsonObject = testUtil.createMarkUpPayload(redactionId, documentId, rectangleId);
+        final Map<String, Object> payloadMap = testUtil.createMarkUpPayload(redactionId, documentId, rectangleId);
 
         return request
-                .body(jsonObject.toString())
+                .body(payloadMap)
                 .post("/api/markups")
                 .then()
                 .assertThat()
@@ -487,10 +488,10 @@ class MarkUpScenariosTest {
 
     @NotNull
     private ValidatableResponse createSearchMarkUps(final String documentId) {
-        final JSONObject jsonObject = testUtil.createSearchMarkUpsPayload(documentId);
+        final Map<String, Object> payloadMap = testUtil.createSearchMarkUpsPayload(documentId);
 
         return request
-                .body(jsonObject.toString())
+                .body(payloadMap)
                 .post("/api/markups/search")
                 .then()
                 .assertThat()
@@ -515,7 +516,7 @@ class MarkUpScenariosTest {
     }
 
     @NotNull
-    private JSONObject extractJsonObjectFromResponse(final ValidatableResponse response) {
-        return response.extract().response().as(JSONObject.class);
+    private Map<String, Object> extractJsonObjectFromResponse(final ValidatableResponse response) {
+        return response.extract().response().as(new TypeRef<Map<String, Object>>() {});
     }
 }

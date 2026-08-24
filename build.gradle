@@ -65,7 +65,6 @@ def versions = [
         serenity           : '5.3.11',
         pact_version       : '4.7.5',
         logging            : '8.0.0',
-        fasterXmlJackson   : '2.22.2',
         mapstruct          : '1.6.3',
         springSecurity     : '6.5.11',
         log4JVersion       : '2.26.1',
@@ -156,10 +155,6 @@ dependencies {
 
     implementation group:'org.apache.logging.log4j', name: 'log4j-core', version: versions.log4JVersion
     implementation group:'org.apache.logging.log4j', name: 'log4j-api', version: versions.log4JVersion
-
-    implementation group:'com.fasterxml.jackson.datatype', name: 'jackson-datatype-json-org', version: versions.fasterXmlJackson
-    implementation group:'com.fasterxml.jackson.module', name: 'jackson-module-blackbird', version: versions.fasterXmlJackson
-    implementation group:'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.22'
 
     implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '3.1.0'
 
@@ -276,7 +271,6 @@ dependencyManagement {
             entry 'log4j-api'
             entry 'log4j-to-slf4j'
         }
-        dependency 'com.fasterxml.jackson.core:jackson-databind:2.22.2'
         dependency 'tools.jackson.core:jackson-databind:3.2.2'
     }
 }

@@ -5,8 +5,6 @@ import io.restassured.specification.RequestSpecification;
 import jakarta.annotation.PostConstruct;
 import net.serenitybdd.rest.SerenityRest;
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -33,8 +31,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -126,44 +126,46 @@ public class TestUtil {
         return tempPath.toFile();
     }
 
+
+
     public String saveAnnotation(String annotationSetId, Integer pageNum) {
         UUID annotationId = UUID.randomUUID();
-        JSONObject createAnnotations = new JSONObject();
+
+        Map<String, Object> comment = Map.of(
+                "content", "text",
+                "annotationId", annotationId,
+                "id", UUID.randomUUID().toString()
+        );
+
+        Map<String, Object> rectangle = Map.of(
+                "id", UUID.randomUUID().toString(),
+                "annotationId", annotationId,
+                "x", 0f,
+                "y", 0f,
+                "width", 10f,
+                "height", 10f
+        );
+
+        Map<String, Object> createAnnotations = new HashMap<>();
         createAnnotations.put("annotationSetId", annotationSetId);
         createAnnotations.put("id", annotationId);
         createAnnotations.put("annotationType", "highlight");
         createAnnotations.put("page", pageNum);
         createAnnotations.put("color", "d1d1d1");
-
-        JSONObject comment = new JSONObject();
-        comment.put("content", "text");
-        comment.put("annotationId", annotationId);
-        comment.put("id", UUID.randomUUID().toString());
-        JSONArray comments = new JSONArray();
-        comments.put(0, comment);
-        createAnnotations.put("comments", comments);
-
-        JSONObject rectangle = new JSONObject();
-        rectangle.put("id", UUID.randomUUID().toString());
-        rectangle.put("annotationId", annotationId);
-        rectangle.put("x", 0f);
-        rectangle.put("y", 0f);
-        rectangle.put("width", 10f);
-        rectangle.put("height", 10f);
-        JSONArray rectangles = new JSONArray();
-        rectangles.put(0, rectangle);
-        createAnnotations.put("rectangles", rectangles);
+        createAnnotations.put("comments", List.of(comment));
+        createAnnotations.put("rectangles", List.of(rectangle));
 
         Response response = authRequest()
-            .baseUri(emAnnotationUrl)
-            .contentType(APPLICATION_JSON_VALUE)
-            .body(createAnnotations)
-            .post("/api/annotations");
+                .baseUri(emAnnotationUrl)
+                .contentType(APPLICATION_JSON_VALUE)
+                .body(createAnnotations)
+                .post("/api/annotations");
 
         Assert.assertEquals(201, response.getStatusCode());
 
         return annotationId.toString();
     }
+
 
     public String saveAnnotation(String annotationSetId) {
         return saveAnnotation(annotationSetId, 1);
@@ -171,15 +173,17 @@ public class TestUtil {
 
     public String createAnnotationSetForDocumentId(String documentId) {
         UUID annotationSetId = UUID.randomUUID();
-        JSONObject createAnnotationSet = new JSONObject();
-        createAnnotationSet.put("documentId", documentId);
-        createAnnotationSet.put("id", annotationSetId);
+
+        Map<String, Object> createAnnotationSet = Map.of(
+                "documentId", documentId,
+                "id", annotationSetId
+        );
 
         Response response = authRequest()
-            .baseUri(emAnnotationUrl)
-            .contentType(APPLICATION_JSON_VALUE)
-            .body(createAnnotationSet)
-            .post("/api/annotation-sets");
+                .baseUri(emAnnotationUrl)
+                .contentType(APPLICATION_JSON_VALUE)
+                .body(createAnnotationSet)
+                .post("/api/annotation-sets");
 
         Assert.assertEquals(201, response.getStatusCode());
 
@@ -281,36 +285,37 @@ public class TestUtil {
 
 
     @NotNull
-    public JSONObject createMarkUpPayload(final String redactionId, final String documentId,
-                                          final String rectangleId) {
-        final JSONObject markup = new JSONObject();
+    public Map<String, Object> createMarkUpPayload(final String redactionId, final String documentId,
+                                                   final String rectangleId) {
+
+        final Map<String, Object> rectangle = Map.of(
+                "id", rectangleId,
+                "x", 1f,
+                "y", 2f,
+                "width", 10f,
+                "height", 11f
+        );
+
+        final Map<String, Object> markup = new HashMap<>();
         markup.put("redactionId", redactionId);
         markup.put("documentId", documentId);
         markup.put("page", 1);
-
-        final JSONArray rectangles = new JSONArray();
-        final JSONObject rectangle = new JSONObject();
-        rectangle.put("id", rectangleId);
-        rectangle.put("x", 1f);
-        rectangle.put("y", 2f);
-        rectangle.put("width", 10f);
-        rectangle.put("height", 11f);
-        rectangles.put(0, rectangle);
-        markup.put("rectangles", rectangles);
+        markup.put("rectangles", List.of(rectangle)); // Wraps the rectangle map in a List
 
         return markup;
     }
 
-    @NotNull
-    public JSONObject createSearchMarkUpsPayload(final String documentId) {
-        final JSONObject payload = new JSONObject();
-        final JSONArray markups = new JSONArray();
-        markups.put(createMarkUpPayload(UUID.randomUUID().toString(), documentId, UUID.randomUUID().toString()));
-        markups.put(createMarkUpPayload(UUID.randomUUID().toString(), documentId, UUID.randomUUID().toString()));
-        markups.put(createMarkUpPayload(UUID.randomUUID().toString(), documentId, UUID.randomUUID().toString()));
 
-        payload.put("searchRedactions", markups);
-        return payload;
+    @NotNull
+    public Map<String, Object> createSearchMarkUpsPayload(final String documentId) {
+
+        final List<Map<String, Object>> markups = List.of(
+                createMarkUpPayload(UUID.randomUUID().toString(), documentId, UUID.randomUUID().toString()),
+                createMarkUpPayload(UUID.randomUUID().toString(), documentId, UUID.randomUUID().toString()),
+                createMarkUpPayload(UUID.randomUUID().toString(), documentId, UUID.randomUUID().toString())
+        );
+
+        return Map.of("searchRedactions", markups);
     }
 
     public UploadResponse uploadCdamDocument(
