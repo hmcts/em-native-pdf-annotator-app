@@ -136,7 +136,7 @@ dependencies {
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '4.3.3'
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.3.3'
 
-    implementation group: 'com.google.guava', name: 'guava', version: '33.6.0-jre'
+    implementation group: 'com.google.guava', name: 'guava', version: '33.7.1-jre'
 
     implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.46'
 
@@ -148,7 +148,7 @@ dependencies {
     implementation group: 'com.itextpdf', name: 'cleanup', version: '5.0.7'
     implementation group: 'com.itextpdf', name: 'bouncy-castle-adapter', version: '9.7.1'
 
-    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '5.4.0'
+    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '5.5.0'
 
     implementation group:'org.apache.logging.log4j', name: 'log4j-core', version: versions.log4JVersion
     implementation group:'org.apache.logging.log4j', name: 'log4j-api', version: versions.log4JVersion
@@ -310,7 +310,7 @@ def coverageExclusionList = [
 
 checkstyle {
     maxWarnings = 0
-    toolVersion = '13.8.0'
+    toolVersion = '13.11.0'
     // need to set configDir to rootDir otherwise submodule will use submodule/config/checkstyle
     getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
 }
