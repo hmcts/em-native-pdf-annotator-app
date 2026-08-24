@@ -19,10 +19,10 @@ plugins {
     id 'org.sonarqube' version '7.3.1.8318'
     id 'jacoco'
     id 'checkstyle'
-    id 'au.com.dius.pact' version '4.7.3'
+    id 'au.com.dius.pact' version '4.7.5'
     id 'org.owasp.dependencycheck' version '12.2.1'
     id 'info.solidsoft.pitest' version '1.19.0'
-    id 'com.github.hmcts.rse-cft-lib' version '0.19.2284'
+    id 'com.github.hmcts.rse-cft-lib' version '0.19.2338'
     id 'org.flywaydb.flyway' version '13.0.0'
     id 'io.freefair.lombok' version '9.5.0'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '5.3.9'
@@ -63,9 +63,9 @@ def versions = [
         postgresql         : '42.7.13',
         h2                 : '1.4.199',
         serenity           : '5.3.11',
-        pact_version       : '4.7.3',
+        pact_version       : '4.7.5',
         logging            : '8.0.0',
-        fasterXmlJackson   : '2.22.1',
+        fasterXmlJackson   : '2.22.2',
         mapstruct          : '1.6.3',
         springSecurity     : '6.5.11',
         log4JVersion       : '2.26.1',
@@ -140,7 +140,7 @@ dependencies {
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '4.3.3'
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.3.3'
 
-    implementation group: 'com.google.guava', name: 'guava', version: '33.6.0-jre'
+    implementation group: 'com.google.guava', name: 'guava', version: '33.7.1-jre'
 
     implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.46'
 
@@ -152,7 +152,7 @@ dependencies {
     implementation group: 'com.itextpdf', name: 'cleanup', version: '5.0.7'
     implementation group: 'com.itextpdf', name: 'bouncy-castle-adapter', version: '9.7.1'
 
-    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '5.4.0'
+    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '5.5.0'
 
     implementation group:'org.apache.logging.log4j', name: 'log4j-core', version: versions.log4JVersion
     implementation group:'org.apache.logging.log4j', name: 'log4j-api', version: versions.log4JVersion
@@ -253,7 +253,7 @@ dependencies {
     contractTestImplementation group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.14'
     contractTestImplementation group: 'org.apache.httpcomponents', name: 'fluent-hc', version: '4.5.14'
 
-    aatImplementation group: 'com.github.hmcts', name: 'em-test-helper', version:'3.1.0'
+    aatImplementation group: 'com.github.hmcts', name: 'em-test-helper', version:'3.3.0'
     aatImplementation group: 'org.apache.poi', name: 'poi', version: versions.poi
     aatImplementation group: 'org.apache.poi', name: 'poi-ooxml', version: versions.poi
     cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
@@ -269,7 +269,7 @@ dependencyManagement {
             entry 'junit-platform-launcher'
         }
         //CVE-2026-41284, CVE-2026-42498, CVE-2026-43514, CVE-2026-41293, CVE-2026-43512, CVE-2026-43513, CVE-2026-43515
-        dependencySet(group: 'org.apache.tomcat.embed', version: '11.0.24') {
+        dependencySet(group: 'org.apache.tomcat.embed', version: '11.0.25') {
             entry 'tomcat-embed-core'
             entry 'tomcat-embed-el'
             entry 'tomcat-embed-websocket'
@@ -279,8 +279,8 @@ dependencyManagement {
             entry 'log4j-api'
             entry 'log4j-to-slf4j'
         }
-        dependency 'com.fasterxml.jackson.core:jackson-databind:2.22.1'
-        dependency 'tools.jackson.core:jackson-databind:3.2.1'
+        dependency 'com.fasterxml.jackson.core:jackson-databind:2.22.2'
+        dependency 'tools.jackson.core:jackson-databind:3.2.2'
     }
 }
 
@@ -317,7 +317,7 @@ def coverageExclusionList = [
 
 checkstyle {
     maxWarnings = 0
-    toolVersion = '13.8.0'
+    toolVersion = '13.11.0'
     // need to set configDir to rootDir otherwise submodule will use submodule/config/checkstyle
     getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
 }
