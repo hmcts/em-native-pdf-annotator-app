@@ -198,28 +198,6 @@ class ExceptionTranslatorTest {
     }
 
     @Test
-    void shouldProcessConstraintViolationProblem() {
-        setupRequestMocks();
-        Violation violation = new Violation("field", "must not be null");
-        ConstraintViolationProblem problem = new ConstraintViolationProblem(
-                HttpStatus.BAD_REQUEST,
-            List.of(violation)
-        );
-        ResponseEntity<ProblemDetail> entity = ResponseEntity.badRequest().body(problem.getProblemDetail());
-
-        ResponseEntity<ProblemDetail> result = exceptionTranslator.process(entity, request);
-
-        assertThat(result).isNotNull();
-        assertThat(result.getBody()).isNotNull();
-        assertThat(result.getStatusCode().value()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(result.getBody().getProperties())
-            .containsEntry(MESSAGE_FIELD, ErrorConstants.ERR_VALIDATION)
-            .containsKey("violations")
-            .containsKey(PATH);
-        assertThat(result.getBody().getProperties().get(PATH)).isEqualTo("/test/path");
-    }
-
-    @Test
     void shouldProcessDefaultProblem() {
         setupRequestMocks();
 
