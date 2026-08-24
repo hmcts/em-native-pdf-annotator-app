@@ -523,7 +523,7 @@ class ExceptionTranslatorTest {
     }
 
     @Test
-    void handleValidationError_ShouldReturnUnprocessableEntityWithDetails() {
+    void handleValidationErrorShouldReturnUnprocessableEntityWithDetails() {
 
         ValidationErrorException exception = new ValidationErrorException("Invalid name field");
         when(servletWebRequest.getRequest()).thenReturn(httpServletRequest);
@@ -544,7 +544,7 @@ class ExceptionTranslatorTest {
     }
 
     @Test
-    void handleEmptyResponse_ShouldReturnNoContentWithDetails() {
+    void handleEmptyResponseShouldReturnNoContentWithDetails() {
 
         EmptyResponseException exception = new EmptyResponseException("Data empty");
         when(servletWebRequest.getRequest()).thenReturn(httpServletRequest);
@@ -564,7 +564,7 @@ class ExceptionTranslatorTest {
     }
 
     @Test
-    void handleUnexpectedRuntime_ShouldReturnInternalServerErrorWithDetails() {
+    void handleUnexpectedRuntimeShouldReturnInternalServerErrorWithDetails() {
 
         RuntimeException exception = new RuntimeException("Database down");
         when(servletWebRequest.getRequest()).thenReturn(httpServletRequest);
@@ -585,7 +585,7 @@ class ExceptionTranslatorTest {
     }
 
     @Test
-    void handleCommonProperties_ShouldNotCrash_WhenWebRequestIsGeneric() {
+    void handleCommonPropertiesShouldNotCrashWhenWebRequestIsGeneric() {
 
         RuntimeException exception = new RuntimeException("Fallback testing");
 

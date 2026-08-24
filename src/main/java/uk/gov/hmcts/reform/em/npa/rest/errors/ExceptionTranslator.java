@@ -2,8 +2,10 @@ package uk.gov.hmcts.reform.em.npa.rest.errors;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.context.MessageSource;
+import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.dao.ConcurrencyFailureException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.ServletWebRequest;
@@ -208,6 +211,29 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Object> handleUnexpectedRuntime(RuntimeException ex, WebRequest request) {
+
+        // Dynamic look-up for library exceptions using @ResponseStatus
+        ResponseStatus responseStatus = AnnotatedElementUtils.findMergedAnnotation(
+                ex.getClass(),
+                ResponseStatus.class
+        );
+
+        // If a library exception HAS @ResponseStatus, extract and use its code!
+        if (responseStatus != null) {
+            HttpStatus libraryStatus = responseStatus.value();
+
+            ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                    libraryStatus,
+                    ex.getMessage()
+            );
+            if (StringUtils.isNotBlank(responseStatus.reason())) {
+                problemDetail.setTitle(responseStatus.reason());
+            }
+            addCommonProperties(problemDetail, request);
+            return ResponseEntity.status(problemDetail.getStatus()).body(problemDetail);
+        }
+
+        // Default 500 fallback logic for any completely untagged RuntimeException
         ProblemDetail detail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
                 "An unexpected internal server error occurred.");
         detail.setTitle("Internal Server Error");
