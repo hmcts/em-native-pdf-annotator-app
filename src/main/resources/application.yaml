@@ -137,6 +137,9 @@ toggles:
   cdam_enabled: ${ENABLE_CDAM:false}
   delete_enabled: ${ENABLE_DELETE_ENDPOINT:true}
 
+toggle:
+  includeidamhealth: ${ENABLE_IDAM_HEALTH_CHECK:false}
+
 springdoc:
   packagesToScan: uk.gov.hmcts.reform.em.npa.rest
   pathsToMatch: /**
