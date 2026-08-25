@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.em.npa.TestSecurityConfiguration;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -53,9 +52,9 @@ class ExceptionTranslatorIntTest {
     @Test
     void testConcurrencyFailure() throws Exception {
         mockMvc.perform(get("/test/concurrency-failure"))
-            .andExpect(status().isConflict()).andDo(print());
-//            .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
-//            .andExpect(jsonPath("$.message").value(ErrorConstants.ERR_CONCURRENCY_FAILURE));
+            .andExpect(status().isConflict())
+            .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
+            .andExpect(jsonPath("$.properties.message").value(ErrorConstants.ERR_CONCURRENCY_FAILURE));
     }
 
     @Test
@@ -72,10 +71,10 @@ class ExceptionTranslatorIntTest {
         mockMvc.perform(post("/test/method-argument").content("{}").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
-                .andExpect(jsonPath("$.message").value(ErrorConstants.ERR_VALIDATION))
-                .andExpect(jsonPath("$.fieldErrors.[0].objectName").value("testDTO"))
-                .andExpect(jsonPath("$.fieldErrors.[0].field").value("test"))
-                .andExpect(jsonPath("$.fieldErrors.[0].message").value("NotNull"));
+                .andExpect(jsonPath("$.properties.message").value(ErrorConstants.ERR_VALIDATION))
+                .andExpect(jsonPath("$.properties.fieldErrors.[0].objectName").value("testDTO"))
+                .andExpect(jsonPath("$.properties.fieldErrors.[0].field").value("test"))
+                .andExpect(jsonPath("$.properties.fieldErrors.[0].message").value("NotNull"));
     }
 
     @Test
@@ -83,9 +82,10 @@ class ExceptionTranslatorIntTest {
         mockMvc.perform(get("/test/parameterized-error"))
             .andExpect(status().isBadRequest())
             .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
-            .andExpect(jsonPath("$.message").value("test parameterized error"))
-            .andExpect(jsonPath("$.params.param0").value("param0_value"))
-            .andExpect(jsonPath("$.params.param1").value("param1_value"));
+//    andDo(print());
+            .andExpect(jsonPath("$.properties.message").value("test parameterized error"))
+            .andExpect(jsonPath("$.properties.params.param0").value("param0_value"))
+            .andExpect(jsonPath("$.properties.params.param1").value("param1_value"));
     }
 
     @Test
@@ -93,9 +93,9 @@ class ExceptionTranslatorIntTest {
         mockMvc.perform(get("/test/parameterized-error2"))
             .andExpect(status().isBadRequest())
             .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
-            .andExpect(jsonPath("$.message").value("test parameterized error"))
-            .andExpect(jsonPath("$.params.foo").value("foo_value"))
-            .andExpect(jsonPath("$.params.bar").value("bar_value"));
+            .andExpect(jsonPath("$.properties.message").value("test parameterized error"))
+            .andExpect(jsonPath("$.properties.params.foo").value("foo_value"))
+            .andExpect(jsonPath("$.properties.params.bar").value("bar_value"));
     }
 
     @Test
@@ -103,7 +103,7 @@ class ExceptionTranslatorIntTest {
         mockMvc.perform(get("/test/missing-servlet-request-part"))
             .andExpect(status().isBadRequest())
             .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
-            .andExpect(jsonPath("$.message").value("error.http.400"));
+            .andExpect(jsonPath("$.properties.message").value("error.http.400"));
     }
 
     @Test
@@ -111,7 +111,7 @@ class ExceptionTranslatorIntTest {
         mockMvc.perform(get("/test/missing-servlet-request-parameter"))
             .andExpect(status().isBadRequest())
             .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
-            .andExpect(jsonPath("$.message").value("error.http.400"));
+            .andExpect(jsonPath("$.properties.message").value("error.http.400"));
     }
 
     @Test
@@ -119,7 +119,7 @@ class ExceptionTranslatorIntTest {
         mockMvc.perform(get("/test/access-denied"))
             .andExpect(status().isForbidden())
             .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
-            .andExpect(jsonPath("$.message").value("error.http.403"));
+            .andExpect(jsonPath("$.properties.message").value("error.http.403"));
     }
 
     @Test
@@ -127,7 +127,7 @@ class ExceptionTranslatorIntTest {
         mockMvc.perform(get("/test/unauthorized"))
             .andExpect(status().isUnauthorized())
             .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
-            .andExpect(jsonPath("$.message").value("error.http.401"));
+            .andExpect(jsonPath("$.properties.message").value("error.http.401"));
     }
 
     @Test
@@ -135,8 +135,8 @@ class ExceptionTranslatorIntTest {
         mockMvc.perform(post("/test/access-denied"))
             .andExpect(status().isMethodNotAllowed())
             .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
-            .andExpect(jsonPath("$.message").value("error.http.405"))
-            .andExpect(jsonPath("$.detail").value("Request method 'POST' is not supported"));
+            .andExpect(jsonPath("$.properties.message").value("error.http.405"))
+            .andExpect(jsonPath("$.properties.detail").value("Request method 'POST' is not supported"));
     }
 
     @Test
@@ -144,7 +144,7 @@ class ExceptionTranslatorIntTest {
         mockMvc.perform(get("/test/response-status"))
             .andExpect(status().isBadRequest())
             .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
-            .andExpect(jsonPath("$.message").value("error.http.400"))
+            .andExpect(jsonPath("$.properties.message").value("error.http.400"))
             .andExpect(jsonPath("$.title").value("test response status"));
     }
 
@@ -153,7 +153,7 @@ class ExceptionTranslatorIntTest {
         mockMvc.perform(get("/test/internal-server-error"))
             .andExpect(status().isInternalServerError())
             .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
-            .andExpect(jsonPath("$.message").value("error.http.500"))
+            .andExpect(jsonPath("$.properties.message").value("error.http.500"))
             .andExpect(jsonPath("$.title").value("Internal Server Error"));
     }
 
@@ -162,13 +162,13 @@ class ExceptionTranslatorIntTest {
         mockMvc.perform(get("/test/no-such-element"))
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
-                .andExpect(jsonPath("$.message").value(ErrorConstants.ENTITY_NOT_FOUND_TYPE));
+                .andExpect(jsonPath("$.properties.message").value(ErrorConstants.ENTITY_NOT_FOUND_TYPE));
     }
 
     @Test
     void testBadRequestAlertException() throws Exception {
         mockMvc.perform(get("/test/bad-request"))
                 .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
-                .andExpect(jsonPath("$.message").value(ErrorConstants.BAD_REQUEST));
+                .andExpect(jsonPath("$.properties.message").value(ErrorConstants.BAD_REQUEST));
     }
 }
