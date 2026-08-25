@@ -1,10 +1,10 @@
 package uk.gov.hmcts.reform.em.npa.testutil;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.em.test.ccddata.CcdDataHelper;
 
@@ -19,7 +19,7 @@ public class ExtendedCcdHelper {
 
     private final CcdDataHelper ccdDataHelper;
 
-    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+    private final ObjectMapper objectMapper = JsonMapper.builder().build();
 
     public static final String CREATE_CASE_TEMPLATE = """
         {

@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.em.npa;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.security.oauth2.client.InMemoryOAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
@@ -22,11 +24,8 @@ import static org.mockito.Mockito.mock;
 @TestConfiguration
 public class TestSecurityConfiguration {
 
-    private final ClientRegistration clientRegistration;
-
-    public TestSecurityConfiguration() {
-        this.clientRegistration = clientRegistration().build();
-    }
+    // 1. REMOVED the constructor and the private final ClientRegistration field
+    // to bypass the proxy/CGLIB lifecycle error entirely.
 
     @Bean
     @Primary
@@ -34,30 +33,32 @@ public class TestSecurityConfiguration {
         return mock(JwtDecoder.class);
     }
 
+    // 2. Instantiate and pass the registration locally inside the Bean definition
     @Bean
-    ClientRegistrationRepository clientRegistrationRepository() {
-        return new InMemoryClientRegistrationRepository(clientRegistration);
+    public ClientRegistrationRepository clientRegistrationRepository() {
+        return new InMemoryClientRegistrationRepository(buildClientRegistration());
     }
 
-    private ClientRegistration.Builder clientRegistration() {
-
+    // 3. Renamed and kept static to keep it simple and clean
+    private static ClientRegistration buildClientRegistration() {
         Map<String, Object> metadata = new HashMap<>();
-        metadata.put("end_session_endpoint", "https://jhipster.org/logout");
+        metadata.put("end_session_endpoint", "https://jhipster.org");
 
         return ClientRegistration.withRegistrationId("oidc")
                 .redirectUri("{baseUrl}/{action}/oauth2/code/{registrationId}")
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .scope("read:user")
-                .authorizationUri("https://jhipster.org/login/oauth/authorize")
-                .tokenUri("https://jhipster.org/login/oauth/access_token")
-                .jwkSetUri("https://jhipster.org/oauth/jwk")
-                .userInfoUri("https://api.jhipster.org/user")
+                .authorizationUri("https://jhipster.org")
+                .tokenUri("https://jhipster.org")
+                .jwkSetUri("https://jhipster.org")
+                .userInfoUri("https://jhipster.org")
                 .providerConfigurationMetadata(metadata)
                 .userNameAttributeName("id")
                 .clientName("Client Name")
                 .clientId("client-id")
-                .clientSecret("client-secret");
+                .clientSecret("client-secret")
+                .build();
     }
 
     @Bean
@@ -74,4 +75,15 @@ public class TestSecurityConfiguration {
         return new AuthenticatedPrincipalOAuth2AuthorizedClientRepository(authorizedClientService);
     }
 
+    @Bean
+    public ObjectMapper jackson2ObjectMapper() {
+        // Manually constructs the Jackson 2 object engine required by CCD
+        return new ObjectMapper();
+    }
+
+    @Bean
+    public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter(ObjectMapper jackson2ObjectMapper) {
+        // Manually exposes the message converter that Spring Boot 4 dropped
+        return new MappingJackson2HttpMessageConverter(jackson2ObjectMapper);
+    }
 }

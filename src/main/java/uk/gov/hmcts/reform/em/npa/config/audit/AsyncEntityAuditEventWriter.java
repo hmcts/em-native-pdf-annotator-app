@@ -1,16 +1,14 @@
 package uk.gov.hmcts.reform.em.npa.config.audit;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.ObjectMapper;
 import uk.gov.hmcts.reform.em.npa.domain.AbstractAuditingEntity;
 import uk.gov.hmcts.reform.em.npa.domain.EntityAuditEvent;
 import uk.gov.hmcts.reform.em.npa.repository.EntityAuditEventRepository;
 import uk.gov.hmcts.reform.em.npa.rest.errors.EntityAuditEventException;
-
-import java.io.IOException;
 
 /**
  * Async Entity Audit Event writer.
@@ -66,8 +64,7 @@ public class AsyncEntityAuditEventWriter {
         try {
             entityData = objectMapper.writeValueAsString(entity);
         } catch (IllegalArgumentException
-                | SecurityException
-                | IOException e) {
+                | SecurityException e) {
             // instead of returning null, a custom exception is thrown, and it is caught in the writeAuditEvent method
             throw new EntityAuditEventException(e.getMessage());
         }
