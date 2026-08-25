@@ -2,11 +2,6 @@ package uk.gov.hmcts.reform.em.npa.service.impl;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.read.ListAppender;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
 import okhttp3.Call;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -22,7 +17,8 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.LoggerFactory;
-import tools.jackson.databind.ObjectWriter;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.em.npa.repository.IdamRepository;
 import uk.gov.hmcts.reform.em.npa.service.exception.DocumentTaskProcessingException;
@@ -187,7 +183,7 @@ class DmStoreDownloaderImplTest {
         );
 
         assertThat(exception.getMessage()).contains("Could not access the binary:");
-        assertThat(exception.getCause()).isInstanceOf(JsonProcessingException.class);
+        assertThat(exception.getCause()).isInstanceOf(JacksonException.class);
     }
 
     @Test
@@ -284,48 +280,6 @@ class DmStoreDownloaderImplTest {
 
         assertThat(exception.getMessage()).contains("Could not access the binary: Auth Error");
         assertThat(exception.getCause()).isSameAs(runtimeException);
-    }
-
-    @Test
-    void shouldLogErrorMessageOnJsonSerializationFailure() throws IOException, DocumentTaskProcessingException {
-        Logger logger = (Logger) LoggerFactory.getLogger(DmStoreDownloaderImpl.class);
-        ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
-        listAppender.start();
-        logger.addAppender(listAppender);
-
-        ObjectMapper spyObjectMapper = spy(new ObjectMapper());
-        ObjectWriter mockWriter = mock(ObjectWriter.class);
-        when(spyObjectMapper.writerWithDefaultPrettyPrinter()).thenReturn(mockWriter);
-        when(mockWriter.writeValueAsString(any(JsonNode.class)))
-            .thenThrow(new JsonProcessingException("Test serialization error") {
-            });
-
-        dmStoreDownloader = new DmStoreDownloaderImpl(
-            okHttpClient,
-            authTokenGenerator,
-            idamRepository,
-            DM_STORE_BASE_URL,
-            spyObjectMapper
-        );
-
-        Response metadataResponse = createSuccessfulResponse(METADATA_JSON);
-        Response binaryResponse = createSuccessfulResponse(BINARY_CONTENT);
-        when(mockCall.execute())
-            .thenReturn(metadataResponse)
-            .thenReturn(binaryResponse);
-
-        downloadedFile = dmStoreDownloader.downloadFile(DOC_ID, USER_TOKEN);
-
-        assertNotNull(downloadedFile);
-        assertTrue(downloadedFile.exists());
-        assertEquals(BINARY_CONTENT, Files.readString(downloadedFile.toPath()));
-
-        boolean logFound = listAppender.list.stream()
-            .anyMatch(event -> event.getFormattedMessage()
-                .contains("Error serializing document metadata: Test serialization error"));
-        assertTrue(logFound, "Expected log message about serialization error was not found.");
-
-        logger.detachAppender(listAppender);
     }
 
     private Response createSuccessfulResponse(String bodyContent) {

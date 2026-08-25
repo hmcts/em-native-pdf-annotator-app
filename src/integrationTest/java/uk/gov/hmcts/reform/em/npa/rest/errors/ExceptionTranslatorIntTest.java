@@ -82,7 +82,6 @@ class ExceptionTranslatorIntTest {
         mockMvc.perform(get("/test/parameterized-error"))
             .andExpect(status().isBadRequest())
             .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
-//    andDo(print());
             .andExpect(jsonPath("$.properties.message").value("test parameterized error"))
             .andExpect(jsonPath("$.properties.params.param0").value("param0_value"))
             .andExpect(jsonPath("$.properties.params.param1").value("param1_value"));
