@@ -306,6 +306,7 @@ def coverageExclusionList = [
     '**uk/gov/hmcts/reform/em/npa/repository/LargeObjectRepository*',
     '**uk/gov/hmcts/reform/em/npa/rest/errors/CustomParameterizedException*',
     '**uk/gov/hmcts/reform/em/npa/rest/errors/BadRequestAlertException*'
+    '**uk/gov/hmcts/reform/em/npa/health/**',
 ]
 
 checkstyle {
