@@ -143,7 +143,7 @@ dependencies {
 
     implementation group: 'com.google.guava', name: 'guava', version: '33.7.1-jre'
 
-    implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.46'
+    implementation group: 'org.projectlombok', name: 'lombok', version: '1.18.48'
 
     implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '3.0.8'
     implementation group: 'org.apache.pdfbox', name: 'pdfbox-io', version: '3.0.8'
