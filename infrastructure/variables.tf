@@ -94,14 +94,3 @@ variable "email_address_key" {
   type        = string
   default     = "db-alert-monitoring-email-address"
 }
-
-////////////////////////////////////////////////
-// Toggle Features
-////////////////////////////////////////////////
-variable "enable_idam_healthcheck" {
-  default = "false"
-}
-
-variable "enable_s2s_healthcheck" {
-  default = "false"
-}
