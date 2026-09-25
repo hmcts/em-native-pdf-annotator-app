@@ -227,7 +227,7 @@ dependencies {
 
     testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.21.4'
 
-    testImplementation group: 'com.h2database', name: 'h2', version: '2.4.240'
+    testImplementation group: 'com.h2database', name: 'h2', version: '2.5.250'
 
     contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5',  version: versions.pact_version
 
