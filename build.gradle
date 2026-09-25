@@ -71,7 +71,7 @@ def versions = [
         serenity           : '5.3.11',
         pact_version       : '4.7.5',
         logging            : '8.0.0',
-        fasterXmlJackson   : '2.22.2',
+        fasterXmlJackson   : '2.22.3',
         hibernate          : '6.6.58.Final',
         mapstruct          : '1.6.3',
         springSecurity     : '6.5.11',
@@ -198,7 +198,7 @@ dependencies {
     annotationProcessor group:'org.springframework.boot', name: 'spring-boot-configuration-processor', withoutStuff
 
     testImplementation group:'org.springframework.boot', name: 'spring-boot-starter-test', withoutStuff
-    testImplementation group: 'com.github.gmazzo.okhttp.mock', name: 'mock-client', version: '2.1.0'
+    testImplementation group: 'com.github.gmazzo.okhttp.mock', name: 'mock-client', version: '2.2.0'
     testImplementation group: 'org.hamcrest', name: 'hamcrest', version: '3.0'
     implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.logging
 
@@ -270,8 +270,8 @@ dependencyManagement {
             entry 'log4j-api'
             entry 'log4j-to-slf4j'
         }
-        dependency 'com.fasterxml.jackson.core:jackson-databind:2.22.2'
-        dependency 'tools.jackson.core:jackson-databind:3.2.2'
+        dependency 'com.fasterxml.jackson.core:jackson-databind:2.22.3'
+        dependency 'tools.jackson.core:jackson-databind:3.2.3'
     }
 }
 
