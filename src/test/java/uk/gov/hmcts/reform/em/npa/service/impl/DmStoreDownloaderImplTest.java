@@ -4,10 +4,6 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import okhttp3.Call;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -23,6 +19,10 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.LoggerFactory;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectWriter;
+import tools.jackson.databind.json.JsonMapper;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.em.npa.repository.IdamRepository;
 import uk.gov.hmcts.reform.em.npa.service.exception.DocumentTaskProcessingException;
@@ -65,7 +65,7 @@ class DmStoreDownloaderImplTest {
     @Mock
     private Call mockCall;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final JsonMapper objectMapper = JsonMapper.builder().build();
 
     private DmStoreDownloaderImpl dmStoreDownloader;
 
@@ -187,7 +187,7 @@ class DmStoreDownloaderImplTest {
         );
 
         assertThat(exception.getMessage()).contains("Could not access the binary:");
-        assertThat(exception.getCause()).isInstanceOf(JsonProcessingException.class);
+        assertThat(exception.getCause()).isInstanceOf(JacksonException.class);
     }
 
     @Test
@@ -293,11 +293,11 @@ class DmStoreDownloaderImplTest {
         listAppender.start();
         logger.addAppender(listAppender);
 
-        ObjectMapper spyObjectMapper = spy(new ObjectMapper());
+        JsonMapper spyObjectMapper = spy(JsonMapper.builder().build());
         ObjectWriter mockWriter = mock(ObjectWriter.class);
         when(spyObjectMapper.writerWithDefaultPrettyPrinter()).thenReturn(mockWriter);
         when(mockWriter.writeValueAsString(any(JsonNode.class)))
-            .thenThrow(new JsonProcessingException("Test serialization error") {
+            .thenThrow(new JacksonException("Test serialization error") {
             });
 
         dmStoreDownloader = new DmStoreDownloaderImpl(
