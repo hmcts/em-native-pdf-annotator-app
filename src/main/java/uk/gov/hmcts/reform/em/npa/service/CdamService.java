@@ -15,9 +15,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.nio.file.attribute.PosixFilePermission;
-import java.nio.file.attribute.PosixFilePermissions;
-import java.util.EnumSet;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -58,8 +55,7 @@ public class CdamService {
     private File copyResponseToFile(InputStream inputStream, String fileName) throws DocumentTaskProcessingException {
         try {
 
-            var tempDir = Files.createTempDirectory("pg",
-                PosixFilePermissions.asFileAttribute(EnumSet.allOf(PosixFilePermission.class)));
+            var tempDir = Files.createTempDirectory("pg");
             var tempFile = new File(tempDir.toAbsolutePath().toFile(), fileName);
 
             Files.copy(inputStream, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
