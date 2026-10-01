@@ -186,9 +186,9 @@ dependencies {
     implementation group:'org.hibernate.orm', name: 'hibernate-jcache'
     implementation group:'org.hibernate.orm', name: 'hibernate-envers'
 
-    implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.3.5'
-    implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '3.0.5'
-    implementation 'com.github.hmcts:ccd-case-document-am-client:1.59.2'
+    implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '6.1.0'
+    implementation group: 'com.github.hmcts', name: 'idam-java-client', version: '4.0.0'
+    implementation 'com.github.hmcts:ccd-case-document-am-client:1.60.0'
     implementation group: 'org.apache.tika', name: 'tika-core', version: '3.3.2'
 
     implementation group: 'org.mapstruct', name: 'mapstruct', version: versions.mapstruct
@@ -462,6 +462,9 @@ tasks.register('providerContractTests', Test) {
 
 // Centralized Pact system property setup for all Test tasks
 tasks.withType(Test).configureEach { t ->
+    jacoco {
+        excludes = ['org/htmlunit/**']
+    }
     // Logging setup
     testLogging {
         exceptionFormat = 'full'

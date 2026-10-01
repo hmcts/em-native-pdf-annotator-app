@@ -36,8 +36,7 @@ class ExceptionTranslatorIntTest {
     @Autowired
     private ExceptionTranslator exceptionTranslator;
 
-    @Autowired
-    private JacksonJsonHttpMessageConverter jacksonMessageConverter;
+    private JacksonJsonHttpMessageConverter jacksonMessageConverter = new JacksonJsonHttpMessageConverter();
 
     private MockMvc mockMvc;
 
