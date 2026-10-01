@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.em.npa.config.security.SecurityConfiguration;
 
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -56,7 +57,8 @@ class OpenAPIPublisherTest {
             .getResponse()
             .getContentAsByteArray();
 
-        try (OutputStream outputStream = Files.newOutputStream(Paths.get("/tmp/openapi-specs.json"))) {
+        Path outputPath = Paths.get(System.getProperty("java.io.tmpdir"), "openapi-specs.json");
+        try (OutputStream outputStream = Files.newOutputStream(outputPath)) {
             outputStream.write(specs);
         }
     }
