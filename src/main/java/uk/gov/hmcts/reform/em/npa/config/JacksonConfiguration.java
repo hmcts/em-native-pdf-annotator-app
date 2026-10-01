@@ -1,8 +1,9 @@
 package uk.gov.hmcts.reform.em.npa.config;
 
-import com.fasterxml.jackson.module.blackbird.BlackbirdModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import tools.jackson.module.blackbird.BlackbirdModule;
+
 
 @Configuration
 public class JacksonConfiguration {
