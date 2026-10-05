@@ -13,8 +13,13 @@ import uk.gov.hmcts.reform.em.npa.service.exception.DocumentTaskProcessingExcept
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -54,7 +59,7 @@ public class CdamService {
     private File copyResponseToFile(InputStream inputStream, String fileType) throws DocumentTaskProcessingException {
         try {
 
-            var tempDir = Files.createTempDirectory("pg-");
+            var tempDir = createSecureTempDirectory();
             var suffix = fileType.isBlank() ? null : "." + fileType;
             var tempFile = Files.createTempFile(tempDir, "document-", suffix);
 
@@ -64,6 +69,24 @@ public class CdamService {
         } catch (IOException e) {
             throw new DocumentTaskProcessingException("Could not copy the file to a temp location", e);
         }
+    }
+
+    private Path createSecureTempDirectory() throws IOException {
+        var tempRoot = Paths.get(System.getProperty("java.io.tmpdir"), "em-npa");
+
+        try {
+            Files.createDirectory(tempRoot);
+        } catch (FileAlreadyExistsException e) {
+            if (!Files.isDirectory(tempRoot, LinkOption.NOFOLLOW_LINKS)) {
+                throw new IOException("Temporary directory is not a directory", e);
+            }
+        }
+
+        if (Files.getFileStore(tempRoot).supportsFileAttributeView("posix")) {
+            Files.setPosixFilePermissions(tempRoot, PosixFilePermissions.fromString("rwx------"));
+        }
+
+        return Files.createTempDirectory(tempRoot, "pg-");
     }
 
 }
