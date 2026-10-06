@@ -258,6 +258,7 @@ dependencies {
     aatImplementation group: 'com.github.hmcts', name: 'em-test-helper', version:'3.3.0'
     // Temporary AAT-only bridge: em-test-helper exposes Jackson 2 JsonNode/ObjectMapper APIs.
     aatImplementation group: 'org.springframework.boot', name: 'spring-boot-jackson2'
+    aatImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
     aatImplementation group: 'org.apache.poi', name: 'poi', version: versions.poi
     aatImplementation group: 'org.apache.poi', name: 'poi-ooxml', version: versions.poi
     cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
