@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * AAT compatibility configuration for document-management-client 7.0.1.
  *
- * The published client is compiled against the Boot 3 health API. Its
+ * <p>The published client is compiled against the Boot 3 health API. Its
  * configuration is discovered by em-test-helper's component scan, so loading
  * the original class fails before the AAT context starts. The document Feign
  * clients remain required by DmHelper; the incompatible health-indicator bean
