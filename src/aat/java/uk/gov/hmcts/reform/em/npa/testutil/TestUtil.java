@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
@@ -42,9 +43,8 @@ import java.util.stream.Stream;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Service
-@ComponentScan({"uk.gov.hmcts.reform.em.test",
-    "uk.gov.hmcts.reform.document",
-    "uk.gov.hmcts.reform.ccd.document.am.config"})
+@ComponentScan({"uk.gov.hmcts.reform.em.test", "uk.gov.hmcts.reform.ccd.document.am.config"})
+@EnableFeignClients(basePackages = "uk.gov.hmcts.reform.document")
 @EnableAutoConfiguration
 // S1192: Using string literals for JSON/request field names intentionally to keep structure clear in tests.
 @SuppressWarnings("squid:S1192")
