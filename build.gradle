@@ -255,7 +255,11 @@ dependencies {
     contractTestImplementation group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.14'
     contractTestImplementation group: 'org.apache.httpcomponents', name: 'fluent-hc', version: '4.5.14'
 
-    aatImplementation group: 'com.github.hmcts', name: 'em-test-helper', version:'3.3.0'
+    aatImplementation group: 'com.github.hmcts', name: 'em-test-helper', version:'3.4.1'
+    // Pin the Boot 4-compatible client on the AAT classpath.
+    aatImplementation group: 'com.github.hmcts', name: 'core-case-data-store-client', version: '6.1.0'
+    // Keep the AAT classpath aligned with the Boot 4-compatible application client.
+    aatImplementation group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.60.0'
     // Temporary AAT-only bridge: em-test-helper exposes Jackson 2 JsonNode/ObjectMapper APIs.
     aatImplementation group: 'org.springframework.boot', name: 'spring-boot-jackson2'
     aatImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
