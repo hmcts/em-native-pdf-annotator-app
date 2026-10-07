@@ -45,8 +45,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Service
 @ComponentScan({"uk.gov.hmcts.reform.em.test", "uk.gov.hmcts.reform.ccd.document.am.config"})
 @EnableFeignClients(basePackages = "uk.gov.hmcts.reform.document")
-@EnableAutoConfiguration(excludeName =
-    "uk.gov.hmcts.reform.document.DocumentManagementClientAutoConfiguration")
+@EnableAutoConfiguration
 // S1192: Using string literals for JSON/request field names intentionally to keep structure clear in tests.
 @SuppressWarnings("squid:S1192")
 public class TestUtil {
