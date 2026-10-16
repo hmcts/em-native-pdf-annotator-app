@@ -12,7 +12,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import uk.gov.hmcts.reform.em.npa.Application;
 import uk.gov.hmcts.reform.em.npa.TestSecurityConfiguration;
 
@@ -39,15 +39,15 @@ class ExceptionTranslatorIntTest {
     private ExceptionTranslator exceptionTranslator;
 
     @Autowired
-    private ObjectMapper objectMapper;
-    
+    private JsonMapper jsonMapper;
+
     private JacksonJsonHttpMessageConverter jacksonMessageConverter;
 
     private MockMvc mockMvc;
 
     @BeforeEach
     void setup() {
-        jacksonMessageConverter = new JacksonJsonHttpMessageConverter(objectMapper);
+        jacksonMessageConverter = new JacksonJsonHttpMessageConverter(jsonMapper);
         
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
             .setControllerAdvice(exceptionTranslator)
