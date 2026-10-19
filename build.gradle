@@ -259,8 +259,6 @@ dependencies {
     aatImplementation group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.60.0'
     // The helper's older document client is not binary-compatible with Spring Framework 7.
     aatImplementation group: 'com.github.hmcts', name: 'document-management-client', version: '10.0.1'
-    // Temporary AAT-only bridge: em-test-helper exposes Jackson 2 JsonNode/ObjectMapper APIs.
-    aatImplementation group: 'org.springframework.boot', name: 'spring-boot-jackson2'
     aatImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
     aatImplementation group: 'org.apache.poi', name: 'poi', version: versions.poi
     aatImplementation group: 'org.apache.poi', name: 'poi-ooxml', version: versions.poi
@@ -467,9 +465,6 @@ tasks.register('providerContractTests', Test) {
 
 // Centralized Pact system property setup for all Test tasks
 tasks.withType(Test).configureEach { t ->
-    jacoco {
-        excludes = ['org/htmlunit/**']
-    }
     // Logging setup
     testLogging {
         exceptionFormat = 'full'
