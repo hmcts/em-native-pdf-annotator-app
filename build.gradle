@@ -104,7 +104,7 @@ sourceSets {
 }
 
 configurations {
-    aatImplementation.extendsFrom(implementation, testImplementation)
+    aatImplementation.extendsFrom(testImplementation)
     aatRuntime.extendsFrom(testRuntimeOnly)
 }
 
