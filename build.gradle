@@ -23,7 +23,7 @@ plugins {
     id 'au.com.dius.pact' version '4.7.5'
     id 'org.owasp.dependencycheck' version '12.2.1'
     id 'info.solidsoft.pitest' version '1.19.0'
-    id 'com.github.hmcts.rse-cft-lib' version '0.19.2435'
+    id 'com.github.hmcts.rse-cft-lib' version '0.19.2446'
     id 'org.flywaydb.flyway' version '13.0.0'
     id 'io.freefair.lombok' version '9.5.0'
     id 'net.serenity-bdd.serenity-gradle-plugin' version '5.3.9'
@@ -71,8 +71,8 @@ def versions = [
         serenity           : '5.3.11',
         pact_version       : '4.7.5',
         logging            : '8.0.0',
-        fasterXmlJackson   : '2.22.3',
-        hibernate          : '6.6.58.Final',
+        fasterXmlJackson   : '2.22.4',
+        hibernate          : '6.6.59.Final',
         mapstruct          : '1.6.3',
         springSecurity     : '6.5.11',
         log4JVersion       : '2.26.1',
@@ -152,7 +152,7 @@ dependencies {
     implementation group: 'org.apache.pdfbox', name: 'jbig2-imageio', version: '3.0.5'
 
     implementation group: 'com.itextpdf', name: 'cleanup', version: '5.0.8'
-    implementation group: 'com.itextpdf', name: 'bouncy-castle-adapter', version: '9.7.1'
+    implementation group: 'com.itextpdf', name: 'bouncy-castle-adapter', version: '9.8.0'
 
     implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '5.5.0'
 
@@ -270,8 +270,8 @@ dependencyManagement {
             entry 'log4j-api'
             entry 'log4j-to-slf4j'
         }
-        dependency 'com.fasterxml.jackson.core:jackson-databind:2.22.3'
-        dependency 'tools.jackson.core:jackson-databind:3.2.3'
+        dependency 'com.fasterxml.jackson.core:jackson-databind:2.22.4'
+        dependency 'tools.jackson.core:jackson-databind:3.2.4'
     }
 }
 
