@@ -257,7 +257,6 @@ dependencies {
     aatImplementation group: 'com.github.hmcts', name: 'ccd-case-document-am-client', version: '1.60.0'
     // The helper's older document client is not binary-compatible with Spring Framework 7.
     aatImplementation group: 'com.github.hmcts', name: 'document-management-client', version: '10.0.1'
-    aatImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
     aatImplementation group: 'org.apache.poi', name: 'poi', version: versions.poi
     aatImplementation group: 'org.apache.poi', name: 'poi-ooxml', version: versions.poi
     cftlibImplementation 'org.springframework.boot:spring-boot-devtools'
