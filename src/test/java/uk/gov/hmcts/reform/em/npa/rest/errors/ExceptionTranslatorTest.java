@@ -188,7 +188,8 @@ class ExceptionTranslatorTest {
     @Test
     void shouldReturnEntityAsIsWhenBodyIsNull() {
 
-        ResponseEntity<ProblemDetail> nullBodyEntity = new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        ResponseEntity<ProblemDetail> nullBodyEntity = new ResponseEntity<ProblemDetail>(
+                (HttpHeaders) null, HttpStatus.BAD_REQUEST);
 
         ResponseEntity<ProblemDetail> result = exceptionTranslator.process(nullBodyEntity, request);
 
@@ -532,11 +533,11 @@ class ExceptionTranslatorTest {
         ResponseEntity<Object> response = exceptionTranslator.handleValidationError(exception, servletWebRequest);
 
         assertThat(response).isNotNull();
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_CONTENT);
 
         ProblemDetail body = (ProblemDetail) response.getBody();
         assertThat(body).isNotNull();
-        assertThat(body.getStatus()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY.value());
+        assertThat(body.getStatus()).isEqualTo(HttpStatus.UNPROCESSABLE_CONTENT.value());
         assertThat(body.getTitle()).isEqualTo("Unprocessable Entity");
         assertThat(body.getDetail()).isEqualTo("Invalid name field");
         assertThat(body.getProperties()).containsEntry(MESSAGE_FIELD, "error.http.422");
