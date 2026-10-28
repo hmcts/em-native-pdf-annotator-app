@@ -68,7 +68,7 @@ ext['tomcat.version'] = '10.1.59'
 def versions = [
         postgresql         : '42.7.14',
         h2                 : '1.4.199',
-        serenity           : '5.3.11',
+        serenity           : '5.4.1',
         pact_version       : '4.7.5',
         logging            : '8.0.0',
         fasterXmlJackson   : '2.22.4',
