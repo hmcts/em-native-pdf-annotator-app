@@ -6,11 +6,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import tools.jackson.databind.json.JsonMapper;
 import uk.gov.hmcts.reform.em.npa.Application;
 import uk.gov.hmcts.reform.em.npa.TestSecurityConfiguration;
 
@@ -37,12 +38,16 @@ class ExceptionTranslatorIntTest {
     private ExceptionTranslator exceptionTranslator;
 
     @Autowired
-    private MappingJackson2HttpMessageConverter jacksonMessageConverter;
+    private JsonMapper jsonMapper;
+
+    private JacksonJsonHttpMessageConverter jacksonMessageConverter;
 
     private MockMvc mockMvc;
 
     @BeforeEach
     void setup() {
+        jacksonMessageConverter = new JacksonJsonHttpMessageConverter(jsonMapper);
+        
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
             .setControllerAdvice(exceptionTranslator)
             .setMessageConverters(jacksonMessageConverter)
