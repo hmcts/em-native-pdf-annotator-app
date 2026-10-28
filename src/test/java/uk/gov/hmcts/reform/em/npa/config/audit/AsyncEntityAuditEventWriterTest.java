@@ -1,13 +1,13 @@
 package uk.gov.hmcts.reform.em.npa.config.audit;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import uk.gov.hmcts.reform.em.npa.domain.AbstractAuditingEntity;
 import uk.gov.hmcts.reform.em.npa.domain.EntityAuditEvent;
 import uk.gov.hmcts.reform.em.npa.domain.Rectangle;
@@ -74,7 +74,7 @@ class AsyncEntityAuditEventWriterTest {
     @Test
     void testWriteAuditEventCatchesObjectMapperException() throws Exception {
         Redaction target = new Redaction();
-        when(objectMapper.writeValueAsString(target)).thenThrow(new JsonProcessingException("Serialization failed") {});
+        when(objectMapper.writeValueAsString(target)).thenThrow(new JacksonException("Serialization failed") {});
         asyncEntityAuditEventWriter.writeAuditEvent(target, EntityAuditAction.CREATE);
         verify(repository, never()).save(any(EntityAuditEvent.class));
     }
