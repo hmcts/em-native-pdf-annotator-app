@@ -1,8 +1,5 @@
 package uk.gov.hmcts.reform.em.npa.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -12,6 +9,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.em.npa.repository.IdamRepository;
 import uk.gov.hmcts.reform.em.npa.service.DmStoreDownloader;
@@ -72,7 +72,7 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
                     .addArgument(() -> {
                         try {
                             return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(documentMetaData);
-                        } catch (JsonProcessingException e) {
+                        } catch (JacksonException e) {
                             return "Error serializing document metadata: " + e.getMessage();
                         }
                     })
