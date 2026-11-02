@@ -72,7 +72,7 @@ def versions = [
         serenity           : '5.4.1',
         pact_version       : '4.7.5',
         logging            : '8.0.0',
-        fasterXmlJackson   : '3.2.3',
+        fasterXmlJackson   : '3.2.4',
         mapstruct          : '1.6.3',
         log4JVersion       : '2.26.1',
         jupiter            : '6.1.3',
@@ -265,7 +265,7 @@ dependencies {
 dependencyManagement {
     imports {
         mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2025.1.3'
-        mavenBom 'tools.jackson:jackson-bom:3.2.3'
+        mavenBom 'tools.jackson:jackson-bom:3.2.4'
     }
     dependencies {
         dependency 'org.jetbrains.kotlin:kotlin-stdlib:2.4.21'
