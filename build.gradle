@@ -26,7 +26,7 @@ plugins {
     id 'com.github.hmcts.rse-cft-lib' version '0.19.2478'
     id 'org.flywaydb.flyway' version '13.11.1'
     id 'io.freefair.lombok' version '9.8.3'
-    id 'net.serenity-bdd.serenity-gradle-plugin' version '5.4.1'
+    id 'net.serenity-bdd.serenity-gradle-plugin' version '5.4.2'
 }
 
 dependencyUpdates.resolutionStrategy {
@@ -264,7 +264,7 @@ dependencies {
 
 dependencyManagement {
     imports {
-        mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2025.1.3'
+        mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2025.1.4'
         mavenBom 'tools.jackson:jackson-bom:3.2.4'
     }
     dependencies {
