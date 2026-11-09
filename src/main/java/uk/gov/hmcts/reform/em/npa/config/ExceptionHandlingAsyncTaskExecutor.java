@@ -23,15 +23,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.core.NestedExceptionUtils;
 import org.springframework.core.task.AsyncTaskExecutor;
+import org.springframework.dao.DataAccessException;
 
+import java.sql.SQLException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 public class ExceptionHandlingAsyncTaskExecutor implements AsyncTaskExecutor,
     InitializingBean, DisposableBean {
-
-    static final String EXCEPTION_MESSAGE = "Caught async exception";
 
     private final Logger log = LoggerFactory.getLogger(ExceptionHandlingAsyncTaskExecutor.class);
 
@@ -68,7 +69,21 @@ public class ExceptionHandlingAsyncTaskExecutor implements AsyncTaskExecutor,
     }
 
     protected void handle(Exception e) {
-        log.error(EXCEPTION_MESSAGE, e);
+        Throwable rootCause = NestedExceptionUtils.getMostSpecificCause(e);
+
+        if (e instanceof DataAccessException || rootCause instanceof SQLException) {
+            log.error("Caught async database exception [{}]: Error Code: {}. Check application constraints.",
+                rootCause.getClass().getSimpleName(),
+                (rootCause instanceof SQLException sqlEx) ? sqlEx.getErrorCode() : "N/A",
+                e
+            );
+        } else {
+            log.error("Caught async exception [{}]: {}",
+                rootCause.getClass().getSimpleName(),
+                rootCause.getMessage(),
+                e
+            );
+        }
     }
 
     @Override

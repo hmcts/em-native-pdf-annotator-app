@@ -54,8 +54,8 @@ public class NpaServiceAuthFilter extends OncePerRequestFilter {
 
             if (isDeleteEndpoint) {
                 if (!deleteAuthorisedServices.contains(service)) {
-                    LOG.info("Service forbidden {} for DELETE endpoint: {} method: {}, deleteAuthorisedServices: {}",
-                            serviceName, request.getRequestURI(), request.getMethod(), deleteAuthorisedServices);
+                    LOG.info("Service forbidden {} for DELETE endpoint: {} method: {}",
+                            serviceName, request.getRequestURI(), request.getMethod());
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     return;
                 }

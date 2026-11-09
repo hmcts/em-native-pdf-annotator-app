@@ -26,6 +26,8 @@ import org.springframework.security.web.authentication.AnonymousAuthenticationFi
 import java.util.List;
 import java.util.Set;
 
+import static org.apache.commons.text.StringEscapeUtils.escapeJava;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
@@ -93,7 +95,10 @@ public class SecurityConfiguration {
         if (iss instanceof String issuer && allowedIssuerSet.contains(issuer)) {
             return true;
         }
-        log.warn("JWT rejected: issuer not allowed. iss={}", iss);
+        log.atWarn()
+            .setMessage("JWT rejected: issuer not allowed. iss={}")
+            .addArgument(() -> escapeJava(String.valueOf(iss)))
+            .log();
         return false;
     }
 
