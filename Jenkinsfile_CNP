@@ -64,14 +64,6 @@ withPipeline(type , product, component) {
     enableAksStagingDeployment()
     disableLegacyDeployment()
     enablePactAs([AppPipelineDsl.PactRoles.CONSUMER, AppPipelineDsl.PactRoles.PROVIDER])
-    onMaster {
-        enableFortifyScan('em-npa-aat')
-
-        afterAlways('fortify-scan') {
-            steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
-        }
-    }
-
 
     afterAlways('test') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/reports/tests/**/*'
