@@ -87,8 +87,6 @@ public class DmStoreDownloaderImpl implements DmStoreDownloader {
                 String originalDocumentName = documentMetaData.get("originalDocumentName").asText();
                 String fileType = FilenameUtils.getExtension(originalDocumentName);
 
-                log.info("Accessing documentBinaryUrl: {}", documentBinaryUrl);
-
                 Response binaryResponse = getDocumentStoreResponse(documentBinaryUrl, userId, userRoles);
 
                 return copyResponseToFile(binaryResponse, fileType);
