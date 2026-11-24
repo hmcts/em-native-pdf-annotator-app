@@ -12,7 +12,7 @@ java:
     SPRING_DATASOURCE_NAME: "{{ .Values.postgresql.auth.database}}"
     SPRING_DATASOURCE_USERNAME: "{{ .Values.postgresql.auth.username}}"
     SPRING_DATASOURCE_PASSWORD: "{{ .Values.postgresql.auth.password}}"
-    SPRING_DATASOURCE_OPTIONS: "?ssl=disable"
+    SPRING_DATASOURCE_OPTIONS: "?sslmode=disable"
     RUN_DB_MIGRATION_ON_STARTUP: true
     LOGGING_LEVEL_UK_GOV_HMCTS_REFORM_EM_NPA: DEBUG
     ENTITY_VALUE_COPY_ENABLED: true
